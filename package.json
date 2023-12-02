@@ -1,5 +1,5 @@
 {
-  "name": "pawnlanguage",
+  "name": "pawnlanguage-test",
   "displayName": "pawn language-helper TEST VERSION",
   "description": "Расширение для бета теста основного расширения",
   "author": {
@@ -7,9 +7,9 @@
   },
   "repository": {
     "type": "git",
-    "directory": "https://github.com/DmitryMukhlisov/pawn.git"
+    "directory": "https://github.com/DmitryMukhlisov/test-pawn.git"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "ilkol",
   "icon": "pawn.png",
   "engines": {
