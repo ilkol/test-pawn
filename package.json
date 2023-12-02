@@ -1,0 +1,86 @@
+{
+  "name": "pawnlanguage",
+  "displayName": "pawn language-helper TEST VERSION",
+  "description": "Расширение для бета теста основного расширения",
+  "author": {
+    "name": "il_kol"
+  },
+  "repository": {
+    "type": "git",
+    "directory": "https://github.com/DmitryMukhlisov/pawn.git"
+  },
+  "version": "0.1.0",
+  "publisher": "ilkol",
+  "icon": "pawn.png",
+  "engines": {
+    "vscode": "^1.83.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:pawn"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "snippets": [
+      {
+        "language": "cpp",
+        "path": "./snippets/snippets.code-snippets"
+      },
+      {
+        "language": "pawn",
+        "path": "./snippets/snippets.code-snippets"
+      }
+    ],
+    "languages": [
+      {
+        "id": "pawn",
+        "aliases": [
+          "pawn",
+          "pawn"
+        ],
+        "extensions": [
+          ".pwn",
+          ".inc"
+        ],
+        "icon": {
+          "light": "./pawn_dark.svg",
+          "dark": "./pawn_dark.svg"
+        },
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "pawn",
+        "scopeName": "source.pawn",
+        "path": "./syntaxes/pawn.tmLanguage.json"
+      }
+    ]
+  },
+  "dependencies": {
+    "findup-sync": "^0.1.2",
+    "vsce": "^2.15.0"
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.2",
+    "@types/node": "^20.8.6",
+    "@types/vscode": "^1.83.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "@vscode/test-electron": "^2.3.5",
+    "eslint": "^8.51.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "typescript": "^5.2.2"
+  }
+}
