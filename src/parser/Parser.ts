@@ -264,6 +264,7 @@ export class Parser {
             if (inc.isKw("if")) return inc.parseIf();
 			if (inc.isKw("for")) return inc.parseFor();
 			if (inc.isKw("while")) return inc.parseOneCondCycle("while", inc); 
+			if (inc.isKw("foreach")) return inc.parseForeach(inc); 
 			if (inc.isKw("tforeach")) return inc.parseOneCondCycle("tforeach", inc); 
 			
 			// if (inc.isKw("true") || inc.isKw("false")) return inc.parseBool();
@@ -681,6 +682,18 @@ export class Parser {
 		var body = inc.parseCondLineProg(inc);
 
 		return new ForCycle(cond, new SubProgrammStruct([postCond], postCond.getPos()), new SubProgrammStruct([postCond], postCond.getPos()), body);
+	}
+	private parseForeach(inc: Parser = this): WhileCycle {
+		inc.skipKw("foreach");
+		inc.skipPunc("(");
+		inc.skipKw("new");
+		var cond = inc.parseExpression();
+		inc.skipPunc(")");
+		var body = inc.parseCondLineProg(inc);
+		if(!(cond instanceof VarStruct ))
+			throw new Error("Ban");
+		return new WhileCycle(new VarsDefenitionsStruct([new VarDefenitionStruct(cond)]), body);
+
 	}
 	private parseOneCondCycle(kw: string, inc: Parser = this): WhileCycle {
 		let start = inc.input.input.position();

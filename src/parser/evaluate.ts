@@ -32,6 +32,7 @@ import { UnarOperator } from "../Strucutres/operators/UnarOperator";
 import { FileManager } from "../FileManager";
 import { TokenEnd } from "../Tokens/TokenLiteral";
 import { VarsDefenitionsStruct } from "../Strucutres/memory/VarsDefinitions";
+import { WhileCycle } from "../Strucutres/cycle/WhileCycle";
 
 export class Evaluater {
 	private diagnostic: DiagnosticManager;
@@ -406,6 +407,11 @@ export class Evaluater {
 			await this.evaluate(exp.preProg, env);
 			await this.evaluate(exp.cond, env);
 			await this.evaluate(exp.postProg, env);
+			await this.evaluate(exp.prog, env);
+			return exp;
+		}
+		if(exp instanceof WhileCycle) {
+			await this.evaluate(exp.cond, env);
 			await this.evaluate(exp.prog, env);
 			return exp;
 		}
