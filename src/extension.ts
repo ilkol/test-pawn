@@ -1,5 +1,9 @@
 import * as vscode from 'vscode';
 import { getDefaultComplitions } from './DefaultComplitions/DefaultComplitions';
+import { DiagnosticManager } from './diagnostic';
+import { FileManager } from './FileManager';
+import { CodelensProvider } from './CodelensProvider';
+import { OpenedFile } from './OpenedFile';
 
 interface IDefine {
 	name: string
@@ -7,34 +11,71 @@ interface IDefine {
 	value?: string
 }
 
-let defines: Map<string ,IDefine> = new Map<string, IDefine>;
+let diagnosticManager: DiagnosticManager;
+let fileManage: FileManager;
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+	diagnosticManager = new DiagnosticManager(vscode.languages.createDiagnosticCollection("pawn"));
+	fileManage = new FileManager(diagnosticManager);
+
+	await fileManage.findPawnDir();
 
 	console.log('Активация расширения!');
 	
+	let defines: Map<string ,IDefine> = new Map<string, IDefine>;
 	vscode.window.onDidChangeActiveTextEditor((e) => {
 		if(!e) return;
 		if(e.document.languageId != "pawn") return;
 		findDefines(e.document.getText(), defines);
 	});	
+	vscode.workspace.onDidChangeTextDocument((e) => {
+		if(e.document.languageId != "pawn") return;
+		let connect = e.contentChanges;
+		if(!connect.length) {
+			
+			return;
+		}
+		if(connect[0].text == ";") fileManage.onDidOpenTextDocument(e.document);
+	});
 	vscode.workspace.onDidOpenTextDocument((file) => {
 		if(file.languageId != "pawn") return;
-		findDefines(file.getText(), defines);
+		return fileManage.onDidOpenTextDocument(file);
 	});
+	vscode.workspace.onDidSaveTextDocument((file) => {
+		if(file.languageId != "pawn") return;
+		return fileManage.onDidOpenTextDocument(file);
+	});
+
+	const codelensProvider = new CodelensProvider(fileManage);
+	context.subscriptions.push(vscode.languages.registerCodeLensProvider('pawn', codelensProvider));
+
+	context.subscriptions.push(vscode.languages.registerHoverProvider('pawn', {
+		async provideHover(document, position, token) {
+			return fileManage.registerHover(document, position);
+		}
+		}));
 
 	const provider1 = vscode.languages.registerCompletionItemProvider('pawn', {
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
-			let complitions: vscode.CompletionItem[] = getDefaultComplitions();
+			
+			const complitions: vscode.CompletionItem[] = getDefaultComplitions();
+			
+			const file: OpenedFile | undefined = fileManage.openedFiles.get(document.uri.path);
+			if(file) file.getComplitions(complitions);
 
-			// const maxPlayerDefine = new vscode.CompletionItem('MAX_PLAYERS');
-			// maxPlayerDefine.documentation = new vscode.MarkdownString('Максимальное число игроков на сервере');
-			// maxPlayerDefine.documentation.isTrusted = true;
-			// maxPlayerDefine.documentation.appendCodeblock("#define MAX_PLAYERS 200", "pawn");
-			// maxPlayerDefine.kind = vscode.CompletionItemKind.Constant;
+			// a simple completion item which inserts `Hello World!`
+			// const simpleCompletion = new vscode.CompletionItem('Hello World!');
 
-			// complitions.push(maxPlayerDefine);
+			// a completion item that inserts its text as snippet,
+			// the `insertText`-property is a `SnippetString` which will be
+			// honored by the editor.
+			// const snippetCompletion = new vscode.CompletionItem('Good part of the day');
+			// snippetCompletion.insertText = new vscode.SnippetString('Good ${1|morning,afternoon,evening|}. It is ${1}, right?');
+			// const docs: any = new vscode.MarkdownString("Inserts a snippet that lets you select [link](x.ts).");
+			// snippetCompletion.documentation = docs;
+			// docs.baseUri = vscode.Uri.parse('http://example.com/a/b/c/');
 
+			
 			defines.forEach(defineEl => {
 				const complition = new vscode.CompletionItem(defineEl.name);
 				complition.documentation = new vscode.MarkdownString('');
@@ -45,6 +86,33 @@ export function activate(context: vscode.ExtensionContext) {
 				complitions.push(complition);
 			});
 
+
+			
+			// const maxPlayerDefine = new vscode.CompletionItem('MAX_PLAYERS');
+			// maxPlayerDefine.documentation = new vscode.MarkdownString('Максимальное число игроков на сервере');
+			// maxPlayerDefine.documentation.isTrusted = true;
+			// maxPlayerDefine.documentation.appendCodeblock("#define MAX_PLAYERS 200", "pawn");
+			// maxPlayerDefine.kind = vscode.CompletionItemKind.Constant;
+			// complitions.push(maxPlayerDefine);
+
+
+			// a completion item that can be accepted by a commit character,
+			// the `commitCharacters`-property is set which means that the completion will
+			// be inserted and then the character will be typed.
+			// const commitCharacterCompletion = new vscode.CompletionItem('console');
+			// commitCharacterCompletion.commitCharacters = ['.'];
+			// commitCharacterCompletion.documentation = new vscode.MarkdownString('Press `.` to get `console.`');
+
+			// a completion item that retriggers IntelliSense when being accepted,
+			// the `command`-property is set which the editor will execute after 
+			// completion has been inserted. Also, the `insertText` is set so that 
+			// a space is inserted after `new`
+			// const commandCompletion = new vscode.CompletionItem('new');
+			// commandCompletion.kind = vscode.CompletionItemKind.Keyword;
+			// commandCompletion.insertText = 'new ';
+			// commandCompletion.command = { command: 'editor.action.triggerSuggest', title: 'Re-trigger completions...' };
+
+			// return all completion items as array
 			return complitions;
 		}
 	});
