@@ -144,7 +144,6 @@ export class Evaluater {
 				
 			} catch(e) {
 				if(e instanceof UndefinedVariable) {
-					console.error(env.functions);
 					this.addDiagnostic(`Undefined functin "${exp.name}"`, DiagnosticSeverity.Error, exp.getPos());
 				}
 			} 
@@ -275,56 +274,35 @@ export class Evaluater {
 			else if(exp.code.getValue() == "include") {
 				let fileStr = exp.code.getWhat();
 				// console.log("including into", this.file.getPath());
-				if(fileStr[0] == '"') {
+				let oneDir = false;
+				if(fileStr[0] == '<' || fileStr[0] == '"') {
+					if(fileStr[0] == '"') oneDir = true;
 					fileStr = fileStr.substring(1, fileStr.length - 1);
-					const postfix = [
-						"",
-						".pwn",
-						".inc"
-					];
-					let res: undefined | OpenedFile;
-					for(let i = 0; i < postfix.length; i++) {
-						res = await this.findInclude(fileStr + postfix[i]);
-						if(res != undefined) break;
-					} 
-					if(res) {
-						env.extendEnv(res.getEnv());
-					}
-					else {
-						this.addDiagnostic(`Невозможно открыть файл (${fileStr})`, DiagnosticSeverity.Error, exp.getPos());
-						this.diagnostic.updateDiagnostic();
-					}
-							
 				}
-				if(fileStr[0] == '<') {
-					fileStr = fileStr.substring(1, fileStr.length - 1);
-					if(!this.fileManager.includePath)
+				
+				if(!this.fileManager.includePath)
 					throw new Error("Не найдена папка инклудов");
-					let tmp_uri = Uri.joinPath(this.fileManager.includePath,  "/" + fileStr);
-					fileStr = tmp_uri.path;
-					
-					const postfix = [
-						"",
-						".pwn",
-						".inc"
-					];
-					let res: undefined | OpenedFile;
-					for(let i = 0; i < postfix.length; i++) {
-						res = await this.findInclude(fileStr + postfix[i]);
-						if(res != undefined) break;
-					} 
-					if(res) {
-						console.log("расширяем");
-						env.extendEnv(res.getEnv());
+				let res = await this.tryFindFileUri(this.fileManager.includePath, fileStr);
+				if(res) {
+					env.extendEnv(exp.getPos(), res.getURI(), res.getEnv());
+				}
+				else {
+					if(oneDir) {
+						let res = await this.tryFindFileUri(Uri.parse(this.currentFilePath), fileStr);
+						if(res) {
+							env.extendEnv(exp.getPos(), res.getURI(), res.getEnv());
+						}
+						else {
+							this.addDiagnostic(`Невозможно открыть файл (${fileStr})`, DiagnosticSeverity.Error, exp.getPos());
+							this.diagnostic.updateDiagnostic();
+						}
 					}
 					else {
 						this.addDiagnostic(`Невозможно открыть файл (${fileStr})`, DiagnosticSeverity.Error, exp.getPos());
 						this.diagnostic.updateDiagnostic();
 					}
-
-					
 				}
-	
+
 			}
 			return exp;
 		}
@@ -451,7 +429,23 @@ export class Evaluater {
 	private addDiagnostic(msg: string, type: DiagnosticSeverity, pos: Range) {
 		this.diagnostic.addDiagnostic(msg, type, this.currentFilePath, pos);
 	}
-	
+	private async tryFindFileUri(dir: Uri, fileStr: string): Promise<OpenedFile | undefined> {
+		let tmp_uri = Uri.joinPath(dir,  "/" + fileStr);
+		fileStr = tmp_uri.path;
+		console.error(fileStr);
+		const postfix = [
+			"",
+			".pwn",
+			".inc"
+		];
+		let res: undefined | OpenedFile;
+		for(let i = 0; i < postfix.length; i++) {
+			res = await this.findInclude(fileStr + postfix[i]);
+			if(res != undefined) break;
+		} 
+		return res;
+		
+	}
 	
 }
 
