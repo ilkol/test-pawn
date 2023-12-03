@@ -15,7 +15,7 @@ export class DocumentLinkProvider implements vscode.DocumentLinkProvider {
 
 			this.links.push(tmp);
 		});
-		this.links.push(new vscode.DocumentLink(new vscode.Range(0,0,0,10), document.uri));
+		// this.links.push(new vscode.DocumentLink(new vscode.Range(0,0,0,10), document.uri));
 		return this.links;
 	}
 	resolveDocumentLink?(link: vscode.DocumentLink, token: vscode.CancellationToken): vscode.ProviderResult<vscode.DocumentLink> {
