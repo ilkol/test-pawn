@@ -275,6 +275,8 @@ export class Evaluater {
 				let fileStr = exp.code.getWhat();
 				// console.log("including into", this.file.getPath());
 				let oneDir = false;
+				let pos = exp.getPos();
+				pos = new Range(new Position(pos.start.line, pos.end.character - fileStr.length), pos.end);
 				if(fileStr[0] == '<' || fileStr[0] == '"') {
 					if(fileStr[0] == '"') oneDir = true;
 					fileStr = fileStr.substring(1, fileStr.length - 1);
@@ -284,7 +286,7 @@ export class Evaluater {
 					throw new Error("Не найдена папка инклудов");
 				let res = await this.tryFindFileUri(this.fileManager.includePath, fileStr);
 				if(res) {
-					env.extendEnv(exp.getPos(), res.getURI(), res.getEnv());
+					env.extendEnv(pos, res.getURI(), res.getEnv());
 				}
 				else {
 					if(oneDir) {
@@ -366,7 +368,15 @@ export class Evaluater {
 				return variable;
 			} catch(e) {
 				if(e instanceof UndefinedVariable) {
-					this.addDiagnostic(`Undefined variable "${exp.name}"`, DiagnosticSeverity.Error, exp.getPos());
+					try {
+						let variable = env.getDefine(exp.name);
+						return variable;
+					}catch(e) {
+						if(e instanceof UndefinedVariable) {
+							this.addDiagnostic(`Undefined variable "${exp.name}"`, DiagnosticSeverity.Error, exp.getPos());
+						}
+						else console.error(e);
+					}
 				}
 				else console.error(e);
 			}
@@ -427,7 +437,7 @@ export class Evaluater {
 		return this.fileManager.openedFiles.get(uri.path);
 	}
 	private addDiagnostic(msg: string, type: DiagnosticSeverity, pos: Range) {
-		this.diagnostic.addDiagnostic(msg, type, this.currentFilePath, pos);
+		this.diagnostic.addDiagnostic(msg, type, this.file.getPathFile(), pos);
 	}
 	private async tryFindFileUri(dir: Uri, fileStr: string): Promise<OpenedFile | undefined> {
 		let tmp_uri = Uri.joinPath(dir,  "/" + fileStr);
