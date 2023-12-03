@@ -1,4 +1,4 @@
-import { FileSystemError, FileType, Hover, Position, TextDocument, Uri, window, workspace } from "vscode";
+import { FileSystemError, FileType, Hover, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
 import { OpenedFile } from "./OpenedFile";
 import { DiagnosticManager } from "./diagnostic";
 import { CannotOpenFile } from "./Errors";
@@ -93,6 +93,14 @@ export class FileManager {
 		else {
 			return new Hover(file.getHover(word, document), range);
 		}
+	}
+	public getFileFunctionsIncludes(document: TextDocument): Map<Range, Uri> {
+
+		const file: OpenedFile | undefined = this.openedFiles.get(document.uri.path);
+	
+		if(!file) return new Map;
+		
+		return file.Env.includes;
 	}
 	public getFileFunctionsDefinitions(document: TextDocument): Map<string, FunctionData> {
 

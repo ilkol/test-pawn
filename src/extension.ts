@@ -4,6 +4,7 @@ import { DiagnosticManager } from './diagnostic';
 import { FileManager } from './FileManager';
 import { CodelensProvider } from './CodelensProvider';
 import { OpenedFile } from './OpenedFile';
+import { DocumentLinkProvider } from './DocumentLinkProvider';
 
 interface IDefine {
 	name: string
@@ -28,6 +29,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		if(e.document.languageId != "pawn") return;
 		findDefines(e.document.getText(), defines);
 	});	
+	const documentLinkProvider = new DocumentLinkProvider(fileManage);
 	vscode.workspace.onDidChangeTextDocument((e) => {
 		if(e.document.languageId != "pawn") return;
 		let connect = e.contentChanges;
@@ -35,7 +37,10 @@ export async function activate(context: vscode.ExtensionContext) {
 			
 			return;
 		}
-		if(connect[0].text == ";") fileManage.onDidOpenTextDocument(e.document);
+		if(connect[0].text == ";") {
+			fileManage.onDidOpenTextDocument(e.document);
+			// documentLinkProvider.provideDocumentLinks(e.document);
+		}
 	});
 	vscode.workspace.onDidOpenTextDocument((file) => {
 		if(file.languageId != "pawn") return;
@@ -48,6 +53,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const codelensProvider = new CodelensProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerCodeLensProvider('pawn', codelensProvider));
+	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider('pawn', documentLinkProvider));
+	
 
 	context.subscriptions.push(vscode.languages.registerHoverProvider('pawn', {
 		async provideHover(document, position, token) {

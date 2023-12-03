@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind, MarkdownString, Range, SnippetString } from "vscode";
+import { CompletionItem, CompletionItemKind, MarkdownString, Range, SnippetString, Uri } from "vscode";
 import { FunctionAlreadyHaveImplementation, FunctionHeadDifferentFromPrototype, FunctionImplementationBeforeDeclaration, SymbolAlredyDefined, TypeMismatch, UndefinedVariable } from "../Errors";
 import { FunctionDeclaration } from "../Strucutres/functions/FunctionDeclaration";
 import { EnumStruct } from "../Strucutres/memory/EnumStruct";
@@ -177,7 +177,7 @@ export class Environment {
 	public readonly functions: Map<string, FunctionData> = new Map<string, FunctionData>;
 
 	public readonly defines: Map<string, PreprocessorScrut> = new Map<string, PreprocessorScrut>;
-
+	public readonly includes: Map<Range, Uri> = new Map<Range, Uri>;
 	public retValue: string = "";
 
 	public readonly enums: Map<string, EnumStruct> = new Map<string, EnumStruct>;
@@ -198,7 +198,8 @@ export class Environment {
 			});
 		}
 	}
-	public extendEnv(env: Environment) {
+	public extendEnv(pos: Range, uri: Uri, env: Environment) {
+		this.includes.set(pos, uri);
 		env.functions.forEach((element, key) => {
 			element.included = true;
 			this.functions.set(key, element);

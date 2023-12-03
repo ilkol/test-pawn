@@ -47,9 +47,9 @@ New:
 - Исправлена подсветка тегов переменных при добавлении пробелов между тегом и ":"
 
 
-| Old    | ![Alt text](images/0.0.10/old.png) |
+| Old    | ![Alt text](https://github.com/DmitryMukhlisov/test-pawn/blob/main/images/0.0.10/old.png) |
 | -------- | ------- |
-| **New**  |  ![Alt text](images/0.0.10/new.png)  |
+| **New**  |  ![Alt text](https://github.com/DmitryMukhlisov/test-pawn/blob/main/images/0.0.10/new.png)  |
 
 
 
