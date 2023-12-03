@@ -135,7 +135,11 @@ export class OpenedFile {
 		return "#define " + name + " " + data.code.getTo();
 	}
 	public getPath(): string {
-		return this.getURI().path;
+		let path = this.getURI().path;
+		let pos = path.lastIndexOf('/');
+		path = path.substring(0, pos);
+		
+		return path;
 	}
 	public getDiagnosticManager():DiagnosticManager {
 		return this.diagnositcManager;
