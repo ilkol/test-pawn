@@ -47,9 +47,9 @@ New:
 - Исправлена подсветка тегов переменных при добавлении пробелов между тегом и ":"
 
 
-| Old    | ![old](./images/0.0.10/old.png) |
+| Old    | ![Alt text](images/0.0.10/old.png) |
 | -------- | ------- |
-| **New**  | ![new](./images/0.0.10/new.png)    |
+| **New**  |  ![Alt text](images/0.0.10/new.png)  |
 
 
 
