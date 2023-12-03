@@ -190,9 +190,18 @@ export class TokenStream {
 		let end = this.input.position();
 		return new TokenString(val, new Range(start.line, start.character - 1, end.line, end.character + 1));
 	}
-	private readCharString(): TokenString {
+	private readCharString(): TokenString | RangeToken {
 		let start = this.input.position();
 		let val = this.readEscaped("'");
+		if(this.input.peek() == '.') {
+			this.input.next();
+			this.input.next();
+			val += ".." + this.readEscaped("'");
+			let end = this.input.position();
+			return new RangeToken(val, new Range(start.line, start.character - 1, end.line, end.character + 1));
+			// RangeToken
+		}
+
 		let end = this.input.position();
 		return new TokenString(val, new Range(start.line, start.character - 1, end.line, end.character + 1));
 	}
