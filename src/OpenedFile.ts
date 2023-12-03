@@ -56,8 +56,8 @@ export class OpenedFile {
 			this.getHoverVar(word, markdown);
 		else if(this.env.functions.has(word))
 			this.getHoverFunc(word, markdown);
-		// else if(this.env.defines.has(word))
-		// 	this.getHoverDefine(word, markdown);
+		else if(this.env.defines.has(word))
+			this.getHoverDefine(word, markdown);
 		else if(this.env.enums.has(word))
 			this.getHoverEnum(word, markdown);
 		return markdown;
@@ -134,8 +134,12 @@ export class OpenedFile {
 	private getCodeByDefineData(name: string, data: PreprocessorScrut): string {
 		return "#define " + name + " " + data.code.getTo();
 	}
+	public getPathFile(): string {
+		return this.getURI().path;
+	
+	}
 	public getPath(): string {
-		let path = this.getURI().path;
+		let path = this.getPathFile();
 		let pos = path.lastIndexOf('/');
 		path = path.substring(0, pos);
 		
