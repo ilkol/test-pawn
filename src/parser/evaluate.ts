@@ -191,14 +191,18 @@ export class Evaluater {
 						else { 
 							let last = 0;
 							let indexes = exp.getSize();
-							ar.getSize().forEach(element => {
+							ar.getSize().forEach(async element => {
 								let index = indexes.at(last++);
 								// console.log(element);
 								if(!index)
 									return;
 								if(element instanceof IntStruct) {
-									if(!(index instanceof IntStruct))
-										this.addDiagnostic("Ожидается целое число", DiagnosticSeverity.Error, index.getPos()); 
+									if(!(index instanceof IntStruct)) {
+										if(!(index instanceof VarStruct || index instanceof CallFunctionStruct))
+											this.addDiagnostic("Ожидается целое число", DiagnosticSeverity.Error, index.getPos()); 
+										else await this.evaluate(index, env);
+									}
+										
 									else {
 										if(index.getValue() < 0)
 											this.addDiagnostic(`Невозможно обратиться к отрицательному индексу`, DiagnosticSeverity.Error, index.getPos());
@@ -232,7 +236,7 @@ export class Evaluater {
 			}
 			exp.getSize().forEach(element => {
 				if(!isDeclare) {
-					if(!(element instanceof VarStruct || element instanceof IntStruct)) {
+					if(!(element instanceof VarStruct || element instanceof IntStruct || element instanceof CallFunctionStruct)) {
 					
 						this.addDiagnostic("Жду индекс крч", DiagnosticSeverity.Error, element.getPos());
 					}
@@ -418,6 +422,7 @@ export class Evaluater {
 		if(exp instanceof UnarOperator) {
 			if(exp.getTag() != "int")
 				this.addDiagnostic(`Ожидается целочисленное значение`, DiagnosticSeverity.Error, exp.getPos());
+			await this.evaluate(exp.value, env);
 			return exp;
 		}
 		if(exp instanceof TokenEnd) {

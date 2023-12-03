@@ -124,7 +124,7 @@ export class Parser {
 			// this.trySkipPunc();
 			return res;
 		}
-		if((inc.isPunc("{") || !inc.isPunc(";")) && !inc.isPunc(")") && !inc.isPunc(",") && !inc.isOperator()) {
+		if((inc.isPunc("{") || !inc.isPunc(";")) && !inc.isPunc(")") && !inc.isOperator() && !inc.isPunc("]") && !inc.isPunc(",") && !inc.isOperator()) {
 			let cur = inc.input.peek();
 			if(cur instanceof TokenOperator && cur.getValue() == "=") {
 				inc.input.next();
