@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { FileManager } from './FileManager';
+import { FileManager } from '../FileManager';
 
 export class CodelensProvider implements vscode.CodeLensProvider {
 	private codeLenses: vscode.CodeLens[] = [];
