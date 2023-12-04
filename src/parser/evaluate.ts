@@ -442,7 +442,6 @@ export class Evaluater {
 	private async tryFindFileUri(dir: Uri, fileStr: string): Promise<OpenedFile | undefined> {
 		let tmp_uri = Uri.joinPath(dir,  "/" + fileStr);
 		fileStr = tmp_uri.path;
-		console.error(fileStr);
 		const postfix = [
 			"",
 			".pwn",
