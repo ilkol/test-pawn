@@ -9,6 +9,8 @@ import { VarStruct } from "../Strucutres/memory/VarStruct";
 import { AssignOperator } from "../Strucutres/operators/AssignOperator";
 import { IntStruct } from "../Strucutres/literals/IntStruct";
 import { FloatStruct } from "../Strucutres/literals/FloatStruct";
+import { TokenString } from "../Tokens/literals/TokenString";
+import { HasTagStruct } from "../HasTagStruct";
 
 export enum Modifires {
 	const = "const",
@@ -65,15 +67,38 @@ export enum FunctioDeclType {
 	native
 }
 
+export class ParamInfo {
+	constructor(public readonly name: string, public defaultvalue?: string | number) {
+
+	}
+}
+
 export class FunctionData {
 	private _included = false;
 	public readonly hover;
 	public readonly complition;
 	private type: FunctioDeclType
+	public readonly args: ParamInfo[] = [];
+
 	constructor(public readonly func: FunctionDeclaration | FunctionImplementation) {
+		this.args = this.getParams();
 		this.hover = this.getHoverText();
 		this.type = this.detectType();	
 		this.complition = this.getComplition();
+	}
+	private getParams(): ParamInfo[] {
+		let params: ParamInfo[] = [];
+		this.func.args.forEach(element => {
+			if(element instanceof VarStruct)
+				params.push(new ParamInfo(element.name)) ;
+			else if(element instanceof AssignOperator) {
+				if(element.right instanceof TokenString)
+					params.push(new ParamInfo(element.left.name, element.right.getValue())) ;
+				// else if(element.right instanceof HasTagStruct)
+				// 	params.push(new ParamInfo(element.left.name, element.right.)) ;
+			}
+		});
+		return params;
 	}
 	private detectType(): FunctioDeclType {
 		switch(this.func.word) {
