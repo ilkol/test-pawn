@@ -2,9 +2,10 @@ import * as vscode from 'vscode';
 import { getDefaultComplitions } from './DefaultComplitions/DefaultComplitions';
 import { DiagnosticManager } from './diagnostic';
 import { FileManager } from './FileManager';
-import { CodelensProvider } from './CodelensProvider';
+import { CodelensProvider } from './Providers/CodelensProvider';
 import { OpenedFile } from './OpenedFile';
-import { DocumentLinkProvider } from './DocumentLinkProvider';
+import { DocumentLinkProvider } from './Providers/DocumentLinkProvider';
+import { SignatureProvider } from './Providers/SignatureProvider';
 
 interface IDefine {
 	name: string
@@ -52,8 +53,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	const codelensProvider = new CodelensProvider(fileManage);
+	const signatureProvider = new SignatureProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerCodeLensProvider('pawn', codelensProvider));
 	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider('pawn', documentLinkProvider));
+	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('pawn', signatureProvider, {triggerCharacters: ['(', ','], retriggerCharacters: [")"] }));
 	
 
 	context.subscriptions.push(vscode.languages.registerHoverProvider('pawn', {
