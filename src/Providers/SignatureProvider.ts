@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { FileManager } from '../FileManager';
+import { FileManager } from '../Managers/FileManager';
 import { OpenedFile } from '../OpenedFile';
 
 export class SignatureProvider implements vscode.SignatureHelpProvider {

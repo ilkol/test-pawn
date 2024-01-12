@@ -1,11 +1,14 @@
 import * as vscode from 'vscode';
 import { getDefaultComplitions } from './DefaultComplitions/DefaultComplitions';
-import { DiagnosticManager } from './diagnostic';
-import { FileManager } from './FileManager';
+import { DiagnosticManager } from './Managers/diagnostic';
+import { FileManager } from './Managers/FileManager';
 import { CodelensProvider } from './Providers/CodelensProvider';
 import { OpenedFile } from './OpenedFile';
 import { DocumentLinkProvider } from './Providers/DocumentLinkProvider';
 import { SignatureProvider } from './Providers/SignatureProvider';
+import { DocumentSemanticTokensProvider } from './Providers/DocumentSemanticTokensProvider';
+import { CallHierarchyProvider } from './Providers/CallHierarchyProvider';
+import { SymbolProvider } from './Providers/SymbolProvider';
 
 interface IDefine {
 	name: string
@@ -31,6 +34,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		findDefines(e.document.getText(), defines);
 	});	
 	const documentLinkProvider = new DocumentLinkProvider(fileManage);
+	
+	const tokenTypes = ['type', 'enum', 'parameter', 'enumMember', 'macro', 'comment', 'string', 'keyword', 'number', 'operator', 'function', 'variable'];
+	const tokenModifiers = ['declaration', 'definition', 'static', 'documentation', 'modification'];
+	const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
+
+	const documentSemanticTokensProvider = new DocumentSemanticTokensProvider(fileManage, legend);
 	vscode.workspace.onDidChangeTextDocument((e) => {
 		if(e.document.languageId != "pawn") return;
 		let connect = e.contentChanges;
@@ -43,19 +52,28 @@ export async function activate(context: vscode.ExtensionContext) {
 			// documentLinkProvider.provideDocumentLinks(e.document);
 		}
 	});
-	vscode.workspace.onDidOpenTextDocument((file) => {
-		if(file.languageId != "pawn") return;
-		return fileManage.onDidOpenTextDocument(file);
-	});
+	vscode.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument);
+	vscode.workspace.textDocuments.forEach(fileManage.onDidOpenTextDocument);
+
 	vscode.workspace.onDidSaveTextDocument((file) => {
 		if(file.languageId != "pawn") return;
 		return fileManage.onDidOpenTextDocument(file);
 	});
 
-	const codelensProvider = new CodelensProvider(fileManage);
+	// const codelensProvider = new CodelensProvider(fileManage);
 	const signatureProvider = new SignatureProvider(fileManage);
-	context.subscriptions.push(vscode.languages.registerCodeLensProvider('pawn', codelensProvider));
+	// context.subscriptions.push(vscode.languages.registerCodeLensProvider('pawn', codelensProvider));
 	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider('pawn', documentLinkProvider));
+
+	const symbolProvider = new SymbolProvider(fileManage);
+	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider('pawn', symbolProvider));
+	
+	//пока бесполезно
+	const callHierarchyProvider = new CallHierarchyProvider();
+	context.subscriptions.push(vscode.languages.registerCallHierarchyProvider('pawn', callHierarchyProvider));
+	//пока бесполезно
+
+	context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider('pawn', documentSemanticTokensProvider, legend));
 	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('pawn', signatureProvider, {triggerCharacters: ['(', ','], retriggerCharacters: [")"] }));
 	
 
