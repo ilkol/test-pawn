@@ -173,7 +173,7 @@ export class Parser {
 				a.push(last);
 			}
 			if (this.isPunc(end)) break;
-			if(!(last instanceof ConditionStruct || last instanceof AbstractCycle || last instanceof SwitchStruct || last instanceof SubProgrammStruct)) inc.skipPunc(separator);
+			if(!(last instanceof ConditionStruct || last instanceof AbstractCycle || last instanceof PreprocessorScrut || last instanceof SwitchStruct || last instanceof SubProgrammStruct)) inc.skipPunc(separator);
 		}
 		// if(separator == ";" && inc.isPunc(";"))
 		if(skipLast) inc.skipPunc(end);
@@ -346,7 +346,7 @@ export class Parser {
 			if (token instanceof TokenBoolean) 
 				return new LiteralStruct<boolean>(token, token.getValue());
 			if(token instanceof TokenString) {
-				while(inc.input.peek() instanceof TokenIdentificator || inc.input.peek() instanceof TokenPreprocessor) {
+				while(inc.input.peek() instanceof TokenIdentificator || inc.input.peek() instanceof TokenPreprocessor || inc.input.peek() instanceof TokenString) {
 					let def = inc.input.next();
 					let nextStr = inc.input.next();
 					token = new TokenString(token.getValue() + '"' + def.getValue() + '"' + nextStr.getValue(), new Range( token.getPos().start, nextStr.getPos().end));
