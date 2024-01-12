@@ -80,7 +80,10 @@ export class Parser {
 					}
 					else if(progr instanceof ConditionStruct || progr instanceof AbstractCycle 
 						|| progr instanceof FunctionImplementation || progr instanceof FunctionDeclaration || (progr instanceof AssignOperator && progr.left instanceof FunctionDeclaration)) {}
-					else this.trySkipPunc();
+					else {
+						// console.error(progr);
+						this.trySkipPunc();
+					}
 
 				}
 			}
@@ -304,7 +307,7 @@ export class Parser {
 					}
 					inc.skipPunc("}");
 					if(!size) {
-						size = new TokenInt(0, new Range(inc.input.input.position(), inc.input.input.position()));
+						size = new IntStruct(new TokenInt(0, new Range(inc.input.input.position(), inc.input.input.position())));
 					}
 					let tmp = new ArrayStruct(res, new Range(res.pos.start, inc.input.input.position()), size);
 					return inc.maybeBinary(tmp, 0);
@@ -322,7 +325,7 @@ export class Parser {
 					
 					inc.skipPunc("]");
 					if(!size) {
-						size = new TokenInt(0, new Range(inc.input.input.position(), inc.input.input.position()));
+						size = new IntStruct(new TokenInt(0, new Range(inc.input.input.position(), inc.input.input.position())));
 					}
 						
 					let tmp = new ArrayStruct(res, new Range(res.pos.start, inc.input.input.position()), size);
@@ -438,7 +441,7 @@ export class Parser {
 			
 			this.skipPunc("]");
 			if(!size) {
-				size = new TokenInt(0, new Range(inc.input.input.position(), inc.input.input.position()));
+				size = new IntStruct(new TokenInt(0, new Range(inc.input.input.position(), inc.input.input.position())));
 			}
 				
 			left.extend(size);
