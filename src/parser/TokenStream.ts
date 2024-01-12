@@ -7,7 +7,7 @@ import { TokenBoolean } from "../Tokens/literals/withTags/TokenBoolean";
 import { TokenHex } from "../Tokens/literals/withTags/TokenHex";
 import { TokenInt } from "../Tokens/literals/withTags/TokenInt";
 import { TokenFloat } from "../Tokens/literals/withTags/TokenFloat";
-import { TokenString } from "../Tokens/literals/TokenString";
+import { TokenString, strTypes } from "../Tokens/literals/TokenString";
 import { RangeToken } from "../Tokens/literals/RangeToken";
 import { TokenPreprocessor } from "../Tokens/TokenPreprocessor";
 
@@ -86,13 +86,13 @@ export class TokenStream {
 	private skipLineComment(): void {
 		this.readEscaped('\n');
 	}
-	private readPreprocessor(): TokenPreprocessor {
-		this.input.next();
+	private readPreprocessor(): TokenPreprocessor | TokenString {
 		let start = this.input.position();
+		this.input.next();
 		let macr = this.readWhile(this.isID);
 		let end = this.input.position();
 		if(!this.isPreproc(macr)) {
-			return new TokenPreprocessor(macr, new Range(start, end));
+			return new TokenString(macr, new Range(start, end), strTypes.sharped);
 		}
 		this.skipSpaces();
 		let value = this.readWhile(this.isNotNewLine);
