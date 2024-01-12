@@ -15,7 +15,7 @@ export class TokenStream {
 
 	private current: Token = new TokenEnd(this.input.position());
 	private keywords = " if else sizeof operator true false native const static enum stock forward public publics new char return for while foreach tforeach break continue switch case default ";
-	private preproc = " define include pragma if endif undef else ";
+	private preproc = " define include pragma if endif undef else endinput ";
 	private stop: boolean = false;
 
 	// hexadecimal
@@ -161,7 +161,7 @@ export class TokenStream {
 			return inc.isaDigit(char);
 		});
 		let start = this.input.position();
-		let pos = new Range(start.line, start.character - number.length - startStr.length, start.line, start.character);
+		let pos = new Range(start.line, start.character - number.length - (number == 0 ? 0 : 1) * startStr.length, start.line, start.character);
 		
 		if(isRange)
 			return new RangeToken(number, pos);
