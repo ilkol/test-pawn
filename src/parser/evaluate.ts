@@ -1,9 +1,9 @@
-import { DiagnosticSeverity, Position, Range, Uri, commands, workspace } from "vscode";
+import { DiagnosticSeverity, DocumentSymbol, Position, Range, SymbolKind, Uri, commands, workspace } from "vscode";
 import { Environment, FuncModifires, Modifires, argsData, enumElData, saveData } from "./Environment";
 import { Token } from "./Token";
 import { CantAssignToConst, FunctionAlreadyHaveImplementation, FunctionHeadDifferentFromPrototype, FunctionImplementationBeforeDeclaration, SymbolAlredyDefined, TypeMismatch, TypeMismatchOperator, UndefinedVariable } from "../Errors";
 import { OpenedFile } from "../OpenedFile";
-import { DiagnosticManager } from "../diagnostic";
+import { DiagnosticManager } from "../Managers/diagnostic";
 import { ReturnToken } from "../Tokens/ReturnToken";
 import { TokenStruct } from "../Strucutres/TokensStruct";
 import { FunctionDeclaration } from "../Strucutres/functions/FunctionDeclaration";
@@ -29,10 +29,11 @@ import { HasTagStruct } from "../HasTagStruct";
 import { NegationStruct } from "../Strucutres/operators/NegationStruct";
 import { ForCycle } from "../Strucutres/cycle/ForCycle";
 import { UnarOperator } from "../Strucutres/operators/UnarOperator";
-import { FileManager } from "../FileManager";
+import { FileManager } from "../Managers/FileManager";
 import { TokenEnd } from "../Tokens/TokenLiteral";
 import { VarsDefenitionsStruct } from "../Strucutres/memory/VarsDefinitions";
 import { WhileCycle } from "../Strucutres/cycle/WhileCycle";
+
 
 export class Evaluater {
 	private diagnostic: DiagnosticManager;
@@ -50,13 +51,27 @@ export class Evaluater {
 		this.diagnostic = file.getDiagnosticManager();
 		this.currentFilePath = file.getPath();
 		this.fileManager = file.fileManager;
+		this.file.tokensManager.refresh();
+		this.file.symbolsManager.refresh();
 	}
 	public async evaluate(exp: TokenStruct, env: Environment) {
-		if(exp instanceof LiteralStruct || exp instanceof TokenString)
+		if(exp instanceof LiteralStruct ) {
+			switch(exp.getTag()) {
+				case "bool":
+					env.symbols.push(new DocumentSymbol(exp.getValue() ? "true" : "false", "", SymbolKind.Boolean, exp.getPos(), exp.getPos()));
+			}
 			return exp;
+		}
+		if(exp instanceof TokenString) {
+			this.file.tokensManager.addToken(exp.getPos(), "string");
+			return exp;
+		}
+			
 		if(exp instanceof FunctionDeclaration || exp instanceof FunctionImplementation) {
+			let symbol: undefined | DocumentSymbol = undefined;
 			try {
 				env.defineFunc(exp);
+				symbol = this.file.symbolsManager.createSymbol(exp.name, "", SymbolKind.Function, exp.getPos(), exp.getPos());
 				
 			} catch(e) {
 				if(e instanceof SymbolAlredyDefined || e instanceof FunctionAlreadyHaveImplementation 
@@ -65,14 +80,19 @@ export class Evaluater {
 				}
 				else console.error(e);
 			}
+			
 			if(exp instanceof FunctionImplementation) {
 				let newEnv = env.extend()
 				newEnv.retValue = exp.getTag();
-
+				
 				exp.args.forEach(element => {
 					try {
-						if(element instanceof VarStruct)
+						if(element instanceof VarStruct) {
 							newEnv.define(new VarDefenitionStruct(element));
+							// if(symbol)
+							// 	newEnv.symbols.push(this.file.symbolsManager.createSymbol(element.name, "", SymbolKind.TypeParameter, element.getPos(), element.getPos()));
+						}
+							
 					} catch(e) {
 						if(e instanceof SymbolAlredyDefined) {
 							this.addDiagnostic(e.message, DiagnosticSeverity.Error, e.pos);
@@ -82,7 +102,11 @@ export class Evaluater {
 				});
 
 				await this.evaluate(exp.prog, newEnv);
+				if(symbol)
+					symbol.children = newEnv.symbols;
 			}
+			if(symbol)
+				env.symbols.push(symbol);
 			return exp;
 		}
 		if(exp instanceof SubProgrammStruct) {
@@ -94,6 +118,8 @@ export class Evaluater {
 		if(exp instanceof EnumStruct) {
 			try {
 				env.defineEnum(exp);
+				this.file.tokensManager.addToken(exp.head.getPos(), "enum");
+			
 			} catch(e) {
 				if(e instanceof SymbolAlredyDefined) {
 					this.addDiagnostic(e.message, DiagnosticSeverity.Error, e.pos);
@@ -103,6 +129,7 @@ export class Evaluater {
 			exp.getElements().forEach(eleement => {
 				try {
 					eleement.setEnum(exp);
+					this.file.tokensManager.addToken(eleement.variable.getPos(), "enumMember");
 					env.define(new VarDefenitionStruct(eleement));
 				} catch(e) {
 					if(e instanceof SymbolAlredyDefined) {
@@ -122,6 +149,9 @@ export class Evaluater {
 		if(exp instanceof CallFunctionStruct) {
 			try {
 				let callable = env.getFunction(exp.name).func;
+				// this.file.symbolsManager.addSymbol(exp.name, "", SymbolKind.Function, exp.getPos(), exp.getPos());
+				
+				
 				if(callable instanceof FunctionDeclaration && callable.word != "native") {
 					this.addDiagnostic(`Can't call function "${callable.name}" without implementation`, DiagnosticSeverity.Error, exp.getPos());
 				}
@@ -134,8 +164,6 @@ export class Evaluater {
 					let arg = await this.evaluate(elements, env);
 					let need = callable.args.at(last++);
 					if(need) {
-						// console.log(need, elements);
-						// console.log(this.getTag(elements));
 						
 						if(!this.isOneTag(elements, need))
 							this.addDiagnostic(`Несовпадение типов (ожидается: ${this.getTag(need)}, найден: ${this.getTag(elements)})`, DiagnosticSeverity.Error, elements.getPos());
@@ -192,7 +220,6 @@ export class Evaluater {
 							let indexes = exp.getSize();
 							ar.getSize().forEach(async element => {
 								let index = indexes.at(last++);
-								// console.log(element);
 								if(!index)
 									return;
 								if(element instanceof IntStruct) {
@@ -260,10 +287,11 @@ export class Evaluater {
 			return exp;
 		}
 		if(exp instanceof PreprocessorScrut) {
+			let symbl = undefined;
 			if(exp.code.getValue() == "define") {
 				try {
-				
 					env.defineDef(exp);
+					symbl = this.file.symbolsManager.createSymbol(exp.code.getWhat(), "", SymbolKind.Constant, exp.getPos(), exp.getPos());
 				} catch(e) {
 					if(e instanceof SymbolAlredyDefined) {
 						this.addDiagnostic(e.message, DiagnosticSeverity.Error, e.pos);
@@ -273,13 +301,17 @@ export class Evaluater {
 			}
 			else if(exp.code.getValue() == "include") {
 				let fileStr = exp.code.getWhat();
-				// console.log("including into", this.file.getPath());
 				let oneDir = false;
 				let pos = exp.getPos();
 				pos = new Range(new Position(pos.start.line, pos.end.character - fileStr.length), pos.end);
 				if(fileStr[0] == '<' || fileStr[0] == '"') {
-					if(fileStr[0] == '"') oneDir = true;
-					fileStr = fileStr.substring(1, fileStr.length - 1);
+					let lastChar;
+					if(fileStr[0] == '"') {
+						oneDir = true;
+						lastChar = fileStr.indexOf('"', 1);
+					}
+					else lastChar = fileStr.indexOf('>', 1);
+					fileStr = fileStr.substring(1, lastChar);
 				}
 				
 				if(!this.fileManager.includePath)
@@ -295,17 +327,19 @@ export class Evaluater {
 							env.extendEnv(exp.getPos(), res.getURI(), res.getEnv());
 						}
 						else {
-							this.addDiagnostic(`Невозможно открыть файл (${fileStr})`, DiagnosticSeverity.Error, exp.getPos());
+							this.addDiagnostic(`Невозможно открыть файл (${fileStr}) ${Uri.parse(this.currentFilePath)}`, DiagnosticSeverity.Error, exp.getPos());
 							this.diagnostic.updateDiagnostic();
 						}
 					}
 					else {
-						this.addDiagnostic(`Невозможно открыть файл (${fileStr})`, DiagnosticSeverity.Error, exp.getPos());
+						this.addDiagnostic(`Невозможно открыть файл (${fileStr})  ${Uri.parse(this.currentFilePath)}`, DiagnosticSeverity.Error, exp.getPos());
 						this.diagnostic.updateDiagnostic();
 					}
 				}
-
+				symbl = this.file.symbolsManager.createSymbol(exp.code.getWhat(), "", SymbolKind.File, exp.getPos(), exp.getPos());
 			}
+			if(symbl)
+				env.symbols.push(symbl);
 			return exp;
 		}
 		if(exp instanceof ConditionStruct) {
@@ -352,11 +386,12 @@ export class Evaluater {
 			}
 			else {
 				let variable = await this.evaluate(exp.left, env);
-				let value = await this.evaluate(exp.right, env);
+				let value: any = await this.evaluate(exp.right, env);
+				
+				
 				if(variable instanceof VarDefenitionStruct && value) {
 					if(!this.isOneTag(value, variable))
 						this.addDiagnostic(`Ожидается тип "${this.getTag(variable)}", а найден "${this.getTag(value)}"`, DiagnosticSeverity.Error, value.getPos());
-					// console.log(value, variable);
 				}
 			}
 			
@@ -365,11 +400,17 @@ export class Evaluater {
 		if(exp instanceof VarStruct) {
 			try {
 				let variable = env.get(exp.name);
+				this.file.tokensManager.addToken(exp.pos, "variable");
+				env.symbols.push(new DocumentSymbol(exp.name, "", SymbolKind.Variable, exp.getPos(), exp.getPos()));
 				return variable;
 			} catch(e) {
 				if(e instanceof UndefinedVariable) {
 					try {
 						let variable = env.getDefine(exp.name);
+						this.file.tokensManager.addToken(exp.pos, "variable");
+						env.symbols.push(new DocumentSymbol(exp.name, "", SymbolKind.Constant, exp.getPos(), exp.getPos()));
+						// this.file.symbolsManager.addSymbol(exp.name, "", SymbolKind.Constant, exp.getPos(), exp.getPos());
+				
 						return variable;
 					}catch(e) {
 						if(e instanceof UndefinedVariable) {
@@ -383,10 +424,13 @@ export class Evaluater {
 			return exp;
 		}
 		if(exp instanceof BinaryOperator) {
-			let first = await this.evaluate(exp.left, env);
-			let second = await this.evaluate(exp.right, env);
+			let first: any = await this.evaluate(exp.left, env);
+			let second: any = await this.evaluate(exp.right, env);
 			if(!first || !second)
 				throw new Error("Kek");
+			
+
+				
 			if(!this.isOneTag(first, second))
 				this.addDiagnostic(`Несовпадение типов (${this.getTag(first)}, ${this.getTag(second)})`, DiagnosticSeverity.Error, exp.getPos());
 			return exp;
@@ -431,7 +475,9 @@ export class Evaluater {
 	}
 
 	private async findInclude(fileStr: string): Promise<OpenedFile | undefined> {
+		
 		let uri = Uri.parse("file:" + fileStr);
+		// this.addDiagnostic(uri.path, DiagnosticSeverity.Error, new Range(0,0,1,1));
 		if(!this.fileManager.openedFiles.has(uri.path))
 			await this.fileManager.openFile(fileStr);
 		return this.fileManager.openedFiles.get(uri.path);

@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind, MarkdownString, Range, SnippetString, Uri } from "vscode";
+import { CompletionItem, CompletionItemKind, DocumentSymbol, MarkdownString, Range, SnippetString, SymbolKind, Uri } from "vscode";
 import { FunctionAlreadyHaveImplementation, FunctionHeadDifferentFromPrototype, FunctionImplementationBeforeDeclaration, SymbolAlredyDefined, TypeMismatch, UndefinedVariable } from "../Errors";
 import { FunctionDeclaration } from "../Strucutres/functions/FunctionDeclaration";
 import { EnumStruct } from "../Strucutres/memory/EnumStruct";
@@ -206,6 +206,8 @@ export class Environment {
 	public retValue: string = "";
 
 	public readonly enums: Map<string, EnumStruct> = new Map<string, EnumStruct>;
+	public symbols: DocumentSymbol[] = [];
+
 
 	constructor(public parnet: Environment | undefined = undefined) {
 		if(parnet) {
@@ -229,9 +231,17 @@ export class Environment {
 			element.included = true;
 			this.functions.set(key, element);
 		});
+		env.defines.forEach((element, key) => {
+			element.included = true;
+			element.file = uri;
+			this.defines.set(key, element);
+		});
 	}
-	public extend(): Environment {
-		return new Environment(this);
+	public extend(symbols: undefined | DocumentSymbol[] = undefined): Environment {
+		let env = new Environment(this);
+		if(symbols)
+			env.symbols = symbols;
+		return env;
 	}
 	public lookup(name: string) {
 		var scope: Environment | undefined = this;
@@ -277,7 +287,7 @@ export class Environment {
 			throw new SymbolAlredyDefined(name, variable.getPos());
 		if(this.functions.has(name)) 
 			throw new SymbolAlredyDefined(name, variable.getPos());
-		
+		this.symbols.push(new DocumentSymbol(name, "", SymbolKind.Variable, variable.getPos(), variable.getPos()));
 		// size.reverse();
 		// let variable: saveData = {
 		// 	type: type,
