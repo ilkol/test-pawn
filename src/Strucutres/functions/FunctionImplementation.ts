@@ -17,7 +17,9 @@ export class FunctionImplementation extends CallFunctionStruct {
 	}
 
 	constructor(funct: CallFunctionStruct, public readonly prog: SubProgrammStruct) {
-		super(funct.name, funct.pos, funct.args);
+		let newPos: Range = new Range(funct.pos.start, prog.getPos().end);
+
+		super(funct.name, newPos, funct.args);
 		if(isDefaultTag(funct.getTag()))
 			this.tag = funct.getTag();
 	}
