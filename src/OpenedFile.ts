@@ -3,8 +3,8 @@ import { InputStream } from "./parser/InputStream";
 import { TokenStream } from "./parser/TokenStream";
 import { Parser } from "./parser/Parser";
 import { Environment, FunctionData, Modifires, enumData, funcData, saveData } from "./parser/Environment";
-import { Evaluater } from "./parser/evaluate";
-import { DiagnosticManager } from "./diagnostic";
+import { Evaluater} from "./parser/evaluate";
+import { DiagnosticManager } from "./Managers/diagnostic";
 import { CaseAfterDefault, ExtraDefault, InputError, SymbolIsNeverUsed, TypeMismatch, UndefinedVariable, UnhandleCharacter } from "./Errors";
 import { TokenStruct } from "./Strucutres/TokensStruct";
 import { EnumStruct } from "./Strucutres/memory/EnumStruct";
@@ -13,11 +13,13 @@ import { ArrayStruct } from "./Strucutres/memory/ArrayStruct";
 import { IntStruct } from "./Strucutres/literals/IntStruct";
 import { SubProgrammStruct } from "./Strucutres/SubProgrammStruct";
 import { PreprocessorScrut } from "./Strucutres/PreprocessorStruct";
-import { FileManager } from "./FileManager";
+import { FileManager } from "./Managers/FileManager";
 import { FunctionDeclaration } from "./Strucutres/functions/FunctionDeclaration";
 import { FunctionImplementation } from "./Strucutres/functions/FunctionImplementation";
 import { LiteralStruct } from "./Strucutres/literals/LiteralStruct";
 import { TokenString } from "./Tokens/literals/TokenString";
+import { SemanticTokensManager } from "./Managers/SemanticTokensManager";
+import { SymbolsManager } from "./Managers/SymbolsManager";
 
 export class OpenedFile {
 	private ast: TokenStruct[] = [];
@@ -26,6 +28,13 @@ export class OpenedFile {
 
 	private includes: string[] = [];
 	private diagnositcManager: DiagnosticManager;
+	public readonly tokensManager: SemanticTokensManager = new SemanticTokensManager();
+	public readonly symbolsManager: SymbolsManager = new SymbolsManager();
+
+	
+	get tokens() {
+		return this.tokensManager.tokens;
+	}
 	constructor(private file: TextDocument, public readonly fileManager: FileManager) {
 		this.diagnositcManager = fileManager.getDiagnostic();
 		console.log("Был открыт файл!");
@@ -193,17 +202,21 @@ export class OpenedFile {
 		let evaluater = new Evaluater(this);
 		console.log("file ", this.file.uri.path);
 		console.log("ast:", this.ast);
+		let i = 0;
 		for(const element of this.ast)
 		{
 			try {
-				await evaluater.evaluate(element, this.env).then(() => {
-					// console.log(this.env);
+				await evaluater.evaluate(element, this.env).then((result) => {
+					this.symbolsManager.addSymbol(this.env.symbols[i++]);
+					
 				});
+				
 			} catch(e) {
 				console.error(e);
 			}
+			
 		}
-		
+		// console.error(this.getPathFile(), this.env.includes);
 		
 		// this.checkNeverUsedSymbols();
 		
@@ -225,6 +238,7 @@ export class OpenedFile {
 			const complition = new CompletionItem(key);
 			complition.documentation = new MarkdownString('');
 			complition.documentation.appendCodeblock(this.getCodeByDefineData(key, value), "pawn");
+			// if(value.file) complition.documentation.appendText(value.file.toString());
 			complition.kind = CompletionItemKind.Constant;
 			complition.detail = `define`;
 			
