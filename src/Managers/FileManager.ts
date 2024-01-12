@@ -1,10 +1,10 @@
-import { FileSystemError, FileType, Hover, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
-import { OpenedFile } from "./OpenedFile";
+import { DiagnosticSeverity, FileSystemError, FileType, Hover, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
+import { OpenedFile } from "../OpenedFile";
 import { DiagnosticManager } from "./diagnostic";
-import { CannotOpenFile } from "./Errors";
-import { FunctionDeclaration } from "./Strucutres/functions/FunctionDeclaration";
-import { FunctionImplementation } from "./Strucutres/functions/FunctionImplementation";
-import { FunctionData } from "./parser/Environment";
+import { CannotOpenFile } from "../Errors";
+import { FunctionDeclaration } from "../Strucutres/functions/FunctionDeclaration";
+import { FunctionImplementation } from "../Strucutres/functions/FunctionImplementation";
+import { FunctionData } from "../parser/Environment";
 
 export class FileManager {
 	public readonly openedFiles: Map<string, OpenedFile> = new Map<string, OpenedFile>;
@@ -81,6 +81,7 @@ export class FileManager {
 		}).then(undefined, err => {
 			result = false;
 		});
+		this.diagnosticManager.addDiagnostic(""+result, DiagnosticSeverity.Warning, uri.path, new Range(0,0,1,1))
 		return result;
 	}
 	public registerHover(document: TextDocument, position: Position) {
@@ -110,7 +111,8 @@ export class FileManager {
 		
 		return file.Env.functions;
 	}
-	public onDidOpenTextDocument(file: TextDocument) {
+	public onDidOpenTextDocument = (file: TextDocument) => {
+		if(file.languageId != "pawn") return;
 		return this.tryParseFile(file);
 	}
 	private tryParseFile(file: TextDocument) {
