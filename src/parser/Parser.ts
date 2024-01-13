@@ -10,7 +10,6 @@ import { SubProgrammStruct } from "../Strucutres/SubProgrammStruct";
 import { TokenStruct } from "../Strucutres/TokensStruct";
 import { ConditionStruct } from "../Strucutres/conditions/ConditionStruct";
 import { NegationStruct } from "../Strucutres/operators/NegationStruct";
-import { PreprocessorScrut } from "../Strucutres/PreprocessorStruct";
 import { Token, TokenNumber } from "./Token";
 import { BinaryOperator } from "../Strucutres/operators/BinaryOperator";
 import { VarStruct } from "../Strucutres/memory/VarStruct";
@@ -41,6 +40,10 @@ import { InitArrayStruct } from "../Strucutres/memory/InitArrayStruct";
 import { TernarOperator } from "../Strucutres/operators/TernarOperator";
 import { TokenPreprocessor } from "../Tokens/TokenPreprocessor";
 import { VarsDefenitionsStruct } from "../Strucutres/memory/VarsDefinitions";
+import { PreprocessorStruct } from "../Strucutres/preprocessor/PreprocessorStruct";
+import { IncludeStruct } from "../Strucutres/preprocessor/IncludeStruct";
+import { SimplePreprocessorStruct } from "../Strucutres/preprocessor/SimplePreprocessorStruct";
+import { DefineStruct } from "../Strucutres/preprocessor/DefineStruct";
 
 interface IPrecedence {
 	[key: string]: number;
@@ -68,7 +71,7 @@ export class Parser {
 			let progr = this.parseExpression(this);
 			prog.push(progr);
 			if(!this.input.end())  {
-				if(progr instanceof PreprocessorScrut) {
+				if(progr instanceof PreprocessorStruct) {
 					if(this.isPunc(';'))
 						throw new UnexpSemicolon();
 				}
@@ -176,7 +179,7 @@ export class Parser {
 				a.push(last);
 			}
 			if (this.isPunc(end)) break;
-			if(!(last instanceof ConditionStruct || last instanceof AbstractCycle || last instanceof PreprocessorScrut || last instanceof SwitchStruct || last instanceof SubProgrammStruct)) inc.skipPunc(separator);
+			if(!(last instanceof ConditionStruct || last instanceof AbstractCycle || last instanceof PreprocessorStruct || last instanceof SwitchStruct || last instanceof SubProgrammStruct)) inc.skipPunc(separator);
 		}
 		// if(separator == ";" && inc.isPunc(";"))
 		if(skipLast) inc.skipPunc(end);
@@ -273,8 +276,19 @@ export class Parser {
 			// if (inc.isKw("true") || inc.isKw("false")) return inc.parseBool();
 
 			let token = inc.input.next();
-			if(token instanceof TokenPreprocessor)
-				return new PreprocessorScrut(token);
+			if(token instanceof TokenPreprocessor) {
+				switch(token.getValue()) {
+					case "include": 
+						return new IncludeStruct(token);
+					case "define":
+						return new DefineStruct(token);
+					default:
+						return new SimplePreprocessorStruct(token);
+					
+				}
+				
+			}
+				
 			if(token instanceof TokenOperator && token.getValue() == "-") {
 				let start = token.getPos();
 				token = inc.input.peek();

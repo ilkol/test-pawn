@@ -16,7 +16,6 @@ import { ConditionStruct } from "../Strucutres/conditions/ConditionStruct";
 import { SubProgrammStruct } from "../Strucutres/SubProgrammStruct";
 import { ReturnStruct } from "../Strucutres/functions/ReturnStruct";
 import { VarDefenitionStruct } from "../Strucutres/memory/VarDefenitionStruct";
-import { PreprocessorScrut } from "../Strucutres/PreprocessorStruct";
 import { SwitchStruct } from "../Strucutres/conditions/SwitchStruct";
 import { CaseStruct } from "../Strucutres/conditions/CaseStruct";
 import { BinaryOperator } from "../Strucutres/operators/BinaryOperator";
@@ -33,6 +32,9 @@ import { FileManager } from "../Managers/FileManager";
 import { TokenEnd } from "../Tokens/TokenLiteral";
 import { VarsDefenitionsStruct } from "../Strucutres/memory/VarsDefinitions";
 import { WhileCycle } from "../Strucutres/cycle/WhileCycle";
+import { IncludeStruct, IncludeType } from "../Strucutres/preprocessor/IncludeStruct";
+import { SimplePreprocessorStruct } from "../Strucutres/preprocessor/SimplePreprocessorStruct";
+import { DefineStruct } from "../Strucutres/preprocessor/DefineStruct";
 
 
 export class Evaluater {
@@ -260,7 +262,7 @@ export class Evaluater {
 				
 				
 			}
-			exp.getSize().forEach(element => {
+			exp.getSize().forEach(async element => {
 				if(!isDeclare) {
 					if(!(element instanceof VarStruct || element instanceof IntStruct || element instanceof CallFunctionStruct)) {
 					
@@ -268,17 +270,35 @@ export class Evaluater {
 					}
 				}
 				else {
+					
 					let canBeSize: boolean = element instanceof IntStruct;
-					if(!canBeSize && element instanceof VarStruct) {
-						try {
-							env.getEnum(element.name);
-							canBeSize = true;
-						} catch(e) {
-							if(e instanceof UndefinedVariable) {
-								
-							} else console.error(e);
+					if(!canBeSize) {
+						if(element instanceof VarStruct) {
+							try {
+								env.getEnum(element.name);
+								canBeSize = true;
+							} catch(e) {
+								if(e instanceof UndefinedVariable) {
+									try {
+										let result = env.getDefine(element.name);
+										
+										if(result.value instanceof IntStruct)
+											canBeSize = true;
+									} catch(e) {
+										if(e instanceof UndefinedVariable) {
+											
+										} else console.error(e);
+									}
+								} else console.error(e);
+							}
+						}
+						else if(element instanceof BinaryOperator) {
+							const el = await this.evalBinarOper(element, env);
+							if(el.constant)
+								canBeSize = true;
 						}
 					}
+
 					
 					if(!canBeSize)
 						this.addDiagnostic("В качестве размера может быть только целочисленная константна или enum", DiagnosticSeverity.Error, element.getPos());
@@ -286,42 +306,25 @@ export class Evaluater {
 			});
 			return exp;
 		}
-		if(exp instanceof PreprocessorScrut) {
+		if(exp instanceof IncludeStruct) {
 			let symbl = undefined;
-			if(exp.code.getValue() == "define") {
-				try {
-					env.defineDef(exp);
-					symbl = this.file.symbolsManager.createSymbol(exp.code.getWhat(), "", SymbolKind.Constant, exp.getPos(), exp.getPos());
-				} catch(e) {
-					if(e instanceof SymbolAlredyDefined) {
-						this.addDiagnostic(e.message, DiagnosticSeverity.Error, e.pos);
-					}
-					else console.error(e);
-				}
+			
+			let path = exp.path;
+			let fileStr = path.path;
+			let oneDir = false;
+			let pos = exp.linkRange;
+			
+			
+			if(!this.fileManager.includePath)
+				throw new Error("Не найдена папка инклудов");
+			let res = await this.tryFindFileUri(this.fileManager.includePath, fileStr);
+			if(res) {
+				env.extendEnv(pos, res.getURI(), res.getEnv());
 			}
-			else if(exp.code.getValue() == "include") {
-				let fileStr = exp.code.getWhat();
-				let oneDir = false;
-				let pos = exp.getPos();
-				pos = new Range(new Position(pos.start.line, pos.end.character - fileStr.length), pos.end);
-				if(fileStr[0] == '<' || fileStr[0] == '"') {
-					let lastChar;
-					if(fileStr[0] == '"') {
-						oneDir = true;
-						lastChar = fileStr.indexOf('"', 1);
-					}
-					else lastChar = fileStr.indexOf('>', 1);
-					fileStr = fileStr.substring(1, lastChar);
-				}
-				
-				if(!this.fileManager.includePath)
-					throw new Error("Не найдена папка инклудов");
-				let res = await this.tryFindFileUri(this.fileManager.includePath, fileStr);
-				if(res) {
-					env.extendEnv(pos, res.getURI(), res.getEnv());
-				}
-				else {
-					if(oneDir) {
+			else {
+				switch (path.type) {
+					case IncludeType.none:
+					case IncludeType.default: {
 						let res = await this.tryFindFileUri(Uri.parse(this.currentFilePath), fileStr);
 						if(res) {
 							env.extendEnv(exp.getPos(), res.getURI(), res.getEnv());
@@ -330,18 +333,39 @@ export class Evaluater {
 							this.addDiagnostic(`Невозможно открыть файл (${fileStr}) ${Uri.parse(this.currentFilePath)}`, DiagnosticSeverity.Error, exp.getPos());
 							this.diagnostic.updateDiagnostic();
 						}
+						break;
 					}
-					else {
+					default: {
 						this.addDiagnostic(`Невозможно открыть файл (${fileStr})  ${Uri.parse(this.currentFilePath)}`, DiagnosticSeverity.Error, exp.getPos());
 						this.diagnostic.updateDiagnostic();
+						break;
 					}
+						
 				}
-				symbl = this.file.symbolsManager.createSymbol(exp.code.getWhat(), "", SymbolKind.File, exp.getPos(), exp.getPos());
+			}
+			symbl = this.file.symbolsManager.createSymbol(path.path, "", SymbolKind.File, exp.getPos(), exp.getPos());
+			if(symbl)
+				env.symbols.push(symbl);
+			return exp;
+		}
+		if(exp instanceof DefineStruct) {
+			let symbl = undefined;
+			try {
+				env.defineDef(exp);
+				symbl = this.file.symbolsManager.createSymbol(exp.what, "", SymbolKind.Constant, exp.getPos(), exp.getPos());
+			} catch(e) {
+				if(e instanceof SymbolAlredyDefined) {
+					this.addDiagnostic(e.message, DiagnosticSeverity.Error, e.pos);
+				}
+				else console.error(e);
 			}
 			if(symbl)
 				env.symbols.push(symbl);
 			return exp;
 		}
+		if(exp instanceof SimplePreprocessorStruct)
+			return exp;
+
 		if(exp instanceof ConditionStruct) {
 			await this.evaluate(exp.condition, env);
 			let newEnv = env.extend()
@@ -424,16 +448,8 @@ export class Evaluater {
 			return exp;
 		}
 		if(exp instanceof BinaryOperator) {
-			let first: any = await this.evaluate(exp.left, env);
-			let second: any = await this.evaluate(exp.right, env);
-			if(!first || !second)
-				throw new Error("Kek");
+			return this.evalBinarOper(exp, env);
 			
-
-				
-			if(!this.isOneTag(first, second))
-				this.addDiagnostic(`Несовпадение типов (${this.getTag(first)}, ${this.getTag(second)})`, DiagnosticSeverity.Error, exp.getPos());
-			return exp;
 		}
 		if(exp instanceof NegationStruct) {
 			await this.evaluate(exp.value, env);
@@ -473,7 +489,58 @@ export class Evaluater {
 		console.error(exp);
 		throw new Error("У данной структуры не может быть тега");
 	}
+	private async evalBinarOper(exp: BinaryOperator, env: Environment): Promise<BinaryOperator> {
+		let first: any = await this.evaluate(exp.left, env);
+		let second: any = await this.evaluate(exp.right, env);
+		if(!first || !second)
+			throw new Error("Kek");
+		
 
+			
+		console.error(first);
+		if(!this.isOneTag(first, second))
+			this.addDiagnostic(`Несовпадение типов (${this.getTag(first)}, ${this.getTag(second)})`, DiagnosticSeverity.Error, exp.getPos());
+		
+		if(first instanceof LiteralStruct) {
+			if(second instanceof LiteralStruct)
+				exp.constant = true;
+			else if(second instanceof VarStruct) {
+				try {
+					let result = env.getDefine(second.name);
+					
+					if(result.value instanceof LiteralStruct)
+						exp.constant = true;
+				} catch(e) {
+					
+				}
+			}
+		}
+		else if(first instanceof VarStruct) {
+			try {
+				let result = env.getDefine(first.name);
+				console.log(result.value instanceof LiteralStruct, result.value)
+				if(result.value instanceof LiteralStruct) {
+					if(second instanceof LiteralStruct)
+						exp.constant = true;
+					else if(second instanceof VarStruct) {
+						try {
+							let result = env.getDefine(second.name);
+							
+							if(result.value instanceof LiteralStruct)
+								exp.constant = true;
+						} catch(e) {
+							
+						}
+					}
+				}
+					
+			} catch(e) {
+				
+			}
+		}
+		
+		return exp;
+	}
 	private async findInclude(fileStr: string): Promise<OpenedFile | undefined> {
 		
 		let uri = Uri.parse("file:" + fileStr);

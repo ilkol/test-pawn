@@ -1,16 +1,23 @@
-import { Range } from "vscode";
+import { Position, Range } from "vscode";
 import { TokenTypes } from "../parser/Token";
 import { IToken } from "./IToken";
 
 export class TokenPreprocessor extends IToken<string> {
 	public readonly type = TokenTypes.macro;
+	
+	public skipStart: number = 0;
 	private what: string = "";
 	private to = "";
-	constructor(name: string, pos: Range, private macrValue: string = "") {
+
+
+	constructor(name: string, pos: Range, private macrValue: string = "", start: Position) {
 		super(pos, name);
+		this.skipStart = start.character;
 		this.tryParseDefine();
 	}
 	private tryParseDefine() {
+		let sourceStr = this.macrValue;
+		
 		if(this.value == "define") {
 			var temp = this.macrValue.split(/\s+/);
 			let ch = temp.at(0);
@@ -29,6 +36,7 @@ export class TokenPreprocessor extends IToken<string> {
 			}
 		}
 		else if(this.value == "include") {
+			this.skipStart += sourceStr.search(this.macrValue);
 			this.what = this.macrValue;
 		}
 	}

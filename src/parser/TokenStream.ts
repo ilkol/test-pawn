@@ -95,9 +95,10 @@ export class TokenStream {
 			return new TokenString(macr, new Range(start, end), strTypes.sharped);
 		}
 		this.skipSpaces();
+		let startWhat = this.input.position();
 		let value = this.readWhile(this.isNotNewLine);
 		end = this.input.position();
-		return new TokenPreprocessor(macr, new Range(start, end), value);
+		return new TokenPreprocessor(macr, new Range(start, end), value, startWhat);
 
 	}
 
@@ -161,7 +162,7 @@ export class TokenStream {
 			return inc.isaDigit(char);
 		});
 		let start = this.input.position();
-		let pos = new Range(start.line, start.character - number.length - (number == 0 ? 0 : 1) * startStr.length, start.line, start.character);
+		let pos = new Range(start.line, start.character - number.length - (number == "0" ? 0 : 1) * startStr.length, start.line, start.character);
 		
 		if(isRange)
 			return new RangeToken(number, pos);
@@ -188,7 +189,7 @@ export class TokenStream {
 		let start = this.input.position();
 		let val = this.readEscaped('"');
 		let end = this.input.position();
-		return new TokenString(val, new Range(start.line, start.character - 1, end.line, end.character + 1));
+		return new TokenString(val, new Range(start.line, start.character, end.line, end.character));
 	}
 	private readCharString(): TokenString | RangeToken {
 		let start = this.input.position();

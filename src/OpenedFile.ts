@@ -12,7 +12,6 @@ import { ConstantStruct } from "./Strucutres/memory/ConstantStruct";
 import { ArrayStruct } from "./Strucutres/memory/ArrayStruct";
 import { IntStruct } from "./Strucutres/literals/IntStruct";
 import { SubProgrammStruct } from "./Strucutres/SubProgrammStruct";
-import { PreprocessorScrut } from "./Strucutres/PreprocessorStruct";
 import { FileManager } from "./Managers/FileManager";
 import { FunctionDeclaration } from "./Strucutres/functions/FunctionDeclaration";
 import { FunctionImplementation } from "./Strucutres/functions/FunctionImplementation";
@@ -20,6 +19,7 @@ import { LiteralStruct } from "./Strucutres/literals/LiteralStruct";
 import { TokenString } from "./Tokens/literals/TokenString";
 import { SemanticTokensManager } from "./Managers/SemanticTokensManager";
 import { SymbolsManager } from "./Managers/SymbolsManager";
+import { DefineStruct } from "./Strucutres/preprocessor/DefineStruct";
 
 export class OpenedFile {
 	private ast: TokenStruct[] = [];
@@ -78,6 +78,10 @@ export class OpenedFile {
 	private getHoverDefine(name: string, markdown: MarkdownString): void {
 		let variable = this.env.getDefine(name);
 		markdown.appendCodeblock(this.getCodeByDefineData(name, variable), "pawn");
+		if(variable.value instanceof IntStruct)
+			markdown.appendText(`Числовая константа ${variable.value.getValue()}`);
+		else if(variable.value instanceof TokenString)
+			markdown.appendText(`Константа строки "${variable.value.getValue()}"`);
 	}
 
 	private getHoverVar(name: string, markdown: MarkdownString): void {
@@ -140,8 +144,8 @@ export class OpenedFile {
 		});
 		return "enum " + name + " {\n" + str + "}";
 	}
-	private getCodeByDefineData(name: string, data: PreprocessorScrut): string {
-		return "#define " + name + " " + data.code.getTo();
+	private getCodeByDefineData(name: string, data: DefineStruct): string {
+		return "#define " + name + " " + data.to;
 	}
 	public getPathFile(): string {
 		return this.getURI().path;
@@ -233,7 +237,7 @@ export class OpenedFile {
 		this.env.functions.forEach((value, key) => {	
 			complitions.push(value.complition);
 		});
-		this.env.defines.forEach((value: PreprocessorScrut, key: string) => {
+		this.env.defines.forEach((value: DefineStruct, key: string) => {
 
 			const complition = new CompletionItem(key);
 			complition.documentation = new MarkdownString('');

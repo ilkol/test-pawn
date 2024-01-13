@@ -12,7 +12,7 @@ import { VarDefenitionStruct } from "./memory/VarDefenitionStruct";
 import { SwitchStruct } from "./conditions/SwitchStruct";
 import { ConstantStruct } from "./memory/ConstantStruct";
 import { CallFunctionStruct } from "./functions/CallFunctionStruct";
-import { PreprocessorScrut } from "./PreprocessorStruct";
+import { PreprocessorStruct } from "./preprocessor/PreprocessorStruct";
 import { Token } from "../parser/Token";
 import { CaseStruct } from "./conditions/CaseStruct";
 import { NegationStruct } from "./operators/NegationStruct";
@@ -22,7 +22,7 @@ import { VarsDefenitionsStruct } from "./memory/VarsDefinitions";
 
 export type TokenStruct = UnarOperator | BinaryOperator | ReturnStruct | EnumStruct | SubProgrammStruct |
 ConditionStruct | ForCycle | WhileCycle | VarDefenitionStruct | SwitchStruct | StorageTokens | CallFunctionStruct 
-| PreprocessorScrut | Token | CaseStruct | NegationStruct | TokensWithTags | TernarOperator | VarsDefenitionsStruct;
+| PreprocessorStruct | Token | CaseStruct | NegationStruct | TokensWithTags | TernarOperator | VarsDefenitionsStruct;
 
 export type StorageTokens = ArrayStruct | ConstantStruct | VarStruct;
 export type TokensWithTags = HasTagStruct;

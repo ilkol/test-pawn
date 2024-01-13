@@ -3,7 +3,6 @@ import { FunctionAlreadyHaveImplementation, FunctionHeadDifferentFromPrototype, 
 import { FunctionDeclaration } from "../Strucutres/functions/FunctionDeclaration";
 import { EnumStruct } from "../Strucutres/memory/EnumStruct";
 import { FunctionImplementation } from "../Strucutres/functions/FunctionImplementation";
-import { PreprocessorScrut } from "../Strucutres/PreprocessorStruct";
 import { VarDefenitionStruct } from "../Strucutres/memory/VarDefenitionStruct";
 import { VarStruct } from "../Strucutres/memory/VarStruct";
 import { AssignOperator } from "../Strucutres/operators/AssignOperator";
@@ -11,6 +10,7 @@ import { IntStruct } from "../Strucutres/literals/IntStruct";
 import { FloatStruct } from "../Strucutres/literals/FloatStruct";
 import { TokenString } from "../Tokens/literals/TokenString";
 import { HasTagStruct } from "../HasTagStruct";
+import { DefineStruct } from "../Strucutres/preprocessor/DefineStruct";
 
 export enum Modifires {
 	const = "const",
@@ -201,7 +201,7 @@ export class Environment {
 	public readonly vars: Map<string, VarDefenitionStruct> = new Map<string, VarDefenitionStruct>;
 	public readonly functions: Map<string, FunctionData> = new Map<string, FunctionData>;
 
-	public readonly defines: Map<string, PreprocessorScrut> = new Map<string, PreprocessorScrut>;
+	public readonly defines: Map<string, DefineStruct> = new Map<string, DefineStruct>;
 	public readonly includes: Map<Range, Uri> = new Map<Range, Uri>;
 	public retValue: string = "";
 
@@ -232,8 +232,8 @@ export class Environment {
 			this.functions.set(key, element);
 		});
 		env.defines.forEach((element, key) => {
-			element.included = true;
-			element.file = uri;
+			// element.included = true;
+			// element.file = uri;
 			this.defines.set(key, element);
 		});
 	}
@@ -306,14 +306,14 @@ export class Environment {
 			throw new SymbolAlredyDefined(name, en.head.getPos());
 		return this.enums.set(name, en);
 	}
-	public defineDef(exp: PreprocessorScrut) {
-		let text = exp.code.getWhat();
+	public defineDef(exp: DefineStruct) {
+		let text = exp.what;
 		if(this.defines.has(text)) 
-			throw new SymbolAlredyDefined(text, exp.code.getPos());
+			throw new SymbolAlredyDefined(text, exp.pos);
 		
 		return this.defines.set(text, exp);;
 	}
-	public getDefine(text: string): PreprocessorScrut {
+	public getDefine(text: string): DefineStruct {
 		if(!this.defines.has(text)) throw new UndefinedVariable(text);
 		let res = this.defines.get(text);
 		if(!res)throw new UndefinedVariable(text);
