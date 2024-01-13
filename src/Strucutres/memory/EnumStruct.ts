@@ -7,6 +7,7 @@ import { TokenIdentificator } from "../../Tokens/TokenLiteral";
 import { IntStruct } from "../literals/IntStruct";
 import { TokenInt } from "../../Tokens/literals/withTags/TokenInt";
 import { LiteralStruct } from "../literals/LiteralStruct";
+import { BinaryOperator } from "../operators/BinaryOperator";
 
 export class EnumStruct extends AbstractStruct {
 	private elements: Map<string, ConstantStruct> = new Map<string, ConstantStruct>;
@@ -21,11 +22,15 @@ export class EnumStruct extends AbstractStruct {
 				name = element.left;
 				if(element.right instanceof IntStruct)
 					last = element.right.getValue();
+				else if(element.right instanceof BinaryOperator) {
+					let res = element.right.value;
+					last = res;
+				}
 				else if(element.right instanceof LiteralStruct)
 					last = element.right.getValue() === true ? 1 : 0;
 				else {
 					console.error(element.right);
-					throw new Error("Нужен этот тот самый ну ты понял");
+					throw new Error("Неожиданное значени при задание константы в ENUM");
 				}
 			}
 			else {
