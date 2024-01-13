@@ -35,6 +35,7 @@ import { WhileCycle } from "../Strucutres/cycle/WhileCycle";
 import { IncludeStruct, IncludeType } from "../Strucutres/preprocessor/IncludeStruct";
 import { SimplePreprocessorStruct } from "../Strucutres/preprocessor/SimplePreprocessorStruct";
 import { DefineStruct } from "../Strucutres/preprocessor/DefineStruct";
+import { TokenInt } from "../Tokens/literals/withTags/TokenInt";
 
 
 export class Evaluater {
@@ -282,8 +283,9 @@ export class Evaluater {
 									try {
 										let result = env.getDefine(element.name);
 										
-										if(result.value instanceof IntStruct)
-											canBeSize = true;
+										canBeSize = true;
+										if(!(result.value instanceof IntStruct))
+										this.addDiagnostic("Возможны ошибки из-за неконстантного define", DiagnosticSeverity.Warning, element.getPos());
 									} catch(e) {
 										if(e instanceof UndefinedVariable) {
 											
@@ -294,8 +296,12 @@ export class Evaluater {
 						}
 						else if(element instanceof BinaryOperator) {
 							const el = await this.evalBinarOper(element, env);
-							if(el.constant)
+							if(el.constant) {
 								canBeSize = true;
+								if(this.getTag(el) != "int") {
+									this.addDiagnostic("Необходима целочисленная контсанта!", DiagnosticSeverity.Error, element.getPos());
+								}
+							}
 						}
 					}
 
@@ -495,12 +501,26 @@ export class Evaluater {
 		if(!first || !second)
 			throw new Error("Kek");
 		
-
+		if(first instanceof DefineStruct) {
 			
-		console.error(first);
+			if(first.value === undefined)
+				this.addDiagnostic(`Данный define не имеет константного значения`, DiagnosticSeverity.Warning, exp.getPos());
+			else first = first.value;
+		}
+		if(second instanceof DefineStruct) {
+			if(second.value === undefined)
+				this.addDiagnostic(`Данный define не имеет константного значения`, DiagnosticSeverity.Warning, exp.getPos());
+			else second = second.value;
+		}
+			
+		exp.left = first;
+		exp.right = second;
+
 		if(!this.isOneTag(first, second))
 			this.addDiagnostic(`Несовпадение типов (${this.getTag(first)}, ${this.getTag(second)})`, DiagnosticSeverity.Error, exp.getPos());
 		
+		exp.setTag(first.getTag());
+
 		if(first instanceof LiteralStruct) {
 			if(second instanceof LiteralStruct)
 				exp.constant = true;

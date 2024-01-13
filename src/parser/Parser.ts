@@ -44,6 +44,7 @@ import { PreprocessorStruct } from "../Strucutres/preprocessor/PreprocessorStruc
 import { IncludeStruct } from "../Strucutres/preprocessor/IncludeStruct";
 import { SimplePreprocessorStruct } from "../Strucutres/preprocessor/SimplePreprocessorStruct";
 import { DefineStruct } from "../Strucutres/preprocessor/DefineStruct";
+import { FloatStruct } from "../Strucutres/literals/FloatStruct";
 
 interface IPrecedence {
 	[key: string]: number;
@@ -357,7 +358,7 @@ export class Parser {
 			if (token instanceof TokenInt) 
 				return new IntStruct(token);
 			if (token instanceof TokenFloat) 
-				return new LiteralStruct<number>(token, token.getValue());
+				return new FloatStruct(token);
 			if (token instanceof TokenHex) 
 				return new LiteralStruct<string>(token, token.getValue());
 			if (token instanceof TokenBoolean) 

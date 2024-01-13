@@ -7,8 +7,9 @@ import { TokenString } from "../../Tokens/literals/TokenString";
 export class BinaryOperator extends HasTagStruct {
 
 	private isConstant: boolean = false;
-
-	constructor(public readonly op: string, public readonly left: TokenStruct | TokenNumber, public readonly right: TokensWithTags | TokenString) {
+	public value: any;
+	
+	constructor(public readonly op: string, public left: TokenStruct | TokenNumber, public right: TokensWithTags | TokenString) {
 		let pos = new Range(left.getPos().start, right.getPos().end);
 		super(pos);
 		if(right instanceof TokenString)
