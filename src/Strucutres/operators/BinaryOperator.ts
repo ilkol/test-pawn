@@ -5,11 +5,20 @@ import { HasTagStruct } from "../../HasTagStruct";
 import { TokenString } from "../../Tokens/literals/TokenString";
 
 export class BinaryOperator extends HasTagStruct {
+
+	private isConstant: boolean = false;
+
 	constructor(public readonly op: string, public readonly left: TokenStruct | TokenNumber, public readonly right: TokensWithTags | TokenString) {
 		let pos = new Range(left.getPos().start, right.getPos().end);
 		super(pos);
 		if(right instanceof TokenString)
 			this.setTag("int");
 		else this.setTag(right.getTag());
+	}
+	get constant(): boolean {
+		return this.isConstant;
+	}
+	set constant(value: boolean) {
+		this.isConstant = value;
 	}
 }
