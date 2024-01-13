@@ -308,12 +308,14 @@ export class Environment {
 	}
 	public defineDef(exp: DefineStruct) {
 		let text = exp.what;
+		
 		if(this.defines.has(text)) 
 			throw new SymbolAlredyDefined(text, exp.pos);
 		
 		return this.defines.set(text, exp);;
 	}
 	public getDefine(text: string): DefineStruct {
+		console.error(this.defines.has(text));
 		if(!this.defines.has(text)) throw new UndefinedVariable(text);
 		let res = this.defines.get(text);
 		if(!res)throw new UndefinedVariable(text);

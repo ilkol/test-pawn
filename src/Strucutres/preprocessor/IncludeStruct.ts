@@ -1,6 +1,6 @@
-import { Position, Range } from "vscode";
-import { TokenPreprocessor } from "../../Tokens/TokenPreprocessor";
 import { PreprocessorStruct } from "./PreprocessorStruct";
+import { IncludeToken } from "../../Tokens/preprocessor/IncludeToken";
+import { Range } from "vscode";
 
 export enum IncludeType {
 	/**
@@ -78,13 +78,13 @@ export class IncludeStruct extends PreprocessorStruct {
 	 */
 	public readonly linkRange: Range;
 	
-	constructor(code: TokenPreprocessor) {
+	constructor(code: IncludeToken) {
 		super(code);
 
 		let pos = code.getPos();
-		this._includePath = new IncludePath(code.getWhat(), pos.start.character, pos.end.character);
+		this._includePath = new IncludePath(code.path, pos.start.character, pos.end.character);
 
-		this.linkRange = new Range(pos.start.line, code.skipStart + this._includePath.start, pos.end.line,  code.skipStart + this._includePath.path.length + 1);
+		this.linkRange = new Range(code.start.line, code.start.character + this._includePath.start, code.start.line,  code.start.character + this._includePath.path.length + 1);
 	}
 
 	/**

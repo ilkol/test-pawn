@@ -10,6 +10,10 @@ import { TokenFloat } from "../Tokens/literals/withTags/TokenFloat";
 import { TokenString, strTypes } from "../Tokens/literals/TokenString";
 import { RangeToken } from "../Tokens/literals/RangeToken";
 import { TokenPreprocessor } from "../Tokens/TokenPreprocessor";
+import { DefineToken } from "../Tokens/preprocessor/DefineToken";
+import { SimplePreprocessorStruct } from "../Strucutres/preprocessor/SimplePreprocessorStruct";
+import { SimplePreprocessorToken } from "../Tokens/preprocessor/SimplePreprocessorToken";
+import { IncludeToken } from "../Tokens/preprocessor/IncludeToken";
 
 export class TokenStream {
 
@@ -88,18 +92,41 @@ export class TokenStream {
 	}
 	private readPreprocessor(): TokenPreprocessor | TokenString {
 		let start = this.input.position();
-		this.input.next();
-		let macr = this.readWhile(this.isID);
+		
+		
+		// this.input.next();
+		// let macr = this.readWhile(this.isID);
+		// let end = this.input.position();
+		// if(!this.isPreproc(macr)) {
+		// 	return new TokenString(macr, new Range(start, end), strTypes.sharped);
+		// }
+		// this.skipSpaces();
+		// let startWhat = this.input.position();
+		let value = "";
+		do {
+			value += this.readWhile(this.isNotNewLine);
+			this.skipSpaces();			
+		} while(value[value.length-1] == '\\');
+		
 		let end = this.input.position();
-		if(!this.isPreproc(macr)) {
-			return new TokenString(macr, new Range(start, end), strTypes.sharped);
+		
+		let result = value.match(/\#define\s+(.+)/i)
+		if(result) {
+			let macroText = result[1];
+			let startMacro = new Position(start.line, start.character + value.search(macroText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+		
+			return new DefineToken(macroText, new Range(start, end), startMacro);
 		}
-		this.skipSpaces();
-		let startWhat = this.input.position();
-		let value = this.readWhile(this.isNotNewLine);
-		end = this.input.position();
-		return new TokenPreprocessor(macr, new Range(start, end), value, startWhat);
-
+		else {
+			result = value.match(/\#include\s+(.+)/)
+			if(result) {
+				let macroText = result[1];
+				let startMacro = new Position(start.line, start.character + value.search(macroText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+			
+				return new IncludeToken(macroText, new Range(start, end), startMacro);
+			}
+		} 
+		return new SimplePreprocessorToken(value, new Range(start, end));
 	}
 
 	private isID(char: string): boolean {

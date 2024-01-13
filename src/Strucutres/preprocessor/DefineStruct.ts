@@ -1,5 +1,4 @@
 import { Range } from "vscode";
-import { TokenPreprocessor } from "../../Tokens/TokenPreprocessor";
 import { TokenString } from "../../Tokens/literals/TokenString";
 import { TokenInt } from "../../Tokens/literals/withTags/TokenInt";
 import { InputStream } from "../../parser/InputStream";
@@ -11,6 +10,7 @@ import { BinaryOperator } from "../operators/BinaryOperator";
 import { PreprocessorStruct } from "./PreprocessorStruct";
 import { FloatStruct } from "../literals/FloatStruct";
 import { TokenFloat } from "../../Tokens/literals/withTags/TokenFloat";
+import { DefineToken } from "../../Tokens/preprocessor/DefineToken";
 
 export class DefineStruct extends PreprocessorStruct {
 	/**
@@ -40,19 +40,13 @@ export class DefineStruct extends PreprocessorStruct {
 		return this._to;
 	}
 
-	constructor(code: TokenPreprocessor) {
+	constructor(code: DefineToken) {
 		super(code);
 	
-		this._what = code.getWhat();
-		this._to = code.getTo();
+		this._what = code.what;
+		this._to = code.to;
 
-		let str = "#define kek(%0,%1) %0";
-
-		let regular = /(\w+)(?:\s+)?(?:\()([^\(]*)(?:\))/i;
-
-		let res = str.match(regular);
-
-		console.log("#define test asd(1,2)".match(regular));
+		let res = this._what.match(/(\w+)(?:\s+)?(?:\()([^\(]*)(?:\))/i);
 		
 		if(res) {
 			let pattern = res[0];
@@ -60,30 +54,20 @@ export class DefineStruct extends PreprocessorStruct {
 			let funcParams = res[2];
 
 			pattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-			pattern = pattern.replace(/%[0-9]/g, "\s*(.+)\s*");
+			pattern = pattern.replace(/%[0-9]/g, "\\s*(.+)\\s*");
 
 			let regPattern = new RegExp(pattern);
 
-			let string = "kek(test, 2)";
-
-
-			console.log("pattern: ", pattern);
-			console.log("result: ", string.match(regPattern));
 		}
-		
-		
-
-
+		else if(this.to != "")
+			this.parse();
 
 		// let test: RegExp = new RegExp();
 
 		//ДЛЯ ПОИСКА АРГУМЕНТА
 		//(?<=[(,])\s*((?:(?:[a-zA-Z_])(?:[a-zA-Z0-9_])*)|(?:%[0-9]+))\s*
 
-		console.error(res);
-
-		if(this.to != "")
-			this.parse();
+	
 	}
 
 	private parse() {

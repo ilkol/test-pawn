@@ -87,8 +87,7 @@ export class Evaluater {
 			if(exp instanceof FunctionImplementation) {
 				let newEnv = env.extend()
 				newEnv.retValue = exp.getTag();
-				
-				exp.args.forEach(element => {
+				for(const element of exp.args) {
 					try {
 						if(element instanceof VarStruct) {
 							newEnv.define(new VarDefenitionStruct(element));
@@ -102,7 +101,7 @@ export class Evaluater {
 						}
 						else console.error(e);
 					}
-				});
+				}
 
 				await this.evaluate(exp.prog, newEnv);
 				if(symbol)
@@ -221,7 +220,7 @@ export class Evaluater {
 						else { 
 							let last = 0;
 							let indexes = exp.getSize();
-							ar.getSize().forEach(async element => {
+							for(const element of ar.getSize()) {
 								let index = indexes.at(last++);
 								if(!index)
 									return;
@@ -251,7 +250,8 @@ export class Evaluater {
 									
 								}
 								else this.addDiagnostic("Ожидался индекс, а получиили хз", DiagnosticSeverity.Error, index.getPos());
-							});
+							}
+							
 						}
 					}
 				} catch(e) {
@@ -263,7 +263,7 @@ export class Evaluater {
 				
 				
 			}
-			exp.getSize().forEach(async element => {
+			for(const element of exp.getSize()) {
 				if(!isDeclare) {
 					if(!(element instanceof VarStruct || element instanceof IntStruct || element instanceof CallFunctionStruct)) {
 					
@@ -281,8 +281,12 @@ export class Evaluater {
 							} catch(e) {
 								if(e instanceof UndefinedVariable) {
 									try {
+										console.error(env.defines);
+										console.error(element.name);
 										let result = env.getDefine(element.name);
+										console.error("123");
 										
+										console.error(element);
 										canBeSize = true;
 										if(!(result.value instanceof IntStruct))
 										this.addDiagnostic("Возможны ошибки из-за неконстантного define", DiagnosticSeverity.Warning, element.getPos());
@@ -304,12 +308,12 @@ export class Evaluater {
 							}
 						}
 					}
-
+	
 					
 					if(!canBeSize)
 						this.addDiagnostic("В качестве размера может быть только целочисленная константна или enum", DiagnosticSeverity.Error, element.getPos());
 				}
-			});
+			}
 			return exp;
 		}
 		if(exp instanceof IncludeStruct) {

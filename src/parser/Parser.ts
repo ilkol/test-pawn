@@ -45,6 +45,9 @@ import { IncludeStruct } from "../Strucutres/preprocessor/IncludeStruct";
 import { SimplePreprocessorStruct } from "../Strucutres/preprocessor/SimplePreprocessorStruct";
 import { DefineStruct } from "../Strucutres/preprocessor/DefineStruct";
 import { FloatStruct } from "../Strucutres/literals/FloatStruct";
+import { IncludeToken } from "../Tokens/preprocessor/IncludeToken";
+import { DefineToken } from "../Tokens/preprocessor/DefineToken";
+import { SimplePreprocessorToken } from "../Tokens/preprocessor/SimplePreprocessorToken";
 
 interface IPrecedence {
 	[key: string]: number;
@@ -277,18 +280,12 @@ export class Parser {
 			// if (inc.isKw("true") || inc.isKw("false")) return inc.parseBool();
 
 			let token = inc.input.next();
-			if(token instanceof TokenPreprocessor) {
-				switch(token.getValue()) {
-					case "include": 
-						return new IncludeStruct(token);
-					case "define":
-						return new DefineStruct(token);
-					default:
-						return new SimplePreprocessorStruct(token);
-					
-				}
-				
-			}
+			if(token instanceof IncludeToken)
+				return new IncludeStruct(token);
+			if(token instanceof DefineToken)
+				return new DefineStruct(token);
+			if(token instanceof SimplePreprocessorToken)
+				return new SimplePreprocessorStruct(token);
 				
 			if(token instanceof TokenOperator && token.getValue() == "-") {
 				let start = token.getPos();
@@ -526,12 +523,12 @@ export class Parser {
 			return token;
 		else return false;
     }
-	private isMacro(operator: string | undefined = undefined): TokenPreprocessor | false {
-        var token: Token = this.input.peek();
-		if(token instanceof TokenPreprocessor && (!operator || token.getValue() == operator)) 
-			return token;
-		else return false;
-	}
+	// private isMacro(operator: string | undefined = undefined): TokenPreprocessor | false {
+    //     var token: Token = this.input.peek();
+	// 	if(token instanceof TokenPreprocessor && (!operator || token.getValue() == operator)) 
+	// 		return token;
+	// 	else return false;
+	// }
 	private isKw(kw: string): boolean {
 		var token: Token = this.input.peek();
 		return token instanceof TokenKeyword && (!kw || token.getValue() == kw);
