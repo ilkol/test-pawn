@@ -46,7 +46,44 @@ export class DefineStruct extends PreprocessorStruct {
 		this._what = code.getWhat();
 		this._to = code.getTo();
 
-		this.parse();
+		let str = "#define kek(%0,%1) %0";
+
+		let regular = /(\w+)(?:\s+)?(?:\()([^\(]*)(?:\))/i;
+
+		let res = str.match(regular);
+
+		console.log("#define test asd(1,2)".match(regular));
+		
+		if(res) {
+			let pattern = res[0];
+			let funcName = res[1];
+			let funcParams = res[2];
+
+			pattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			pattern = pattern.replace(/%[0-9]/g, "\s*(.+)\s*");
+
+			let regPattern = new RegExp(pattern);
+
+			let string = "kek(test, 2)";
+
+
+			console.log("pattern: ", pattern);
+			console.log("result: ", string.match(regPattern));
+		}
+		
+		
+
+
+
+		// let test: RegExp = new RegExp();
+
+		//ДЛЯ ПОИСКА АРГУМЕНТА
+		//(?<=[(,])\s*((?:(?:[a-zA-Z_])(?:[a-zA-Z0-9_])*)|(?:%[0-9]+))\s*
+
+		console.error(res);
+
+		if(this.to != "")
+			this.parse();
 	}
 
 	private parse() {
@@ -80,7 +117,7 @@ export class DefineStruct extends PreprocessorStruct {
 			return undefined;
 		}
 		else {
-			console.error("cna't evaluate define: ", exp);
+			console.error("can't evaluate define: ", exp);
 			return undefined;
 		}
 	}
