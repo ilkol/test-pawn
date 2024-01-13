@@ -81,7 +81,7 @@ export class FileManager {
 		}).then(undefined, err => {
 			result = false;
 		});
-		this.diagnosticManager.addDiagnostic(""+result, DiagnosticSeverity.Warning, uri.path, new Range(0,0,1,1))
+		// this.diagnosticManager.addDiagnostic(""+result, DiagnosticSeverity.Warning, uri.path, new Range(0,0,1,1))
 		return result;
 	}
 	public registerHover(document: TextDocument, position: Position) {
