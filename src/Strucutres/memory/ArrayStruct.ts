@@ -3,7 +3,7 @@ import { VarStruct } from "./VarStruct";
 import { TokenStruct } from "../TokensStruct";
 
 export class ArrayStruct extends VarStruct {
-	protected size: TokenStruct[] = [];
+	protected _size: TokenStruct[] = [];
 	protected define: boolean = false;
 
 	constructor(name: VarStruct, pos: Range, size: TokenStruct) {
@@ -11,10 +11,13 @@ export class ArrayStruct extends VarStruct {
 		this.extend(size);
 	}
 	public extend(size: TokenStruct) {
-		this.size.push(size);
+		this._size.push(size);
 	}
-	public getSize(): TokenStruct[] {
-		return this.size;	
+	get size(): TokenStruct[] {
+		return this._size;	
+	}
+	set size(v: TokenStruct[]) {
+		this._size = v;	
 	}
 	public declarate(): void {
 		this.define = true;

@@ -6,9 +6,9 @@ import { SubProgrammStruct } from "../SubProgrammStruct";
 
 export class InitArrayStruct extends ArrayStruct {
 	constructor(name: ArrayStruct, public readonly value: SubProgrammStruct) {
-		super(name, name.pos, name.getSize()[0]);
+		super(name, name.pos, name.size[0]);
 		this.define = true;
-		this.size = name.getSize();
+		this.size = name.size;
 		// this.extend(size);
 	}
 }
