@@ -10,7 +10,7 @@ export class DefineToken extends TokenPreprocessor {
 	constructor(text: string, pos: Range, private startMacro: Position) {
 		super("define", pos);
 
-		let space = text.indexOf(" ");
+		let space = text.search(/\s/);
 		let newLine = text.indexOf("\\");
 		if(space == -1 && newLine == -1) {
 			this.startReplace = startMacro;
