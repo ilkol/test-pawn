@@ -99,7 +99,7 @@ export class OpenedFile {
 		
 		let sizeStr = "";
 		if(variable.struct instanceof ArrayStruct) {
-			variable.struct.getSize().forEach(elements => {
+			variable.struct.size.forEach(elements => {
 				if(elements instanceof IntStruct)
 					sizeStr += `[${elements.getValue()}]`;
 				else sizeStr += `[${elements}]`;
@@ -210,20 +210,16 @@ export class OpenedFile {
 		for(const element of this.ast)
 		{
 			try {
-				await evaluater.evaluate(element, this.env).then((result) => {
-					this.symbolsManager.addSymbol(this.env.symbols[i++]);
-					
-				});
+				let result = await evaluater.evaluate(element, this.env);
+				this.symbolsManager.addSymbol(this.env.symbols[i++]);
+			
 				
 			} catch(e) {
 				console.error(e);
 			}
 			
 		}
-		// console.error(this.getPathFile(), this.env.includes);
-		
-		// this.checkNeverUsedSymbols();
-		
+
 	}
 
 	private checkNeverUsedSymbols(): void {
