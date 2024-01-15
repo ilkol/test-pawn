@@ -48,6 +48,7 @@ import { FloatStruct } from "../Strucutres/literals/FloatStruct";
 import { IncludeToken } from "../Tokens/preprocessor/IncludeToken";
 import { DefineToken } from "../Tokens/preprocessor/DefineToken";
 import { SimplePreprocessorToken } from "../Tokens/preprocessor/SimplePreprocessorToken";
+import { MacroStruct } from "../Strucutres/preprocessor/MacroStruct";
 
 interface IPrecedence {
 	[key: string]: number;
@@ -88,7 +89,6 @@ export class Parser {
 					else if(progr instanceof ConditionStruct || progr instanceof AbstractCycle 
 						|| progr instanceof FunctionImplementation || progr instanceof FunctionDeclaration || (progr instanceof AssignOperator && progr.left instanceof FunctionDeclaration)) {}
 					else {
-						// console.error(progr);
 						this.trySkipPunc();
 					}
 
@@ -282,8 +282,13 @@ export class Parser {
 			let token = inc.input.next();
 			if(token instanceof IncludeToken)
 				return new IncludeStruct(token);
-			if(token instanceof DefineToken)
-				return new DefineStruct(token);
+			if(token instanceof DefineToken) {
+				let res = token.what.match(/(\w+)(?:\s+)?(?:\()([^\(]*)(?:\))/i);
+				if(res)
+					return new MacroStruct(token, res);
+				else return new DefineStruct(token);
+			}
+				
 			if(token instanceof SimplePreprocessorToken)
 				return new SimplePreprocessorStruct(token);
 				
@@ -696,7 +701,7 @@ export class Parser {
 		inc.skipPunc(")");
 		var body = inc.parseCondLineProg(inc);
 
-		return new ForCycle(cond, new SubProgrammStruct([postCond], postCond.getPos()), new SubProgrammStruct([postCond], postCond.getPos()), body);
+		return new ForCycle(cond, new SubProgrammStruct([preCycle], postCond.getPos()), new SubProgrammStruct([postCond], postCond.getPos()), body);
 	}
 	private parseForeach(inc: Parser = this): WhileCycle {
 		inc.skipKw("foreach");
