@@ -22,7 +22,7 @@ export class DefineToken extends TokenPreprocessor {
 				startPos = space > newLine ? newLine : space;
 			else startPos = space != -1 ? space : newLine;
 			
-			this._what = text.substring(0, startPos + 1);
+			this._what = text.substring(0, startPos);
 			this._to = text.substring(startPos + 1);
 
 			
