@@ -21,11 +21,11 @@ export class DefineStruct extends PreprocessorStruct {
 	/**
 	 * Что заменяет define
 	 */
-	private _what: string;
+	protected _what: string;
 	/**
 	 * На что заменяет define
 	 */
-	private _to: string;
+	protected _to: string;
 
 	/**
 	 * Что заменяет define
@@ -40,7 +40,9 @@ export class DefineStruct extends PreprocessorStruct {
 		return this._to;
 	}
 
-	constructor(code: DefineToken) {
+	public name: string;
+
+	constructor(code: DefineToken, parse: boolean = true) {
 		super(code);
 	
 		this._what = code.what;
@@ -48,18 +50,8 @@ export class DefineStruct extends PreprocessorStruct {
 
 		let res = this._what.match(/(\w+)(?:\s+)?(?:\()([^\(]*)(?:\))/i);
 		
-		if(res) {
-			let pattern = res[0];
-			let funcName = res[1];
-			let funcParams = res[2];
-
-			pattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-			pattern = pattern.replace(/%[0-9]/g, "\\s*(.+)\\s*");
-
-			let regPattern = new RegExp(pattern);
-
-		}
-		else if(this.to != "")
+		this.name = this._what;
+		if(parse && this.to != "")
 			this.parse();
 
 		// let test: RegExp = new RegExp();
