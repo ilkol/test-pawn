@@ -29,7 +29,7 @@ import { NegationStruct } from "../Strucutres/operators/NegationStruct";
 import { ForCycle } from "../Strucutres/cycle/ForCycle";
 import { UnarOperator } from "../Strucutres/operators/UnarOperator";
 import { FileManager } from "../Managers/FileManager";
-import { TokenEnd } from "../Tokens/TokenLiteral";
+import { TokenEnd, TokenKeyword } from "../Tokens/TokenLiteral";
 import { VarsDefenitionsStruct } from "../Strucutres/memory/VarsDefinitions";
 import { WhileCycle } from "../Strucutres/cycle/WhileCycle";
 import { IncludeStruct, IncludeType } from "../Strucutres/preprocessor/IncludeStruct";
@@ -69,7 +69,9 @@ export class Evaluater {
 			this.file.tokensManager.addToken(exp.getPos(), "string");
 			return exp;
 		}
-			
+		if(exp instanceof TokenKeyword) {
+			return exp;
+		}
 		if(exp instanceof FunctionDeclaration || exp instanceof FunctionImplementation) {
 			let symbol: undefined | DocumentSymbol = undefined;
 			try {
@@ -154,9 +156,9 @@ export class Evaluater {
 				// this.file.symbolsManager.addSymbol(exp.name, "", SymbolKind.Function, exp.getPos(), exp.getPos());
 				
 				
-				if(callable instanceof FunctionDeclaration && callable.word != "native") {
-					this.addDiagnostic(`Can't call function "${callable.name}" without implementation`, DiagnosticSeverity.Error, exp.getPos());
-				}
+				// if(callable instanceof FunctionDeclaration && callable.word != "native") {
+				// 	this.addDiagnostic(`Can't call function "${callable.name}" without implementation`, DiagnosticSeverity.Error, exp.getPos());
+				// }
 				if(callable.args.length != exp.args.length) {
 					this.addDiagnostic(`Несоответствие количества аргументов (требуется: ${callable.args.length}, найдено: ${exp.args.length})`, DiagnosticSeverity.Error, exp.getPos());
 				}
@@ -174,7 +176,14 @@ export class Evaluater {
 				
 			} catch(e) {
 				if(e instanceof UndefinedVariable) {
-					this.addDiagnostic(`Undefined functin "${exp.name}"`, DiagnosticSeverity.Error, exp.getPos());
+					try {
+						let macro = env.getDefine(exp.name);
+
+						console.log(macro);
+					}catch(e) {
+						if(e instanceof UndefinedVariable)
+							this.addDiagnostic(`Undefined functin "${exp.name}"`, DiagnosticSeverity.Error, exp.getPos());
+					}
 				}
 			} 
 			return exp;
@@ -193,9 +202,11 @@ export class Evaluater {
 		}
 		if(exp instanceof VarDefenitionStruct) {
 			try {
-				if(exp.struct instanceof ArrayStruct)
+				if(exp.struct instanceof ArrayStruct) {
 					await this.evaluate(exp.struct, env);
-				env.define(exp);
+					
+				}
+				await env.define(exp);
 				
 			} catch(e) {
 				if(e instanceof SymbolAlredyDefined) {
@@ -210,17 +221,17 @@ export class Evaluater {
 
 			if(!isDeclare) {
 				try {
-					let declare = env.get(exp.name);
+					let declare = await env.get(exp.name);
 					if(!(declare.struct instanceof ArrayStruct))
 						this.addDiagnostic("\""+exp.name+"\" не является массивом", DiagnosticSeverity.Error, exp.getPos());
 					else {
 						let ar = declare.struct;
-						if(exp.getSize().length != ar.getSize().length) 
+						if(exp.size.length != ar.size.length) 
 							this.addDiagnostic("Несовпадение размеров массива", DiagnosticSeverity.Error, exp.getPos());
 						else { 
 							let last = 0;
-							let indexes = exp.getSize();
-							for(const element of ar.getSize()) {
+							let indexes = exp.size;
+							for(const element of ar.size) {
 								let index = indexes.at(last++);
 								if(!index)
 									return;
@@ -239,12 +250,19 @@ export class Evaluater {
 									} 
 								}
 								else if(element instanceof VarStruct) {
-									let enuma = env.getEnum(element.name);
+									try {
+										let enuma = env.getEnum(element.name);
 									if(!(index instanceof VarStruct))
 										this.addDiagnostic(`Ожидается константа из enum "${enuma.head.getValue()}"`, DiagnosticSeverity.Error, index.getPos()); 
 									else {
 										if(!enuma.getElements().has(index.name))
 											this.addDiagnostic(`Ожидается константа из enum "${enuma.head.getValue()}"`, DiagnosticSeverity.Error, index.getPos()); 
+									}
+									}
+									catch(e) {
+										if(e instanceof UndefinedVariable) {
+											this.addDiagnostic(`Не получилось найти ${e.varName}`, DiagnosticSeverity.Error, exp.getPos());
+										}
 									}
 									
 									
@@ -263,7 +281,9 @@ export class Evaluater {
 				
 				
 			}
-			for(const element of exp.getSize()) {
+			
+			let newSize: TokenStruct[] = [];
+			for(let element of exp.size) {
 				if(!isDeclare) {
 					if(!(element instanceof VarStruct || element instanceof IntStruct || element instanceof CallFunctionStruct)) {
 					
@@ -281,15 +301,15 @@ export class Evaluater {
 							} catch(e) {
 								if(e instanceof UndefinedVariable) {
 									try {
-										console.error(env.defines);
-										console.error(element.name);
-										let result = env.getDefine(element.name);
-										console.error("123");
+										let result = await env.getDefine(element.name);
 										
-										console.error(element);
 										canBeSize = true;
-										if(!(result.value instanceof IntStruct))
-										this.addDiagnostic("Возможны ошибки из-за неконстантного define", DiagnosticSeverity.Warning, element.getPos());
+										if(!(result.value instanceof IntStruct)) {
+											element = result;
+											this.addDiagnostic("Возможны ошибки из-за неконстантного define", DiagnosticSeverity.Warning, element.getPos());
+										}
+										else element = result.value;
+										
 									} catch(e) {
 										if(e instanceof UndefinedVariable) {
 											
@@ -313,7 +333,9 @@ export class Evaluater {
 					if(!canBeSize)
 						this.addDiagnostic("В качестве размера может быть только целочисленная константна или enum", DiagnosticSeverity.Error, element.getPos());
 				}
+				newSize.push(element);
 			}
+			exp.size = newSize;
 			return exp;
 		}
 		if(exp instanceof IncludeStruct) {
@@ -466,10 +488,11 @@ export class Evaluater {
 			return exp;
 		}
 		if(exp instanceof ForCycle) {
-			await this.evaluate(exp.preProg, env);
-			await this.evaluate(exp.cond, env);
-			await this.evaluate(exp.postProg, env);
-			await this.evaluate(exp.prog, env);
+			let newEnv = env.extend();
+			await this.evaluate(exp.preProg, newEnv);
+			await this.evaluate(exp.cond, newEnv);
+			await this.evaluate(exp.postProg, newEnv);
+			await this.evaluate(exp.prog, newEnv);
 			return exp;
 		}
 		if(exp instanceof WhileCycle) {
@@ -486,6 +509,7 @@ export class Evaluater {
 		if(exp instanceof TokenEnd) {
 			return exp;
 		}
+		console.error("Невозможно обработать (evaluate) структуру:");
 		console.error(exp);
 	}
 	private isOneTag(first: TokenStruct, second: TokenStruct):boolean {
@@ -542,7 +566,6 @@ export class Evaluater {
 		else if(first instanceof VarStruct) {
 			try {
 				let result = env.getDefine(first.name);
-				console.log(result.value instanceof LiteralStruct, result.value)
 				if(result.value instanceof LiteralStruct) {
 					if(second instanceof LiteralStruct)
 						exp.constant = true;
