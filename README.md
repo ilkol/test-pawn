@@ -8,5 +8,8 @@ Extension include:
 - Code highlighting
 - Snippets for coding
 
+0.2.13
+
+Добавлена подсветка SQL строк
 
 **Enjoy!**

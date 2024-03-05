@@ -438,7 +438,8 @@ export class Parser {
 					
 					resaaaalt = new BinaryOperator(value, left, right);
 				}
-					
+				if(resaaaalt instanceof SubProgrammStruct)
+					throw new Error("WTF?");
 				return inc.maybeBinary(resaaaalt, my_prec);
             }
         }

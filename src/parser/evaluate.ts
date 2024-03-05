@@ -66,7 +66,7 @@ export class Evaluater {
 			return exp;
 		}
 		if(exp instanceof TokenString) {
-			this.file.tokensManager.addToken(exp.getPos(), "string");
+			// this.file.tokensManager.addToken(exp.getPos(), "string");
 			return exp;
 		}
 		if(exp instanceof TokenKeyword) {
