@@ -1,6 +1,6 @@
 {
   "name": "pawnlanguage-test",
-  "displayName": "pawn language-helper TEST VERSION",
+  "displayName": "Pawn Language TEST VERSION",
   "description": "Расширение для бета теста основного расширения",
   "author": {
     "name": "il_kol"
@@ -9,7 +9,7 @@
     "type": "git",
     "directory": "https://github.com/DmitryMukhlisov/test-pawn.git"
   },
-  "version": "0.2.13",
+  "version": "0.2.14",
   "publisher": "ilkol",
   "icon": "pawn.png",
   "engines": {
@@ -25,10 +25,6 @@
   "contributes": {
     "snippets": [
       {
-        "language": "cpp",
-        "path": "./snippets/snippets.code-snippets"
-      },
-      {
         "language": "pawn",
         "path": "./snippets/snippets.code-snippets"
       }
@@ -37,8 +33,8 @@
       {
         "id": "pawn",
         "aliases": [
-          "pawn",
-          "pawn"
+          "pwn",
+          "pawno"
         ],
         "extensions": [
           ".pwn",
