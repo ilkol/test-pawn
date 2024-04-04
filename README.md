@@ -1,15 +1,32 @@
-# pawnlanguage README
+# Pawn Language
 
-## Features
+Extension for VSCode support for the Pawn programming language (SA:MP)
 
-Extension for pawn language (SA:MP) coding
+## Functionality
 
-Extension include:
-- Code highlighting
-- Snippets for coding
+The extension includes:
+- Syntax highlighting for the Pawn programming language
+- A few snipets
 
-0.2.13
 
-Добавлена подсветка SQL строк
+## Plans
 
-**Enjoy!**
+### Already on the way:
+- SQL syntax highlighting in query strings
+
+### Prospects:
+- Semantic code highlighting
+- Autocompletion
+- Code Analysis
+- Processing preprocessor commands
+- Auto-tuning of the compiler and working folder settings
+- Intellisense support
+
+### Screenshots of developments
+
+![Alt text](images/0.2.0/undeffunc.png)
+
+![Alt text](images/0.2.0/undefinclude.png)
+
+![Alt text](images/0.2.0/undefvar.png)
+
