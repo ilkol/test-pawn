@@ -1,4 +1,39 @@
 # Pawn Language
+# Ru
+
+Расширение для поддержки в VSCode языка программирования Pawn (SA:MP)
+
+## Реализованные функции
+
+Расширение включает в себя:
+- Синтаксическую подсветку кода для языка программирования Pawn
+- Несколько быстрых вводов фрагментов кода (snipets) 
+
+
+## Планы
+
+### Уже на подходе:
+- Подсветка SQL синтаксиска в строках с запросами
+
+### Перспективы:
+- Семантическая подсветка кода
+- Автодополнение
+- Анализ кода
+- Обработка команд препроцессора
+- Автонастройка компилятора и настроек рабочей папки
+- Поддержка Intellisense
+
+### Скриншоты наработок
+
+![https://i.imgur.com/T3Hmjti.png](https://i.imgur.com/T3Hmjti.png)
+
+![https://i.imgur.com/BiCf1J9.png](https://i.imgur.com/BiCf1J9.png)
+
+![https://i.imgur.com/BcflN78.png](https://i.imgur.com/BcflN78.png)
+
+
+
+# En
 
 Extension for VSCode support for the Pawn programming language (SA:MP)
 
@@ -24,9 +59,9 @@ The extension includes:
 
 ### Screenshots of developments
 
-![Alt text](images/0.2.0/undeffunc.png)
+![https://i.imgur.com/T3Hmjti.png](https://i.imgur.com/T3Hmjti.png)
 
-![Alt text](images/0.2.0/undefinclude.png)
+![https://i.imgur.com/BiCf1J9.png](https://i.imgur.com/BiCf1J9.png)
 
-![Alt text](images/0.2.0/undefvar.png)
+![https://i.imgur.com/BcflN78.png](https://i.imgur.com/BcflN78.png)
 
