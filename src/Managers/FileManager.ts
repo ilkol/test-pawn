@@ -5,6 +5,7 @@ import { CannotOpenFile } from "../Errors";
 import { FunctionDeclaration } from "../Strucutres/functions/FunctionDeclaration";
 import { FunctionImplementation } from "../Strucutres/functions/FunctionImplementation";
 import { FunctionData } from "../parser/Environment";
+import { AntrlOpenFile } from "../AntlrOpenFile";
 
 export class FileManager {
 	public readonly openedFiles: Map<string, OpenedFile> = new Map<string, OpenedFile>;
@@ -113,7 +114,11 @@ export class FileManager {
 	}
 	public onDidOpenTextDocument = (file: TextDocument) => {
 		if(file.languageId != "pawn") return;
-		return this.tryParseFile(file);
+		this.tryParseFile(file);
+
+		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
+		doc.tryParse();
+		return;
 	}
 	private tryParseFile(file: TextDocument) {
 		if(file.languageId !== "pawn") return;
