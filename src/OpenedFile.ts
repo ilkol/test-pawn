@@ -20,24 +20,21 @@ import { TokenString } from "./Tokens/literals/TokenString";
 import { SemanticTokensManager } from "./Managers/SemanticTokensManager";
 import { SymbolsManager } from "./Managers/SymbolsManager";
 import { DefineStruct } from "./Strucutres/preprocessor/DefineStruct";
+import { AbstractOpenFile } from "./AbstractOpenFile";
 
-export class OpenedFile {
+export class OpenedFile extends AbstractOpenFile{
 	private ast: TokenStruct[] = [];
 	private env: Environment = new Environment();
 	private _changed: boolean = true;
 
 	private includes: string[] = [];
-	private diagnositcManager: DiagnosticManager;
-	public readonly tokensManager: SemanticTokensManager = new SemanticTokensManager();
-	public readonly symbolsManager: SymbolsManager = new SymbolsManager();
-
+	
 	
 	get tokens() {
 		return this.tokensManager.tokens;
 	}
-	constructor(private file: TextDocument, public readonly fileManager: FileManager) {
-		this.diagnositcManager = fileManager.getDiagnostic();
-		console.log("Был открыт файл!");
+	constructor(file: TextDocument, fileManager: FileManager) {
+		super(file, fileManager);
 	}
 	set changed(value: boolean) {
 		this._changed = value;
