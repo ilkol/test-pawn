@@ -47,11 +47,11 @@ preOperators:	NOT | MINUS | INCREMENTS | DECREMENTS | SIZEOF;
 operation:			operator expresion?;
 varOrLiteral:		(variable) | literal;
 
-declParams:			(CONST)? (reference)? varModifires variable (ASSIGMENT literal)?;	
+declParams:			(CONST)? (reference)? variable (ASSIGMENT literal)?;	
 
 reference:			BIT_AND;
 
-varModifires:		(CONST)? (STATIC)? (STOCK)?;
+varModifires:		(CONST|STATIC|STOCK)*;
 
 rValue:				(varOrLiteral | functionCall | grouping);
 sizeof:				SIZEOF;
