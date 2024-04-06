@@ -1,3 +1,3 @@
 node_modules
 out
-/src/antlr/.antlr
+/src/antlr/generated/.antlr
