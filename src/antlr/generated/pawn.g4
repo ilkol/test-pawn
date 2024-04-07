@@ -78,7 +78,7 @@ range:				PERIOD (IDENTIFIER | number);
 
 condition:			OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
 
-codeBlock:			CURLY_OPEN_BRACKET (statement)* CURLY_CLOSE_BRACKET | statement|return;
+codeBlock:			CURLY_OPEN_BRACKET (statement)* CURLY_CLOSE_BRACKET | statement;
 return:				RETURN expresion?;
 cycles:				while | for | do;
 do:					DO cycleBody (WHILE condition)?;
@@ -88,9 +88,8 @@ for:				FOR OPEN_PARENTHESIS var_definition SEMI expresion SEMI expresion CLOSE_
 					cycleBody;
 cycleBody:			
 	cycleKeywords | 
-	CURLY_OPEN_BRACKET (statement|return|cycleKeywords)* CURLY_CLOSE_BRACKET | 
-	statement | 
-	return;
+	CURLY_OPEN_BRACKET (statement|cycleKeywords)* CURLY_CLOSE_BRACKET | 
+	statement;
 
 cycleKeywords:		(BREAK|CONTINUE) SEMI;
 
