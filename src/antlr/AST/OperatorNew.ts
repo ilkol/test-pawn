@@ -1,13 +1,24 @@
 import { ASTNode } from "./ASTNode";
+import { IContainsVars } from "./IContainsVars";
 import { VarDeclaration } from "./VarDeclaration";
 import { IVisitor } from "./visitor/IVisitor";
 
-export class OperatorNew extends ASTNode
+export enum VariableModifire {
+	const,
+	stock,
+	static
+}
+
+export class OperatorNew extends ASTNode implements IContainsVars<VarDeclaration>
 {
 	private readonly _variables: VarDeclaration[] = [];
+	private _modifires: VariableModifire[] = [];
 
 	public constructor() {
 		super();
+	}
+	push(el: VarDeclaration): void {
+		this._variables.push(el);
 	}
 	public accept(visitor: IVisitor): void {
 		throw new Error("Method not implemented.");
@@ -15,5 +26,13 @@ export class OperatorNew extends ASTNode
 	
 	public get vars() : VarDeclaration[] {
 		return this._variables;
+	}
+
+	public addModifire(modifire: VariableModifire): void {
+		this._modifires.push(modifire);
+	}
+
+	public get modifires() : VariableModifire[] {
+		return this._modifires;
 	}
 }
