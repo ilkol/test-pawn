@@ -7,7 +7,7 @@ import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
 import { CodeBlockContext, EnumContext, EnumMemberContext, FileContext, FunctionDeclContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/VarDeclaration";
-import { OperatorNew, VariableModifire } from "./AST/OperatorNew";
+import { OperatorNew, VariableModifire } from "./AST/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
 import { EnumDeclaration } from "./AST/EnumDeclaration";
 import { EnumMember } from "./AST/EnumMember";

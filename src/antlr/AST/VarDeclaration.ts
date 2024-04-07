@@ -1,6 +1,6 @@
 import { FunctionParameter } from "./FunctionParameter";
 import { IContainsVars } from "./IContainsVars";
-import { VariableModifire } from "./OperatorNew";
+import { VariableModifire } from "./Operators/OperatorNew";
 import { VarOrFunctionDeclaration } from "./VarOrFunctionDeclaration";
 import { IVisitor } from "./visitor/IVisitor";
 

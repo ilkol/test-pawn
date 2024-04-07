@@ -10,9 +10,16 @@ import { EnumMember } from "../EnumMember";
 import { FunctionParameter } from "../FunctionParameter";
 import { CodeBlock } from "../CodeBlock";
 import { ReturnStatement } from "../ReturnStatement";
+import { BinarOperator } from "../Operators/BinarOperator";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitBinarOperator(node: BinarOperator): void {
+	
+	}
+	afterVisitBinarOperator(node: BinarOperator): void {
+	
+	}
 	beforeVisitReturn(node: ReturnStatement): void {
 	
 	}

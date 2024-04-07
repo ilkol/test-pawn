@@ -7,9 +7,18 @@ import { EnumMember } from "../EnumMember";
 import { FunctionParameter } from "../FunctionParameter";
 import { CodeBlock } from "../CodeBlock";
 import { ReturnStatement } from "../ReturnStatement";
+import { BinarOperator } from "../Operators/BinarOperator";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitBinarOperator(node: BinarOperator): void {
+		this.beforeVisitBinarOperator(node);
+		if(node.left)
+			node.left.accept(this);
+		if(node.right)
+			node.right.accept(this);
+		this.afterVisitBinarOperator(node);
+	}
 	visitReturn(node: ReturnStatement): void {
 		this.beforeVisitReturn(node);
 		this.afterVisitReturn(node);
@@ -75,4 +84,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitReturn(node: ReturnStatement): void;
 	abstract afterVisitReturn(node: ReturnStatement): void;
+
+	abstract beforeVisitBinarOperator(node: BinarOperator): void;
+	abstract afterVisitBinarOperator(node: BinarOperator): void;
 }

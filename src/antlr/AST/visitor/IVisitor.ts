@@ -4,11 +4,13 @@ import { EnumDeclaration } from "../EnumDeclaration";
 import { EnumMember } from "../EnumMember";
 import { FunctionDeclaration } from "../FunctionDeclaration";
 import { FunctionParameter } from "../FunctionParameter";
+import { BinarOperator } from "../Operators/BinarOperator";
 import { ReturnStatement } from "../ReturnStatement";
 import { VarDeclaration } from "../VarDeclaration";
 
 export interface IVisitor
 {
+	visitBinarOperator(node: BinarOperator): void;
 	visitReturn(node: ReturnStatement): void;
 	visitCodeBlock(node: CodeBlock): void;
 	visitFunctionParameter(node: FunctionParameter): void;
