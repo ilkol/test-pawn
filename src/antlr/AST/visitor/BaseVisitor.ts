@@ -5,9 +5,19 @@ import { VarDeclaration } from "../VarDeclaration";
 import { EnumDeclaration } from "../EnumDeclaration";
 import { EnumMember } from "../EnumMember";
 import { FunctionParameter } from "../FunctionParameter";
+import { CodeBlock } from "../CodeBlock";
+import { ReturnStatement } from "../ReturnStatement";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitReturn(node: ReturnStatement): void {
+		this.beforeVisitReturn(node);
+		this.afterVisitReturn(node);
+	}
+	visitCodeBlock(node: CodeBlock): void {
+		this.beforeVisitCodeBlock(node);
+		this.afterVisitCodeBlock(node);
+	}
 	visitFunctionParameter(node: FunctionParameter): void {
 		this.beforeVisitFunctionParameter(node);
 		this.afterVisitFunctionParameter(node);
@@ -25,6 +35,8 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.beforeVisitFunctionDeclaration(node);
+		if(node.code)
+			node.code.accept(this);
 		this.afterVisitFunctionDeclaration(node);
 	}
 	visitVariableDeclaration(node: VarDeclaration): void {
@@ -57,4 +69,10 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitFunctionParameter(node: FunctionParameter): void;
 	abstract afterVisitFunctionParameter(node: FunctionParameter): void;
+	
+	abstract beforeVisitCodeBlock(node: CodeBlock): void;
+	abstract afterVisitCodeBlock(node: CodeBlock): void;
+
+	abstract beforeVisitReturn(node: ReturnStatement): void;
+	abstract afterVisitReturn(node: ReturnStatement): void;
 }

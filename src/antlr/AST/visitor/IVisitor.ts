@@ -1,12 +1,16 @@
+import { CodeBlock } from "../CodeBlock";
 import { Declarations } from "../Declarations";
 import { EnumDeclaration } from "../EnumDeclaration";
 import { EnumMember } from "../EnumMember";
 import { FunctionDeclaration } from "../FunctionDeclaration";
 import { FunctionParameter } from "../FunctionParameter";
+import { ReturnStatement } from "../ReturnStatement";
 import { VarDeclaration } from "../VarDeclaration";
 
 export interface IVisitor
 {
+	visitReturn(node: ReturnStatement): void;
+	visitCodeBlock(node: CodeBlock): void;
 	visitFunctionParameter(node: FunctionParameter): void;
 	visitEnumMember(node: EnumMember): void;
 	visitEnumDeclaration(node: EnumDeclaration): void;

@@ -8,9 +8,23 @@ import { DiagnosticWarning } from "../../diagnostic/DiagnosticWarning";
 import { EnumDeclaration } from "../EnumDeclaration";
 import { EnumMember } from "../EnumMember";
 import { FunctionParameter } from "../FunctionParameter";
+import { CodeBlock } from "../CodeBlock";
+import { ReturnStatement } from "../ReturnStatement";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitReturn(node: ReturnStatement): void {
+	
+	}
+	afterVisitReturn(node: ReturnStatement): void {
+	
+	}
+	beforeVisitCodeBlock(node: CodeBlock): void {
+	
+	}
+	afterVisitCodeBlock(node: CodeBlock): void {
+		console.log(node.statements.statements);
+	}
 	beforeVisitFunctionParameter(node: FunctionParameter): void {
 	
 	}

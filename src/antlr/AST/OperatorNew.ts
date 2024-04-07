@@ -1,5 +1,6 @@
 import { ASTNode } from "./ASTNode";
 import { IContainsVars } from "./IContainsVars";
+import { Statement } from "./Statement";
 import { VarDeclaration } from "./VarDeclaration";
 import { IVisitor } from "./visitor/IVisitor";
 
@@ -9,7 +10,7 @@ export enum VariableModifire {
 	static
 }
 
-export class OperatorNew extends ASTNode implements IContainsVars<VarDeclaration>
+export class OperatorNew extends Statement implements IContainsVars<VarDeclaration>
 {
 	private readonly _variables: VarDeclaration[] = [];
 	private _modifires: VariableModifire[] = [];

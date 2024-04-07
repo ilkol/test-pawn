@@ -5,13 +5,15 @@ import { Declarations } from "./AST/Declarations";
 import { FunctionDeclaration } from "./AST/FunctionDeclaration";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { EnumContext, EnumMemberContext, FileContext, FunctionDeclContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
+import { CodeBlockContext, EnumContext, EnumMemberContext, FileContext, FunctionDeclContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
 import { EnumDeclaration } from "./AST/EnumDeclaration";
 import { EnumMember } from "./AST/EnumMember";
 import { Tag } from "./AST/Tag";
+import { CodeBlock } from "./AST/CodeBlock";
+import { Statements } from "./AST/Statements";
 
 export class PawnListener implements pawnListener
 {
@@ -80,11 +82,16 @@ export class PawnListener implements pawnListener
 			this.checkModif(ctx.varModifires().STATIC(), node, VariableModifire.static, "static");
 			this.checkModif(ctx.varModifires().STOCK(), node, VariableModifire.stock, "stock");
 				
-			let decl = (<Declarations>this.nodes.peek());
-			node.vars.forEach(element => {
-				element.modifires = node.modifires;
-				decl.declarations.push(element);
-			});
+			let decl = this.nodes.peek();
+			if(decl instanceof Declarations) {
+				node.vars.forEach(element => {
+					element.modifires = node.modifires;
+					decl.declarations.push(element);
+				});
+			}
+			else if(decl instanceof CodeBlock) {
+				decl.statements.push(node);
+			}
 		}
 	}
 
@@ -188,6 +195,22 @@ export class PawnListener implements pawnListener
 			let last = this.nodes.peek();
 			if(last && 'tag' in last) {
 				last.tag = node;
+			}
+		}
+	}
+
+	enterCodeBlock(ctx: CodeBlockContext): void {
+		let node = new CodeBlock(new Statements());	
+		this.nodes.push(node);
+	}
+
+	exitCodeBlock(ctx: CodeBlockContext): void {
+		let node = <CodeBlock>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			let last = this.nodes.peek();
+			if(last instanceof FunctionDeclaration) {
+				last.code = node;
 			}
 		}
 	}
