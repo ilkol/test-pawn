@@ -5,35 +5,47 @@ import { Declarations } from "../Declarations";
 import { FunctionDeclaration } from "../FunctionDeclaration";
 import { VarDeclaration } from "../VarDeclaration";
 import { DiagnosticWarning } from "../../diagnostic/DiagnosticWarning";
+import { EnumDeclaration } from "../EnumDeclaration";
+import { EnumMember } from "../EnumMember";
+import { FunctionParameter } from "../FunctionParameter";
 
 export class Analyzer extends BaseVisitor
 {
-	private UsedFunctions: FunctionDeclaration[] = [];
-
-	constructor(public readonly diagnostics: DiagnosticMessage[]) {
-		super();
+	beforeVisitFunctionParameter(node: FunctionParameter): void {
+	
 	}
-
-	private addDiagnostic(msg: DiagnosticMessage) {
-		this.diagnostics.push(msg);
+	afterVisitFunctionParameter(node: FunctionParameter): void {
+	
 	}
-
+	beforeVisitEnumMember(node: EnumMember): void {
+		// throw new Error("Method not implemented.");
+	}
+	afterVisitEnumMember(node: EnumMember): void {
+		// throw new Error ("Method not implemented.");
+	}
+	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
+		
+	}
+	afterVisitEnumDeclaration(node: EnumDeclaration): void {
+		// throw new Error("Method not implemented.");
+	}
+	
 	beforeVisitDeclarations(declaration: Declarations): void {
 		// throw new Error("Method not implemented.");
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
-		this.UsedFunctions.forEach(element => {
+		this.UnUsedFunctions.forEach(element => {
 			this.addDiagnostic(new DiagnosticWarning("Функция \"" + element.id + "\" нигде не используется", element.idPos));
 		});
 	}
-
-	beforeVisitFunctionDeclaration(functiondeclaration: FunctionDeclaration): void {
-		this.UsedFunctions.push(functiondeclaration);
+	
+	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
+		this.UnUsedFunctions.push(node);
 	}
-	afterVisitFunctionDeclaration(functiondeclaration: FunctionDeclaration): void {
+	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		// throw new Error("Method not implemented.");
 	}
-
+	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
 		// throw new Error("Method not implemented.");
 	}
@@ -41,4 +53,13 @@ export class Analyzer extends BaseVisitor
 		// throw new Error("Method not implemented.");
 	}
 	
+	private UnUsedFunctions: FunctionDeclaration[] = [];
+	
+	constructor(public readonly diagnostics: DiagnosticMessage[]) {
+		super();
+	}
+	
+	private addDiagnostic(msg: DiagnosticMessage) {
+		this.diagnostics.push(msg);
+	}
 }
