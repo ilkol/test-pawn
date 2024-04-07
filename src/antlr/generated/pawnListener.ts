@@ -33,6 +33,8 @@ import { VarModifiresContext } from "./pawnParser";
 import { RValueContext } from "./pawnParser";
 import { SizeofContext } from "./pawnParser";
 import { NumberContext } from "./pawnParser";
+import { IntegerContext } from "./pawnParser";
+import { FloatContext } from "./pawnParser";
 import { OperatorContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
 import { LogicOperatorContext } from "./pawnParser";
@@ -393,6 +395,28 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitNumber?: (ctx: NumberContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.integer`.
+	 * @param ctx the parse tree
+	 */
+	enterInteger?: (ctx: IntegerContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.integer`.
+	 * @param ctx the parse tree
+	 */
+	exitInteger?: (ctx: IntegerContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.float`.
+	 * @param ctx the parse tree
+	 */
+	enterFloat?: (ctx: FloatContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.float`.
+	 * @param ctx the parse tree
+	 */
+	exitFloat?: (ctx: FloatContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.operator`.

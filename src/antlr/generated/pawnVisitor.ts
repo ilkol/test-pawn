@@ -33,6 +33,8 @@ import { VarModifiresContext } from "./pawnParser";
 import { RValueContext } from "./pawnParser";
 import { SizeofContext } from "./pawnParser";
 import { NumberContext } from "./pawnParser";
+import { IntegerContext } from "./pawnParser";
+import { FloatContext } from "./pawnParser";
 import { OperatorContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
 import { LogicOperatorContext } from "./pawnParser";
@@ -276,6 +278,20 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitNumber?: (ctx: NumberContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.integer`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitInteger?: (ctx: IntegerContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.float`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitFloat?: (ctx: FloatContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.operator`.

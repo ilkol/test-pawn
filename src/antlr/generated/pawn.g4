@@ -56,7 +56,9 @@ varModifires:		(CONST|STATIC|STOCK)*;
 rValue:				(varOrLiteral | functionCall | grouping);
 sizeof:				SIZEOF;
 
-number: 			INTEGER | FLOAT;
+number: 			integer | float;
+integer:			INTEGER;
+float:				FLOAT;
 
 operator:			arefmeticOperator | logicOperator | bitwiseOperator;
 
