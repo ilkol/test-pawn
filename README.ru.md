@@ -23,10 +23,3 @@
 - Поддержка Intellisense
 
 ### Скриншоты наработок
-
-![Alt text](images/0.2.0/undeffunc.png)
-
-![Alt text](images/0.2.0/undefinclude.png)
-
-![Alt text](images/0.2.0/undefvar.png)
-
