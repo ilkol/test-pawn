@@ -12,6 +12,8 @@ import { ASTNode } from "./antlr/AST/ASTNode";
 import { DiagnosticMessage } from "./antlr/diagnostic/DiagnosticMessage";
 import { Analyzer } from "./antlr/AST/visitor/Analyzer";
 import { Declarations } from "./antlr/AST/Declarations";
+import { LexerErrorListener } from "./antlr/LexerErrorListener";
+import { ParserErrorListener } from "./antlr/ParserErrorListener";
 
 export class AntrlOpenFile extends AbstractOpenFile
 {
@@ -24,8 +26,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 	public tryParse(): void
 	{
 		const lexer = this.tryLex();
+		lexer.addErrorListener(new LexerErrorListener());
 		const tokenStream = new CommonTokenStream(lexer);
 		const parser = new pawnParser(tokenStream);
+		parser.addErrorListener(new ParserErrorListener());
 		const ruleContext = parser.file();
 		const listener: pawnListener = new PawnListener();
 		
