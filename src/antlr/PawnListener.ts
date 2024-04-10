@@ -5,7 +5,7 @@ import { Declarations } from "./AST/Declarations";
 import { FunctionDeclaration } from "./AST/FunctionDeclaration";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { CodeBlockContext, EnumContext, EnumMemberContext, FileContext, FunctionDeclContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
+import { CodeBlockContext, EnumContext, EnumMemberContext, FileContext, FunctionDeclContext, IntegerContext, NumberContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -14,6 +14,8 @@ import { EnumMember } from "./AST/EnumMember";
 import { Tag } from "./AST/Tag";
 import { CodeBlock } from "./AST/CodeBlock";
 import { Statements } from "./AST/Statements";
+import { IntLiteral } from "./AST/Literals/IntLiteral";
+import { ReturnStatement } from "./AST/ReturnStatement";
 
 export class PawnListener implements pawnListener
 {
@@ -82,15 +84,16 @@ export class PawnListener implements pawnListener
 			this.checkModif(ctx.varModifires().STATIC(), node, VariableModifire.static, "static");
 			this.checkModif(ctx.varModifires().STOCK(), node, VariableModifire.stock, "stock");
 				
-			let decl = this.nodes.peek();
-			if(decl instanceof Declarations) {
+			let last = this.nodes.peek();
+			if(last instanceof Declarations) {
+				let tmp: Declarations = last;
 				node.vars.forEach(element => {
 					element.modifires = node.modifires;
-					decl.declarations.push(element);
+					tmp.declarations.push(element);
 				});
 			}
-			else if(decl instanceof CodeBlock) {
-				decl.statements.push(node);
+			else if(last instanceof CodeBlock) {
+				last.statements.push(node);
 			}
 		}
 	}
@@ -211,6 +214,36 @@ export class PawnListener implements pawnListener
 			let last = this.nodes.peek();
 			if(last instanceof FunctionDeclaration) {
 				last.code = node;
+			}
+		}
+	}
+
+	enterInteger(ctx: IntegerContext): void {
+		let node = new IntLiteral();
+		this.nodes.push(node);
+	}
+	exitInteger(ctx: IntegerContext): void {
+		let node = <IntLiteral>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			node.value = +ctx.INTEGER().text;
+			let last = this.nodes.peek();
+			if(last instanceof ReturnStatement) {
+				last.value = node;
+			}
+		}
+	}
+	enterReturn(ctx: ReturnContext): void {
+		let node = new ReturnStatement();
+		this.nodes.push(node);
+	}
+	exitReturn(ctx: ReturnContext): void {
+		let node = <ReturnStatement>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			let last = this.nodes.peek();
+			if(last instanceof CodeBlock) {
+				last.statements.push(node);
 			}
 		}
 	}

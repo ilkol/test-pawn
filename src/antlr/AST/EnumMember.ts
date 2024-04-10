@@ -1,4 +1,3 @@
-import { IHasTag } from "./IHasTag";
 import { VarDeclaration } from "./VarDeclaration";
 import { VarOrFunctionDeclaration } from "./VarOrFunctionDeclaration";
 import { IVisitor } from "./visitor/IVisitor";

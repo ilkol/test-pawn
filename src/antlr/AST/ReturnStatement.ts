@@ -10,4 +10,9 @@ export class ReturnStatement extends Statement
 		visitor.visitReturn(this);
 	}
 	
+	
+	public set value(v : Expresion) {
+		this._value = v;
+	}
+	
 }

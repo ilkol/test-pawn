@@ -2,7 +2,7 @@ import { ASTNode } from "./ASTNode";
 import { Declaration } from "./Declaration";
 import { IVisitor } from "./visitor/IVisitor";
 
-export class Declarations extends ASTNode
+export class Declarations extends ASTNode 
 {
 	public accept(visitor: IVisitor): void {
 		visitor.visitDeclarations(this);
