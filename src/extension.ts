@@ -9,6 +9,7 @@ import { SignatureProvider } from './Providers/SignatureProvider';
 import { DocumentSemanticTokensProvider } from './Providers/DocumentSemanticTokensProvider';
 import { CallHierarchyProvider } from './Providers/CallHierarchyProvider';
 import { SymbolProvider } from './Providers/SymbolProvider';
+import { PawnColorProvider } from './Providers/ColorProvider';
 
 interface IDefine {
 	name: string
@@ -72,7 +73,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	const callHierarchyProvider = new CallHierarchyProvider();
 	context.subscriptions.push(vscode.languages.registerCallHierarchyProvider('pawn', callHierarchyProvider));
 	//пока бесполезно
-
+	const colorProvider = new PawnColorProvider();
+	context.subscriptions.push(vscode.languages.registerColorProvider('pawn', colorProvider));
 	context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider('pawn', documentSemanticTokensProvider, legend));
 	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('pawn', signatureProvider, {triggerCharacters: ['(', ','], retriggerCharacters: [")"] }));
 	
@@ -169,3 +171,4 @@ function findDefines(text: string, defines: Map<string, IDefine>): void {
 		
 	}
 }
+
