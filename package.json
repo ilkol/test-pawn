@@ -9,7 +9,7 @@
     "type": "git",
     "directory": "https://github.com/DmitryMukhlisov/test-pawn.git"
   },
-  "version": "0.2.15",
+  "version": "0.2.16",
   "publisher": "ilkol",
   "icon": "pawn.png",
   "engines": {
