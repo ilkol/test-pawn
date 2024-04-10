@@ -65,3 +65,4 @@ The extension includes:
 
 ![https://i.imgur.com/BcflN78.png](https://i.imgur.com/BcflN78.png)
 
+<img alt="https://i.imgur.com/l3dlLsr.png" src="https://i.imgur.com/l3dlLsr.png" width="40%"> 
