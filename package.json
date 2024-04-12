@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "antlr4ts": "^0.5.0-alpha.4",
-    "findup-sync": "^0.1.2",
+    "findup-sync": "^5.0.0",
     "vsce": "^2.15.0"
   },
   "scripts": {
@@ -74,6 +74,7 @@
     "@types/vscode": "^1.83.0",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "@typescript-eslint/parser": "^6.7.5",
+    "@vscode/l10n-dev": "^0.0.35",
     "@vscode/test-electron": "^2.3.5",
     "antlr4ts-cli": "^0.5.0-alpha.4",
     "eslint": "^8.51.0",
