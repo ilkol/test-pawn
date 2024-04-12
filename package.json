@@ -1,7 +1,7 @@
 {
   "name": "pawnlanguage-test",
   "displayName": "Pawn Language TEST VERSION",
-  "description": "Расширение для бета теста основного расширения",
+  "description": "%config.description%",
   "author": {
     "name": "il_kol"
   },
@@ -9,7 +9,7 @@
     "type": "git",
     "directory": "https://github.com/DmitryMukhlisov/test-pawn.git"
   },
-  "version": "0.2.16",
+  "version": "0.2.18",
   "publisher": "ilkol",
   "icon": "pawn.png",
   "engines": {
@@ -22,6 +22,7 @@
     "onLanguage:pawn"
   ],
   "main": "./out/extension.js",
+  "l10n": "./l10n",
   "contributes": {
     "snippets": [
       {
@@ -56,6 +57,7 @@
     ]
   },
   "dependencies": {
+    "@vscode/l10n": "^0.0.18",
     "antlr4ts": "^0.5.0-alpha.4",
     "findup-sync": "^5.0.0",
     "vsce": "^2.15.0"
