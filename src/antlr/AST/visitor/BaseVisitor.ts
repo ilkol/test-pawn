@@ -21,10 +21,14 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitReturn(node: ReturnStatement): void {
 		this.beforeVisitReturn(node);
+		node.value.accept(this);
 		this.afterVisitReturn(node);
 	}
 	visitCodeBlock(node: CodeBlock): void {
 		this.beforeVisitCodeBlock(node);
+		node.statements.statements.forEach(element => {
+			element.accept(this);
+		});
 		this.afterVisitCodeBlock(node);
 	}
 	visitFunctionParameter(node: FunctionParameter): void {
