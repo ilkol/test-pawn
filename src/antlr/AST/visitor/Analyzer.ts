@@ -11,9 +11,16 @@ import { FunctionParameter } from "../FunctionParameter";
 import { CodeBlock } from "../CodeBlock";
 import { ReturnStatement } from "../ReturnStatement";
 import { BinarOperator } from "../Operators/BinarOperator";
+import { IntLiteral } from "../Literals/IntLiteral";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitIntLiteral(node: IntLiteral): void {
+	
+	}
+	afterVisitIntLiteral(node: IntLiteral): void {
+	
+	}
 	beforeVisitBinarOperator(node: BinarOperator): void {
 	
 	}

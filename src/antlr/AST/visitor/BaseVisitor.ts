@@ -8,9 +8,14 @@ import { FunctionParameter } from "../FunctionParameter";
 import { CodeBlock } from "../CodeBlock";
 import { ReturnStatement } from "../ReturnStatement";
 import { BinarOperator } from "../Operators/BinarOperator";
+import { IntLiteral } from "../Literals/IntLiteral";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitIntLiteral(node: IntLiteral): void {
+		this.beforeVisitIntLiteral(node);
+		this.afterVisitIntLiteral(node);
+	}
 	visitBinarOperator(node: BinarOperator): void {
 		this.beforeVisitBinarOperator(node);
 		if(node.left)
@@ -91,4 +96,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitBinarOperator(node: BinarOperator): void;
 	abstract afterVisitBinarOperator(node: BinarOperator): void;
+
+	abstract beforeVisitIntLiteral(node: IntLiteral): void;
+	abstract afterVisitIntLiteral(node: IntLiteral): void;
 }
