@@ -9,9 +9,25 @@ import { CodeBlock } from "../CodeBlock";
 import { ReturnStatement } from "../ReturnStatement";
 import { BinarOperator } from "../Operators/BinarOperator";
 import { IntLiteral } from "../Literals/IntLiteral";
+import { UnarOperator } from "../Operators/UnarOperator";
+import { OperatorNew } from "../Operators/OperatorNew";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitOperatorNew(node: OperatorNew): void {
+		this.beforeVisitOperatorNew(node);
+		node.vars.forEach(element => {
+			element.accept(this);
+		});
+		this.afterVisitOperatorNew(node);
+	}
+	visitUnarOperator(node: UnarOperator): void {
+		this.beforeVisitUnarOperator(node);
+		if(node.value) {
+			node.value.accept(this);
+		}
+		this.afterVisitUnarOperator(node);
+	}
 	visitIntLiteral(node: IntLiteral): void {
 		this.beforeVisitIntLiteral(node);
 		this.afterVisitIntLiteral(node);
@@ -26,7 +42,9 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitReturn(node: ReturnStatement): void {
 		this.beforeVisitReturn(node);
-		node.value.accept(this);
+		console.log(node.value);
+		if(node.value)
+			node.value.accept(this);
 		this.afterVisitReturn(node);
 	}
 	visitCodeBlock(node: CodeBlock): void {
@@ -99,4 +117,10 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitIntLiteral(node: IntLiteral): void;
 	abstract afterVisitIntLiteral(node: IntLiteral): void;
+	
+	abstract beforeVisitUnarOperator(node: UnarOperator): void;
+	abstract afterVisitUnarOperator(node: UnarOperator): void;
+
+	abstract beforeVisitOperatorNew(node: OperatorNew): void;
+	abstract afterVisitOperatorNew(node: OperatorNew): void;
 }

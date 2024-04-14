@@ -12,9 +12,23 @@ import { CodeBlock } from "../CodeBlock";
 import { ReturnStatement } from "../ReturnStatement";
 import { BinarOperator } from "../Operators/BinarOperator";
 import { IntLiteral } from "../Literals/IntLiteral";
+import { UnarOperator } from "../Operators/UnarOperator";
+import { OperatorNew } from "../Operators/OperatorNew";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitOperatorNew(node: OperatorNew): void {
+	
+	}
+	afterVisitOperatorNew(node: OperatorNew): void {
+	
+	}
+	beforeVisitUnarOperator(node: UnarOperator): void {
+
+	}
+	afterVisitUnarOperator(node: UnarOperator): void {
+
+	}
 	beforeVisitIntLiteral(node: IntLiteral): void {
 	
 	}

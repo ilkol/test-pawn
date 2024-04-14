@@ -14,5 +14,7 @@ export class ReturnStatement extends Statement
 	public set value(v : Expresion) {
 		this._value = v;
 	}
-	
+	public get value(): Expresion | undefined {
+		return this._value;
+	}
 }

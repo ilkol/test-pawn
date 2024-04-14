@@ -2,7 +2,7 @@ import { Expresion } from "../Expresion";
 import { IVisitor } from "../visitor/IVisitor";
 import { AbstractOperator } from "./AbstractOperator";
 
-export abstract class BinarOperator extends AbstractOperator
+export class BinarOperator extends AbstractOperator
 {
 	public accept(visitor: IVisitor): void {
 		visitor.visitBinarOperator(this);
@@ -13,11 +13,18 @@ export abstract class BinarOperator extends AbstractOperator
 
 	
 	public get left() : Expresion | undefined {
-		return this.left;
+		return this._left;
 	}
 	
 	public get right() : Expresion | undefined {
 		return this._right;
 	}
+
+	public set left(v: Expresion) {
+		this._left = v;
+	}
 	
+	public set right(v: Expresion) {
+		this._right = v;
+	}
 }

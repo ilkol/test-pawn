@@ -22,7 +22,7 @@ export class OperatorNew extends Statement implements IContainsVars<VarDeclarati
 		this._variables.push(el);
 	}
 	public accept(visitor: IVisitor): void {
-		throw new Error("Method not implemented.");
+		visitor.visitOperatorNew(this);
 	}
 	
 	public get vars() : VarDeclaration[] {

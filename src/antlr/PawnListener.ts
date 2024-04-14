@@ -5,7 +5,7 @@ import { Declarations } from "./AST/Declarations";
 import { FunctionDeclaration } from "./AST/FunctionDeclaration";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { CodeBlockContext, EnumContext, EnumMemberContext, FileContext, FunctionDeclContext, IntegerContext, NumberContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
+import { CodeBlockContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -16,6 +16,10 @@ import { CodeBlock } from "./AST/CodeBlock";
 import { Statements } from "./AST/Statements";
 import { IntLiteral } from "./AST/Literals/IntLiteral";
 import { ReturnStatement } from "./AST/ReturnStatement";
+import { Expresion } from "./AST/Expresion";
+import { AbstractOperator } from "./AST/Operators/AbstractOperator";
+import { BinarOperator } from "./AST/Operators/BinarOperator";
+import { UnarOperator } from "./AST/Operators/UnarOperator";
 
 export class PawnListener implements pawnListener
 {
@@ -223,14 +227,14 @@ export class PawnListener implements pawnListener
 		this.nodes.push(node);
 	}
 	exitInteger(ctx: IntegerContext): void {
-		let node = <IntLiteral>this.nodes.pop();
+		let node = <IntLiteral>this.nodes.peek();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			node.value = +ctx.INTEGER().text;
-			let last = this.nodes.peek();
-			if(last instanceof ReturnStatement) {
-				last.value = node;
-			}
+			// let last = this.nodes.peek();
+			// if(last instanceof ReturnStatement) {
+			// 	last.value = node;
+			// }
 		}
 	}
 	enterReturn(ctx: ReturnContext): void {
@@ -241,10 +245,59 @@ export class PawnListener implements pawnListener
 		let node = <ReturnStatement>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
+			node.value = <Expresion>this.nodes.pop();
 			let last = this.nodes.peek();
 			if(last instanceof CodeBlock) {
 				last.statements.push(node);
 			}
+		}
+	}
+	exitExpresion(ctx: ExpresionContext): void {
+		let pre = ctx.preOperators();
+		if(pre) {
+			if(ctx.stop) {
+				let last = <Expresion>this.nodes.pop();
+				let node = new UnarOperator();
+				node.value = last;
+				node.setPos(ctx.start, ctx.stop);
+				if(pre.NOT()) {	
+					node.operator = "!";
+				}
+				else if(pre.MINUS()) {
+					node.operator = "!";			
+				}
+				else if(pre.DECREMENTS()) {
+					node.operator = "--";			
+				}
+				else if(pre.DECREMENTS()) {
+					node.operator = "++";			
+				}
+				this.nodes.push(node);
+			}
+		}
+	}
+
+	exitOperation(ctx: OperationContext): void 
+	{
+		if(ctx.stop) {
+			let node: AbstractOperator;
+			switch(ctx.operator().text) {
+				case "--":
+				case "++": {
+					node = new UnarOperator();
+					(<UnarOperator>node).value = <Expresion>this.nodes.pop();
+					break;
+				}
+				default: {
+					node = new BinarOperator();
+					(<BinarOperator>node).right = <Expresion>this.nodes.pop();
+					(<BinarOperator>node).left = <Expresion>this.nodes.pop();
+					break;
+				}
+			}
+			node.operator = ctx.operator().text;	
+			node.setPos(ctx.start, ctx.stop);
+			this.nodes.push(node);
 		}
 	}
 }

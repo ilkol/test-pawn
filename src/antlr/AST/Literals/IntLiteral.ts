@@ -11,7 +11,7 @@ export class IntLiteral extends NumberLiteral
 	}
 
 	public accept(visitor: IVisitor): void {
-		throw new Error("Method not implemented.");
+		visitor.visitIntLiteral(this);
 	}
 
 	

@@ -6,11 +6,15 @@ import { FunctionDeclaration } from "../FunctionDeclaration";
 import { FunctionParameter } from "../FunctionParameter";
 import { IntLiteral } from "../Literals/IntLiteral";
 import { BinarOperator } from "../Operators/BinarOperator";
+import { OperatorNew } from "../Operators/OperatorNew";
+import { UnarOperator } from "../Operators/UnarOperator";
 import { ReturnStatement } from "../ReturnStatement";
 import { VarDeclaration } from "../VarDeclaration";
 
 export interface IVisitor
 {
+	visitOperatorNew(node: OperatorNew): void;
+	visitUnarOperator(node: UnarOperator): void;
 	visitIntLiteral(node: IntLiteral): void;
 	visitBinarOperator(node: BinarOperator): void;
 	visitReturn(node: ReturnStatement): void;
