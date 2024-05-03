@@ -14,6 +14,7 @@ import { BinarOperator } from "../Operators/BinarOperator";
 import { IntLiteral } from "../Literals/IntLiteral";
 import { UnarOperator } from "../Operators/UnarOperator";
 import { OperatorNew } from "../Operators/OperatorNew";
+import { DiagnosticUnused } from "../../diagnostic/DiagnosticUnused";
 
 export class Analyzer extends BaseVisitor
 {
@@ -77,7 +78,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
 		this.UnUsedFunctions.forEach(element => {
-			this.addDiagnostic(new DiagnosticWarning("Функция \"" + element.id + "\" нигде не используется", element.idPos));
+			this.addDiagnostic(new DiagnosticUnused("Функция \"" + element.id + "\" нигде не используется", element.pos));
 		});
 	}
 	

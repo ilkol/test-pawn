@@ -6,10 +6,13 @@ export class DiagnosticManager {
 	constructor(private diagnosticCollection: vscode.DiagnosticCollection) {
 
 	}
-	public addDiagnostic(msg: string, type: vscode.DiagnosticSeverity, filePath: string, range: vscode.Range) {
+	public addDiagnostic(msg: string, type: vscode.DiagnosticSeverity, filePath: string, range: vscode.Range, tags?: vscode.DiagnosticTag[]) {
 		let diagnostics = this.diagnosticMap.get(filePath);
 		if (!diagnostics) { diagnostics = []; }
-		diagnostics.push(new vscode.Diagnostic(range, msg, type));
+		let diagnostic = new vscode.Diagnostic(range, msg, type);
+		diagnostic.tags = tags;
+		
+		diagnostics.push(diagnostic);
 		this.diagnosticMap.set(filePath, diagnostics);
 	}
 	public updateDiagnostic() {

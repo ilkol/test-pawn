@@ -1,10 +1,11 @@
-import { DiagnosticSeverity, Position, Range } from "vscode";
+import { DiagnosticSeverity, DiagnosticTag, Position, Range } from "vscode";
 
 export class DiagnosticMessage
 {
 	public readonly message: string;
 	public readonly type: DiagnosticSeverity;
 	public readonly pos: Range;
+	private _tags?: DiagnosticTag[];
 
 	constructor(message: string, type: DiagnosticSeverity, pos: Range);
 	constructor(message: string, type: DiagnosticSeverity, start: Position, end: Position);
@@ -24,4 +25,13 @@ export class DiagnosticMessage
 			this.pos = new Range(pos, <Position>end);
 		}
 	}
+
+	public get tags() : DiagnosticTag[] | undefined {
+		return this._tags;
+	}
+	
+	public set tags(v : DiagnosticTag[]) {
+		this._tags = v;
+	}
+	
 }
