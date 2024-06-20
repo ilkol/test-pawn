@@ -117,7 +117,6 @@ export class FileManager {
 	}
 	public onDidOpenTextDocument = (file: TextDocument) => {
 		if(file.languageId != "pawn") return;
-		// this.tryParseFile(file);
 
 		this.diagnosticManager.clear();
 		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
@@ -127,23 +126,4 @@ export class FileManager {
 		this.diagnosticManager.updateDiagnostic();
 		return;
 	}
-	// private tryParseFile(file: TextDocument) {
-	// 	if(file.languageId !== "pawn") return;
-	// 	let doc: OpenedFile;
-	// 	let path = file.uri.path;
-	// 	if(this.openedFiles.has(path)) {
-	// 		let tmp = this.openedFiles.get(path);
-	// 		if(tmp) {
-	// 			doc = tmp;
-	// 			doc.changeStatus();
-	// 		}
-				
-	// 		else doc = new OpenedFile(file, this);
-	// 	}
-	// 	else {
-	// 		doc = new OpenedFile(file, this);
-	// 		this.openedFiles.set(path, doc);
-	// 	}
-	// 	doc.tryParse();
-	// }
 }
