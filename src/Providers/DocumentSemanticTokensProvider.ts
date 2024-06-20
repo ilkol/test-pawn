@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { FileManager } from '../Managers/FileManager';
 import { OpenedFile } from '../OpenedFile';
+import { AbstractOpenFile } from '../AbstractOpenFile';
 
 export class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
 	constructor(private readonly fileManager: FileManager, private readonly legend: vscode.SemanticTokensLegend) {
@@ -11,12 +12,12 @@ export class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTo
 	provideDocumentSemanticTokens(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.SemanticTokens> {
 		const tokensBuilder = new vscode.SemanticTokensBuilder(this.legend);
 	
-		const file: OpenedFile | undefined = this.fileManager.openedFiles.get(document.uri.path);
-		if(file) {
-			file.tokens.forEach((value) => {
-				tokensBuilder.push(value.pos, value.type, value.modifers);
-			});
-		}
+		const file: AbstractOpenFile | undefined = this.fileManager.openedFiles.get(document.uri.path);
+		// if(file) {
+		// 	file.tokens.forEach((value) => {
+		// 		tokensBuilder.push(value.pos, value.type, value.modifers);
+		// 	});
+		// }
 		
 		
 		return tokensBuilder.build();

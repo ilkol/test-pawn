@@ -36,6 +36,7 @@ import { IncludeStruct, IncludeType } from "../Strucutres/preprocessor/IncludeSt
 import { SimplePreprocessorStruct } from "../Strucutres/preprocessor/SimplePreprocessorStruct";
 import { DefineStruct } from "../Strucutres/preprocessor/DefineStruct";
 import { TokenInt } from "../Tokens/literals/withTags/TokenInt";
+import { AbstractOpenFile } from "../AbstractOpenFile";
 
 
 export class Evaluater {
@@ -588,7 +589,7 @@ export class Evaluater {
 		
 		return exp;
 	}
-	private async findInclude(fileStr: string): Promise<OpenedFile | undefined> {
+	private async findInclude(fileStr: string): Promise<AbstractOpenFile | undefined> {
 		
 		let uri = Uri.parse("file:" + fileStr);
 		// this.addDiagnostic(uri.path, DiagnosticSeverity.Error, new Range(0,0,1,1));
@@ -609,7 +610,7 @@ export class Evaluater {
 		];
 		let res: undefined | OpenedFile;
 		for(let i = 0; i < postfix.length; i++) {
-			res = await this.findInclude(fileStr + postfix[i]);
+			// res = await this.findInclude(fileStr + postfix[i]);
 			if(res != undefined) break;
 		} 
 		return res;

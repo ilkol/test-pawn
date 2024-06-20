@@ -10,12 +10,25 @@ import { DocumentSemanticTokensProvider } from './Providers/DocumentSemanticToke
 import { CallHierarchyProvider } from './Providers/CallHierarchyProvider';
 import { SymbolProvider } from './Providers/SymbolProvider';
 import { PawnColorProvider } from './Providers/ColorProvider';
+import { AbstractOpenFile } from './AbstractOpenFile';
 
 interface IDefine {
 	name: string
 	pos: vscode.Position,
 	value?: string
 }
+
+interface RakeTaskDefinition extends vscode.TaskDefinition {
+	/**
+	 * The task name
+	 */
+	task: string;
+  
+	/**
+	 * The rake file containing the task
+	 */
+	file?: string;
+  }
 
 let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
@@ -79,19 +92,53 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('pawn', signatureProvider, {triggerCharacters: ['(', ','], retriggerCharacters: [")"] }));
 	
 
-	context.subscriptions.push(vscode.languages.registerHoverProvider('pawn', {
-		async provideHover(document, position, token) {
-			return fileManage.registerHover(document, position);
-		}
-		}));
+	context.subscriptions.push(vscode.tasks.registerTaskProvider('pawnBuildGameMode', {
+		provideTasks: () => {
+			
+			return [
+				new vscode.Task({ 
+					type: "pawnBuildGameMode"
+
+				 },
+					vscode.TaskScope.Workspace,
+					"Собрать проект",
+					context.extension.id,
+					new vscode.ShellExecution("echo Hello world")
+				)
+			]
+		},
+		resolveTask(_task, token) {
+			const task = _task.definition.task;
+			// A Rake task consists of a task and an optional file as specified in RakeTaskDefinition
+			// Make sure that this looks like a Rake task by checking that there is a task.
+			if (task) {
+			// resolveTask requires that the same definition object be used.
+			const definition: RakeTaskDefinition = <any>_task.definition;
+			return new vscode.Task(
+				definition,
+				_task.scope ?? vscode.TaskScope.Workspace,
+				definition.task,
+				'rake',
+				new vscode.ShellExecution(`rake ${definition.task}`)
+			);
+			}
+			return undefined;
+		},
+	}));
+
+	// context.subscriptions.push(vscode.languages.registerHoverProvider('pawn', {
+	// 	async provideHover(document, position, token) {
+	// 		return fileManage.registerHover(document, position);
+	// 	}
+	// 	}));
 
 	const provider1 = vscode.languages.registerCompletionItemProvider('pawn', {
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
 			
 			const complitions: vscode.CompletionItem[] = getDefaultComplitions();
 			
-			const file: OpenedFile | undefined = fileManage.openedFiles.get(document.uri.path);
-			if(file) file.getComplitions(complitions);
+			const file: AbstractOpenFile | undefined = fileManage.openedFiles.get(document.uri.path);
+			// if(file) file.getComplitions(complitions);
 
 			// a simple completion item which inserts `Hello World!`
 			// const simpleCompletion = new vscode.CompletionItem('Hello World!');

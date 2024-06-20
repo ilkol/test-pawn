@@ -6,9 +6,10 @@ import { FunctionDeclaration } from "../Strucutres/functions/FunctionDeclaration
 import { FunctionImplementation } from "../Strucutres/functions/FunctionImplementation";
 import { FunctionData } from "../parser/Environment";
 import { AntrlOpenFile } from "../AntlrOpenFile";
+import { AbstractOpenFile } from "../AbstractOpenFile";
 
 export class FileManager {
-	public readonly openedFiles: Map<string, OpenedFile> = new Map<string, OpenedFile>;
+	public readonly openedFiles: Map<string, AbstractOpenFile> = new Map<string, OpenedFile>;
 	public root = workspace.workspaceFolders;
 	public _includePath?: Uri = undefined;
 	constructor(private diagnosticManager: DiagnosticManager) {
@@ -89,54 +90,59 @@ export class FileManager {
 		const range = document.getWordRangeAtPosition(position);
 		const word = document.getText(range);
 
-		const file: OpenedFile | undefined = this.openedFiles.get(document.uri.path);
+		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
 
-		if(!file) return;
-		else {
-			return new Hover(file.getHover(word, document), range);
-		}
+		// if(!file) return;
+		// else {
+		// 	return new Hover(file.getHover(word, document), range);
+		// }
 	}
 	public getFileFunctionsIncludes(document: TextDocument): Map<Range, Uri> {
 
-		const file: OpenedFile | undefined = this.openedFiles.get(document.uri.path);
+		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
 	
 		if(!file) return new Map;
 		
-		return file.Env.includes;
+		return new Map<Range, Uri>();
+		// return file.Env.includes;
 	}
 	public getFileFunctionsDefinitions(document: TextDocument): Map<string, FunctionData> {
 
-		const file: OpenedFile | undefined = this.openedFiles.get(document.uri.path);
+		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
 	
 		if(!file) return new Map;
-		
-		return file.Env.functions;
+
+		return new Map<string, FunctionData>();
+		// return file.Env.functions;
 	}
 	public onDidOpenTextDocument = (file: TextDocument) => {
 		if(file.languageId != "pawn") return;
-		this.tryParseFile(file);
+		// this.tryParseFile(file);
 
 		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
 		doc.tryParse();
+		let path = file.uri.path;
+		this.openedFiles.set(path, doc);
+		this.diagnosticManager.updateDiagnostic();
 		return;
 	}
-	private tryParseFile(file: TextDocument) {
-		if(file.languageId !== "pawn") return;
-		let doc: OpenedFile;
-		let path = file.uri.path;
-		if(this.openedFiles.has(path)) {
-			let tmp = this.openedFiles.get(path);
-			if(tmp) {
-				doc = tmp;
-				doc.changeStatus();
-			}
+	// private tryParseFile(file: TextDocument) {
+	// 	if(file.languageId !== "pawn") return;
+	// 	let doc: OpenedFile;
+	// 	let path = file.uri.path;
+	// 	if(this.openedFiles.has(path)) {
+	// 		let tmp = this.openedFiles.get(path);
+	// 		if(tmp) {
+	// 			doc = tmp;
+	// 			doc.changeStatus();
+	// 		}
 				
-			else doc = new OpenedFile(file, this);
-		}
-		else {
-			doc = new OpenedFile(file, this);
-			this.openedFiles.set(path, doc);
-		}
-		doc.tryParse();
-	}
+	// 		else doc = new OpenedFile(file, this);
+	// 	}
+	// 	else {
+	// 		doc = new OpenedFile(file, this);
+	// 		this.openedFiles.set(path, doc);
+	// 	}
+	// 	doc.tryParse();
+	// }
 }
