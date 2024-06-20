@@ -1,16 +1,16 @@
 import { Declarations } from "../Nodes/Declarations";
-import { FunctionDeclaration } from "../Nodes/FunctionDeclaration";
 import { IVisitor } from "./IVisitor";
 import { VarDeclaration } from "../Nodes/VarDeclaration";
 import { EnumDeclaration } from "../Nodes/EnumDeclaration";
 import { EnumMember } from "../Nodes/EnumMember";
-import { FunctionParameter } from "../Nodes/FunctionParameter";
+import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
 import { CodeBlock } from "../Nodes/CodeBlock";
 import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Operators/BinarOperator";
 import { IntLiteral } from "../Literals/IntLiteral";
 import { UnarOperator } from "../Operators/UnarOperator";
 import { OperatorNew } from "../Operators/OperatorNew";
+import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 
 export abstract class BaseVisitor implements IVisitor
 {

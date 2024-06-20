@@ -1,6 +1,6 @@
-import { VarDeclaration } from "./VarDeclaration";
-import { VarOrFunctionDeclaration } from "./VarOrFunctionDeclaration";
-import { IVisitor } from "../visitor/IVisitor";
+import { VarDeclaration } from "../VarDeclaration";
+import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
+import { IVisitor } from "../../visitor/IVisitor";
 
 export class FunctionParameter extends VarOrFunctionDeclaration
 {

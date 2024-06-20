@@ -1,17 +1,17 @@
-import { CodeBlock } from "./CodeBlock";
-import { Declaration } from "./Declaration";
+import { IVisitor } from "../../visitor/IVisitor";
+import { CodeBlock } from "../CodeBlock";
+import { IContainsVars } from "../IContainsVars";
+import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 import { FunctionParameter } from "./FunctionParameter";
-import { IContainsVars } from "./IContainsVars";
-import { VarOrFunctionDeclaration } from "./VarOrFunctionDeclaration";
-import { IVisitor } from "../visitor/IVisitor";
 
-export class FunctionDeclaration extends VarOrFunctionDeclaration implements IContainsVars<FunctionParameter>
+
+export class FunctionCall extends VarOrFunctionDeclaration implements IContainsVars<FunctionParameter>
 {
 	private _parameters: FunctionParameter[] = [];
 	private _code: CodeBlock | undefined;
 
 	public accept(visitor: IVisitor): void {
-		visitor.visitFunctionDeclaration(this);
+		// visitor.visitFunctionDeclaration(this);
 	}
 	public constructor() {
 		super();

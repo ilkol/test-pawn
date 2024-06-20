@@ -2,12 +2,11 @@ import { DiagnosticError } from "../../diagnostic/DiagnosticError";
 import { DiagnosticMessage } from "../../diagnostic/DiagnosticMessage";
 import { BaseVisitor } from "./BaseVisitor";
 import { Declarations } from "../Nodes/Declarations";
-import { FunctionDeclaration } from "../Nodes/FunctionDeclaration";
 import { VarDeclaration } from "../Nodes/VarDeclaration";
 import { DiagnosticWarning } from "../../diagnostic/DiagnosticWarning";
 import { EnumDeclaration } from "../Nodes/EnumDeclaration";
 import { EnumMember } from "../Nodes/EnumMember";
-import { FunctionParameter } from "../Nodes/FunctionParameter";
+import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
 import { CodeBlock } from "../Nodes/CodeBlock";
 import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Operators/BinarOperator";
@@ -15,6 +14,7 @@ import { IntLiteral } from "../Literals/IntLiteral";
 import { UnarOperator } from "../Operators/UnarOperator";
 import { OperatorNew } from "../Operators/OperatorNew";
 import { DiagnosticUnused } from "../../diagnostic/DiagnosticUnused";
+import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 
 export class Analyzer extends BaseVisitor
 {
