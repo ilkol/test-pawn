@@ -1,6 +1,6 @@
 import { ASTNode } from "./ASTNode";
 import { Declaration } from "./Declaration";
-import { IVisitor } from "./visitor/IVisitor";
+import { IVisitor } from "../visitor/IVisitor";
 
 export class Declarations extends ASTNode 
 {

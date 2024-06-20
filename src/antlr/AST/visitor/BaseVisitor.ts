@@ -1,12 +1,12 @@
-import { Declarations } from "../Declarations";
-import { FunctionDeclaration } from "../FunctionDeclaration";
+import { Declarations } from "../Nodes/Declarations";
+import { FunctionDeclaration } from "../Nodes/FunctionDeclaration";
 import { IVisitor } from "./IVisitor";
-import { VarDeclaration } from "../VarDeclaration";
-import { EnumDeclaration } from "../EnumDeclaration";
-import { EnumMember } from "../EnumMember";
-import { FunctionParameter } from "../FunctionParameter";
-import { CodeBlock } from "../CodeBlock";
-import { ReturnStatement } from "../ReturnStatement";
+import { VarDeclaration } from "../Nodes/VarDeclaration";
+import { EnumDeclaration } from "../Nodes/EnumDeclaration";
+import { EnumMember } from "../Nodes/EnumMember";
+import { FunctionParameter } from "../Nodes/FunctionParameter";
+import { CodeBlock } from "../Nodes/CodeBlock";
+import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Operators/BinarOperator";
 import { IntLiteral } from "../Literals/IntLiteral";
 import { UnarOperator } from "../Operators/UnarOperator";
@@ -49,7 +49,10 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitCodeBlock(node: CodeBlock): void {
 		this.beforeVisitCodeBlock(node);
+		console.debug("start CodeBlock");
+		console.log(node.statements);
 		node.statements.statements.forEach(element => {
+			console.log(element);
 			element.accept(this);
 		});
 		this.afterVisitCodeBlock(node);

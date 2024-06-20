@@ -1,18 +1,20 @@
 import { VarDeclaration } from "./VarDeclaration";
 import { VarOrFunctionDeclaration } from "./VarOrFunctionDeclaration";
-import { IVisitor } from "./visitor/IVisitor";
+import { IVisitor } from "../visitor/IVisitor";
 
-export class EnumMember extends VarOrFunctionDeclaration
+export class FunctionParameter extends VarOrFunctionDeclaration
 {
 	private _value: number = 0;
+	private constant: boolean = false;
 	
 	public accept(visitor: IVisitor): void {
-		visitor.visitEnumMember(this);
+		visitor.visitFunctionParameter(this);
 	}
 	public setValue(data: VarDeclaration): void {
 		this.id = data.id;
 		this.setIDPos(data.idPos);
 		this.tag = data.tag;
+		this.constant = data.isConstant;
 	}
 
 	public set value(v: number) {

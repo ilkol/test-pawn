@@ -8,12 +8,12 @@ import { pawnLexer } from "./antlr/generated/pawnLexer";
 import { pawnParser } from "./antlr/generated/pawnParser";
 import { pawnListener } from "./antlr/generated/pawnListener";
 import { PawnListener } from "./antlr/PawnListener";
-import { ASTNode } from "./antlr/AST/ASTNode";
 import { DiagnosticMessage } from "./antlr/diagnostic/DiagnosticMessage";
 import { Analyzer } from "./antlr/AST/visitor/Analyzer";
-import { Declarations } from "./antlr/AST/Declarations";
+import { Declarations } from "./antlr/AST/Nodes/Declarations";
 import { LexerErrorListener } from "./antlr/LexerErrorListener";
 import { ParserErrorListener } from "./antlr/ParserErrorListener";
+import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
 
 export class AntrlOpenFile extends AbstractOpenFile
 {

@@ -1,6 +1,6 @@
 import { Range } from "vscode";
-import { IVisitor } from "./visitor/IVisitor";
 import { Token } from "antlr4ts";
+import { IVisitor } from "../visitor/IVisitor";
 
 export abstract class ASTNode {
 	protected _pos: Range = new Range(0,0,0,0);

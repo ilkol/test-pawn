@@ -1,5 +1,5 @@
-import { DefaultTag } from "../DefaultTag";
-import { Tag } from "../Tag";
+import { DefaultTag } from "../Nodes/DefaultTag";
+import { Tag } from "../Nodes/Tag";
 import { IVisitor } from "../visitor/IVisitor";
 import { NumberLiteral } from "./NumberLiteral";
 

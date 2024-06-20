@@ -1,6 +1,6 @@
 import { ASTNode } from "./ASTNode";
+import { IVisitor } from "../visitor/IVisitor";
 import { Statements } from "./Statements";
-import { IVisitor } from "./visitor/IVisitor";
 
 export class CodeBlock extends ASTNode
 {

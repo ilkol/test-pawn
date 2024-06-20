@@ -1,25 +1,25 @@
 import { DiagnosticSeverity, Range } from "vscode";
 import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
-import { ASTNode } from "./AST/ASTNode";
-import { Declarations } from "./AST/Declarations";
-import { FunctionDeclaration } from "./AST/FunctionDeclaration";
+import { Declarations } from "./AST/Nodes/Declarations";
+import { FunctionDeclaration } from "./AST/Nodes/FunctionDeclaration";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { CodeBlockContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
-import { VarDeclaration } from "./AST/VarDeclaration";
+import { CodeBlockContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
+import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
-import { EnumDeclaration } from "./AST/EnumDeclaration";
-import { EnumMember } from "./AST/EnumMember";
-import { Tag } from "./AST/Tag";
-import { CodeBlock } from "./AST/CodeBlock";
-import { Statements } from "./AST/Statements";
+import { EnumDeclaration } from "./AST/Nodes/EnumDeclaration";
+import { EnumMember } from "./AST/Nodes/EnumMember";
+import { Tag } from "./AST/Nodes/Tag";
+import { CodeBlock } from "./AST/Nodes/CodeBlock";
+import { Statements } from "./AST/Nodes/Statements";
 import { IntLiteral } from "./AST/Literals/IntLiteral";
-import { ReturnStatement } from "./AST/ReturnStatement";
-import { Expresion } from "./AST/Expresion";
+import { ReturnStatement } from "./AST/Nodes/ReturnStatement";
+import { Expresion } from "./AST/Nodes/Expresion";
 import { AbstractOperator } from "./AST/Operators/AbstractOperator";
 import { BinarOperator } from "./AST/Operators/BinarOperator";
 import { UnarOperator } from "./AST/Operators/UnarOperator";
+import { ASTNode } from "./AST/Nodes/ASTNode";
 
 export class PawnListener implements pawnListener
 {
@@ -299,5 +299,10 @@ export class PawnListener implements pawnListener
 			node.setPos(ctx.start, ctx.stop);
 			this.nodes.push(node);
 		}
+	}
+
+	enterFunctionCall(ctx: FunctionCallContext): void {
+		let node = new OperatorNew();	
+		this.nodes.push(node);
 	}
 }

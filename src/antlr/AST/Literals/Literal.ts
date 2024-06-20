@@ -1,4 +1,4 @@
-import { Expresion } from "../Expresion";
+import { Expresion } from "../Nodes/Expresion";
 
 export abstract class Literal extends Expresion
 {

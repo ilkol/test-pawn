@@ -1,4 +1,4 @@
-import { Expresion } from "../Expresion";
+import { Expresion } from "../Nodes/Expresion";
 import { IVisitor } from "../visitor/IVisitor";
 import { AbstractOperator } from "./AbstractOperator";
 

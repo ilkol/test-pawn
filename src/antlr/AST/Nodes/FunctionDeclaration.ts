@@ -3,7 +3,7 @@ import { Declaration } from "./Declaration";
 import { FunctionParameter } from "./FunctionParameter";
 import { IContainsVars } from "./IContainsVars";
 import { VarOrFunctionDeclaration } from "./VarOrFunctionDeclaration";
-import { IVisitor } from "./visitor/IVisitor";
+import { IVisitor } from "../visitor/IVisitor";
 
 export class FunctionDeclaration extends VarOrFunctionDeclaration implements IContainsVars<FunctionParameter>
 {

@@ -1,5 +1,5 @@
 import { ASTNode } from "./ASTNode";
-import { IVisitor } from "./visitor/IVisitor";
+import { IVisitor } from "../visitor/IVisitor";
 import { Statement } from "./Statement";
 
 export class Statements extends ASTNode {

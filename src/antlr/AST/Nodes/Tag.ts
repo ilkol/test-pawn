@@ -1,6 +1,6 @@
 import { ASTNode } from "./ASTNode";
 import { HasID } from "./HasID";
-import { IVisitor } from "./visitor/IVisitor";
+import { IVisitor } from "../visitor/IVisitor";
 
 export class Tag extends HasID
 {

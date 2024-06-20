@@ -1,6 +1,6 @@
 import { Expresion } from "./Expresion";
 import { Statement } from "./Statement";
-import { IVisitor } from "./visitor/IVisitor";
+import { IVisitor } from "../visitor/IVisitor";
 
 export class ReturnStatement extends Statement
 {

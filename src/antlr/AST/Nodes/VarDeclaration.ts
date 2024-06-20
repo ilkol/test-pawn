@@ -1,8 +1,8 @@
 import { FunctionParameter } from "./FunctionParameter";
 import { IContainsVars } from "./IContainsVars";
-import { VariableModifire } from "./Operators/OperatorNew";
+import { VariableModifire } from "../Operators/OperatorNew";
 import { VarOrFunctionDeclaration } from "./VarOrFunctionDeclaration";
-import { IVisitor } from "./visitor/IVisitor";
+import { IVisitor } from "../visitor/IVisitor";
 
 export class VarDeclaration extends VarOrFunctionDeclaration
 {

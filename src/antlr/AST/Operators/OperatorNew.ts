@@ -1,7 +1,6 @@
-import { ASTNode } from "../ASTNode";
-import { IContainsVars } from "../IContainsVars";
-import { Statement } from "../Statement";
-import { VarDeclaration } from "../VarDeclaration";
+import { IContainsVars } from "../Nodes/IContainsVars";
+import { Statement } from "../Nodes/Statement";
+import { VarDeclaration } from "../Nodes/VarDeclaration";
 import { IVisitor } from "../visitor/IVisitor";
 
 export enum VariableModifire {

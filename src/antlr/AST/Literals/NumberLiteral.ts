@@ -1,5 +1,5 @@
-import { IHasTag } from "../IHasTag";
-import { Tag } from "../Tag";
+import { IHasTag } from "../Nodes/IHasTag";
+import { Tag } from "../Nodes/Tag";
 import { Literal } from "./Literal";
 
 export abstract class NumberLiteral extends Literal implements IHasTag

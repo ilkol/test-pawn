@@ -1,15 +1,15 @@
-import { CodeBlock } from "../CodeBlock";
-import { Declarations } from "../Declarations";
-import { EnumDeclaration } from "../EnumDeclaration";
-import { EnumMember } from "../EnumMember";
-import { FunctionDeclaration } from "../FunctionDeclaration";
-import { FunctionParameter } from "../FunctionParameter";
+import { CodeBlock } from "../Nodes/CodeBlock";
+import { Declarations } from "../Nodes/Declarations";
+import { EnumDeclaration } from "../Nodes/EnumDeclaration";
+import { EnumMember } from "../Nodes/EnumMember";
+import { FunctionDeclaration } from "../Nodes/FunctionDeclaration";
+import { FunctionParameter } from "../Nodes/FunctionParameter";
 import { IntLiteral } from "../Literals/IntLiteral";
 import { BinarOperator } from "../Operators/BinarOperator";
 import { OperatorNew } from "../Operators/OperatorNew";
 import { UnarOperator } from "../Operators/UnarOperator";
-import { ReturnStatement } from "../ReturnStatement";
-import { VarDeclaration } from "../VarDeclaration";
+import { ReturnStatement } from "../Nodes/ReturnStatement";
+import { VarDeclaration } from "../Nodes/VarDeclaration";
 
 export interface IVisitor
 {
