@@ -83,7 +83,8 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		this.UnUsedFunctions.push(node);
+		if(node.id != "main")
+			this.UnUsedFunctions.push(node);
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		// throw new Error("Method not implemented.");
