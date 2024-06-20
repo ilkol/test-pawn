@@ -60,7 +60,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 	private diagnostic(diagnostics: DiagnosticMessage[])
 	{
 		diagnostics.forEach(element => {
-			console.log(element.tags);
 			this.diagnositcManager.addDiagnostic(element.message, element.type, this.file.uri.path, element.pos, element.tags);
 		});
 	}
