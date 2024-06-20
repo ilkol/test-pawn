@@ -24,6 +24,31 @@
   "main": "./out/extension.js",
   "l10n": "./l10n",
   "contributes": {
+	"keybindings": [
+		{
+			"key": "f5",
+			"command": "workbench.action.tasks.build",
+			"when": "editorFocus && editorLangId == pawn"
+		}
+	],
+	"taskDefinitions": [
+		{
+			"type": "rake",
+			"required": [
+				"task"
+			],
+			"properties": {
+				"task": {
+					"type": "string",
+					"description": "The Rake task to customize"
+				},
+				"file": {
+					"type": "string",
+					"description": "The Rake file that provides the task. Can be omitted."
+				}
+			}
+		}
+	],
     "snippets": [
       {
         "language": "pawn",
