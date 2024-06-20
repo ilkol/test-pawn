@@ -60,7 +60,7 @@ export class PawnListener implements pawnListener
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
 			} catch(e) {
-				this.addDiagnostic("Оиждается идентификатор функции", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic("Ожидается идентификатор функции", DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -108,7 +108,7 @@ export class PawnListener implements pawnListener
 			if(arr.length > 1) {
 				let start = arr[1].symbol;
 				let end = arr[arr.length - 1];
-				this.addDiagnostic("Оиждается один модификатор \""+text+"\"", DiagnosticSeverity.Error, new Range(start.line - 1, start.charPositionInLine, end.symbol.line - 1, end.symbol.charPositionInLine + end.text.length));
+				this.addDiagnostic("Ожидается один модификатор \""+text+"\"", DiagnosticSeverity.Error, new Range(start.line - 1, start.charPositionInLine, end.symbol.line - 1, end.symbol.charPositionInLine + end.text.length));
 			}
 		}
 	}
@@ -138,7 +138,7 @@ export class PawnListener implements pawnListener
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
 			} catch(e) {
-				this.addDiagnostic("Оиждается идентификатор переменной", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic("Ожидается идентификатор переменной", DiagnosticSeverity.Error, node.pos);
 			}
 
 			let decl = this.nodes.peek();
@@ -197,7 +197,7 @@ export class PawnListener implements pawnListener
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
 			} catch(e) {
-				this.addDiagnostic("Оиждается идентификатор тэга", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic("Ожидается идентификатор тэга", DiagnosticSeverity.Error, node.pos);
 			}
 			let last = this.nodes.peek();
 			if(last && 'tag' in last) {
