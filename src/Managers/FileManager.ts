@@ -119,6 +119,7 @@ export class FileManager {
 		if(file.languageId != "pawn") return;
 		// this.tryParseFile(file);
 
+		this.diagnosticManager.clear();
 		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
 		doc.tryParse();
 		let path = file.uri.path;
