@@ -1,7 +1,6 @@
 import { DiagnosticSeverity, Range } from "vscode";
 import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
-import { FunctionDeclaration } from "./AST/Nodes/FunctionDeclaration";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
 import { CodeBlockContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
@@ -20,6 +19,7 @@ import { AbstractOperator } from "./AST/Operators/AbstractOperator";
 import { BinarOperator } from "./AST/Operators/BinarOperator";
 import { UnarOperator } from "./AST/Operators/UnarOperator";
 import { ASTNode } from "./AST/Nodes/ASTNode";
+import { FunctionDeclaration } from "./AST/Nodes/Functions/FunctionDeclaration";
 
 export class PawnListener implements pawnListener
 {
