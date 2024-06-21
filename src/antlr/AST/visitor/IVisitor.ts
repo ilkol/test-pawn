@@ -10,6 +10,7 @@ import { UnarOperator } from "../Operators/UnarOperator";
 import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { VarDeclaration } from "../Nodes/VarDeclaration";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
+import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 
 export interface IVisitor
 {
@@ -25,4 +26,5 @@ export interface IVisitor
 	visitDeclarations(node: Declarations): void;
 	visitFunctionDeclaration(node: FunctionDeclaration): void;
 	visitVariableDeclaration(node: VarDeclaration): void;
+	visitFunctionCall(node: FunctionCall): void;
 }

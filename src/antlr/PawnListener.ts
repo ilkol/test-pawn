@@ -20,6 +20,7 @@ import { BinarOperator } from "./AST/Operators/BinarOperator";
 import { UnarOperator } from "./AST/Operators/UnarOperator";
 import { ASTNode } from "./AST/Nodes/ASTNode";
 import { FunctionDeclaration } from "./AST/Nodes/Functions/FunctionDeclaration";
+import { FunctionCall } from "./AST/Nodes/Functions/FunctionCall";
 
 export class PawnListener implements pawnListener
 {
@@ -302,7 +303,29 @@ export class PawnListener implements pawnListener
 	}
 
 	enterFunctionCall(ctx: FunctionCallContext): void {
-		let node = new OperatorNew();	
+		let node = new FunctionCall();	
 		this.nodes.push(node);
+	}
+
+	exitFunctionCall(ctx: FunctionCallContext): void 
+	{
+		let node = <FunctionCall>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+
+			try {
+				let id = ctx.IDENTIFIER();
+				node.id = id.text;
+				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+
+			} catch(e) {
+				this.addDiagnostic("Ожидается идентификатор функции", DiagnosticSeverity.Error, node.pos);
+			}
+			
+			let last = this.nodes.peek();
+			if(last instanceof CodeBlock) {
+				last.statements.push(node);
+			}
+		}
 	}
 }

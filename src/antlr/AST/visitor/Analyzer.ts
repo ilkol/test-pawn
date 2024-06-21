@@ -15,9 +15,16 @@ import { UnarOperator } from "../Operators/UnarOperator";
 import { OperatorNew } from "../Operators/OperatorNew";
 import { DiagnosticUnused } from "../../diagnostic/DiagnosticUnused";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
+import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitFunctionCall(node: FunctionCall): void {
+
+	}
+	afterVisitFunctionCall(node: FunctionCall): void {
+		this.UnUsedFunctions.delete(node.id);
+	}
 	beforeVisitOperatorNew(node: OperatorNew): void {
 	
 	}
@@ -77,14 +84,15 @@ export class Analyzer extends BaseVisitor
 		// throw new Error("Method not implemented.");
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
-		this.UnUsedFunctions.forEach(element => {
-			this.addDiagnostic(new DiagnosticUnused("Функция \"" + element.id + "\" нигде не используется", element.pos));
+		console.log(this.UnUsedFunctions);
+		this.UnUsedFunctions.forEach((element, key) => {
+			this.addDiagnostic(new DiagnosticUnused("Функция \"" + key + "\" нигде не используется", element.pos));
 		});
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		if(node.id != "main")
-			this.UnUsedFunctions.push(node);
+			this.UnUsedFunctions.set(node.id, node);
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		// throw new Error("Method not implemented.");
@@ -97,7 +105,7 @@ export class Analyzer extends BaseVisitor
 		// throw new Error("Method not implemented.");
 	}
 	
-	private UnUsedFunctions: FunctionDeclaration[] = [];
+	private UnUsedFunctions: Map<string, FunctionDeclaration> = new Map<string, FunctionDeclaration>();
 	
 	constructor(public readonly diagnostics: DiagnosticMessage[]) {
 		super();

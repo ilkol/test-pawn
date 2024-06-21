@@ -11,7 +11,7 @@ export class FunctionCall extends VarOrFunctionDeclaration implements IContainsV
 	private _code: CodeBlock | undefined;
 
 	public accept(visitor: IVisitor): void {
-		// visitor.visitFunctionDeclaration(this);
+		visitor.visitFunctionCall(this);
 	}
 	public constructor() {
 		super();

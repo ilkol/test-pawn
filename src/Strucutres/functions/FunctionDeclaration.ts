@@ -1,3 +1,5 @@
+import { Range } from "vscode";
+import { AbstractStruct } from "../AbstractStruct";
 import { CallFunctionStruct } from "./CallFunctionStruct";
 import { isDefaultTag } from "../../utils";
 

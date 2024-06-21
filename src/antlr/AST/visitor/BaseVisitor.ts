@@ -11,6 +11,7 @@ import { IntLiteral } from "../Literals/IntLiteral";
 import { UnarOperator } from "../Operators/UnarOperator";
 import { OperatorNew } from "../Operators/OperatorNew";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
+import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 
 export abstract class BaseVisitor implements IVisitor
 {
@@ -89,6 +90,11 @@ export abstract class BaseVisitor implements IVisitor
 		});
 		this.afterVisitDeclarations(node);
 	}
+
+	visitFunctionCall(node: FunctionCall): void {
+		this.beforeVisitFunctionCall(node);
+		this.afterVisitFunctionCall(node);
+	}
 	
 	
 	abstract beforeVisitDeclarations(node: Declarations): void;
@@ -126,4 +132,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitOperatorNew(node: OperatorNew): void;
 	abstract afterVisitOperatorNew(node: OperatorNew): void;
+
+	abstract beforeVisitFunctionCall(node: FunctionCall): void;
+	abstract afterVisitFunctionCall(node: FunctionCall): void;
 }
