@@ -145,9 +145,10 @@ export class PawnListener implements pawnListener
 			}
 
 			let decl = this.nodes.peek();
-			if(decl instanceof OperatorNew)
-				decl.push(node);
-			else if(decl instanceof EnumMember) decl.setValue(node);
+			// if(decl instanceof OperatorNew)
+			// 	decl.push(node);
+			// else 
+			if(decl instanceof EnumMember) decl.setValue(node);
 		}
 	}
 
