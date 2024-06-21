@@ -3,7 +3,7 @@ import { Declarations } from "../Nodes/Declarations";
 import { EnumDeclaration } from "../Nodes/EnumDeclaration";
 import { EnumMember } from "../Nodes/EnumMember";
 import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
-import { IntLiteral } from "../Literals/IntLiteral";
+import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
 import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { UnarOperator } from "../Nodes/Operators/UnarOperator";

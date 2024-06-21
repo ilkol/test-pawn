@@ -12,7 +12,7 @@ import { EnumMember } from "./AST/Nodes/EnumMember";
 import { Tag } from "./AST/Nodes/Tag";
 import { CodeBlock } from "./AST/Nodes/CodeBlock";
 import { Statements } from "./AST/Nodes/Statements";
-import { IntLiteral } from "./AST/Literals/IntLiteral";
+import { IntLiteral } from "./AST/Nodes/Literals/IntLiteral";
 import { ReturnStatement } from "./AST/Nodes/ReturnStatement";
 import { Expresion } from "./AST/Nodes/Expresion";
 import { AbstractOperator } from "./AST/Nodes/Operators/AbstractOperator";

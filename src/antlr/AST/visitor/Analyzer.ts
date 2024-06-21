@@ -10,7 +10,7 @@ import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
 import { CodeBlock } from "../Nodes/CodeBlock";
 import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
-import { IntLiteral } from "../Literals/IntLiteral";
+import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { UnarOperator } from "../Nodes/Operators/UnarOperator";
 import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { DiagnosticUnused } from "../../diagnostic/DiagnosticUnused";
