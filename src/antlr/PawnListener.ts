@@ -5,7 +5,7 @@ import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
 import { CodeBlockContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
-import { OperatorNew, VariableModifire } from "./AST/Operators/OperatorNew";
+import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
 import { EnumDeclaration } from "./AST/Nodes/EnumDeclaration";
 import { EnumMember } from "./AST/Nodes/EnumMember";
@@ -15,9 +15,9 @@ import { Statements } from "./AST/Nodes/Statements";
 import { IntLiteral } from "./AST/Literals/IntLiteral";
 import { ReturnStatement } from "./AST/Nodes/ReturnStatement";
 import { Expresion } from "./AST/Nodes/Expresion";
-import { AbstractOperator } from "./AST/Operators/AbstractOperator";
-import { BinarOperator } from "./AST/Operators/BinarOperator";
-import { UnarOperator } from "./AST/Operators/UnarOperator";
+import { AbstractOperator } from "./AST/Nodes/Operators/AbstractOperator";
+import { BinarOperator } from "./AST/Nodes/Operators/BinarOperator";
+import { UnarOperator } from "./AST/Nodes/Operators/UnarOperator";
 import { ASTNode } from "./AST/Nodes/ASTNode";
 import { FunctionDeclaration } from "./AST/Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "./AST/Nodes/Functions/FunctionCall";
@@ -61,7 +61,7 @@ export class PawnListener implements pawnListener
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
 			} catch(e) {
-				this.addDiagnostic("Ожидается идентификатор функции", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic("Ожидается идентификатор функции, а найден узел \"" + node.name + '"', DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}

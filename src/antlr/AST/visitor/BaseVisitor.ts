@@ -6,10 +6,10 @@ import { EnumMember } from "../Nodes/EnumMember";
 import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
 import { CodeBlock } from "../Nodes/CodeBlock";
 import { ReturnStatement } from "../Nodes/ReturnStatement";
-import { BinarOperator } from "../Operators/BinarOperator";
+import { BinarOperator } from "../Nodes/Operators/BinarOperator";
 import { IntLiteral } from "../Literals/IntLiteral";
-import { UnarOperator } from "../Operators/UnarOperator";
-import { OperatorNew } from "../Operators/OperatorNew";
+import { UnarOperator } from "../Nodes/Operators/UnarOperator";
+import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 

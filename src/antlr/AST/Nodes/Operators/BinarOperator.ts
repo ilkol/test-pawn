@@ -1,5 +1,5 @@
-import { Expresion } from "../Nodes/Expresion";
-import { IVisitor } from "../visitor/IVisitor";
+import { Expresion } from "../Expresion";
+import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractOperator } from "./AbstractOperator";
 
 export class BinarOperator extends AbstractOperator
