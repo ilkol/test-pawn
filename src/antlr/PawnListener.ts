@@ -34,7 +34,8 @@ export class PawnListener implements pawnListener
 	}
 	addDiagnostic(msg: string, type: DiagnosticSeverity, pos: Range): void
 	addDiagnostic(msg: string, type: DiagnosticSeverity, startLine: number | Range, startChar?: number, endLine?: number, endChar?: number): void {
-		if(startLine instanceof Range) {
+		console.error(msg);
+		if(startLine instanceof Range) {	
 			this.diagnostics.push(new DiagnosticMessage(msg, type, startLine));
 		}
 		else this.diagnostics.push(new DiagnosticMessage(msg, type, startLine - 1, <number>startChar, <number>endLine - 1, <number>endChar));
@@ -335,6 +336,13 @@ export class PawnListener implements pawnListener
 			let last = this.nodes.peek();
 			if(last instanceof CodeBlock) {
 				last.statements.push(node);
+			}
+			else if(last instanceof VariableInit) {
+				last.rightValue = node;
+			}
+			else {
+				console.debug(last);
+				this.addDiagnostic("Неожиданный вызов функции", DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
