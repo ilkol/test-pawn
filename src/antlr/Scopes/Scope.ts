@@ -1,39 +1,42 @@
 import { FunctionDeclaration } from "../AST/Nodes/Functions/FunctionDeclaration";
-import { IHasID } from "../AST/Nodes/IHasID";
+import { Declaration } from "../AST/Nodes/Declaration";
 import { IHasTag } from "../AST/Nodes/IHasTag";
 import { VarDeclaration } from "../AST/Nodes/VarDeclaration";
 import { IScope } from "./IScope";
 
 export class Scope implements IScope
 {
-	protected parent: Scope|undefined;
-	protected _ids: Map<string, IHasID> = new Map<string, IHasID>();
+	protected _parent: IScope|undefined;
+	protected _ids: Map<string, Declaration> = new Map<string, Declaration>();
 	protected _functions: Map<string, FunctionDeclaration> = new Map();
 	protected _variables: Map<string, VarDeclaration> = new Map();
 	
-	private constructor(scope: Scope)
+	public constructor(IScope: IScope|undefined = undefined)
 	{
-		this.parent = scope;
+		this._parent = IScope;
 	}
 	public findVar(id: string): VarDeclaration | undefined {
-		let currentScope: Scope | undefined = this;
+		let currentScope: IScope | undefined = this;
         while (currentScope !== undefined) {
-            if (currentScope._variables.has(id)) {
-                return currentScope._variables.get(id)!;
+            if (currentScope.variables().has(id)) {
+                return currentScope.variables().get(id)!;
             }
             currentScope = currentScope.parent;
         }
         return undefined;
 	}
 	public findFunction(id: string): FunctionDeclaration | undefined {
-		let currentScope: Scope | undefined = this;
+		let currentScope: IScope | undefined = this;
         while (currentScope !== undefined) {
-            if (currentScope._functions.has(id)) {
-                return currentScope._functions.get(id)!;
+            if (currentScope.functions().has(id)) {
+                return currentScope.functions().get(id)!;
             }
             currentScope = currentScope.parent;
         }
         return undefined;
+	}
+	public identifires(): Map<string, Declaration> {
+		return this._ids;
 	}
 	public functions(): Map<string, FunctionDeclaration> {
 		return this._functions;
@@ -41,11 +44,11 @@ export class Scope implements IScope
 	public variables(): Map<string, VarDeclaration> {
 		return this._variables;
 	}
-	public find(id: string): IHasID | undefined {
-		let currentScope: Scope | undefined = this;
+	public find(id: string): Declaration | undefined {
+		let currentScope: IScope | undefined = this;
         while (currentScope !== undefined) {
-            if (currentScope._ids.has(id)) {
-                return currentScope._ids.get(id)!;
+            if (currentScope.identifires().has(id)) {
+                return currentScope.identifires().get(id)!;
             }
             currentScope = currentScope.parent;
         }
@@ -56,7 +59,7 @@ export class Scope implements IScope
 		return new Scope(this);
 	}
 
-	private addIdent(id: IHasID) {
+	private addIdent(id: Declaration) {
 		this._ids.set(id.id, id);
 	}
 	public addVar(variable: VarDeclaration) {
@@ -68,5 +71,7 @@ export class Scope implements IScope
 		this._functions.set(func.id, func);
 	}
 
-	 
+	public get parent(): IScope|undefined {
+		return this._parent;
+	}
 }

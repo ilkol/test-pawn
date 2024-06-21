@@ -17,20 +17,31 @@ import { DiagnosticUnused } from "../../diagnostic/DiagnosticUnused";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
+import { IScope } from "../../Scopes/IScope";
+import { Scope } from "../../Scopes/Scope";
+import { IHasID } from "../Nodes/IHasID";
+import { Declaration } from "../Nodes/Declaration";
 
 export class Analyzer extends BaseVisitor
 {
+	private curScope: IScope = new Scope();
+
 	beforeVisitVarInit(node: VariableInit): void {
 
 	}
 	afterVisitVarInit(node: VariableInit): void {
-
+		this.checkUsed(node, (variable: VariableInit) => this.curScope.addVar(variable));
 	}
 	beforeVisitFunctionCall(node: FunctionCall): void {
 
 	}
 	afterVisitFunctionCall(node: FunctionCall): void {
-		this.UnUsedFunctions.delete(node.id);
+		let func = this.curScope.findFunction(node.id);
+		if(func)
+			func.used = true;
+		else 
+			this.addDiagnostic(new DiagnosticUnused("Функция \"" + node.id + "\" ненайдена", node.idPos));
+		// this.UnUsedFunctions.delete(node.id);
 	}
 	beforeVisitOperatorNew(node: OperatorNew): void {
 	
@@ -63,9 +74,12 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	beforeVisitCodeBlock(node: CodeBlock): void {
-	
+		this.curScope = new Scope(this.curScope);
 	}
 	afterVisitCodeBlock(node: CodeBlock): void {
+		this.checkIds(this.curScope.variables());
+		if(this.curScope.parent)
+			this.curScope = this.curScope.parent;
 		// console.log(node.statements.statements);
 	}
 	beforeVisitFunctionParameter(node: FunctionParameter): void {
@@ -91,15 +105,14 @@ export class Analyzer extends BaseVisitor
 		// throw new Error("Method not implemented.");
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
-		// console.log(this.UnUsedFunctions);
-		this.UnUsedFunctions.forEach((element, key) => {
-			this.addDiagnostic(new DiagnosticUnused("Функция \"" + key + "\" нигде не используется", element.pos));
-		});
+		this.checkIds(this.curScope.identifires());
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		if(node.id != "main")
-			this.UnUsedFunctions.set(node.id, node);
+		if(node.id != "main") {
+			this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
+		}
+			
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		// throw new Error("Method not implemented.");
@@ -109,7 +122,7 @@ export class Analyzer extends BaseVisitor
 		// throw new Error("Method not implemented.");
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
-		// throw new Error("Method not implemented.");
+		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
 	}
 	
 	private UnUsedFunctions: Map<string, FunctionDeclaration> = new Map<string, FunctionDeclaration>();
@@ -120,5 +133,21 @@ export class Analyzer extends BaseVisitor
 	
 	private addDiagnostic(msg: DiagnosticMessage) {
 		this.diagnostics.push(msg);
+	}
+
+	private checkIds(ids: Map<string, Declaration>) {
+		ids.forEach((element, key) => {
+			if(!element.used)
+				this.addDiagnostic(new DiagnosticUnused("Идентификатор \"" + key + "\" нигде не используется", element.pos));
+		});
+	}
+
+	private checkUsed<T extends Declaration>(node: T, callback: (variable: T) => void) {
+		let id = this.curScope.find(node.id);
+		if (id) {
+			this.addDiagnostic(new DiagnosticError(`Идентификатор "${node.id}" уже занят`, node.pos));
+		} else {
+			callback(node);
+		}
 	}
 }
