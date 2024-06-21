@@ -15,6 +15,7 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	}
 	public constructor() {
 		super();
+		this.name = "объявление функции";
 	}
 	push(el: FunctionParameter): void {
 		this._parameters.push(el);

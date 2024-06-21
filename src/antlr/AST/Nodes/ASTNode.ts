@@ -5,6 +5,8 @@ import { IVisitor } from "../visitor/IVisitor";
 export abstract class ASTNode {
 	protected _pos: Range = new Range(0,0,0,0);
 	
+	public name: string = "Node";
+
 	public constructor() {
 
 	}
