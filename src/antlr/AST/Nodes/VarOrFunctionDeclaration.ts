@@ -19,4 +19,6 @@ export abstract class VarOrFunctionDeclaration extends Declaration implements IH
 	public set tag(v : Tag) {
 		this._tag = v;
 	}
+
+	public used: boolean = false;
 }
