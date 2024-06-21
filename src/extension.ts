@@ -39,7 +39,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	await fileManage.findPawnDir();
 
-	console.log('Активация расширения!');
+	console.debug('Активация расширения!');
 	
 	let defines: Map<string ,IDefine> = new Map<string, IDefine>;
 	vscode.window.onDidChangeActiveTextEditor((e) => {

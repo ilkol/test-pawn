@@ -163,10 +163,10 @@ export class OpenedFile extends AbstractOpenFile{
 	}
 	public async tryParse() {
 		if(this.changed == false) {
-			console.log("Пропускаем парсинг");
+			console.debug("Пропускаем парсинг");
 			return;
 		}
-		console.log("Something try parse file", this.file.fileName);
+		console.debug("Something try parse file", this.file.fileName);
 		this.diagnositcManager.clear();
 		this.env = new Environment();
 		this.makeTree();
@@ -201,8 +201,8 @@ export class OpenedFile extends AbstractOpenFile{
 	}
 	private async tryEvaluate() {
 		let evaluater = new Evaluater(this);
-		console.log("file ", this.file.uri.path);
-		console.log("ast:", this.ast);
+		console.debug("file ", this.file.uri.path);
+		console.debug("ast:", this.ast);
 		let i = 0;
 		for(const element of this.ast)
 		{

@@ -59,7 +59,7 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	afterVisitCodeBlock(node: CodeBlock): void {
-		console.log(node.statements.statements);
+		// console.log(node.statements.statements);
 	}
 	beforeVisitFunctionParameter(node: FunctionParameter): void {
 	
@@ -84,7 +84,7 @@ export class Analyzer extends BaseVisitor
 		// throw new Error("Method not implemented.");
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
-		console.log(this.UnUsedFunctions);
+		// console.log(this.UnUsedFunctions);
 		this.UnUsedFunctions.forEach((element, key) => {
 			this.addDiagnostic(new DiagnosticUnused("Функция \"" + key + "\" нигде не используется", element.pos));
 		});

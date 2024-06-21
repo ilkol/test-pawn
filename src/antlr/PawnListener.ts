@@ -31,7 +31,13 @@ export class PawnListener implements pawnListener
 	public get Root() : Declarations | null {
 		return this.root;
 	}
-	
+	addDiagnostic(msg: string, type: DiagnosticSeverity, pos: Range): void
+	addDiagnostic(msg: string, type: DiagnosticSeverity, startLine: number | Range, startChar?: number, endLine?: number, endChar?: number): void {
+		if(startLine instanceof Range) {
+			this.diagnostics.push(new DiagnosticMessage(msg, type, startLine));
+		}
+		else this.diagnostics.push(new DiagnosticMessage(msg, type, startLine - 1, <number>startChar, <number>endLine - 1, <number>endChar));
+	}
 
 	enterFile(ctx: FileContext): void {
 		let node = new Declarations();	
@@ -61,19 +67,13 @@ export class PawnListener implements pawnListener
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
 			} catch(e) {
-				console.log(node);
+				let last = this.nodes.peek();
 				
 				this.addDiagnostic("Ожидается идентификатор функции, а найден узел \"" + node.name + '"', DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
-	addDiagnostic(msg: string, type: DiagnosticSeverity, pos: Range): void
-	addDiagnostic(msg: string, type: DiagnosticSeverity, startLine: number | Range, startChar?: number, endLine?: number, endChar?: number): void {
-		if(startLine instanceof Range) {
-			this.diagnostics.push(new DiagnosticMessage(msg, type, startLine));
-		}
-		else this.diagnostics.push(new DiagnosticMessage(msg, type, startLine - 1, <number>startChar, <number>endLine - 1, <number>endChar));
-	}
+	
 
 	enterVar_definition?(ctx: Var_definitionContext): void 
 	{

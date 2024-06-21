@@ -46,7 +46,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			console.error("Error on tree visit")
 			console.error(e);
 		}
-		console.log("Обход дерева окончен");
+		console.debug("Обход дерева окончен");
 
 		this.diagnostic(listen.diagnostics);
 	}

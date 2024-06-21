@@ -13,7 +13,7 @@ export abstract class AbstractOpenFile
 	
 	constructor(protected file: TextDocument, public readonly fileManager: FileManager) {
 		this.diagnositcManager = fileManager.getDiagnostic();
-		console.log("Был открыт файл!");
+		console.debug("Был открыт файл!");
 	}
 
 	public abstract tryParse(): void;
