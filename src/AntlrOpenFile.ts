@@ -49,6 +49,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 		console.debug("Обход дерева окончен");
 
 		this.diagnostic(listen.diagnostics);
+
+		console.log(this.AST);
 	}
 
 	private tryLex(): pawnLexer
