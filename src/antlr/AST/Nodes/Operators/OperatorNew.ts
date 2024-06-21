@@ -11,6 +11,8 @@ export enum VariableModifire {
 
 export class OperatorNew extends Statement implements IContainsVars<VarDeclaration>
 {
+	name = "операртор декларации";
+
 	private readonly _variables: VarDeclaration[] = [];
 	private _modifires: VariableModifire[] = [];
 

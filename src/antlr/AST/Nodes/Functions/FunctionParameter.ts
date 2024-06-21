@@ -6,7 +6,7 @@ export class FunctionParameter extends VarOrFunctionDeclaration
 {
 	private _value: number = 0;
 	private constant: boolean = false;
-	public name = "параметр функции";
+	name = "параметр функции";
 	
 	public accept(visitor: IVisitor): void {
 		visitor.visitFunctionParameter(this);

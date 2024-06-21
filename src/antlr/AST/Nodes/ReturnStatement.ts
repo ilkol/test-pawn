@@ -4,6 +4,8 @@ import { IVisitor } from "../visitor/IVisitor";
 
 export class ReturnStatement extends Statement
 {
+	name = "оператор возвращения";
+	
 	private _value: Expresion | undefined;
 	
 	public accept(visitor: IVisitor): void {

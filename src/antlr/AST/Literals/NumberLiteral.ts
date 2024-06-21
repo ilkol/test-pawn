@@ -4,6 +4,7 @@ import { Literal } from "./Literal";
 
 export abstract class NumberLiteral extends Literal implements IHasTag
 {
+	name = "числовая константа";
 	constructor(private _tag: Tag) {
 		super();
 	}

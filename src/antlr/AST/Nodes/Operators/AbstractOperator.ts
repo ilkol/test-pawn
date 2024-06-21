@@ -2,6 +2,8 @@ import { Expresion } from "../Expresion";
 
 export abstract class AbstractOperator extends Expresion
 {
+	name = "оператор";
+
 	private _operator: string = "";
 	
 	public get operator(): string {

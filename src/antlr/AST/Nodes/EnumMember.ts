@@ -4,6 +4,8 @@ import { IVisitor } from "../visitor/IVisitor";
 
 export class EnumMember extends VarOrFunctionDeclaration
 {
+	name = "член перечисления";
+
 	private _value: number = 0;
 	
 	public accept(visitor: IVisitor): void {

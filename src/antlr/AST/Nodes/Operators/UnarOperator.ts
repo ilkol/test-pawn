@@ -4,6 +4,8 @@ import { AbstractOperator } from "./AbstractOperator";
 
 export class UnarOperator extends AbstractOperator
 {
+	name = "унарный операртор";
+
 	public accept(visitor: IVisitor): void {
 		visitor.visitUnarOperator(this);
 	}

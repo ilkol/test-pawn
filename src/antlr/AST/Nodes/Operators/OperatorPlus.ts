@@ -3,6 +3,8 @@ import { BinarOperator } from "./BinarOperator";
 
 export class OperatorPlus extends BinarOperator
 {
+	name = "операртор сложения";
+	
 	public accept(visitor: IVisitor): void {
 		throw new Error("Method not implemented.");
 	}

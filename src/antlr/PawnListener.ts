@@ -61,6 +61,8 @@ export class PawnListener implements pawnListener
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
 			} catch(e) {
+				console.log(node);
+				
 				this.addDiagnostic("Ожидается идентификатор функции, а найден узел \"" + node.name + '"', DiagnosticSeverity.Error, node.pos);
 			}
 		}

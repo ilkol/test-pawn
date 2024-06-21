@@ -6,6 +6,8 @@ import { IVisitor } from "../visitor/IVisitor";
 
 export class EnumDeclaration extends Declaration implements IContainsVars<EnumMember>
 {
+	name = "декларация перечисления";
+
 	private lastIndex: number = 0;
 	private readonly _variables: EnumMember[] = [];
 	

@@ -5,6 +5,7 @@ import { NumberLiteral } from "./NumberLiteral";
 
 export class IntLiteral extends NumberLiteral
 {
+	name = "целое число";
 	private _value: number = 0;
 	constructor() {
 		super(new DefaultTag());

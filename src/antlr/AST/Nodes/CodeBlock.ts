@@ -8,6 +8,8 @@ export class CodeBlock extends ASTNode
 		visitor.visitCodeBlock(this);
 	}
 
+	name = "блок кода";
+
 	constructor(private _statements: Statements) {
 		super();
 	}

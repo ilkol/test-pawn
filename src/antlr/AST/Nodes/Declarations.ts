@@ -4,6 +4,8 @@ import { IVisitor } from "../visitor/IVisitor";
 
 export class Declarations extends ASTNode 
 {
+	name = "объявления";
+
 	public accept(visitor: IVisitor): void {
 		visitor.visitDeclarations(this);
 	}

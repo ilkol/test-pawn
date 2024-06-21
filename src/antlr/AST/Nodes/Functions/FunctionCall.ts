@@ -7,6 +7,8 @@ import { FunctionParameter } from "./FunctionParameter";
 
 export class FunctionCall extends VarOrFunctionDeclaration implements IContainsVars<FunctionParameter>
 {
+	name = "вызов функции";
+
 	private _parameters: FunctionParameter[] = [];
 	private _code: CodeBlock | undefined;
 
@@ -15,7 +17,6 @@ export class FunctionCall extends VarOrFunctionDeclaration implements IContainsV
 	}
 	public constructor() {
 		super();
-		this.name = "вызов функции";
 	}
 	push(el: FunctionParameter): void {
 		this._parameters.push(el);

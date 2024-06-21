@@ -2,6 +2,8 @@ import { VarDeclaration } from "./VarDeclaration";
 
 export class VariableInit extends VarDeclaration
 {
+	name = "инициализация переменной";
+	
 	private _value: any;
 	
 	

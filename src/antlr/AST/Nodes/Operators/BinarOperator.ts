@@ -4,6 +4,8 @@ import { AbstractOperator } from "./AbstractOperator";
 
 export class BinarOperator extends AbstractOperator
 {
+	name = "бинарный оператор";
+	
 	public accept(visitor: IVisitor): void {
 		visitor.visitBinarOperator(this);
 	}
