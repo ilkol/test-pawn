@@ -4,7 +4,13 @@ import { IHasID } from "./IHasID";
 
 export abstract class HasID extends ASTNode implements IHasID
 {
+	/**
+	 * Текст идентификатора
+	 */
 	private _identifire: string = "";
+	/**
+	 * Позиция идентификатора
+	 */
 	private _idPos: Range = new Range(0,0,0,0);
 	public constructor(instance: HasID|undefined = undefined)
 	{
@@ -36,4 +42,5 @@ export abstract class HasID extends ASTNode implements IHasID
 		else 
 			this._idPos = line;
 	}
+	
 }
