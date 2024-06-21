@@ -16,9 +16,16 @@ import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { DiagnosticUnused } from "../../diagnostic/DiagnosticUnused";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
+import { VariableInit } from "../Nodes/VariableInit";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitVarInit(node: VariableInit): void {
+
+	}
+	afterVisitVarInit(node: VariableInit): void {
+
+	}
 	beforeVisitFunctionCall(node: FunctionCall): void {
 
 	}

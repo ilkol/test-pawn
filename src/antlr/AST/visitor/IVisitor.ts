@@ -11,6 +11,7 @@ import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { VarDeclaration } from "../Nodes/VarDeclaration";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
+import { VariableInit } from "../Nodes/VariableInit";
 
 export interface IVisitor
 {
@@ -27,4 +28,5 @@ export interface IVisitor
 	visitFunctionDeclaration(node: FunctionDeclaration): void;
 	visitVariableDeclaration(node: VarDeclaration): void;
 	visitFunctionCall(node: FunctionCall): void;
+	visitVarInit(node: VariableInit): void;
 }

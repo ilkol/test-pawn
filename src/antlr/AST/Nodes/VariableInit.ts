@@ -1,3 +1,4 @@
+import { IVisitor } from "../visitor/IVisitor";
 import { RightValue } from "./RightValue";
 import { VarDeclaration } from "./VarDeclaration";
 
@@ -7,6 +8,9 @@ export class VariableInit extends VarDeclaration
 
 	private _value: any;
 	
+	public accept(visitor: IVisitor): void {
+		visitor.visitVarInit(this);
+	}
 	
 	public get rightValue() : RightValue {
 		return this._value;

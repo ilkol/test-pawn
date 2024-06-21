@@ -12,9 +12,15 @@ import { UnarOperator } from "../Nodes/Operators/UnarOperator";
 import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
+import { VariableInit } from "../Nodes/VariableInit";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitVarInit(node: VariableInit): void {
+		this.beforeVisitVarInit(node);
+		node.rightValue.accept(this);
+		this.afterVisitVarInit(node);
+	}
 	visitOperatorNew(node: OperatorNew): void {
 		this.beforeVisitOperatorNew(node);
 		node.vars.forEach(element => {
@@ -43,7 +49,6 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitReturn(node: ReturnStatement): void {
 		this.beforeVisitReturn(node);
-		console.log(node.value);
 		if(node.value)
 			node.value.accept(this);
 		this.afterVisitReturn(node);
@@ -51,9 +56,7 @@ export abstract class BaseVisitor implements IVisitor
 	visitCodeBlock(node: CodeBlock): void {
 		this.beforeVisitCodeBlock(node);
 		console.debug("start CodeBlock");
-		console.log(node.statements);
 		node.statements.statements.forEach(element => {
-			console.log(element);
 			element.accept(this);
 		});
 		this.afterVisitCodeBlock(node);
@@ -135,4 +138,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitFunctionCall(node: FunctionCall): void;
 	abstract afterVisitFunctionCall(node: FunctionCall): void;
+
+	abstract beforeVisitVarInit(node: VariableInit): void;
+	abstract afterVisitVarInit(node: VariableInit): void;
 }
