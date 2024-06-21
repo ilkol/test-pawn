@@ -3,7 +3,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { CodeBlockContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
+import { AssigmentContext, CodeBlockContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -21,6 +21,7 @@ import { UnarOperator } from "./AST/Nodes/Operators/UnarOperator";
 import { ASTNode } from "./AST/Nodes/ASTNode";
 import { FunctionDeclaration } from "./AST/Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "./AST/Nodes/Functions/FunctionCall";
+import { VariableInit } from "./AST/Nodes/VariableInit";
 
 export class PawnListener implements pawnListener
 {
@@ -118,15 +119,7 @@ export class PawnListener implements pawnListener
 
 	enterVariable(ctx: VariableContext): void {
 		let node = new VarDeclaration();
-		let decl = this.nodes.peek();
-		if(decl instanceof OperatorNew) {
-			decl.push(node);
-		}
-		else if(decl instanceof EnumMember)
-		{
-			
-		}
-		else this.addDiagnostic("Не ожиданная переменная", DiagnosticSeverity.Error, node.idPos);
+		
 		
 		this.nodes.push(node);
 	}
@@ -144,11 +137,25 @@ export class PawnListener implements pawnListener
 				this.addDiagnostic("Ожидается идентификатор переменной", DiagnosticSeverity.Error, node.pos);
 			}
 
-			let decl = this.nodes.peek();
+			// let decl = this.nodes.peek();
 			// if(decl instanceof OperatorNew)
 			// 	decl.push(node);
 			// else 
-			if(decl instanceof EnumMember) decl.setValue(node);
+
+			let decl = this.nodes.peek();
+			if(decl instanceof OperatorNew) {
+				decl.push(node);
+			}
+			else if(decl instanceof VariableInit)
+			{
+				decl.var = node;
+			}
+			else if(decl instanceof EnumMember)
+			{
+				decl.setValue(node);
+			}
+			else this.addDiagnostic("Неожиданная переменная", DiagnosticSeverity.Error, node.idPos);
+			// if(decl instanceof EnumMember) decl.setValue(node);
 		}
 	}
 
@@ -231,7 +238,7 @@ export class PawnListener implements pawnListener
 		this.nodes.push(node);
 	}
 	exitInteger(ctx: IntegerContext): void {
-		let node = <IntLiteral>this.nodes.peek();
+		let node = <IntLiteral>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			node.value = +ctx.INTEGER().text;
@@ -329,6 +336,26 @@ export class PawnListener implements pawnListener
 			if(last instanceof CodeBlock) {
 				last.statements.push(node);
 			}
+		}
+	}
+
+	enterAssigment(ctx: AssigmentContext):void {
+		let node = new VariableInit();	
+
+		
+
+		this.nodes.push(node);
+	}
+
+	exitAssigment(ctx: AssigmentContext):void {
+		const node = <VariableInit>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			const decl = this.nodes.peek();
+			if(decl instanceof OperatorNew) {
+				decl.push(node);
+			}
+			else this.addDiagnostic("Неожиданная инициализация", DiagnosticSeverity.Error, node.idPos);
 		}
 	}
 }

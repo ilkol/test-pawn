@@ -3,7 +3,7 @@ import { VarDeclaration } from "./VarDeclaration";
 export class VariableInit extends VarDeclaration
 {
 	name = "инициализация переменной";
-	
+
 	private _value: any;
 	
 	
@@ -13,6 +13,15 @@ export class VariableInit extends VarDeclaration
 	
 	public set value(v : any) {
 		this._value = v;
+	}
+	
+	private _var: VarDeclaration|undefined;
+	public get var() : VarDeclaration|undefined {
+		return this._var;
+	}
+	
+	public set var(v : VarDeclaration) {
+		this._var = v;
 	}
 	
 }
