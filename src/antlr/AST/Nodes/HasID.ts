@@ -1,7 +1,8 @@
 import { Range } from "vscode";
 import { ASTNode } from "./ASTNode";
+import { IHasID } from "./IHasID";
 
-export abstract class HasID extends ASTNode
+export abstract class HasID extends ASTNode implements IHasID
 {
 	private _identifire: string = "";
 	private _idPos: Range = new Range(0,0,0,0);

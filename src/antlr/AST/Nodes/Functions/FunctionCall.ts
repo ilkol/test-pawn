@@ -1,11 +1,13 @@
+import { Range } from "vscode";
 import { IVisitor } from "../../visitor/IVisitor";
 import { CodeBlock } from "../CodeBlock";
 import { IContainsVars } from "../IContainsVars";
-import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
+import { RightValue } from "../RightValue";
 import { FunctionParameter } from "./FunctionParameter";
+import { IHasID } from "../IHasID";
 
 
-export class FunctionCall extends VarOrFunctionDeclaration implements IContainsVars<FunctionParameter>
+export class FunctionCall extends RightValue implements IContainsVars<FunctionParameter>, IHasID
 {
 	name = "вызов функции";
 
@@ -32,6 +34,28 @@ export class FunctionCall extends VarOrFunctionDeclaration implements IContainsV
 	public get code() : CodeBlock | undefined {
 		return this._code;
 	}
+
+	private _identifire: string = "";
+	private _idPos: Range = new Range(0,0,0,0);
 	
+	public get id() : string {
+		return this._identifire;
+	}
 	
+	public set id(v : string) {
+		this._identifire = v;
+	}
+
+	public get idPos() : Range {
+		return this._idPos;
+	}
+	
+	public setIDPos(pos: Range): void
+	public setIDPos(line: number, start: number, end: number): void
+	public setIDPos(line: Range | number, start?: number, end?: number): void {
+		if(typeof line == "number")
+			this._idPos = new Range(line - 1, <number>start, line - 1, <number>end);
+		else 
+			this._idPos = line;
+	}
 }

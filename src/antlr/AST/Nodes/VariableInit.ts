@@ -1,3 +1,4 @@
+import { RightValue } from "./RightValue";
 import { VarDeclaration } from "./VarDeclaration";
 
 export class VariableInit extends VarDeclaration
@@ -7,11 +8,11 @@ export class VariableInit extends VarDeclaration
 	private _value: any;
 	
 	
-	public get value() : any {
+	public get rightValue() : RightValue {
 		return this._value;
 	}
 	
-	public set value(v : any) {
+	public set rightValue(v : RightValue) {
 		this._value = v;
 	}
 	
