@@ -55,7 +55,6 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitCodeBlock(node: CodeBlock): void {
 		this.beforeVisitCodeBlock(node);
-		console.debug("start CodeBlock");
 		node.statements.statements.forEach(element => {
 			element.accept(this);
 		});
