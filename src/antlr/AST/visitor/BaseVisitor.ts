@@ -13,9 +13,18 @@ import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
+import { IContainsVars } from "../Nodes/IContainsVars";
+import { ASTNode } from "../Nodes/ASTNode";
 
 export abstract class BaseVisitor implements IVisitor
 {
+
+	private checkVars<T extends ASTNode>(node: IContainsVars<T>) {
+		node.vars.forEach(element => {
+			element.accept(this);
+		});
+	}
+
 	visitVarInit(node: VariableInit): void {
 		this.beforeVisitVarInit(node);
 		node.rightValue.accept(this);
@@ -23,9 +32,7 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitOperatorNew(node: OperatorNew): void {
 		this.beforeVisitOperatorNew(node);
-		node.vars.forEach(element => {
-			element.accept(this);
-		});
+		this.checkVars(node);
 		this.afterVisitOperatorNew(node);
 	}
 	visitUnarOperator(node: UnarOperator): void {
@@ -70,15 +77,16 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitEnumDeclaration(node: EnumDeclaration): void {
 		this.beforeVisitEnumDeclaration(node);
-		node.vars.forEach(element => {
-			element.accept(this);
-		});
+		this.checkVars(node);
 		this.afterVisitEnumDeclaration(node);
 	}
 	visitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.beforeVisitFunctionDeclaration(node);
-		if(node.code)
+		if(node.code) {
+			this.checkVars(node);
 			node.code.accept(this);
+		}
+		
 		this.afterVisitFunctionDeclaration(node);
 	}
 	visitVariableDeclaration(node: VarDeclaration): void {

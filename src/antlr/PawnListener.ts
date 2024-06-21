@@ -22,6 +22,7 @@ import { ASTNode } from "./AST/Nodes/ASTNode";
 import { FunctionDeclaration } from "./AST/Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "./AST/Nodes/Functions/FunctionCall";
 import { VariableInit } from "./AST/Nodes/VariableInit";
+import { FunctionParameter } from "./AST/Nodes/Functions/FunctionParameter";
 
 export class PawnListener implements pawnListener
 {
@@ -144,6 +145,7 @@ export class PawnListener implements pawnListener
 			// else 
 
 			let decl = this.nodes.peek();
+			console.log(decl);
 			if(decl instanceof OperatorNew) {
 				decl.push(node);
 			}
@@ -154,6 +156,10 @@ export class PawnListener implements pawnListener
 			else if(decl instanceof EnumMember)
 			{
 				decl.setValue(node);
+			}
+			else if(decl instanceof FunctionDeclaration)
+			{
+				decl.push(new FunctionParameter(node));
 			}
 			else this.addDiagnostic("Неожиданная переменная", DiagnosticSeverity.Error, node.idPos);
 			// if(decl instanceof EnumMember) decl.setValue(node);

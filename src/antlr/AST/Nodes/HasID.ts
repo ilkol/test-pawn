@@ -6,9 +6,14 @@ export abstract class HasID extends ASTNode implements IHasID
 {
 	private _identifire: string = "";
 	private _idPos: Range = new Range(0,0,0,0);
-	public constructor()
+	public constructor(instance: HasID|undefined = undefined)
 	{
 		super();
+		if(instance) {
+			this._identifire = instance._identifire;
+			this._idPos = instance._idPos;
+			this._pos = instance._pos;
+		}
 	}
 	
 	public get id() : string {

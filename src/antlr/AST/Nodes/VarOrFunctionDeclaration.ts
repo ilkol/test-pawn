@@ -5,6 +5,12 @@ import { Tag } from "./Tag";
 
 export abstract class VarOrFunctionDeclaration extends Declaration implements IHasTag
 {
+	constructor(instance: VarOrFunctionDeclaration|undefined = undefined) {
+		super(instance);
+		if(instance) {
+			this._tag = instance._tag;
+		}
+	}
 	private _tag: Tag = new DefaultTag();
 
 	public get tag() : Tag {

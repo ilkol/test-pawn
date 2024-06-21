@@ -86,7 +86,7 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	afterVisitFunctionParameter(node: FunctionParameter): void {
-	
+		this.checkUsed(node, (variable: FunctionParameter) => this.curScope.addVar(variable));
 	}
 	beforeVisitEnumMember(node: EnumMember): void {
 		// throw new Error("Method not implemented.");

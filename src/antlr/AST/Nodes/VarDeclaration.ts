@@ -9,13 +9,17 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 	name = "объявление переменной";
 	private _modifires: VariableModifire[] = [];
 
+	constructor(instance: VarDeclaration | undefined = undefined) {
+		super(instance);
+		if(instance) {
+			this._modifires = instance._modifires;
+		}
+	}
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitVariableDeclaration(this);
 	}
-	public constructor() {
-		super();
-	}
+
 	
 	public get modifires() : VariableModifire[] {
 		return this._modifires;
