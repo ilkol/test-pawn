@@ -28,6 +28,7 @@ export class VariableInit extends VarDeclaration
 	public set var(v : VarDeclaration) {
 		this._var = v;
 		this.id = v.id;
+		this.idPos = v.idPos;
 	}
 	
 }

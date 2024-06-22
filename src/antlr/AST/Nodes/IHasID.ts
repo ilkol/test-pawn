@@ -16,24 +16,16 @@ export interface IHasID
 	 * Позиция идентификатора
 	 */
 	get idPos() : Range;
+	/**
+	 * Позиция идентификатора
+	 */
+	set idPos(v : Range);
 	
 	/**
 	 * Установка позиции идентификатора
-	 * @param pos новая позиция
-	 */
-	setIDPos(pos: Range): void
-	/**
-	 * Установка позиции идентификатора
 	 * @param line строка
 	 * @param start начльнаый индекс в строке
 	 * @param end конечный идекс в строке
 	 */
-	setIDPos(line: number, start: number, end: number): void
-	/**
-	 * Установка позиции идентификатора
-	 * @param line строка
-	 * @param start начльнаый индекс в строке
-	 * @param end конечный идекс в строке
-	 */
-	setIDPos(line: Range | number, start?: number, end?: number): void;
+	setIDPos(line: number, start: number, end: number): void;
 }

@@ -11,8 +11,8 @@ export class EnumDeclaration extends Declaration implements IContainsVars<EnumMe
 	private lastIndex: number = 0;
 	private readonly _variables: EnumMember[] = [];
 	
-	public constructor() {
-		super();
+	public constructor(instance: EnumDeclaration|undefined = undefined) {
+		super(instance);
 	}
 	public accept(visitor: IVisitor): void {
 		visitor.visitEnumDeclaration(this);

@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import { DiagnosticError } from "../../diagnostic/DiagnosticError";
 import { DiagnosticMessage } from "../../diagnostic/DiagnosticMessage";
 import { BaseVisitor } from "./BaseVisitor";
@@ -21,9 +22,20 @@ import { IScope } from "../../Scopes/IScope";
 import { Scope } from "../../Scopes/Scope";
 import { IHasID } from "../Nodes/IHasID";
 import { Declaration } from "../Nodes/Declaration";
+import { Variable } from "../Nodes/Variable";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitVariable(node: Variable): void {
+	
+	}
+	afterVisitVariable(node: Variable): void {
+		const variable = this.curScope.findVar(node.id);
+		if(variable)
+			variable.used = true;
+		else 
+			this.addDiagnostic(new DiagnosticError("Переменная \"" + node.id + "\" ненайдена", node.idPos));
+	}
 	private curScope: IScope = new Scope();
 
 	beforeVisitVarInit(node: VariableInit): void {
@@ -40,8 +52,7 @@ export class Analyzer extends BaseVisitor
 		if(func)
 			func.used = true;
 		else 
-			this.addDiagnostic(new DiagnosticUnused("Функция \"" + node.id + "\" ненайдена", node.idPos));
-		// this.UnUsedFunctions.delete(node.id);
+			this.addDiagnostic(new DiagnosticError("Функция \"" + node.id + "\" ненайдена", node.idPos));
 	}
 	beforeVisitOperatorNew(node: OperatorNew): void {
 	
@@ -138,14 +149,14 @@ export class Analyzer extends BaseVisitor
 	private checkIds(ids: Map<string, Declaration>) {
 		ids.forEach((element, key) => {
 			if(!element.used)
-				this.addDiagnostic(new DiagnosticUnused("Идентификатор \"" + key + "\" нигде не используется", element.pos));
+				this.addDiagnostic(new DiagnosticUnused("Идентификатор \"" + key + "\" нигде не используется", element.idPos));
 		});
 	}
 
 	private checkUsed<T extends Declaration>(node: T, callback: (variable: T) => void) {
 		let id = this.curScope.find(node.id);
 		if (id) {
-			this.addDiagnostic(new DiagnosticError(`Идентификатор "${node.id}" уже занят`, node.pos));
+			this.addDiagnostic(new DiagnosticError(`Идентификатор "${node.id}" уже занят`, node.idPos));
 		} else {
 			callback(node);
 		}

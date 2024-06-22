@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import { DiagnosticSeverity, Range } from "vscode";
 import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
@@ -23,6 +24,7 @@ import { FunctionDeclaration } from "./AST/Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "./AST/Nodes/Functions/FunctionCall";
 import { VariableInit } from "./AST/Nodes/VariableInit";
 import { FunctionParameter } from "./AST/Nodes/Functions/FunctionParameter";
+import { Variable } from "./AST/Nodes/Variable";
 
 export class PawnListener implements pawnListener
 {
@@ -120,13 +122,13 @@ export class PawnListener implements pawnListener
 	}
 
 	enterVariable(ctx: VariableContext): void {
-		let node = new VarDeclaration();
+		let node = new Variable();
 		
 		
 		this.nodes.push(node);
 	}
 	exitVariable(ctx: VariableContext): void {
-		let node = <VarDeclaration>this.nodes.pop();
+		let node = <Variable>this.nodes.pop();
 		if(ctx.stop)
 		{	
 			node.setPos(ctx.start, ctx.stop);
@@ -144,25 +146,31 @@ export class PawnListener implements pawnListener
 			// 	decl.push(node);
 			// else 
 
-			let decl = this.nodes.peek();
-			console.log(decl);
+			const decl = this.nodes.peek();
+			const declarationVar = new VarDeclaration();
+
+			declarationVar.setPos(ctx.start, ctx.stop);
+			declarationVar.id = node.id;
+			declarationVar.idPos = node.idPos;
+			
 			if(decl instanceof OperatorNew) {
-				decl.push(node);
+				decl.push(declarationVar);
 			}
 			else if(decl instanceof VariableInit)
 			{
-				decl.var = node;
+				if(!decl.var)
+					decl.var = declarationVar;
+				else decl.rightValue = node;
 			}
 			else if(decl instanceof EnumMember)
 			{
-				decl.setValue(node);
+				decl.setValue(declarationVar);
 			}
 			else if(decl instanceof FunctionDeclaration)
 			{
-				decl.push(new FunctionParameter(node));
+				decl.push(new FunctionParameter(declarationVar));
 			}
 			else this.addDiagnostic("Неожиданная переменная", DiagnosticSeverity.Error, node.idPos);
-			// if(decl instanceof EnumMember) decl.setValue(node);
 		}
 	}
 

@@ -17,7 +17,7 @@ export class FunctionParameter extends VarDeclaration
 	}
 	public setValue(data: VarDeclaration): void {
 		this.id = data.id;
-		this.setIDPos(data.idPos);
+		this.idPos = data.idPos;
 		this.tag = data.tag;
 		this.constant = data.isConstant;
 	}
