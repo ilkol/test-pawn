@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import { Declarations } from "../Nodes/Declarations";
 import { IVisitor } from "./IVisitor";
 import { VarDeclaration } from "../Nodes/VarDeclaration";
@@ -27,7 +28,8 @@ export abstract class BaseVisitor implements IVisitor
 
 	visitVarInit(node: VariableInit): void {
 		this.beforeVisitVarInit(node);
-		node.rightValue.accept(this);
+		if(node.rightValue)
+			node.rightValue.accept(this);
 		this.afterVisitVarInit(node);
 	}
 	visitOperatorNew(node: OperatorNew): void {
