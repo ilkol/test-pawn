@@ -38,8 +38,10 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVariable(node: Variable): void {
 		const variable = this.curScope.findVar(node.id);
-		if(variable)
+		if(variable) {
 			variable.used = true;
+			this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires));
+		}
 		else {
 			const func = this.curScope.findFunction(node.id);
 			if(func)
@@ -147,25 +149,8 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
-		console.error("TRY TOKEN");
-		console.error(node);
-		const tokens: string[] = [];
-		node.modifires.forEach(value => {
-			switch(value) {
-				case VariableModifire.const: 
-					tokens.push("readonly");
-					break;
-				case VariableModifire.static:
-					tokens.push("static");
-					break;
-				case VariableModifire.stock:
-					tokens.push("stock");
-					break;
-			}
-		});
-		console.log(tokens);
-		this.tokens.addToken(node.idPos, "variable", tokens)
 		
+		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires));
 	}
 		
 	constructor(public readonly diagnostics: DiagnosticMessage[], public readonly tokens: SemanticTokensManager) {
@@ -190,5 +175,23 @@ export class Analyzer extends BaseVisitor
 		} else {
 			callback(node);
 		}
+	}
+
+	private checkVarModifires(modifires: VariableModifire[]): string[] {
+		const tokens: string[] = [];
+		modifires.forEach(value => {
+			switch(value) {
+				case VariableModifire.const: 
+					tokens.push("readonly");
+					break;
+				case VariableModifire.static:
+					tokens.push("static");
+					break;
+				case VariableModifire.stock:
+					tokens.push("stock");
+					break;
+			}
+		});
+		return tokens;
 	}
 }
