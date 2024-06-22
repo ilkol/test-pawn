@@ -73,7 +73,7 @@ export class PawnListener implements pawnListener
 
 			} catch(e) {
 				let last = this.nodes.peek();
-				
+				console.error(node);
 				this.addDiagnostic("Ожидается идентификатор функции, а найден узел \"" + node.name + '"', DiagnosticSeverity.Error, node.pos);
 			}
 		}
@@ -170,6 +170,10 @@ export class PawnListener implements pawnListener
 			{
 				decl.push(new FunctionParameter(declarationVar));
 			}
+			else if(decl instanceof ReturnStatement)
+			{
+				decl.value = node;
+			}
 			else this.addDiagnostic("Неожиданная переменная", DiagnosticSeverity.Error, node.idPos);
 		}
 	}
@@ -262,6 +266,9 @@ export class PawnListener implements pawnListener
 			if(last instanceof VariableInit) {
 				last.rightValue = node;
 			}
+			else if(last instanceof ReturnStatement) {
+				last.value = node;
+			}
 			else {
 				console.debug(last);
 				this.addDiagnostic("Неожиданная целочисленная константа", DiagnosticSeverity.Error, node.pos);
@@ -276,7 +283,6 @@ export class PawnListener implements pawnListener
 		let node = <ReturnStatement>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
-			node.value = <Expresion>this.nodes.pop();
 			let last = this.nodes.peek();
 			if(last instanceof CodeBlock) {
 				last.statements.push(node);
