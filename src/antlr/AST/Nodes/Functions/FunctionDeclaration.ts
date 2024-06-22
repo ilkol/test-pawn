@@ -2,14 +2,14 @@ import { IVisitor } from "../../visitor/IVisitor";
 import { CodeBlock } from "../CodeBlock";
 import { IContainsVars } from "../IContainsVars";
 import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
-import { FunctionParameter } from "./FunctionParameter";
+import { FunctionDeclarationParameter } from "./FunctionDeclarationParameter";
 
 
-export class FunctionDeclaration extends VarOrFunctionDeclaration implements IContainsVars<FunctionParameter>
+export class FunctionDeclaration extends VarOrFunctionDeclaration implements IContainsVars<FunctionDeclarationParameter>
 {
 	name = "объявление функции";
 	
-	private _parameters: FunctionParameter[] = [];
+	private _parameters: FunctionDeclarationParameter[] = [];
 	private _code: CodeBlock | undefined;
 
 	public accept(visitor: IVisitor): void {
@@ -18,10 +18,10 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	public constructor() {
 		super();
 	}
-	push(el: FunctionParameter): void {
+	push(el: FunctionDeclarationParameter): void {
 		this._parameters.push(el);
 	}
-	get vars(): FunctionParameter[] {
+	get vars(): FunctionDeclarationParameter[] {
 		return this._parameters;
 	}
 

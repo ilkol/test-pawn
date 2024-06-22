@@ -1,32 +1,24 @@
 import { VarDeclaration } from "../VarDeclaration";
-import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 import { IVisitor } from "../../visitor/IVisitor";
+import { Variable } from "../Variable";
+import { RightValue } from "../RightValue";
 
-export class FunctionParameter extends VarDeclaration
+export class FunctionParameter extends RightValue
 {
-	private _value: number = 0;
-	private constant: boolean = false;
 	name = "параметр функции";
 	
-	constructor(param: VarDeclaration) {
-		super(param);
+	private _val: RightValue;
+
+	constructor(instance: RightValue) {
+		super();
+		this._val = instance;
 	}
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitFunctionParameter(this);
 	}
-	public setValue(data: VarDeclaration): void {
-		this.id = data.id;
-		this.idPos = data.idPos;
-		this.tag = data.tag;
-		this.constant = data.isConstant;
-	}
 
-	public set value(v: number) {
-		this._value = v;
+	get val(): RightValue {
+		return this._val;
 	}
-	public get value(): number {
-		return this._value;
-	}
-
 }

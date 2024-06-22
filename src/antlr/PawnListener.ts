@@ -25,6 +25,7 @@ import { FunctionCall } from "./AST/Nodes/Functions/FunctionCall";
 import { VariableInit } from "./AST/Nodes/VariableInit";
 import { FunctionParameter } from "./AST/Nodes/Functions/FunctionParameter";
 import { Variable } from "./AST/Nodes/Variable";
+import { FunctionDeclarationParameter } from "./AST/Nodes/Functions/FunctionDeclarationParameter";
 
 export class PawnListener implements pawnListener
 {
@@ -146,35 +147,42 @@ export class PawnListener implements pawnListener
 			// 	decl.push(node);
 			// else 
 
-			const decl = this.nodes.peek();
+			const last = this.nodes.peek();
 			const declarationVar = new VarDeclaration();
 
 			declarationVar.setPos(ctx.start, ctx.stop);
 			declarationVar.id = node.id;
 			declarationVar.idPos = node.idPos;
 			
-			if(decl instanceof OperatorNew) {
-				decl.push(declarationVar);
+			if(last instanceof OperatorNew) {
+				last.push(declarationVar);
 			}
-			else if(decl instanceof VariableInit)
+			else if(last instanceof VariableInit)
 			{
-				if(!decl.var)
-					decl.var = declarationVar;
-				else decl.rightValue = node;
+				if(!last.var)
+					last.var = declarationVar;
+				else last.rightValue = node;
 			}
-			else if(decl instanceof EnumMember)
+			else if(last instanceof EnumMember)
 			{
-				decl.setValue(declarationVar);
+				last.setValue(declarationVar);
 			}
-			else if(decl instanceof FunctionDeclaration)
+			else if(last instanceof FunctionDeclaration)
 			{
-				decl.push(new FunctionParameter(declarationVar));
+				last.push(new FunctionDeclarationParameter(declarationVar));
 			}
-			else if(decl instanceof ReturnStatement)
+			else if(last instanceof ReturnStatement)
 			{
-				decl.value = node;
+				last.value = node;
 			}
-			else this.addDiagnostic("Неожиданная переменная", DiagnosticSeverity.Error, node.idPos);
+			else if(last instanceof FunctionCall)
+			{
+				last.push(new FunctionParameter(node));
+			}
+			else {
+				console.log(last);
+				this.addDiagnostic("Неожиданная переменная", DiagnosticSeverity.Error, node.idPos);
+			}
 		}
 	}
 
@@ -364,6 +372,9 @@ export class PawnListener implements pawnListener
 			}
 			else if(last instanceof VariableInit) {
 				last.rightValue = node;
+			}
+			else if(last instanceof FunctionCall) {
+				last.push(new FunctionParameter(node));
 			}
 			else {
 				console.debug(last);

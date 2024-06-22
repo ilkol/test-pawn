@@ -17,6 +17,7 @@ import { VariableInit } from "../Nodes/VariableInit";
 import { IContainsVars } from "../Nodes/IContainsVars";
 import { ASTNode } from "../Nodes/ASTNode";
 import { Variable } from "../Nodes/Variable";
+import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 
 export abstract class BaseVisitor implements IVisitor
 {
@@ -74,8 +75,13 @@ export abstract class BaseVisitor implements IVisitor
 		});
 		this.afterVisitCodeBlock(node);
 	}
+	visitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
+		this.beforeVisitFunctionDeclarationParameter(node);
+		this.afterVisitFunctionDeclarationParameter(node);
+	}
 	visitFunctionParameter(node: FunctionParameter): void {
 		this.beforeVisitFunctionParameter(node);
+		node.val.accept(this);
 		this.afterVisitFunctionParameter(node);
 	}
 	visitEnumMember(node: EnumMember): void {
@@ -110,6 +116,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	visitFunctionCall(node: FunctionCall): void {
 		this.beforeVisitFunctionCall(node);
+		this.checkVars(node);
 		this.afterVisitFunctionCall(node);
 	}
 	
@@ -129,6 +136,9 @@ export abstract class BaseVisitor implements IVisitor
 	abstract beforeVisitEnumMember(node: EnumMember): void;
 	abstract afterVisitEnumMember(node: EnumMember): void;
 
+	abstract beforeVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void;
+	abstract afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void;
+	
 	abstract beforeVisitFunctionParameter(node: FunctionParameter): void;
 	abstract afterVisitFunctionParameter(node: FunctionParameter): void;
 	

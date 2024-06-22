@@ -13,6 +13,7 @@ import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
 import { Variable } from "../Nodes/Variable";
+import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 
 export interface IVisitor
 {
@@ -31,4 +32,5 @@ export interface IVisitor
 	visitFunctionCall(node: FunctionCall): void;
 	visitVarInit(node: VariableInit): void;
 	visitVariable(node: Variable): void;
+	visitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void;
 }

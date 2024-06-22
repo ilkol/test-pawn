@@ -5,6 +5,16 @@ import { RightValue } from "./RightValue";
 
 export class Variable extends RightValue implements IHasID
 {
+
+    constructor(instance: Variable|undefined = undefined) {
+        super();
+        if(instance) {
+            this._idPos = instance._idPos;
+            this._identifire = instance._identifire;
+            this._pos = instance._pos;
+            this.tag = instance.tag;
+        }
+    }
     public accept(visitor: IVisitor): void {
         visitor.visitVariable(this);
     }

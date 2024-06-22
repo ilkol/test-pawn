@@ -23,9 +23,15 @@ import { Scope } from "../../Scopes/Scope";
 import { IHasID } from "../Nodes/IHasID";
 import { Declaration } from "../Nodes/Declaration";
 import { Variable } from "../Nodes/Variable";
+import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
+	}
+	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
+		this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
+	}
 	beforeVisitVariable(node: Variable): void {
 	
 	}
@@ -33,8 +39,12 @@ export class Analyzer extends BaseVisitor
 		const variable = this.curScope.findVar(node.id);
 		if(variable)
 			variable.used = true;
-		else 
-			this.addDiagnostic(new DiagnosticError("Переменная \"" + node.id + "\" ненайдена", node.idPos));
+		else {
+			const func = this.curScope.findFunction(node.id);
+			if(func)
+				this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является функцией", node.idPos));
+			else this.addDiagnostic(new DiagnosticError("Переменная \"" + node.id + "\" ненайдена", node.idPos));
+		}
 	}
 	private curScope: IScope = new Scope();
 
@@ -97,7 +107,7 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	afterVisitFunctionParameter(node: FunctionParameter): void {
-		this.checkUsed(node, (variable: FunctionParameter) => this.curScope.addVar(variable));
+		
 	}
 	beforeVisitEnumMember(node: EnumMember): void {
 		// throw new Error("Method not implemented.");
@@ -120,13 +130,15 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		if(node.id != "main") {
+		if(node.id !== "main") {
 			this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
 		}
-			
+		this.curScope = new Scope(this.curScope);	
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		// throw new Error("Method not implemented.");
+		this.checkIds(this.curScope.variables());
+		if(this.curScope.parent)
+			this.curScope = this.curScope.parent;
 	}
 	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
