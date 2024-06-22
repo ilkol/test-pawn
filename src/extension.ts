@@ -50,7 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	const documentLinkProvider = new DocumentLinkProvider(fileManage);
 	
 	const tokenTypes = ['type', 'enum', 'parameter', 'enumMember', 'macro', 'comment', 'string', 'keyword', 'number', 'operator', 'function', 'variable'];
-	const tokenModifiers = ['declaration', 'definition', 'static', 'documentation', 'modification'];
+	const tokenModifiers = ['declaration', 'definition', 'readonly', 'static', 'deprecated', 'documentation', 'modification', 'defaultLibrary'];
 	const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
 
 	const documentSemanticTokensProvider = new DocumentSemanticTokensProvider(fileManage, legend);

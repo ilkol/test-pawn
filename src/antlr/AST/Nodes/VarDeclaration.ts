@@ -3,7 +3,6 @@ import { IContainsVars } from "./IContainsVars";
 import { VariableModifire } from "./Operators/OperatorNew";
 import { VarOrFunctionDeclaration } from "./VarOrFunctionDeclaration";
 import { IVisitor } from "../visitor/IVisitor";
-import { Variable } from "./Variable";
 
 export class VarDeclaration extends VarOrFunctionDeclaration
 {

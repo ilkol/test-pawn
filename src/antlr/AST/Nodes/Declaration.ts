@@ -6,7 +6,7 @@ export abstract class Declaration extends HasID
 	public used: boolean = false;
 
 	constructor(instance: Declaration|undefined = undefined) {
-		super();
+		super(instance);
 		if(instance) {
 			this.idPos = instance.idPos;
 		}

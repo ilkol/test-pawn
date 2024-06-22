@@ -13,11 +13,11 @@ export class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTo
 		const tokensBuilder = new vscode.SemanticTokensBuilder(this.legend);
 	
 		const file: AbstractOpenFile | undefined = this.fileManager.openedFiles.get(document.uri.path);
-		// if(file) {
-		// 	file.tokens.forEach((value) => {
-		// 		tokensBuilder.push(value.pos, value.type, value.modifers);
-		// 	});
-		// }
+		if(file) {
+			file.tokens.forEach((value) => {
+				tokensBuilder.push(value.pos, value.type, value.modifers);
+			});
+		}
 		
 		
 		return tokensBuilder.build();

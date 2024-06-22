@@ -24,6 +24,7 @@ import { IHasID } from "../Nodes/IHasID";
 import { Declaration } from "../Nodes/Declaration";
 import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
+import { SemanticTokensManager } from "../../../Managers/SemanticTokensManager";
 
 export class Analyzer extends BaseVisitor
 {
@@ -147,10 +148,8 @@ export class Analyzer extends BaseVisitor
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
 	}
-	
-	private UnUsedFunctions: Map<string, FunctionDeclaration> = new Map<string, FunctionDeclaration>();
-	
-	constructor(public readonly diagnostics: DiagnosticMessage[]) {
+		
+	constructor(public readonly diagnostics: DiagnosticMessage[], public readonly tokens: SemanticTokensManager) {
 		super();
 	}
 	

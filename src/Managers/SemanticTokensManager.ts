@@ -1,6 +1,6 @@
 import { Range } from "vscode";
 
-interface Token {
+export interface Token {
 	pos: Range;
 	type: string;
 	modifers: string[] | undefined;
