@@ -13,7 +13,7 @@ import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
 import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { UnarOperator } from "../Nodes/Operators/UnarOperator";
-import { OperatorNew } from "../Nodes/Operators/OperatorNew";
+import { OperatorNew, VariableModifire } from "../Nodes/Operators/OperatorNew";
 import { DiagnosticUnused } from "../../diagnostic/DiagnosticUnused";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
@@ -147,6 +147,25 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
+		console.error("TRY TOKEN");
+		console.error(node);
+		const tokens: string[] = [];
+		node.modifires.forEach(value => {
+			switch(value) {
+				case VariableModifire.const: 
+					tokens.push("readonly");
+					break;
+				case VariableModifire.static:
+					tokens.push("static");
+					break;
+				case VariableModifire.stock:
+					tokens.push("stock");
+					break;
+			}
+		});
+		console.log(tokens);
+		this.tokens.addToken(node.idPos, "variable", tokens)
+		
 	}
 		
 	constructor(public readonly diagnostics: DiagnosticMessage[], public readonly tokens: SemanticTokensManager) {

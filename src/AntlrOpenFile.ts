@@ -38,7 +38,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		let listen = (<PawnListener>listener);
 		this.AST = <Declarations>listen.Root;
 
-		let analyzer = new Analyzer(listen.diagnostics);
+		let analyzer = new Analyzer(listen.diagnostics, this.tokensManager);
 		try {
 			this.AST.accept(analyzer);
 		}

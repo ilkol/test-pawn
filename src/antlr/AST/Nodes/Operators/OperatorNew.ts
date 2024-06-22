@@ -21,6 +21,7 @@ export class OperatorNew extends Statement implements IContainsVars<VarDeclarati
 	}
 	push(el: VarDeclaration): void {
 		this._variables.push(el);
+		el.modifires = this.modifires;
 	}
 	public accept(visitor: IVisitor): void {
 		visitor.visitOperatorNew(this);
