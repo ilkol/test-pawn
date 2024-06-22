@@ -249,10 +249,15 @@ export class PawnListener implements pawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			node.value = +ctx.INTEGER().text;
-			// let last = this.nodes.peek();
-			// if(last instanceof ReturnStatement) {
-			// 	last.value = node;
-			// }
+
+			const last = this.nodes.peek();
+			if(last instanceof VariableInit) {
+				last.rightValue = node;
+			}
+			else {
+				console.debug(last);
+				this.addDiagnostic("Неожиданная целочисленная константа", DiagnosticSeverity.Error, node.pos);
+			}
 		}
 	}
 	enterReturn(ctx: ReturnContext): void {
