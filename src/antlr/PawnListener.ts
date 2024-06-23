@@ -416,6 +416,8 @@ export class PawnListener implements pawnListener
 		const node = <FunctionDeclarationParameter>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
+			if(ctx.CONST())
+				node.const = true;
 			const decl = this.nodes.peek();
 			if(decl instanceof FunctionDeclaration) {
 				decl.push(node);

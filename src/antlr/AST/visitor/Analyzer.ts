@@ -32,6 +32,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
 		this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
+		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires));
 	}
 	beforeVisitVariable(node: Variable): void {
 	

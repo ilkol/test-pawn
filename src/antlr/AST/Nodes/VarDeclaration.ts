@@ -7,7 +7,7 @@ import { IVisitor } from "../visitor/IVisitor";
 export class VarDeclaration extends VarOrFunctionDeclaration
 {
 	name = "объявление переменной";
-	private _modifires: VariableModifire[] = [];
+	protected _modifires: VariableModifire[] = [];
 
 	constructor(instance: VarDeclaration | undefined = undefined) {
 		super(instance);

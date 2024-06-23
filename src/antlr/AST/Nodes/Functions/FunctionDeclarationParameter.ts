@@ -3,12 +3,16 @@ import { IVisitor } from "../../visitor/IVisitor";
 import { Variable } from "../Variable";
 import { Range } from "vscode";
 import { RightValue } from "../RightValue";
+import { VariableModifire } from "../Operators/OperatorNew";
 
 export class FunctionDeclarationParameter extends VarDeclaration
 {
+	name = "параметр объявляемой функции";
+
 	private _var: Variable|undefined;
 	private _value: RightValue|undefined;
-	name = "параметр объявляемой функции";
+	private isConst: boolean = false;
+	private isRef: boolean = false;
 	
 	constructor(param: VarDeclaration|undefined = undefined) {
 		super(param);
@@ -35,4 +39,19 @@ export class FunctionDeclarationParameter extends VarDeclaration
 		return this._value;
 	}
 
+	public set const(v: true) {
+		this._modifires.push(VariableModifire.const);
+	}
+
+	public get const(): boolean {
+		return this._modifires.indexOf(VariableModifire.const) !== -1;
+	}
+
+	public set reference(v: true) {
+		this.isRef = v;
+	}
+
+	public get reference(): boolean {
+		return this.isRef;
+	}
 }
