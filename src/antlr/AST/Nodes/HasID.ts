@@ -11,7 +11,7 @@ export abstract class HasID extends ASTNode implements IHasID
 	/**
 	 * Позиция идентификатора
 	 */
-	private _idPos: Range = new Range(0,0,0,0);
+	protected _idPos: Range = new Range(0,0,0,0);
 	public constructor(instance: HasID|undefined = undefined)
 	{
 		super();

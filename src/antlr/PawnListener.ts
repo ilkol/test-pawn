@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { AssigmentContext, CodeBlockContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
+import { AssigmentContext, CodeBlockContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -98,7 +98,6 @@ export class PawnListener implements pawnListener
 			this.checkModif(ctx.varModifires().STOCK(), node, VariableModifire.stock, "stock");
 				
 			let last = this.nodes.peek();
-			console.error(last);
 			if(last instanceof Declarations) {
 				let tmp: Declarations = last;
 				console.log(node.modifires);
@@ -169,9 +168,10 @@ export class PawnListener implements pawnListener
 			{
 				last.setValue(declarationVar);
 			}
-			else if(last instanceof FunctionDeclaration)
+			else if(last instanceof FunctionDeclarationParameter)
 			{
-				last.push(new FunctionDeclarationParameter(declarationVar));
+				last.variable = node;
+				// last.push(new FunctionDeclarationParameter(declarationVar));
 			}
 			else if(last instanceof ReturnStatement)
 			{
@@ -275,6 +275,9 @@ export class PawnListener implements pawnListener
 			const last = this.nodes.peek();
 			if(last instanceof VariableInit) {
 				last.rightValue = node;
+			}
+			else if(last instanceof FunctionDeclarationParameter) {
+				last.defaultValue = node;
 			}
 			else if(last instanceof ReturnStatement) {
 				last.value = node;
@@ -402,6 +405,22 @@ export class PawnListener implements pawnListener
 				decl.push(node);
 			}
 			else this.addDiagnostic("Неожиданная инициализация", DiagnosticSeverity.Error, node.idPos);
+		}
+	}
+
+	enterDeclParams(ctx: DeclParamsContext): void {
+		let node = new FunctionDeclarationParameter();	
+		this.nodes.push(node);
+	}
+	exitDeclParams(ctx: DeclParamsContext):void {
+		const node = <FunctionDeclarationParameter>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			const decl = this.nodes.peek();
+			if(decl instanceof FunctionDeclaration) {
+				decl.push(node);
+			}
+			else this.addDiagnostic("Неожиданный параметр функции", DiagnosticSeverity.Error, node.idPos);
 		}
 	}
 }
