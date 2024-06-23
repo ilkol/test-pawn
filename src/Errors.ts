@@ -1,6 +1,4 @@
 import { Position, Range } from "vscode";
-import { FunctionDeclaration } from "./Strucutres/functions/FunctionDeclaration";
-import { FunctionImplementation } from "./Strucutres/functions/FunctionImplementation";
 
 
 export class UnexpSemicolon extends  Error {
@@ -72,30 +70,30 @@ export class SymbolAlredyDefined extends Error {
 		this.name = "symbol already defined";
 	}
 }
-export class FunctionAlreadyHaveImplementation extends Error {
-	public pos: Range;
-	constructor(funct: FunctionDeclaration | FunctionImplementation) {
-		super("Function \"" + funct.name +"\" already have implementation");
-		this.name = "symbol already defined";
-		this.pos = funct.getPos();
-	}
-}
-export class FunctionImplementationBeforeDeclaration extends Error {
-	public pos: Range;
-	constructor(funct: FunctionDeclaration | FunctionImplementation) {
-		super("Function implementation \"" + funct.name +"\" founded before declaration");
-		this.name = "symbol already defined";
-		this.pos = funct.getPos();
-	}
-}
-export class FunctionHeadDifferentFromPrototype extends Error {
-	public pos: Range;
-	constructor(funct: FunctionDeclaration | FunctionImplementation) {
-		super(`Function heading differs from prototype`);
-		this.name = "symbol already defined";
-		this.pos = funct.getPos();
-	}
-}
+// export class FunctionAlreadyHaveImplementation extends Error {
+// 	public pos: Range;
+// 	constructor(funct: FunctionDeclaration | FunctionImplementation) {
+// 		super("Function \"" + funct.name +"\" already have implementation");
+// 		this.name = "symbol already defined";
+// 		this.pos = funct.getPos();
+// 	}
+// }
+// export class FunctionImplementationBeforeDeclaration extends Error {
+// 	public pos: Range;
+// 	constructor(funct: FunctionDeclaration | FunctionImplementation) {
+// 		super("Function implementation \"" + funct.name +"\" founded before declaration");
+// 		this.name = "symbol already defined";
+// 		this.pos = funct.getPos();
+// 	}
+// }
+// export class FunctionHeadDifferentFromPrototype extends Error {
+// 	public pos: Range;
+// 	constructor(funct: FunctionDeclaration | FunctionImplementation) {
+// 		super(`Function heading differs from prototype`);
+// 		this.name = "symbol already defined";
+// 		this.pos = funct.getPos();
+// 	}
+// }
 export class ExtraDefault extends Error {
 	public pos: Range;
 	constructor(startPos: Position) {

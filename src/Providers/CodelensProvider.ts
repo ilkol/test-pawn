@@ -15,20 +15,20 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 
 	public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
 
-		let funcList = this.fileManager.getFileFunctionsDefinitions(document);
+		// let funcList = this.fileManager.getFileFunctionsDefinitions(document);
 		this.codeLenses = [];
 		
-		funcList.forEach(element => {
-			if(element.included) return;
-			let tmp = new vscode.CodeLens(element.func.getPos());
-			tmp.command = {
-				title: `Ну крч тут определяется функция ${element.func.name}`,
-				tooltip: "Ну крч навелся ты, да",
-				command: "",
-				arguments: []
-			};
-			this.codeLenses.push(tmp);
-		});
+		// funcList.forEach(element => {
+		// 	if(element.included) return;
+		// 	let tmp = new vscode.CodeLens(element.func.getPos());
+		// 	tmp.command = {
+		// 		title: `Ну крч тут определяется функция ${element.func.name}`,
+		// 		tooltip: "Ну крч навелся ты, да",
+		// 		command: "",
+		// 		arguments: []
+		// 	};
+		// 	this.codeLenses.push(tmp);
+		// });
 		return this.codeLenses;
 	}
 

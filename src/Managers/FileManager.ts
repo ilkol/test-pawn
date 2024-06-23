@@ -1,10 +1,6 @@
 import { DiagnosticSeverity, FileSystemError, FileType, Hover, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
 import { OpenedFile } from "../OpenedFile";
 import { DiagnosticManager } from "./diagnostic";
-import { CannotOpenFile } from "../Errors";
-import { FunctionDeclaration } from "../Strucutres/functions/FunctionDeclaration";
-import { FunctionImplementation } from "../Strucutres/functions/FunctionImplementation";
-import { FunctionData } from "../parser/Environment";
 import { AntrlOpenFile } from "../AntlrOpenFile";
 import { AbstractOpenFile } from "../AbstractOpenFile";
 
@@ -106,15 +102,15 @@ export class FileManager {
 		return new Map<Range, Uri>();
 		// return file.Env.includes;
 	}
-	public getFileFunctionsDefinitions(document: TextDocument): Map<string, FunctionData> {
+	// public getFileFunctionsDefinitions(document: TextDocument): Map<string, FunctionData> {
 
-		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
+	// 	const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
 	
-		if(!file) return new Map;
+	// 	if(!file) return new Map;
 
-		return new Map<string, FunctionData>();
-		// return file.Env.functions;
-	}
+	// 	return new Map<string, FunctionData>();
+	// 	// return file.Env.functions;
+	// }
 	public onDidOpenTextDocument = (file: TextDocument) => {
 		if(file.languageId != "pawn") return;
 
