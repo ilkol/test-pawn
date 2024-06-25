@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { AssigmentContext, CodeBlockContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
+import { AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -28,6 +28,8 @@ import { Variable } from "./AST/Nodes/Variable";
 import { FunctionDeclarationParameter } from "./AST/Nodes/Functions/FunctionDeclarationParameter";
 import { FloatLiteral } from "./AST/Nodes/Literals/FloatLiteral";
 import { StringLiteral } from "./AST/Nodes/Literals/StringLiteral";
+import { WhileCycle } from "./AST/Nodes/Cycles/WhileCycle";
+import { Cycle } from "./AST/Nodes/Cycles/Cycle";
 
 export class PawnListener implements pawnListener
 {
@@ -111,6 +113,9 @@ export class PawnListener implements pawnListener
 			}
 			else if(last instanceof CodeBlock) {
 				last.statements.push(node);
+			}
+			else if(last instanceof Statements) {
+				last.push(node);
 			}
 		}
 	}
@@ -259,6 +264,9 @@ export class PawnListener implements pawnListener
 			if(last instanceof FunctionDeclaration) {
 				last.code = node;
 			}
+			else {
+				this.addDiagnostic("Неоижданый код", DiagnosticSeverity.Error, node.pos);
+			}
 		}
 	}
 
@@ -323,6 +331,9 @@ export class PawnListener implements pawnListener
 			}
 			else if(last instanceof AbstractOperator) {
 				last.expresion = node;
+			}
+			else if(last instanceof Cycle) {
+				last.condition = node;
 			}
 			else if(last instanceof FunctionDeclarationParameter) {
 				last.defaultValue = node;
@@ -559,6 +570,36 @@ export class PawnListener implements pawnListener
 			console.debug(last);
 			const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop.line - 1, ctx.stop.charPositionInLine);
 			this.addDiagnostic("Неожиданный модификатор функции", DiagnosticSeverity.Error, pos);
+		}
+	}
+
+	enterWhile(ctx: WhileContext): void {
+		const node = new WhileCycle();
+		this.nodes.push(node);
+	}
+	exitWhile(ctx: WhileContext): void {
+		const node = <WhileCycle>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			let last = this.nodes.peek();
+			if(last instanceof CodeBlock) {
+				last.statements.push(node);
+			}
+			else {
+				this.addDiagnostic("Неожиданный цикл while", DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	}
+	enterCycleBody(ctx: CycleBodyContext): void {
+		const node = new Statements();
+		this.nodes.push(node);
+	}
+	exitCycleBody(ctx: CycleBodyContext): void {
+		const node = <Statements>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			const last = <Cycle>this.nodes.peek();
+			last.code = node;
 		}
 	}
 }

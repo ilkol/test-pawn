@@ -15,6 +15,7 @@ import { VariableInit } from "../Nodes/VariableInit";
 import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
+import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 
 export interface IVisitor
 {
@@ -35,4 +36,6 @@ export interface IVisitor
 	visitVariable(node: Variable): void;
 	visitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void;
 	visitStringLiteral(node: StringLiteral): void;
+
+	visitWhile(node: WhileCycle): void;
 }

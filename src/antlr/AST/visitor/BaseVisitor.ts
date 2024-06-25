@@ -19,9 +19,19 @@ import { ASTNode } from "../Nodes/ASTNode";
 import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
+import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitWhile(node: WhileCycle): void {
+		this.beforeVisitWhile(node);
+		node.condition?.accept(this);
+		node.code?.statements.forEach(value => {
+			value.accept(this);
+		});
+		this.afterVisitWhile(node);
+	}
+
 	visitStringLiteral(node: StringLiteral): void {
 		this.beforeVisitString(node);
 		this.afterVisitString(node);
@@ -176,4 +186,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitString(node: StringLiteral): void;
 	abstract afterVisitString(node: StringLiteral): void;
+
+	abstract beforeVisitWhile(node: WhileCycle): void;
+	abstract afterVisitWhile(node: WhileCycle): void;
 }

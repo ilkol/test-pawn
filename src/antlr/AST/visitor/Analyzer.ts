@@ -27,9 +27,16 @@ import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclara
 import { SemanticTokensManager } from "../../../Managers/SemanticTokensManager";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { DiagnosticTag } from "vscode";
+import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitWhile(node: WhileCycle): void {
+
+	}
+	afterVisitWhile(node: WhileCycle): void {
+
+	}
 	beforeVisitString(node: StringLiteral): void {
 
 	}
