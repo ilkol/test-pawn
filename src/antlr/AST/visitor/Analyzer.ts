@@ -28,14 +28,21 @@ import { SemanticTokensManager } from "../../../Managers/SemanticTokensManager";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { DiagnosticTag } from "vscode";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
+import { ForCycle } from "../Nodes/Cycles/ForCycle";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitFor(node: ForCycle): void {
+		this.extendScope();
+	}
+	afterVisitFor(node: ForCycle): void {
+		this.restrictScope();
+	}
 	beforeVisitWhile(node: WhileCycle): void {
-
+		this.extendScope();
 	}
 	afterVisitWhile(node: WhileCycle): void {
-
+		this.restrictScope();
 	}
 	beforeVisitString(node: StringLiteral): void {
 
@@ -115,13 +122,10 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	beforeVisitCodeBlock(node: CodeBlock): void {
-		this.curScope = new Scope(this.curScope);
+		this.extendScope();
 	}
 	afterVisitCodeBlock(node: CodeBlock): void {
-		this.checkIds(this.curScope.variables());
-		if(this.curScope.parent)
-			this.curScope = this.curScope.parent;
-		// console.log(node.statements.statements);
+		this.restrictScope();
 	}
 	beforeVisitFunctionParameter(node: FunctionParameter): void {
 	
@@ -153,12 +157,10 @@ export class Analyzer extends BaseVisitor
 		if(node.id !== "main") {
 			this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
 		}
-		this.curScope = new Scope(this.curScope);	
+		this.extendScope();
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		this.checkIds(this.curScope.variables());
-		if(this.curScope.parent)
-			this.curScope = this.curScope.parent;
+		this.restrictScope();
 	}
 	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
@@ -224,5 +226,14 @@ export class Analyzer extends BaseVisitor
 			}
 		});
 		return tokens;
+	}
+
+	private extendScope() {
+		this.curScope = new Scope(this.curScope);
+	}
+	private restrictScope() {
+		this.checkIds(this.curScope.variables());
+		if(this.curScope.parent)
+			this.curScope = this.curScope.parent;
 	}
 }

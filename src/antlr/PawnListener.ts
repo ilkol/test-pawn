@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -30,6 +30,7 @@ import { FloatLiteral } from "./AST/Nodes/Literals/FloatLiteral";
 import { StringLiteral } from "./AST/Nodes/Literals/StringLiteral";
 import { WhileCycle } from "./AST/Nodes/Cycles/WhileCycle";
 import { Cycle } from "./AST/Nodes/Cycles/Cycle";
+import { ForCycle } from "./AST/Nodes/Cycles/ForCycle";
 
 export class PawnListener implements pawnListener
 {
@@ -113,6 +114,9 @@ export class PawnListener implements pawnListener
 			}
 			else if(last instanceof CodeBlock) {
 				last.statements.push(node);
+			}
+			else if(last instanceof ForCycle) {
+				last.initialization = node;
 			}
 			else if(last instanceof Statements) {
 				last.push(node);
@@ -331,6 +335,15 @@ export class PawnListener implements pawnListener
 			}
 			else if(last instanceof AbstractOperator) {
 				last.expresion = node;
+			}
+			else if(last instanceof ForCycle) {
+				try {
+					last.addExpresion(node);
+				}
+				catch(e) {
+					console.log(last);
+					this.addDiagnostic("Неожиданное вырожение", DiagnosticSeverity.Error, node.pos);
+				}
 			}
 			else if(last instanceof Cycle) {
 				last.condition = node;
@@ -581,7 +594,7 @@ export class PawnListener implements pawnListener
 		const node = <WhileCycle>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
-			let last = this.nodes.peek();
+			const last = this.nodes.peek();
 			if(last instanceof CodeBlock) {
 				last.statements.push(node);
 			}
@@ -600,6 +613,23 @@ export class PawnListener implements pawnListener
 			node.setPos(ctx.start, ctx.stop);
 			const last = <Cycle>this.nodes.peek();
 			last.code = node;
+		}
+	}
+	enterFor(ctx: ForContext): void {
+		const node = new ForCycle();
+		this.nodes.push(node);
+	}
+	exitFor(ctx: ForContext): void {
+		const node = <ForCycle>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			const last = this.nodes.peek();
+			if(last instanceof CodeBlock) {
+				last.statements.push(node);
+			}
+			else {
+				this.addDiagnostic("Неожиданный цикл for", DiagnosticSeverity.Error, node.pos);
+			}
 		}
 	}
 }

@@ -20,16 +20,29 @@ import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
+import { ForCycle } from "../Nodes/Cycles/ForCycle";
+import { Cycle } from "../Nodes/Cycles/Cycle";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitWFor(node: ForCycle): void {
+		this.beforeVisitFor(node);
+		node.initialization?.accept(this);
+		node.increment?.accept(this);
+		this.visitCycle(node);
+		this.afterVisitFor(node);
+	}
 	visitWhile(node: WhileCycle): void {
 		this.beforeVisitWhile(node);
+		this.visitCycle(node);
+		this.afterVisitWhile(node);
+	}
+
+	visitCycle(node: Cycle): void {
 		node.condition?.accept(this);
 		node.code?.statements.forEach(value => {
 			value.accept(this);
 		});
-		this.afterVisitWhile(node);
 	}
 
 	visitStringLiteral(node: StringLiteral): void {
@@ -189,4 +202,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitWhile(node: WhileCycle): void;
 	abstract afterVisitWhile(node: WhileCycle): void;
+
+	abstract beforeVisitFor(node: ForCycle): void;
+	abstract afterVisitFor(node: ForCycle): void;
 }
