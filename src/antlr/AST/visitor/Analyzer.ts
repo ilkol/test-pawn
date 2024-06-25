@@ -15,7 +15,7 @@ import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { UnarOperator } from "../Nodes/Operators/UnarOperator";
 import { OperatorNew, VariableModifire } from "../Nodes/Operators/OperatorNew";
 import { DiagnosticUnused } from "../../diagnostic/DiagnosticUnused";
-import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
+import { FunctionDeclaration, FunctionModifire } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
 import { IScope } from "../../Scopes/IScope";
@@ -26,6 +26,7 @@ import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 import { SemanticTokensManager } from "../../../Managers/SemanticTokensManager";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
+import { DiagnosticTag } from "vscode";
 
 export class Analyzer extends BaseVisitor
 {
@@ -171,8 +172,22 @@ export class Analyzer extends BaseVisitor
 
 	private checkIds(ids: Map<string, Declaration>) {
 		ids.forEach((element, key) => {
-			if(!element.used)
-				this.addDiagnostic(new DiagnosticUnused("Идентификатор \"" + key + "\" нигде не используется", element.idPos));
+			if(!element.used) {
+				if(element instanceof FunctionDeclaration) {
+					let diagnostic: DiagnosticMessage;
+					if(element.modifire === FunctionModifire.none) {
+						diagnostic = new DiagnosticWarning("Функция \"" + key + "\" нигде не используется", element.idPos);
+						diagnostic.tags = [DiagnosticTag.Unnecessary];
+					}
+					else {
+						diagnostic = new DiagnosticUnused("Функция \"" + key + "\" нигде не используется", element.idPos);
+						
+					}
+
+					this.addDiagnostic(diagnostic);
+				}
+				else this.addDiagnostic(new DiagnosticUnused("Переменная \"" + key + "\" нигде не используется", element.idPos));
+			}
 		});
 	}
 

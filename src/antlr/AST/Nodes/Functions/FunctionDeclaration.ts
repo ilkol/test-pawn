@@ -4,6 +4,13 @@ import { IContainsVars } from "../IContainsVars";
 import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 import { FunctionDeclarationParameter } from "./FunctionDeclarationParameter";
 
+export enum FunctionModifire {
+	none = 0,
+	native,
+	forward,
+	public,
+	stock
+}
 
 export class FunctionDeclaration extends VarOrFunctionDeclaration implements IContainsVars<FunctionDeclarationParameter>
 {
@@ -11,6 +18,7 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	
 	private _parameters: FunctionDeclarationParameter[] = [];
 	private _code: CodeBlock | undefined;
+	private _modifire: FunctionModifire = FunctionModifire.none;
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitFunctionDeclaration(this);
@@ -33,5 +41,11 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 		return this._code;
 	}
 	
+	public set modifire(v: FunctionModifire) {
+		this._modifire = v;
+	}
 	
+	public get modifire(): FunctionModifire {
+		return this._modifire;
+	}
 }

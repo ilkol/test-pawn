@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { AssigmentContext, CodeBlockContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
+import { AssigmentContext, CodeBlockContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -20,7 +20,7 @@ import { AbstractOperator } from "./AST/Nodes/Operators/AbstractOperator";
 import { BinarOperator } from "./AST/Nodes/Operators/BinarOperator";
 import { UnarOperator } from "./AST/Nodes/Operators/UnarOperator";
 import { ASTNode } from "./AST/Nodes/ASTNode";
-import { FunctionDeclaration } from "./AST/Nodes/Functions/FunctionDeclaration";
+import { FunctionDeclaration, FunctionModifire } from "./AST/Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "./AST/Nodes/Functions/FunctionCall";
 import { VariableInit } from "./AST/Nodes/VariableInit";
 import { FunctionParameter } from "./AST/Nodes/Functions/FunctionParameter";
@@ -540,6 +540,24 @@ export class PawnListener implements pawnListener
 				console.debug(last);
 				this.addDiagnostic("Неожиданная строка", DiagnosticSeverity.Error, node.pos);
 			}
+		}
+	}
+	exitFuncDeclModif(ctx: FuncDeclModifContext): void {
+		const last = this.nodes.peek();
+		if(last instanceof FunctionDeclaration) {
+			if(ctx.funcModif()?.STOCK())
+				last.modifire = FunctionModifire.stock;
+			else if(ctx.funcModif()?.PUBLIC())
+				last.modifire = FunctionModifire.public;
+			else if(ctx.FORWARD())
+				last.modifire = FunctionModifire.forward;
+			else if(ctx.NATIVE())
+				last.modifire = FunctionModifire.native;
+		}
+		else if(ctx.stop) {
+			console.debug(last);
+			const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop.line - 1, ctx.stop.charPositionInLine);
+			this.addDiagnostic("Неожиданный модификатор функции", DiagnosticSeverity.Error, pos);
 		}
 	}
 }
