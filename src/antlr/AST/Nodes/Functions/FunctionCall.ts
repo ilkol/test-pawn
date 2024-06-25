@@ -2,12 +2,12 @@ import { Range } from "vscode";
 import { IVisitor } from "../../visitor/IVisitor";
 import { CodeBlock } from "../CodeBlock";
 import { IContainsVars } from "../IContainsVars";
-import { RightValue } from "../RightValue";
 import { FunctionParameter } from "./FunctionParameter";
 import { IHasID } from "../IHasID";
+import { Expresion } from "../Expresion";
 
 
-export class FunctionCall extends RightValue implements IContainsVars<FunctionParameter>, IHasID
+export class FunctionCall extends Expresion implements IContainsVars<FunctionParameter>, IHasID
 {
 	name = "вызов функции";
 

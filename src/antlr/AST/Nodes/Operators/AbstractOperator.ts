@@ -1,10 +1,9 @@
 import { Expresion } from "../Expresion";
+import { Tag } from "../Tag";
 
-export abstract class AbstractOperator extends Expresion
+export class AbstractOperator extends Expresion
 {
 	name = "оператор";
-
-	private _operator: string = "";
 	
 	public get operator(): string {
 		return this._operator;
@@ -13,5 +12,14 @@ export abstract class AbstractOperator extends Expresion
 		this._operator = value;
 	}
 
+	constructor(private _operator: string = "") {
+		super();
+		switch(_operator) {
+			case "!": {
+				// this.tag = new Tag();
+				this.tag.id = "bool";
+			}
+		}
+	}
 	
 }

@@ -6,12 +6,16 @@ export class BinarOperator extends AbstractOperator
 {
 	name = "бинарный оператор";
 	
+	constructor(oper: AbstractOperator) {
+		super(oper.operator);
+		if(oper.expresion)
+			this.expresion = oper.expresion;
+	}
+
 	public accept(visitor: IVisitor): void {
 		visitor.visitBinarOperator(this);
 	}
-
 	private _left: Expresion | undefined;
-	private _right: Expresion | undefined;
 
 	
 	public get left() : Expresion | undefined {
@@ -19,7 +23,7 @@ export class BinarOperator extends AbstractOperator
 	}
 	
 	public get right() : Expresion | undefined {
-		return this._right;
+		return this.expresion;
 	}
 
 	public set left(v: Expresion) {
@@ -27,6 +31,6 @@ export class BinarOperator extends AbstractOperator
 	}
 	
 	public set right(v: Expresion) {
-		this._right = v;
+		this.expresion = v;
 	}
 }

@@ -6,18 +6,21 @@ export class UnarOperator extends AbstractOperator
 {
 	name = "унарный операртор";
 
+	constructor(oper: AbstractOperator) {
+		super(oper.operator);
+		if(oper.expresion)
+			this.expresion = oper.expresion;
+	}
+
 	public accept(visitor: IVisitor): void {
 		visitor.visitUnarOperator(this);
 	}
-
-	private _value: Expresion | undefined;
-
 	
 	public get value() : Expresion | undefined {
-		return this._value;
+		return this.expresion;
 	}
 	
 	public set value(v: Expresion) {
-		this._value = v;
+		this.expresion = v;
 	}
 }

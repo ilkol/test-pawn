@@ -1,9 +1,9 @@
 import { Range } from "vscode";
 import { IVisitor } from "../visitor/IVisitor";
 import { IHasID } from "./IHasID";
-import { RightValue } from "./RightValue";
+import { Expresion } from "./Expresion";
 
-export class Variable extends RightValue implements IHasID
+export class Variable extends Expresion implements IHasID
 {
 
     constructor(instance: Variable|undefined = undefined) {

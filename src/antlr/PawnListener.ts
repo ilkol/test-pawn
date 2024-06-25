@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { AssigmentContext, CodeBlockContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
+import { AssigmentContext, CodeBlockContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -158,6 +158,10 @@ export class PawnListener implements pawnListener
 			if(last instanceof OperatorNew) {
 				last.push(declarationVar);
 			}
+			else if(last instanceof Expresion)
+			{
+				last.expresion = node;
+			}
 			else if(last instanceof VariableInit)
 			{
 				if(!last.var)
@@ -172,14 +176,6 @@ export class PawnListener implements pawnListener
 			{
 				last.variable = node;
 				// last.push(new FunctionDeclarationParameter(declarationVar));
-			}
-			else if(last instanceof ReturnStatement)
-			{
-				last.value = node;
-			}
-			else if(last instanceof FunctionCall)
-			{
-				last.push(new FunctionParameter(node));
 			}
 			else {
 				console.log(last);
@@ -273,14 +269,8 @@ export class PawnListener implements pawnListener
 			node.value = +ctx.INTEGER().text;
 
 			const last = this.nodes.peek();
-			if(last instanceof VariableInit) {
-				last.rightValue = node;
-			}
-			else if(last instanceof FunctionDeclarationParameter) {
-				last.defaultValue = node;
-			}
-			else if(last instanceof ReturnStatement) {
-				last.value = node;
+			if(last instanceof Expresion) {
+				last.expresion = node;
 			}
 			else {
 				console.debug(last);
@@ -302,52 +292,132 @@ export class PawnListener implements pawnListener
 			}
 		}
 	}
+	enterExpresion(ctx: ExpresionContext): void {
+		const node = new Expresion();
+		this.nodes.push(node);
+	}
 	exitExpresion(ctx: ExpresionContext): void {
-		let pre = ctx.preOperators();
-		if(pre) {
-			if(ctx.stop) {
-				let last = <Expresion>this.nodes.pop();
-				let node = new UnarOperator();
-				node.value = last;
-				node.setPos(ctx.start, ctx.stop);
-				if(pre.NOT()) {	
-					node.operator = "!";
+		const node = <Expresion>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+
+			const opCtx = ctx.preOperators();
+			if(opCtx) {
+				const oper = new UnarOperator(new AbstractOperator(opCtx.text));
+				if(opCtx.stop)
+					oper.setPos(opCtx.start, opCtx.stop);
+				if(node.expresion) {
+					oper.value = node.expresion;
+					node.expresion = oper;
 				}
-				else if(pre.MINUS()) {
-					node.operator = "!";			
-				}
-				else if(pre.DECREMENTS()) {
-					node.operator = "--";			
-				}
-				else if(pre.DECREMENTS()) {
-					node.operator = "++";			
-				}
-				this.nodes.push(node);
+
+			}
+
+			const last = this.nodes.peek();
+			if(last instanceof VariableInit) {
+				last.rightValue = node;
+			}
+			else if(last instanceof AbstractOperator) {
+				last.expresion = node;
+			}
+			else if(last instanceof FunctionDeclarationParameter) {
+				last.defaultValue = node;
+			}
+			else if(last instanceof ReturnStatement) {
+				last.value = node;
+			}
+			else if(last instanceof FunctionCall)
+			{
+				last.push(new FunctionParameter(node));
+			}
+			else if(last instanceof Expresion)
+			{
+				last.expresion = node;
+			}
+			else {
+				console.debug(last);
+				this.addDiagnostic("Неожиданное вырожение", DiagnosticSeverity.Error, node.pos);
 			}
 		}
+
+		// let pre = ctx.preOperators();
+		// if(pre) {
+			// if(ctx.stop) {
+				// let node = new UnarOperator();
+				// node.value = last;
+				// if(pre.NOT()) {	
+				// 	node.operator = "!";
+				// }
+				// else if(pre.MINUS()) {
+				// 	node.operator = "!";			
+				// }
+				// else if(pre.DECREMENTS()) {
+				// 	node.operator = "--";			
+				// }
+				// else if(pre.DECREMENTS()) {
+				// 	node.operator = "++";			
+				// }
+				// this.nodes.push(node);
+			// }
+		// }
 	}
 
-	exitOperation(ctx: OperationContext): void 
-	{
-		if(ctx.stop) {
-			let node: AbstractOperator;
-			switch(ctx.operator().text) {
+	exitOperator(ctx: OperatorContext): void {
+		let node = this.nodes.pop();
+		if(node instanceof AbstractOperator) {
+			node.operator = ctx.text;
+			switch(ctx.text) {
+				case "++":
 				case "--":
-				case "++": {
-					node = new UnarOperator();
-					(<UnarOperator>node).value = <Expresion>this.nodes.pop();
+				case "tagof":
+				case "char":
+				case "defined":
+				case "sizeof": {
+					node = new UnarOperator(node);
 					break;
 				}
 				default: {
-					node = new BinarOperator();
-					(<BinarOperator>node).right = <Expresion>this.nodes.pop();
-					(<BinarOperator>node).left = <Expresion>this.nodes.pop();
-					break;
+					node = new BinarOperator(node);
 				}
 			}
-			node.operator = ctx.operator().text;	
-			node.setPos(ctx.start, ctx.stop);
 			this.nodes.push(node);
+		}
+		else if(node){
+			this.nodes.push(node);
+			this.addDiagnostic("Неожиданный оператор", DiagnosticSeverity.Error, node.pos);
+		}
+	}
+	enterOperation(ctx: OperationContext): void {
+		let node = new AbstractOperator();
+		this.nodes.push(node);
+	}
+	exitOperation(ctx: OperationContext): void 
+	{
+		let node = this.nodes.pop();
+		if(node && ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			const last = this.nodes.pop();
+			if(last instanceof Expresion) {
+				if(node instanceof BinarOperator) {
+					node.left = last;
+					this.nodes.push(node);
+				}
+				else if(node instanceof UnarOperator) {
+					if(node.expresion)
+						this.addDiagnostic("Унарный оператор уже применён к другмоу вырожению", DiagnosticSeverity.Error, node.expresion.pos);
+					node.expresion = last;
+					this.nodes.push(node);
+				} else {
+					this.nodes.push(last);
+					this.addDiagnostic("Неожиданая операция", DiagnosticSeverity.Error, node.pos);
+				}
+			}
+			else {
+				if(last)
+					this.nodes.push(last);
+				console.log(last, node);
+				this.addDiagnostic("Неожиданая операция", DiagnosticSeverity.Error, node.pos);
+			}
 		}
 	}
 
@@ -375,11 +445,8 @@ export class PawnListener implements pawnListener
 			if(last instanceof CodeBlock) {
 				last.statements.push(node);
 			}
-			else if(last instanceof VariableInit) {
-				last.rightValue = node;
-			}
-			else if(last instanceof FunctionCall) {
-				last.push(new FunctionParameter(node));
+			else if(last instanceof Expresion) {
+				last.expresion = node;
 			}
 			else {
 				console.debug(last);
@@ -389,6 +456,7 @@ export class PawnListener implements pawnListener
 	}
 
 	enterAssigment(ctx: AssigmentContext):void {
+		// console.log(this.nodes.peek());
 		let node = new VariableInit();	
 
 		
@@ -404,7 +472,7 @@ export class PawnListener implements pawnListener
 			if(decl instanceof OperatorNew) {
 				decl.push(node);
 			}
-			else this.addDiagnostic("Неожиданная инициализация", DiagnosticSeverity.Error, node.idPos);
+			else this.addDiagnostic("Неоижданная инициализация", DiagnosticSeverity.Error, node.idPos);
 		}
 	}
 
@@ -420,11 +488,15 @@ export class PawnListener implements pawnListener
 				node.const = true;
 			if(ctx.reference())
 				node.reference = true;
-			const decl = this.nodes.peek();
-			if(decl instanceof FunctionDeclaration) {
-				decl.push(node);
+			const last = this.nodes.peek();
+			if(last instanceof FunctionDeclaration) {
+				last.push(node);
 			}
-			else this.addDiagnostic("Неожиданный параметр функции", DiagnosticSeverity.Error, node.idPos);
+			else {
+				console.debug(last);
+				this.addDiagnostic("Неожиданный параметр функции", DiagnosticSeverity.Error, node.idPos);
+			}
 		}
 	}
+
 }

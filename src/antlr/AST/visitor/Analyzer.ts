@@ -78,7 +78,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitUnarOperator(node: UnarOperator): void {
-
+		
 	}
 	beforeVisitIntLiteral(node: IntLiteral): void {
 	
