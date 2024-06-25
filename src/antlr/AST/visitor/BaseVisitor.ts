@@ -22,9 +22,16 @@ import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { Cycle } from "../Nodes/Cycles/Cycle";
+import { Array } from "../Nodes/Variables.ts/Array";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitArray(node: Array): void {
+		node.indexes.forEach(el => {
+			el.accept(this);
+		});
+	}
+	
 	visitWFor(node: ForCycle): void {
 		this.beforeVisitFor(node);
 		node.initialization?.accept(this);

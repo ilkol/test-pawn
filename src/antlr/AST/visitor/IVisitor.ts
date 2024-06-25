@@ -17,6 +17,7 @@ import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclara
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
+import { Array } from "../Nodes/Variables.ts/Array";
 
 export interface IVisitor
 {
@@ -40,4 +41,5 @@ export interface IVisitor
 
 	visitWhile(node: WhileCycle): void;
 	visitWFor(node: ForCycle): void;
+	visitArray(ndoe: Array): void;
 }

@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -31,6 +31,8 @@ import { StringLiteral } from "./AST/Nodes/Literals/StringLiteral";
 import { WhileCycle } from "./AST/Nodes/Cycles/WhileCycle";
 import { Cycle } from "./AST/Nodes/Cycles/Cycle";
 import { ForCycle } from "./AST/Nodes/Cycles/ForCycle";
+import { ArrayIndexes } from "./AST/Nodes/Variables.ts/ArrayIndexes";
+import { Array } from "./AST/Nodes/Variables.ts/Array";
 
 export class PawnListener implements pawnListener
 {
@@ -336,6 +338,9 @@ export class PawnListener implements pawnListener
 			else if(last instanceof AbstractOperator) {
 				last.expresion = node;
 			}
+			else if(last instanceof ArrayIndexes) {
+				last.push(node);
+			}
 			else if(last instanceof ForCycle) {
 				try {
 					last.addExpresion(node);
@@ -631,5 +636,14 @@ export class PawnListener implements pawnListener
 				this.addDiagnostic("Неожиданный цикл for", DiagnosticSeverity.Error, node.pos);
 			}
 		}
+	}
+	enterArrayIndex(ctx: ArrayIndexContext): void {
+		const node = new ArrayIndexes();
+		this.nodes.push(node);
+	}
+	exitArrayIndex(ctx: ArrayIndexContext): void {
+		const node = <ArrayIndexes>this.nodes.pop();
+		const last = <Variable>this.nodes.pop();
+		this.nodes.push(new Array(last, node.indexes));
 	}
 }
