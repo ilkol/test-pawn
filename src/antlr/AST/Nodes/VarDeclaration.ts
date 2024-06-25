@@ -12,7 +12,7 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 	constructor(instance: VarDeclaration | undefined = undefined) {
 		super(instance);
 		if(instance) {
-			this._modifires = instance._modifires;
+			this.modifires = instance._modifires;
 			this.tag = instance.tag;
 		}
 	}
@@ -28,10 +28,14 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 	
 	public set modifires(v : VariableModifire[]) {
 		this._modifires = v;
+		// console.log(v);
+		if(v.indexOf(VariableModifire.stock) !== -1) {
+			this.stock = true;
+		}
 	}
 
 	public get isConstant(): boolean {
-		return this._modifires.find(el => el == VariableModifire.const) ? true : false;
+		return this._modifires.find(el => el === VariableModifire.const) ? true : false;
 	}
 	
 }

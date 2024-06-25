@@ -50,6 +50,7 @@ export class Analyzer extends BaseVisitor
 		if(variable) {
 			variable.used = true;
 			this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires));
+
 		}
 		else {	
 			const func = this.curScope.findFunction(node.id);
@@ -173,20 +174,20 @@ export class Analyzer extends BaseVisitor
 	private checkIds(ids: Map<string, Declaration>) {
 		ids.forEach((element, key) => {
 			if(!element.used) {
+				let diagnostic: DiagnosticMessage, diagnosticMsg: string;
 				if(element instanceof FunctionDeclaration) {
-					let diagnostic: DiagnosticMessage;
-					if(element.modifire === FunctionModifire.none) {
-						diagnostic = new DiagnosticWarning("Функция \"" + key + "\" нигде не используется", element.idPos);
-						diagnostic.tags = [DiagnosticTag.Unnecessary];
-					}
-					else {
-						diagnostic = new DiagnosticUnused("Функция \"" + key + "\" нигде не используется", element.idPos);
-						
-					}
-
-					this.addDiagnostic(diagnostic);
+					diagnosticMsg = "Функция";
 				}
-				else this.addDiagnostic(new DiagnosticUnused("Переменная \"" + key + "\" нигде не используется", element.idPos));
+				else 
+					diagnosticMsg = "Переменная";
+				
+				if(!element.stock) {
+					diagnostic = new DiagnosticWarning(`${diagnosticMsg} "${key}" нигде не используется`, element.idPos);
+					diagnostic.tags = [DiagnosticTag.Unnecessary];
+				}
+				else
+					diagnostic = new DiagnosticUnused(`${diagnosticMsg} "${key}" нигде не используется`, element.idPos);
+				this.addDiagnostic(diagnostic);
 			}
 		});
 	}

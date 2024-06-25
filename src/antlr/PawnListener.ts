@@ -100,11 +100,12 @@ export class PawnListener implements pawnListener
 			this.checkModif(ctx.varModifires().STOCK(), node, VariableModifire.stock, "stock");
 				
 			let last = this.nodes.peek();
+			node.vars.forEach(element => {
+				element.modifires = node.modifires;
+			});
 			if(last instanceof Declarations) {
 				let tmp: Declarations = last;
-				console.log(node.modifires);
 				node.vars.forEach(element => {
-					element.modifires = node.modifires;
 					tmp.declarations.push(element);
 				});
 			}
@@ -546,7 +547,7 @@ export class PawnListener implements pawnListener
 		const last = this.nodes.peek();
 		if(last instanceof FunctionDeclaration) {
 			if(ctx.funcModif()?.STOCK())
-				last.modifire = FunctionModifire.stock;
+				last.stock = true;
 			else if(ctx.funcModif()?.PUBLIC())
 				last.modifire = FunctionModifire.public;
 			else if(ctx.FORWARD())
