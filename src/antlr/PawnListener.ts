@@ -154,6 +154,7 @@ export class PawnListener implements pawnListener
 			declarationVar.setPos(ctx.start, ctx.stop);
 			declarationVar.id = node.id;
 			declarationVar.idPos = node.idPos;
+			declarationVar.tag = node.tag;
 			
 			if(last instanceof OperatorNew) {
 				last.push(declarationVar);

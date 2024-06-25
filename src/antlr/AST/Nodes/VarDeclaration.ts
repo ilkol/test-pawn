@@ -13,6 +13,7 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 		super(instance);
 		if(instance) {
 			this._modifires = instance._modifires;
+			this.tag = instance.tag;
 		}
 	}
 
