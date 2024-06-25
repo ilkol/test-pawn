@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { AssigmentContext, CodeBlockContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
+import { AssigmentContext, CodeBlockContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -27,6 +27,7 @@ import { FunctionParameter } from "./AST/Nodes/Functions/FunctionParameter";
 import { Variable } from "./AST/Nodes/Variable";
 import { FunctionDeclarationParameter } from "./AST/Nodes/Functions/FunctionDeclarationParameter";
 import { FloatLiteral } from "./AST/Nodes/Literals/FloatLiteral";
+import { StringLiteral } from "./AST/Nodes/Literals/StringLiteral";
 
 export class PawnListener implements pawnListener
 {
@@ -517,6 +518,27 @@ export class PawnListener implements pawnListener
 			else {
 				console.debug(last);
 				this.addDiagnostic("Неожиданная вещественная константа", DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	}
+
+	enterString(ctx: StringContext): void {
+		const node = new StringLiteral();
+		this.nodes.push(node);
+	}
+	exitString(ctx: StringContext): void {
+		let node = <StringLiteral>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			node.value = ctx.text;
+
+			const last = this.nodes.peek();
+			if(last instanceof Expresion) {
+				last.expresion = node;
+			}
+			else {
+				console.debug(last);
+				this.addDiagnostic("Неожиданная строка", DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}

@@ -25,9 +25,16 @@ import { Declaration } from "../Nodes/Declaration";
 import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 import { SemanticTokensManager } from "../../../Managers/SemanticTokensManager";
+import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitString(node: StringLiteral): void {
+
+	}
+	afterVisitString(node: StringLiteral): void {
+
+	}
 	beforeVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
@@ -43,7 +50,7 @@ export class Analyzer extends BaseVisitor
 			variable.used = true;
 			this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires));
 		}
-		else {
+		else {	
 			const func = this.curScope.findFunction(node.id);
 			if(func)
 				this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является функцией", node.idPos));
@@ -78,7 +85,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitUnarOperator(node: UnarOperator): void {
-		
+
 	}
 	beforeVisitIntLiteral(node: IntLiteral): void {
 	

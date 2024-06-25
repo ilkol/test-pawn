@@ -18,9 +18,14 @@ import { IContainsVars } from "../Nodes/IContainsVars";
 import { ASTNode } from "../Nodes/ASTNode";
 import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
+import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitStringLiteral(node: StringLiteral): void {
+		this.beforeVisitString(node);
+		this.afterVisitString(node);
+	}
 	visitVariable(node: Variable): void {
 		this.beforeVisitVariable(node);
 		this.afterVisitVariable(node);
@@ -168,4 +173,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitVariable(node: Variable): void;
 	abstract afterVisitVariable(node: Variable): void;
+
+	abstract beforeVisitString(node: StringLiteral): void;
+	abstract afterVisitString(node: StringLiteral): void;
 }

@@ -14,6 +14,7 @@ import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
 import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
+import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 
 export interface IVisitor
 {
@@ -33,4 +34,5 @@ export interface IVisitor
 	visitVarInit(node: VariableInit): void;
 	visitVariable(node: Variable): void;
 	visitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void;
+	visitStringLiteral(node: StringLiteral): void;
 }
