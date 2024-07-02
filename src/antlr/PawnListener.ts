@@ -34,6 +34,7 @@ import { ForCycle } from "./AST/Nodes/Cycles/ForCycle";
 import { ArrayIndexes } from "./AST/Nodes/Variables/ArrayIndexes";
 import { Array } from "./AST/Nodes/Variables/Array";
 import { ArrayDeclaration } from "./AST/Nodes/Variables/ArrayDeclaration";
+import { AssigmentOperator } from "./AST/Nodes/Operators/AssigmentOperator";
 
 export class PawnListener implements pawnListener
 {
@@ -182,11 +183,11 @@ export class PawnListener implements pawnListener
 			{
 				last.expresion = node;
 			}
-			else if(last instanceof VariableInit)
+			else if(last instanceof AssigmentOperator)
 			{
-				if(!last.var)
-					last.var = declarationVar;
-				else last.rightValue = node;
+				if(!last.left)
+					last.left = node;
+				else last.right = node;
 			}
 			else if(last instanceof EnumMember)
 			{
@@ -337,8 +338,8 @@ export class PawnListener implements pawnListener
 			}
 
 			const last = this.nodes.peek();
-			if(last instanceof VariableInit) {
-				last.rightValue = node;
+			if(last instanceof AssigmentOperator) {
+				last.right = node;
 			}
 			else if(last instanceof AbstractOperator) {
 				last.expresion = node;
@@ -495,22 +496,39 @@ export class PawnListener implements pawnListener
 
 	enterAssigment(ctx: AssigmentContext):void {
 		// console.log(this.nodes.peek());
-		let node = new VariableInit();	
-
-		
+		let node = new AssigmentOperator();	
 
 		this.nodes.push(node);
 	}
 
 	exitAssigment(ctx: AssigmentContext):void {
-		const node = <VariableInit>this.nodes.pop();
+		const node = <AssigmentOperator>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
-			const decl = this.nodes.peek();
-			if(decl instanceof OperatorNew) {
-				decl.push(node);
+			const last = this.nodes.peek();
+			if(last instanceof OperatorNew) {
+				const newVar = new VariableInit();
+				if(node.right)
+					newVar.rightValue = node.right;
+				if(node.left) {
+					var declarationVar:VarDeclaration = new VarDeclaration();
+					if(node.left instanceof Variable) {
+						declarationVar.id = node.left.id;
+						declarationVar.idPos = node.left.idPos;
+					}
+					declarationVar.tag = node.left.tag;
+					newVar.var = declarationVar;			
+				}
+
+				last.push(newVar);
 			}
-			else this.addDiagnostic("Неоижданная инициализация", DiagnosticSeverity.Error, node.idPos);
+			else if(last instanceof CodeBlock){
+				last.statements.push(node);
+			}
+			else {
+				console.log(last);
+				this.addDiagnostic("Неоижданная инициализация", DiagnosticSeverity.Error, node.pos);
+			}
 		}
 	}
 
@@ -648,7 +666,15 @@ export class PawnListener implements pawnListener
 	}
 	exitArrayIndex(ctx: ArrayIndexContext): void {
 		const node = <ArrayIndexes>this.nodes.pop();
-		const last = <Variable>this.nodes.pop();
-		this.nodes.push(new Array(last, node.indexes));
+		const last = this.nodes.pop();
+		if(!last) return;
+		if(last instanceof Array) {
+			last.pushIndexes(node.indexes);
+			this.nodes.push(last);
+		}
+		else {
+			this.nodes.push(new Array(<Variable>last, node.indexes));
+			
+		}
 	}
 }

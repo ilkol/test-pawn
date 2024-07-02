@@ -30,9 +30,17 @@ import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
+import { Expresion } from "../Nodes/Expresion";
+import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitAssigment(node: AssigmentOperator): void {
+
+	}
+	afterVisitAssigment(node: AssigmentOperator): void {
+
+	}
 	beforeVisitArrayDeclaration(node: ArrayDeclaration): void {
 
 	}
@@ -41,9 +49,13 @@ export class Analyzer extends BaseVisitor
 		
 		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires));
 
-		node.indexes.forEach(el => {
-			if(el instanceof IntLiteral) return;
-			this.addDiagnostic(new DiagnosticError("Ожидается целочисленная константа", el.pos));
+		node.indexes = node.indexes.map(el => {
+			if(el instanceof Expresion && el.expresion instanceof IntLiteral) {
+				node.pushSize(el.expresion.value);
+				return el.expresion;
+			}
+			this.addDiagnostic(new DiagnosticError("Ожидается целочисленная константа, а найдена \""+el.name+"\"", el.pos));
+			return el;
 		});
 	}
 	beforeVisitFor(node: ForCycle): void {

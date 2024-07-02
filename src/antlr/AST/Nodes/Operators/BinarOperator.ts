@@ -1,15 +1,17 @@
 import { Expresion } from "../Expresion";
 import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractOperator } from "./AbstractOperator";
+import { Variable } from "../Variable";
 
 export class BinarOperator extends AbstractOperator
 {
 	name = "бинарный оператор";
 	
-	constructor(oper: AbstractOperator) {
-		super(oper.operator);
-		if(oper.expresion)
+	constructor(oper: AbstractOperator | string) {
+		super(oper instanceof AbstractOperator ? oper.operator : oper);
+		if(oper instanceof AbstractOperator && oper.expresion)
 			this.expresion = oper.expresion;
+	
 	}
 
 	public accept(visitor: IVisitor): void {

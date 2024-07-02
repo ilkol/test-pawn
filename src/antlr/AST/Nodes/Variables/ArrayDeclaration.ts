@@ -6,6 +6,9 @@ import { VarDeclaration } from "./VarDeclaration";
 export class ArrayDeclaration extends VarDeclaration
 {
 	private _indexes: Expresion[] = [];
+	private _size: number[] = [];
+	private _lastSize = 0;
+	
 	name = "объявление массива";
 
 	constructor(instance: ArrayDeclaration | undefined = undefined) {
@@ -20,6 +23,13 @@ export class ArrayDeclaration extends VarDeclaration
 	}
 	public get indexes(): Expresion[] {
 		return this._indexes;
+	}
+
+	public pushSize(v: number) {
+		this._size[this._lastSize++] = v;
+	}
+	public get size(): number[] {
+		return this._size;
 	}
 	
 	public accept(visitor: IVisitor): void {
