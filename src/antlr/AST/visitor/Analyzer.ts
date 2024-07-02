@@ -29,9 +29,23 @@ import { DiagnosticTag } from "vscode";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
+import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitArrayDeclaration(node: ArrayDeclaration): void {
+
+	}
+	afterVisitArrayDeclaration(node: ArrayDeclaration): void {
+		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
+		
+		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires));
+
+		node.indexes.forEach(el => {
+			if(el instanceof IntLiteral) return;
+			this.addDiagnostic(new DiagnosticError("Ожидается целочисленная константа", el.pos));
+		});
+	}
 	beforeVisitFor(node: ForCycle): void {
 		this.extendScope();
 	}

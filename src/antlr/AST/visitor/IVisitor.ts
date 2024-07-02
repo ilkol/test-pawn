@@ -18,6 +18,7 @@ import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { Array } from "../Nodes/Variables/Array";
+import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 
 export interface IVisitor
 {
@@ -41,5 +42,8 @@ export interface IVisitor
 
 	visitWhile(node: WhileCycle): void;
 	visitWFor(node: ForCycle): void;
+	
 	visitArray(ndoe: Array): void;
+	visitArrayDeclaration(node: ArrayDeclaration): void;
+
 }

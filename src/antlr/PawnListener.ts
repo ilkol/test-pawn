@@ -33,6 +33,7 @@ import { Cycle } from "./AST/Nodes/Cycles/Cycle";
 import { ForCycle } from "./AST/Nodes/Cycles/ForCycle";
 import { ArrayIndexes } from "./AST/Nodes/Variables/ArrayIndexes";
 import { Array } from "./AST/Nodes/Variables/Array";
+import { ArrayDeclaration } from "./AST/Nodes/Variables/ArrayDeclaration";
 
 export class PawnListener implements pawnListener
 {
@@ -163,7 +164,11 @@ export class PawnListener implements pawnListener
 			// else 
 
 			const last = this.nodes.peek();
-			const declarationVar = new VarDeclaration();
+			var declarationVar:VarDeclaration = new VarDeclaration();
+			if(node instanceof Array) {
+				declarationVar = new ArrayDeclaration();
+				(<ArrayDeclaration>declarationVar).indexes = node.indexes;
+			}
 
 			declarationVar.setPos(ctx.start, ctx.stop);
 			declarationVar.id = node.id;

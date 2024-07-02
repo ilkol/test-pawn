@@ -27,7 +27,6 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 	
 	public set modifires(v : VariableModifire[]) {
 		this._modifires = v;
-		// console.log(v);
 		if(v.indexOf(VariableModifire.stock) !== -1) {
 			this.stock = true;
 		}

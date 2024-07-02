@@ -23,10 +23,16 @@ import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { Cycle } from "../Nodes/Cycles/Cycle";
 import { Array } from "../Nodes/Variables/Array";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
+import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 
 export abstract class BaseVisitor implements IVisitor
 {
-	visitArray(node: Array): void {
+	visitArrayDeclaration(node: ArrayDeclaration): void {
+		this.beforeVisitArrayDeclaration(node);
+		this.visitArray(node);
+		this.afterVisitArrayDeclaration(node);
+	}
+	visitArray(node: Array | ArrayDeclaration): void {
 		node.indexes.forEach(el => {
 			el.accept(this);
 		});
@@ -212,4 +218,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitFor(node: ForCycle): void;
 	abstract afterVisitFor(node: ForCycle): void;
+
+	abstract beforeVisitArrayDeclaration(node: ArrayDeclaration): void;
+	abstract afterVisitArrayDeclaration(node: ArrayDeclaration): void;
 }
