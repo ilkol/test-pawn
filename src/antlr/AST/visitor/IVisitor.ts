@@ -8,7 +8,7 @@ import { BinarOperator } from "../Nodes/Operators/BinarOperator";
 import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { UnarOperator } from "../Nodes/Operators/UnarOperator";
 import { ReturnStatement } from "../Nodes/ReturnStatement";
-import { VarDeclaration } from "../Nodes/VarDeclaration";
+import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
@@ -17,7 +17,7 @@ import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclara
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
-import { Array } from "../Nodes/Variables.ts/Array";
+import { Array } from "../Nodes/Variables/Array";
 
 export interface IVisitor
 {

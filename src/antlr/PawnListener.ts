@@ -5,7 +5,7 @@ import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
 import { ArrayIndexContext, AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
-import { VarDeclaration } from "./AST/Nodes/VarDeclaration";
+import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
 import { EnumDeclaration } from "./AST/Nodes/EnumDeclaration";
@@ -31,8 +31,8 @@ import { StringLiteral } from "./AST/Nodes/Literals/StringLiteral";
 import { WhileCycle } from "./AST/Nodes/Cycles/WhileCycle";
 import { Cycle } from "./AST/Nodes/Cycles/Cycle";
 import { ForCycle } from "./AST/Nodes/Cycles/ForCycle";
-import { ArrayIndexes } from "./AST/Nodes/Variables.ts/ArrayIndexes";
-import { Array } from "./AST/Nodes/Variables.ts/Array";
+import { ArrayIndexes } from "./AST/Nodes/Variables/ArrayIndexes";
+import { Array } from "./AST/Nodes/Variables/Array";
 
 export class PawnListener implements pawnListener
 {

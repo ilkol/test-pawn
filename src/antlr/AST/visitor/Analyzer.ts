@@ -3,7 +3,6 @@ import { DiagnosticError } from "../../diagnostic/DiagnosticError";
 import { DiagnosticMessage } from "../../diagnostic/DiagnosticMessage";
 import { BaseVisitor } from "./BaseVisitor";
 import { Declarations } from "../Nodes/Declarations";
-import { VarDeclaration } from "../Nodes/VarDeclaration";
 import { DiagnosticWarning } from "../../diagnostic/DiagnosticWarning";
 import { EnumDeclaration } from "../Nodes/EnumDeclaration";
 import { EnumMember } from "../Nodes/EnumMember";
@@ -29,6 +28,7 @@ import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { DiagnosticTag } from "vscode";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
+import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 
 export class Analyzer extends BaseVisitor
 {

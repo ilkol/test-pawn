@@ -1,9 +1,9 @@
-import { VarDeclaration } from "../VarDeclaration";
 import { IVisitor } from "../../visitor/IVisitor";
 import { Variable } from "../Variable";
 import { Range } from "vscode";
 import { RightValue } from "../RightValue";
 import { VariableModifire } from "../Operators/OperatorNew";
+import { VarDeclaration } from "../Variables/VarDeclaration";
 
 export class FunctionDeclarationParameter extends VarDeclaration
 {

@@ -1,7 +1,7 @@
 import { IContainsVars } from "../IContainsVars";
 import { Statement } from "../Statement";
-import { VarDeclaration } from "../VarDeclaration";
 import { IVisitor } from "../../visitor/IVisitor";
+import { VarDeclaration } from "../Variables/VarDeclaration";
 
 export enum VariableModifire {
 	const,

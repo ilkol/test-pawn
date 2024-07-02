@@ -1,6 +1,6 @@
 import { IVisitor } from "../visitor/IVisitor";
 import { RightValue } from "./RightValue";
-import { VarDeclaration } from "./VarDeclaration";
+import { VarDeclaration } from "./Variables/VarDeclaration";
 
 export class VariableInit extends VarDeclaration
 {

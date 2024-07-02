@@ -1,7 +1,6 @@
 /* eslint-disable curly */
 import { Declarations } from "../Nodes/Declarations";
 import { IVisitor } from "./IVisitor";
-import { VarDeclaration } from "../Nodes/VarDeclaration";
 import { EnumDeclaration } from "../Nodes/EnumDeclaration";
 import { EnumMember } from "../Nodes/EnumMember";
 import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
@@ -22,7 +21,8 @@ import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { Cycle } from "../Nodes/Cycles/Cycle";
-import { Array } from "../Nodes/Variables.ts/Array";
+import { Array } from "../Nodes/Variables/Array";
+import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 
 export abstract class BaseVisitor implements IVisitor
 {

@@ -1,6 +1,4 @@
-import { VarDeclaration } from "../VarDeclaration";
 import { IVisitor } from "../../visitor/IVisitor";
-import { Variable } from "../Variable";
 import { RightValue } from "../RightValue";
 
 export class FunctionParameter extends RightValue

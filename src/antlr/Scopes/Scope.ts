@@ -1,7 +1,6 @@
 import { FunctionDeclaration } from "../AST/Nodes/Functions/FunctionDeclaration";
 import { Declaration } from "../AST/Nodes/Declaration";
-import { IHasTag } from "../AST/Nodes/IHasTag";
-import { VarDeclaration } from "../AST/Nodes/VarDeclaration";
+import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
 import { IScope } from "./IScope";
 
 export class Scope implements IScope

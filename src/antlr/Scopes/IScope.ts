@@ -1,7 +1,6 @@
 import { Declaration } from "../AST/Nodes/Declaration";
 import { FunctionDeclaration } from "../AST/Nodes/Functions/FunctionDeclaration";
-import { IHasID } from "../AST/Nodes/IHasID";
-import { VarDeclaration } from "../AST/Nodes/VarDeclaration";
+import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
 
 export interface IScope
 {
