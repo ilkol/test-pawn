@@ -21,17 +21,16 @@ import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { Cycle } from "../Nodes/Cycles/Cycle";
-import { Array } from "../Nodes/Variables/Array";
+import * as ArrayNode from "../Nodes/Variables/Array";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 
 export abstract class BaseVisitor implements IVisitor
 {
-	visitArray(node: Array | ArrayDeclaration): void {
-		node.indexes.forEach(el => {
-			el.accept(this);
-		});
+	visitArray(node: ArrayNode.Array): void {
+		this.visitVariable(node);
+		this.acceptArray(node.indexes);
 	}
 
 	visitAssigment(node: AssigmentOperator): void {
@@ -43,7 +42,7 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitArrayDeclaration(node: ArrayDeclaration): void {
 		this.beforeVisitArrayDeclaration(node);
-		this.visitArray(node);
+		this.acceptArray(node.indexes);
 		this.afterVisitArrayDeclaration(node);
 	}
 
@@ -75,12 +74,6 @@ export abstract class BaseVisitor implements IVisitor
 	visitVariable(node: Variable): void {
 		this.beforeVisitVariable(node);
 		this.afterVisitVariable(node);
-	}
-
-	private checkVars<T extends ASTNode>(node: IContainsVars<T>) {
-		node.vars.forEach(element => {
-			element.accept(this);
-		});
 	}
 
 	visitVarInit(node: VariableInit): void {
@@ -170,7 +163,15 @@ export abstract class BaseVisitor implements IVisitor
 		this.checkVars(node);
 		this.afterVisitFunctionCall(node);
 	}
-	
+
+	private checkVars<T extends ASTNode>(node: IContainsVars<T>) {
+		this.acceptArray(node.vars);
+	}
+	private acceptArray<T extends ASTNode>(array: Array<T>) {
+		array.forEach(element => {
+			element.accept(this);
+		});
+	}
 	
 	abstract beforeVisitDeclarations(node: Declarations): void;
 	abstract afterVisitDeclarations(node: Declarations): void;

@@ -32,6 +32,7 @@ import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { Expresion } from "../Nodes/Expresion";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
+import { Array } from "../Nodes/Variables/Array";
 
 export class Analyzer extends BaseVisitor
 {
@@ -39,7 +40,10 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitAssigment(node: AssigmentOperator): void {
-
+		// let variableNode = node.left;
+		// if(!(variableNode instanceof Variable)) return;
+		// const variable = this.curScope.findVar(variableNode.id);
+		
 	}
 	beforeVisitArrayDeclaration(node: ArrayDeclaration): void {
 
@@ -90,7 +94,19 @@ export class Analyzer extends BaseVisitor
 		if(variable) {
 			variable.used = true;
 			this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires));
-
+			if(variable instanceof ArrayDeclaration) {
+				if(!(node instanceof Array))
+					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является массивом", node.idPos));
+				else {
+					if(variable.size.length != node.indexes.length) {
+						this.addDiagnostic(new DiagnosticError("Несовпадение размерности массива", node.pos));
+					}
+				}
+			}
+			else {
+				if(node instanceof Array)
+					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" не является массивом", node.idPos));
+			}
 		}
 		else {	
 			const func = this.curScope.findFunction(node.id);

@@ -83,7 +83,6 @@ export class PawnListener implements pawnListener
 
 			} catch(e) {
 				let last = this.nodes.peek();
-				console.error(node);
 				this.addDiagnostic("Ожидается идентификатор функции, а найден узел \"" + node.name + '"', DiagnosticSeverity.Error, node.pos);
 			}
 		}
@@ -179,15 +178,15 @@ export class PawnListener implements pawnListener
 			if(last instanceof OperatorNew) {
 				last.push(declarationVar);
 			}
-			else if(last instanceof Expresion)
-			{
-				last.expresion = node;
-			}
 			else if(last instanceof AssigmentOperator)
 			{
 				if(!last.left)
 					last.left = node;
 				else last.right = node;
+			}
+			else if(last instanceof Expresion)
+			{
+				last.expresion = node;
 			}
 			else if(last instanceof EnumMember)
 			{
