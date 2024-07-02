@@ -1,8 +1,7 @@
-import { ASTNode } from "./ASTNode";
-import { Declaration } from "./Declaration";
+import { Declaration } from "../Declaration";
+import { IContainsVars } from "../IContainsVars";
+import { IVisitor } from "../../visitor/IVisitor";
 import { EnumMember } from "./EnumMember";
-import { IContainsVars } from "./IContainsVars";
-import { IVisitor } from "../visitor/IVisitor";
 
 export class EnumDeclaration extends Declaration implements IContainsVars<EnumMember>
 {

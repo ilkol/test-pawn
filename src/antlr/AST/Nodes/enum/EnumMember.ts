@@ -1,6 +1,6 @@
-import { VarDeclaration } from "./Variables/VarDeclaration";
-import { VarOrFunctionDeclaration } from "./VarOrFunctionDeclaration";
-import { IVisitor } from "../visitor/IVisitor";
+import { VarDeclaration } from "../Variables/VarDeclaration";
+import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
+import { IVisitor } from "../../visitor/IVisitor";
 
 export class EnumMember extends VarOrFunctionDeclaration
 {

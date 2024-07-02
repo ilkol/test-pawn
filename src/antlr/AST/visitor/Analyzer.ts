@@ -4,8 +4,8 @@ import { DiagnosticMessage } from "../../diagnostic/DiagnosticMessage";
 import { BaseVisitor } from "./BaseVisitor";
 import { Declarations } from "../Nodes/Declarations";
 import { DiagnosticWarning } from "../../diagnostic/DiagnosticWarning";
-import { EnumDeclaration } from "../Nodes/EnumDeclaration";
-import { EnumMember } from "../Nodes/EnumMember";
+import { EnumDeclaration } from "../Nodes/enum/EnumDeclaration";
+import { EnumMember } from "../Nodes/enum/EnumMember";
 import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
 import { CodeBlock } from "../Nodes/CodeBlock";
 import { ReturnStatement } from "../Nodes/ReturnStatement";
@@ -51,7 +51,7 @@ export class Analyzer extends BaseVisitor
 	afterVisitArrayDeclaration(node: ArrayDeclaration): void {
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
 		
-		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires));
+		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires).concat(["declaration"]));
 
 		node.indexes = node.indexes.map(el => {
 			if(el instanceof Expresion && el.expresion instanceof IntLiteral) {
@@ -84,7 +84,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
 		this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
-		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires));
+		this.tokens.addToken(node.idPos, "parameter", this.checkVarModifires(node.modifires).concat(["declaration"]));
 	}
 	beforeVisitVariable(node: Variable): void {
 	
@@ -93,7 +93,7 @@ export class Analyzer extends BaseVisitor
 		const variable = this.curScope.findVar(node.id);
 		if(variable) {
 			variable.used = true;
-			this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires));
+			// this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires));
 			if(variable instanceof ArrayDeclaration) {
 				if(!(node instanceof Array))
 					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является массивом", node.idPos));
@@ -110,8 +110,11 @@ export class Analyzer extends BaseVisitor
 		}
 		else {	
 			const func = this.curScope.findFunction(node.id);
-			if(func)
+			if(func) {
+				this.tokens.addToken(node.idPos, "function");
 				this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является функцией", node.idPos));
+		
+			}
 			else this.addDiagnostic(new DiagnosticError("Переменная \"" + node.id + "\" ненайдена", node.idPos));
 		}
 	}
@@ -128,6 +131,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionCall(node: FunctionCall): void {
 		let func = this.curScope.findFunction(node.id);
+		this.tokens.addToken(node.idPos, "function");
 		if(func)
 			func.used = true;
 		else 
@@ -179,13 +183,16 @@ export class Analyzer extends BaseVisitor
 		// throw new Error("Method not implemented.");
 	}
 	afterVisitEnumMember(node: EnumMember): void {
-		// throw new Error ("Method not implemented.");
+		
+		this.tokens.addToken(node.idPos, "enumMember", ["readonly", "declaration"]);
 	}
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
 		
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
-		// throw new Error("Method not implemented.");
+		this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addVar(variable));
+		
+		this.tokens.addToken(node.idPos, "enum", ["declaration"]);
 	}
 	
 	beforeVisitDeclarations(declaration: Declarations): void {
@@ -211,7 +218,7 @@ export class Analyzer extends BaseVisitor
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
 		
-		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires));
+		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires).concat("declaration"));
 	}
 		
 	constructor(public readonly diagnostics: DiagnosticMessage[], public readonly tokens: SemanticTokensManager) {

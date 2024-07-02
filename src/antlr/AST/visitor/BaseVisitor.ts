@@ -1,8 +1,8 @@
 /* eslint-disable curly */
 import { Declarations } from "../Nodes/Declarations";
 import { IVisitor } from "./IVisitor";
-import { EnumDeclaration } from "../Nodes/EnumDeclaration";
-import { EnumMember } from "../Nodes/EnumMember";
+import { EnumDeclaration } from "../Nodes/enum/EnumDeclaration";
+import { EnumMember } from "../Nodes/enum/EnumMember";
 import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
 import { CodeBlock } from "../Nodes/CodeBlock";
 import { ReturnStatement } from "../Nodes/ReturnStatement";

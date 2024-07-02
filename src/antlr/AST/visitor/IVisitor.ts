@@ -1,7 +1,7 @@
 import { CodeBlock } from "../Nodes/CodeBlock";
 import { Declarations } from "../Nodes/Declarations";
-import { EnumDeclaration } from "../Nodes/EnumDeclaration";
-import { EnumMember } from "../Nodes/EnumMember";
+import { EnumDeclaration } from "../Nodes/enum/EnumDeclaration";
+import { EnumMember } from "../Nodes/enum/EnumMember";
 import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
 import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
@@ -19,7 +19,7 @@ import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { Array } from "../Nodes/Variables/Array";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
-import AssigmentOperator from "../Nodes/Operators/AssigmentOperator";
+import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 
 export interface IVisitor
 {

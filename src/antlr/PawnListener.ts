@@ -8,8 +8,8 @@ import { ArrayIndexContext, AssigmentContext, CodeBlockContext, CycleBodyContext
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
-import { EnumDeclaration } from "./AST/Nodes/EnumDeclaration";
-import { EnumMember } from "./AST/Nodes/EnumMember";
+import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
+import { EnumMember } from "./AST/Nodes/enum/EnumMember";
 import { Tag } from "./AST/Nodes/Tag";
 import { CodeBlock } from "./AST/Nodes/CodeBlock";
 import { Statements } from "./AST/Nodes/Statements";
@@ -216,7 +216,13 @@ export class PawnListener implements pawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 
-			let decl = (<Declarations>this.nodes.peek());
+			let id = ctx.IDENTIFIER();
+			if(id) {
+				node.id = id.text;
+				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+			}
+
+			let decl = <Declarations>this.nodes.peek();
 			node.vars.forEach(element => {
 				decl.declarations.push(element);
 			});

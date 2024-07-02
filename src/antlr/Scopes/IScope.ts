@@ -6,7 +6,7 @@ export interface IScope
 {
 	extend(): IScope;
 	
-	addVar(variable: VarDeclaration): void;
+	addVar(variable: Declaration): void;
 	addFunction(func: FunctionDeclaration): void;
 
 	find(id: string): Declaration|undefined;
