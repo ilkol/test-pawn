@@ -26,7 +26,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 	public tryParse(): void
 	{
 		const lexer = this.tryLex();
-		lexer.addErrorListener(new LexerErrorListener());
+		const lexerErrorListener = new LexerErrorListener();
+		lexer.addErrorListener(lexerErrorListener);
 		const tokenStream = new CommonTokenStream(lexer);
 		const parser = new pawnParser(tokenStream);
 		const parserErrorListener = new ParserErrorListener();
@@ -39,7 +40,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		let listen = (<PawnListener>listener);
 		this.AST = <Declarations>listen.Root;
 
-		let analyzer = new Analyzer(listen.diagnostics.concat(parserErrorListener.diagnostic), this.tokensManager);
+		let analyzer = new Analyzer(listen.diagnostics.concat(parserErrorListener.diagnostic).concat(lexerErrorListener.diagnostic), this.tokensManager);
 		try {
 			this.AST.accept(analyzer);
 		}
