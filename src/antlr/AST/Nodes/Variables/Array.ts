@@ -16,8 +16,6 @@ export class Array extends Variable
         return this._indexes;
     }
     public pushIndexes(v: Expresion[]) {
-        console.log(this._indexes);
         this._indexes = this._indexes.concat(v);
-        console.log(this._indexes);
     }
 }

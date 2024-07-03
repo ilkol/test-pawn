@@ -500,7 +500,6 @@ export class PawnListener implements pawnListener
 	}
 
 	enterAssigment(ctx: AssigmentContext):void {
-		// console.log(this.nodes.peek());
 		let node = new AssigmentOperator();	
 
 		this.nodes.push(node);
