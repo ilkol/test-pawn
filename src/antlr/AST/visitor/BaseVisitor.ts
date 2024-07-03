@@ -134,7 +134,7 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitEnumDeclaration(node: EnumDeclaration): void {
 		this.beforeVisitEnumDeclaration(node);
-		this.checkVars(node);
+		// this.checkVars(node);
 		this.afterVisitEnumDeclaration(node);
 	}
 	visitFunctionDeclaration(node: FunctionDeclaration): void {

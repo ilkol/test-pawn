@@ -93,7 +93,6 @@ export class Analyzer extends BaseVisitor
 		const variable = this.curScope.findVar(node.id);
 		if(variable) {
 			variable.used = true;
-			// this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires));
 			if(variable instanceof ArrayDeclaration) {
 				if(!(node instanceof Array))
 					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является массивом", node.idPos));
@@ -182,8 +181,10 @@ export class Analyzer extends BaseVisitor
 	beforeVisitEnumMember(node: EnumMember): void {
 		// throw new Error("Method not implemented.");
 	}
-	afterVisitEnumMember(node: EnumMember): void {
-		
+	afterVisitEnumMember(node: EnumMember): void {	
+		console.error(node.id);
+		// throw new Error("1");
+		this.checkUsed(node, (variable: EnumMember) => this.curScope.addVar(variable));
 		this.tokens.addToken(node.idPos, "enumMember", ["readonly", "declaration"]);
 	}
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
@@ -213,7 +214,7 @@ export class Analyzer extends BaseVisitor
 		const modif = ["declaration"];
 		if(node.code != undefined)
 			modif.push("definition");
-		
+
 		this.tokens.addToken(node.idPos, "function", modif);
 			
 	}
