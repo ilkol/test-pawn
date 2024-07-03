@@ -210,6 +210,12 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope();
+		const modif = ["declaration"];
+		if(node.code != undefined)
+			modif.push("definition");
+		
+		this.tokens.addToken(node.idPos, "function", modif);
+			
 	}
 	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
