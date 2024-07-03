@@ -182,8 +182,6 @@ export class Analyzer extends BaseVisitor
 		// throw new Error("Method not implemented.");
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
-		console.error(node.id);
-		// throw new Error("1");
 		this.checkUsed(node, (variable: EnumMember) => this.curScope.addVar(variable));
 		this.tokens.addToken(node.idPos, "enumMember", ["readonly", "declaration"]);
 	}
