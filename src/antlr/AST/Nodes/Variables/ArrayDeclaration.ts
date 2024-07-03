@@ -1,14 +1,14 @@
 import { IVisitor } from "../../visitor/IVisitor";
+import { EnumDeclaration } from "../enum/EnumDeclaration";
 import { Expresion } from "../Expresion";
 import { VarDeclaration } from "./VarDeclaration";
 
 
 export class ArrayDeclaration extends VarDeclaration
 {
-	private _indexes: Expresion[] = [];
+	private _indexes: (Expresion | EnumDeclaration)[] = [];
 	private _size: number[] = [];
-	private _lastSize = 0;
-	
+		
 	name = "объявление массива";
 
 	constructor(instance: ArrayDeclaration | undefined = undefined) {
@@ -18,15 +18,15 @@ export class ArrayDeclaration extends VarDeclaration
 		}
 	}
 
-	public set indexes(v: Expresion[]) {
+	public set indexes(v: (Expresion | EnumDeclaration)[]) {
 		this._indexes = v;
 	}
-	public get indexes(): Expresion[] {
+	public get indexes(): (Expresion | EnumDeclaration)[] {
 		return this._indexes;
 	}
 
-	public pushSize(v: number) {
-		this._size[this._lastSize++] = v;
+	public pushSize(index: number, v: number) {
+		this._size[index] = v;
 	}
 	public get size(): number[] {
 		return this._size;

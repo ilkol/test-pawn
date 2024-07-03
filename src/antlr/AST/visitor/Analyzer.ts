@@ -53,12 +53,30 @@ export class Analyzer extends BaseVisitor
 		
 		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires).concat(["declaration"]));
 
+		let index = -1;
 		node.indexes = node.indexes.map(el => {
-			if(el instanceof Expresion && el.expresion instanceof IntLiteral) {
-				node.pushSize(el.expresion.value);
-				return el.expresion;
+			index++;
+			if(el instanceof Expresion) {
+				if(el.expresion instanceof IntLiteral) {
+					node.pushSize(index, el.expresion.value);
+					return el.expresion;
+				}
+				if(el.expresion instanceof Variable) {
+					const variable = this.curScope.findVar(el.expresion.id);
+					if(variable) {
+						if(!(variable instanceof EnumDeclaration)) {
+							this.addDiagnostic(new DiagnosticError("Ожидается целочисленная константа или перечисление, а найдено \""+el.expresion.name+"\"", el.pos));
+						}
+						else {
+							variable.used = true;
+							this.tokens.addToken(el.expresion.idPos, "enum");
+							return variable;
+						}
+					}
+				}
+				// else
+				// 	this.addDiagnostic(new DiagnosticError("Ожидается целочисленная константа, а найдено пустое вырожение", el.pos));
 			}
-			this.addDiagnostic(new DiagnosticError("Ожидается целочисленная константа, а найдена \""+el.name+"\"", el.pos));
 			return el;
 		});
 	}
@@ -97,8 +115,49 @@ export class Analyzer extends BaseVisitor
 				if(!(node instanceof Array))
 					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является массивом", node.idPos));
 				else {
-					if(variable.size.length != node.indexes.length) {
+					if(variable.indexes.length != node.indexes.length) {
 						this.addDiagnostic(new DiagnosticError("Несовпадение размерности массива", node.pos));
+					}
+					else {
+						let iter = -1;
+						node.indexes = node.indexes.map(el => {
+							iter++;
+							if(el.expresion instanceof IntLiteral) {
+								const size = variable.size.at(iter);
+								if(!size)
+									this.addDiagnostic(new DiagnosticError("Ожидается константа", el.pos));
+								else {
+									const val = el.expresion.value;
+									if(val < 0) {
+										this.addDiagnostic(new DiagnosticError("Индекс не может быть отрицательным", el.pos));
+									}
+									else if(val >= size) {
+										this.addDiagnostic(new DiagnosticError(`Выход за границы массива. Максимальный индекс ${size-1}`, el.pos));
+									}
+								}
+								return el.expresion;
+							}
+							if(el.expresion instanceof Variable) {
+								const enumer = variable.indexes.at(iter);
+								const checkVar = this.curScope.findVar(el.expresion.id);
+								// console.error(enumer);
+								// console.error(checkVar);
+								if(!(enumer instanceof EnumDeclaration)) {
+									variable.used = true;
+								} else {
+									if(checkVar instanceof EnumMember) {
+										if(enumer !== checkVar.parent)
+											this.addDiagnostic(new DiagnosticError("Ожидается константа из перечисления \""+enumer.id+"\"", el.pos));
+									}
+									else {
+										this.addDiagnostic(new DiagnosticError("Ожидается константа из перечисления \""+enumer.id+"\"", el.pos));
+									}
+								}
+							}
+							// else
+							// 	this.addDiagnostic(new DiagnosticError("Ожидается целочисленная константа, а найдено пустое вырожение", el.pos));
+							return el;
+						});
 					}
 				}
 			}
@@ -116,6 +175,7 @@ export class Analyzer extends BaseVisitor
 			}
 			else this.addDiagnostic(new DiagnosticError("Переменная \"" + node.id + "\" ненайдена", node.idPos));
 		}
+
 	}
 	private curScope: IScope = new Scope();
 

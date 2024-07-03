@@ -237,11 +237,13 @@ export class PawnListener implements pawnListener
 	}
 	exitEnumMember(ctx: EnumMemberContext): void
 	{
-		let node = <EnumMember>this.nodes.pop();
+		const node = <EnumMember>this.nodes.pop();
 		if(ctx.stop)
 		{	
 			node.setPos(ctx.start, ctx.stop);
-			(<EnumDeclaration>this.nodes.peek()).push(node);
+			const last = <EnumDeclaration>this.nodes.peek();
+			last.push(node);
+			node.parent = last;
 		}
 	}
 
