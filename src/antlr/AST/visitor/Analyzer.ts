@@ -165,7 +165,7 @@ export class Analyzer extends BaseVisitor
 				if(node instanceof Array)
 					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" не является массивом", node.idPos));
 			}
-			this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires)));
+			this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires));
 		}
 		else {	
 			const func = this.curScope.findFunction(node.id);
