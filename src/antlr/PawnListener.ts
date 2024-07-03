@@ -605,13 +605,13 @@ export class PawnListener implements pawnListener
 		const last = this.nodes.peek();
 		if(last instanceof FunctionDeclaration) {
 			if(ctx.funcModif()?.STOCK())
-				last.stock = true;
+				last.modifire = FunctionModifire.stock;
 			else if(ctx.funcModif()?.PUBLIC())
 				last.modifire = FunctionModifire.public;
 			else if(ctx.FORWARD())
 				last.modifire = FunctionModifire.forward;
 			else if(ctx.NATIVE())
-				last.native = true;
+				last.modifire = FunctionModifire.native;
 		}
 		else if(ctx.stop) {
 			console.debug(last);

@@ -309,13 +309,17 @@ export class Analyzer extends BaseVisitor
 		ids.forEach((element, key) => {
 			if(!element.used && !element.native) {
 				let diagnostic: DiagnosticMessage, diagnosticMsg: string;
+				let stock = element.stock;
 				if(element instanceof FunctionDeclaration) {
 					diagnosticMsg = "Функция";
+					if(element.modifire !== FunctionModifire.none)
+						stock = true;
 				}
-				else 
+				else {
 					diagnosticMsg = "Переменная";
+				}
 				
-				if(!element.stock) {
+				if(!stock) {
 					diagnostic = new DiagnosticWarning(`${diagnosticMsg} "${key}" нигде не используется`, element.idPos);
 					diagnostic.tags = [DiagnosticTag.Unnecessary];
 				}

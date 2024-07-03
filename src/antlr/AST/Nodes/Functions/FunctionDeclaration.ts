@@ -48,4 +48,7 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	public get modifire(): FunctionModifire {
 		return this._modifire;
 	}
+	public get stock(): boolean {
+		return this._modifire === FunctionModifire.stock;
+	}
 }
