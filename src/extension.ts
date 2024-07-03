@@ -11,6 +11,7 @@ import { CallHierarchyProvider } from './Providers/CallHierarchyProvider';
 import { SymbolProvider } from './Providers/SymbolProvider';
 import { PawnColorProvider } from './Providers/ColorProvider';
 import { AbstractOpenFile } from './AbstractOpenFile';
+import { SemanticTokens, SemanticTokensModifires } from './SemanticTokens';
 
 interface IDefine {
 	name: string
@@ -49,8 +50,30 @@ export async function activate(context: vscode.ExtensionContext) {
 	});	
 	const documentLinkProvider = new DocumentLinkProvider(fileManage);
 	
-	const tokenTypes = ['type', 'enum', 'parameter', 'enumMember', 'macro', 'comment', 'string', 'keyword', 'number', 'operator', 'function', 'variable'];
-	const tokenModifiers = ['declaration', 'definition', 'readonly', 'static', 'deprecated', 'documentation', 'modification', 'defaultLibrary'];
+	const tokenTypes = [
+		SemanticTokens.type, 
+		SemanticTokens.enum, 
+		SemanticTokens.parameter, 
+		SemanticTokens.enumMember, 
+		SemanticTokens.macro, 
+		SemanticTokens.comment, 
+		SemanticTokens.string,
+		SemanticTokens.keyword, 
+		SemanticTokens.number, 
+		SemanticTokens.operator, 
+		SemanticTokens.function, 
+		SemanticTokens.variable
+	];
+	const tokenModifiers = [
+		SemanticTokensModifires.declaration,
+		SemanticTokensModifires.declaration,
+		SemanticTokensModifires.const,
+		SemanticTokensModifires.static,
+		SemanticTokensModifires.deprecated,
+		SemanticTokensModifires.doc,
+		SemanticTokensModifires.modification,
+		SemanticTokensModifires.default
+	];
 	const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
 
 	const documentSemanticTokensProvider = new DocumentSemanticTokensProvider(fileManage, legend);

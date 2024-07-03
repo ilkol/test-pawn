@@ -33,6 +33,7 @@ import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { Expresion } from "../Nodes/Expresion";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 import { Array } from "../Nodes/Variables/Array";
+import { SemanticTokens, SemanticTokensModifires } from "../../../SemanticTokens";
 
 export class Analyzer extends BaseVisitor
 {
@@ -48,7 +49,7 @@ export class Analyzer extends BaseVisitor
 	afterVisitArrayDeclaration(node: ArrayDeclaration): void {
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
 		
-		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires).concat(["declaration"]));
+		this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(node.modifires).concat([SemanticTokensModifires.declaration]));
 
 		let index = -1;
 		node.indexes = node.indexes.map(el => {
@@ -66,7 +67,7 @@ export class Analyzer extends BaseVisitor
 						}
 						else {
 							variable.used = true;
-							this.tokens.addToken(el.expresion.idPos, "enum");
+							this.tokens.addToken(el.expresion.idPos, SemanticTokens.enum);
 							return variable;
 						}
 					}
@@ -100,7 +101,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
 		this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
-		this.tokens.addToken(node.idPos, "parameter", this.checkVarModifires(node.modifires).concat(["declaration"]));
+		this.tokens.addToken(node.idPos, SemanticTokens.parameter, this.checkVarModifires(node.modifires).concat([SemanticTokensModifires.declaration]));
 	}
 	beforeVisitVariable(node: Variable): void {
 	
@@ -161,12 +162,12 @@ export class Analyzer extends BaseVisitor
 				if(node instanceof Array)
 					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" не является массивом", node.idPos));
 			}
-			this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires));
+			this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(variable.modifires));
 		}
 		else {	
 			const func = this.curScope.findFunction(node.id);
 			if(func) {
-				this.tokens.addToken(node.idPos, "function");
+				this.tokens.addToken(node.idPos, SemanticTokens.function);
 				this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является функцией", node.idPos));
 		
 			}
@@ -186,7 +187,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionCall(node: FunctionCall): void {
 		let func = this.curScope.findFunction(node.id);
-		this.tokens.addToken(node.idPos, "function");
+		this.tokens.addToken(node.idPos, SemanticTokens.function);
 		if(func)
 			func.used = true;
 		else 
@@ -249,14 +250,14 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
 		this.checkUsed(node, (variable: EnumMember) => this.curScope.addVar(variable));
-		this.tokens.addToken(node.idPos, "enumMember", ["readonly", "declaration"]);
+		this.tokens.addToken(node.idPos, SemanticTokens.enumMember, [SemanticTokensModifires.const, SemanticTokensModifires.declaration]);
 	}
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
 		
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
 		this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addVar(variable));		
-		this.tokens.addToken(node.idPos, "enum", ["declaration"]);
+		this.tokens.addToken(node.idPos, SemanticTokens.enum, [SemanticTokensModifires.declaration]);
 	}
 	
 	beforeVisitDeclarations(declaration: Declarations): void {
@@ -275,11 +276,11 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope();
-		const modif = ["declaration"];
+		const modif = [SemanticTokensModifires.declaration];
 		if(node.code != undefined)
-			modif.push("definition");
+			modif.push(SemanticTokensModifires.declaration);
 
-		this.tokens.addToken(node.idPos, "function", modif);			
+		this.tokens.addToken(node.idPos, SemanticTokens.function, modif);			
 	}
 	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
@@ -287,7 +288,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));		
-		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires).concat("declaration"));
+		this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(node.modifires).concat(SemanticTokensModifires.declaration));
 	}
 		
 	constructor(public readonly diagnostics: DiagnosticMessage[], public readonly tokens: SemanticTokensManager) {
@@ -332,19 +333,19 @@ export class Analyzer extends BaseVisitor
 		}
 	}
 
-	private checkVarModifires(modifires: VariableModifire[]): string[] {
-		const tokens: string[] = [];
+	private checkVarModifires(modifires: VariableModifire[]): SemanticTokensModifires[] {
+		const tokens: SemanticTokensModifires[] = [];
 		modifires.forEach(value => {
 			switch(value) {
 				case VariableModifire.const: 
-					tokens.push("readonly");
+					tokens.push(SemanticTokensModifires.const);
 					break;
 				case VariableModifire.static:
-					tokens.push("static");
+					tokens.push(SemanticTokensModifires.static);
 					break;
-				case VariableModifire.stock:
-					tokens.push("stock");
-					break;
+				// case VariableModifire.stock:
+				// 	tokens.push(SemanticTokensModifires.);
+				// 	break;
 			}
 		});
 		return tokens;
