@@ -307,7 +307,7 @@ export class Analyzer extends BaseVisitor
 
 	private checkIds(ids: Map<string, Declaration>) {
 		ids.forEach((element, key) => {
-			if(!element.used) {
+			if(!element.used && !element.native) {
 				let diagnostic: DiagnosticMessage, diagnosticMsg: string;
 				if(element instanceof FunctionDeclaration) {
 					diagnosticMsg = "Функция";

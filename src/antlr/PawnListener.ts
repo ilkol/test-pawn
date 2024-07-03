@@ -611,7 +611,7 @@ export class PawnListener implements pawnListener
 			else if(ctx.FORWARD())
 				last.modifire = FunctionModifire.forward;
 			else if(ctx.NATIVE())
-				last.modifire = FunctionModifire.native;
+				last.native = true;
 		}
 		else if(ctx.stop) {
 			console.debug(last);
