@@ -1,15 +1,30 @@
-import { ANTLRErrorListener, RecognitionException, Recognizer, Token } from "antlr4ts";
+import { ANTLRErrorListener, CommonToken, RecognitionException, Recognizer, Token } from "antlr4ts";
+import * as antlr from "antlr4ts";
+import { FunctionDeclContext } from "./generated/pawnParser";
+import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
+import { DiagnosticError } from "./diagnostic/DiagnosticError";
+import { Position, Range } from "vscode";
 
 export class ParserErrorListener implements ANTLRErrorListener<Token>
 {
+	private _diagnostic: DiagnosticMessage[] = [];
 	syntaxError <T extends Token>(recognizer: Recognizer<T, any>, offendingSymbol: T | undefined, line: number, charPositionInLine: number, msg: string, e: RecognitionException | undefined): void {
-		console.error("PARSER ERROR");
-		// console.log(recognizer);
-		// console.log(offendingSymbol);
-		console.log(line);
-		console.log(charPositionInLine);
-		console.log(msg);
-		// console.log(e?.);
+		if(e) {
+			if(e.context instanceof FunctionDeclContext) {
+				if(offendingSymbol?.text == "<EOF>") {
+					this.diagnostic.push(new DiagnosticError(`Ожидается ";"`, this.getPos(line, charPositionInLine, charPositionInLine+1)));
+					// console.log("Ожидается ;");
+				}
+			}
+		}
 		
+	}
+
+	private getPos(line: number, start: number, stop: number): Range {
+		return  new Range(line, start, line, stop);
+	}
+
+	public get diagnostic(): DiagnosticMessage[] {
+		return this._diagnostic;
 	}
 }

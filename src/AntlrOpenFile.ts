@@ -29,7 +29,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 		lexer.addErrorListener(new LexerErrorListener());
 		const tokenStream = new CommonTokenStream(lexer);
 		const parser = new pawnParser(tokenStream);
-		parser.addErrorListener(new ParserErrorListener());
+		const parserErrorListener = new ParserErrorListener();
+		parser.addErrorListener(parserErrorListener);
 		const ruleContext = parser.file();
 		const listener: pawnListener = new PawnListener();
 		
@@ -38,7 +39,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		let listen = (<PawnListener>listener);
 		this.AST = <Declarations>listen.Root;
 
-		let analyzer = new Analyzer(listen.diagnostics, this.tokensManager);
+		let analyzer = new Analyzer(listen.diagnostics.concat(parserErrorListener.diagnostic), this.tokensManager);
 		try {
 			this.AST.accept(analyzer);
 		}
@@ -48,7 +49,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		}
 		console.debug("Обход дерева окончен");
 
-		this.diagnostic(listen.diagnostics);
+		this.diagnostic(analyzer.diagnostics);
 
 		console.log(this.AST);
 	}
