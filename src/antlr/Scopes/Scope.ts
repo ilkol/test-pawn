@@ -2,6 +2,7 @@ import { FunctionDeclaration } from "../AST/Nodes/Functions/FunctionDeclaration"
 import { Declaration } from "../AST/Nodes/Declaration";
 import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
 import { IScope } from "./IScope";
+import { Tag } from "../AST/Nodes/Tag";
 
 export class Scope implements IScope
 {
@@ -9,10 +10,18 @@ export class Scope implements IScope
 	protected _ids: Map<string, Declaration> = new Map<string, Declaration>();
 	protected _functions: Map<string, FunctionDeclaration> = new Map();
 	protected _variables: Map<string, VarDeclaration> = new Map();
+	protected _tag: Tag | undefined;
 	
 	public constructor(IScope: IScope|undefined = undefined)
 	{
 		this._parent = IScope;
+		this._tag = IScope?.returnTag;
+	}
+	get returnTag(): Tag | undefined {
+		return this._tag;
+	}
+	set returnTag(v: Tag) {
+		this._tag = v;
 	}
 	public findVar(id: string): VarDeclaration | undefined {
 		let currentScope: IScope | undefined = this;

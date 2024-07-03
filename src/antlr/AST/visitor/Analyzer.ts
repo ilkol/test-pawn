@@ -165,6 +165,7 @@ export class Analyzer extends BaseVisitor
 				if(node instanceof Array)
 					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" не является массивом", node.idPos));
 			}
+			this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(variable.modifires)));
 		}
 		else {	
 			const func = this.curScope.findFunction(node.id);
@@ -175,7 +176,6 @@ export class Analyzer extends BaseVisitor
 			}
 			else this.addDiagnostic(new DiagnosticError("Переменная \"" + node.id + "\" ненайдена", node.idPos));
 		}
-
 	}
 	private curScope: IScope = new Scope();
 
@@ -224,7 +224,17 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	afterVisitReturn(node: ReturnStatement): void {
-	
+		if(node.value) {
+			if(node.value.tag.id !== this.curScope.returnTag?.id) {
+				if(node.value.expresion instanceof Variable) {
+					const variable = this.curScope.findVar(node.value.expresion.id);
+					if(variable?.tag.id !== this.curScope.returnTag?.id) {
+						this.addDiagnostic(new DiagnosticError(`Возвращаемое вырожение должно быть с тэгом "${this.curScope.returnTag?.id}", а найден тэг "${variable?.tag.id}"`, node.value.pos));
+					}
+				}
+				else this.addDiagnostic(new DiagnosticError(`Возвращаемое вырожение должно быть с тэгом "${this.curScope.returnTag?.id}", а найден тэг "${node.value.tag.id}"`, node.value.pos));
+			}
+		}
 	}
 	beforeVisitCodeBlock(node: CodeBlock): void {
 		this.extendScope();
@@ -266,6 +276,7 @@ export class Analyzer extends BaseVisitor
 			this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
 		}
 		this.extendScope();
+		this.curScope.returnTag = node.tag;
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope();

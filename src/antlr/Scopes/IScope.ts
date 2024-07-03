@@ -1,5 +1,6 @@
 import { Declaration } from "../AST/Nodes/Declaration";
 import { FunctionDeclaration } from "../AST/Nodes/Functions/FunctionDeclaration";
+import { Tag } from "../AST/Nodes/Tag";
 import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
 
 export interface IScope
@@ -18,4 +19,7 @@ export interface IScope
 	identifires(): Map<string, Declaration>;
 
 	get parent(): IScope|undefined;
+
+	get returnTag(): Tag|undefined;
+	set returnTag(v: Tag);
 }
