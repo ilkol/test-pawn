@@ -40,10 +40,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitAssigment(node: AssigmentOperator): void {
-		// let variableNode = node.left;
-		// if(!(variableNode instanceof Variable)) return;
-		// const variable = this.curScope.findVar(variableNode.id);
-		
+	
 	}
 	beforeVisitArrayDeclaration(node: ArrayDeclaration): void {
 
@@ -99,6 +96,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 	beforeVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
+		
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
 		this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
@@ -140,8 +138,6 @@ export class Analyzer extends BaseVisitor
 							if(el.expresion instanceof Variable) {
 								const enumer = variable.indexes.at(iter);
 								const checkVar = this.curScope.findVar(el.expresion.id);
-								// console.error(enumer);
-								// console.error(checkVar);
 								if(!(enumer instanceof EnumDeclaration)) {
 									variable.used = true;
 								} else {
@@ -249,7 +245,7 @@ export class Analyzer extends BaseVisitor
 		
 	}
 	beforeVisitEnumMember(node: EnumMember): void {
-		// throw new Error("Method not implemented.");
+
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
 		this.checkUsed(node, (variable: EnumMember) => this.curScope.addVar(variable));
@@ -259,13 +255,12 @@ export class Analyzer extends BaseVisitor
 		
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
-		this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addVar(variable));
-		
+		this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addVar(variable));		
 		this.tokens.addToken(node.idPos, "enum", ["declaration"]);
 	}
 	
 	beforeVisitDeclarations(declaration: Declarations): void {
-		// throw new Error("Method not implemented.");
+
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
 		this.checkIds(this.curScope.identifires());
@@ -284,16 +279,14 @@ export class Analyzer extends BaseVisitor
 		if(node.code != undefined)
 			modif.push("definition");
 
-		this.tokens.addToken(node.idPos, "function", modif);
-			
+		this.tokens.addToken(node.idPos, "function", modif);			
 	}
 	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
-		// throw new Error("Method not implemented.");
+
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
-		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
-		
+		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));		
 		this.tokens.addToken(node.idPos, "variable", this.checkVarModifires(node.modifires).concat("declaration"));
 	}
 		
