@@ -208,7 +208,7 @@ TAGOF:		'tagof';
 
 //команды препроцессора
 DEFINE:		'define';
-ELSEIF:		'#elsei';
+ELSEIF:		'elseif';
 EMIT:		'emit';
 ENDIF:		'endif';
 ENDINPUT:	'endinput';

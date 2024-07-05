@@ -1,6 +1,7 @@
-import { TextDocument } from "vscode";
+import { commands, Position, Range, TextDocument } from "vscode";
 import { AbstractOpenFile } from "./AbstractOpenFile";
 import { FileManager } from "./Managers/FileManager";
+import * as vscode from 'vscode';
 
 import { CharStreams, CommonTokenStream } from "antlr4ts";
 import { ParseTreeWalker } from 'antlr4ts/tree/ParseTreeWalker'
@@ -14,6 +15,10 @@ import { Declarations } from "./antlr/AST/Nodes/Declarations";
 import { LexerErrorListener } from "./antlr/LexerErrorListener";
 import { ParserErrorListener } from "./antlr/ParserErrorListener";
 import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
+import { match } from "assert";
+import { Define } from "./Prepocessor/Define";
+import { PPCommand } from "./Prepocessor/PPComand";
+import { Include } from "./Prepocessor/Include";
 
 export class AntrlOpenFile extends AbstractOpenFile
 {
@@ -25,7 +30,22 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 	public tryParse(): void
 	{
-		const lexer = this.tryLex();
+
+		let code = this.file.getText()
+		try {
+			code = this.preprocessor(code);
+		}
+		catch(e) {
+			console.error(e);
+		}
+
+		console.error(this.ppCmds);
+		// vscode.workspace.openTextDocument({ content: code, language: "txt" }).then(document => {
+        //     // Открытие документа в редакторе
+        //     vscode.window.showTextDocument(document);
+        // });
+
+		const lexer = this.tryLex(code);
 		const lexerErrorListener = new LexerErrorListener();
 		lexer.addErrorListener(lexerErrorListener);
 		const tokenStream = new CommonTokenStream(lexer);
@@ -54,10 +74,111 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 		console.log(this.AST);
 	}
+	private ppCmds: PPCommand[] = [];
+	private preprocessor(text: string): string {
+		let code = text;
+		const reg = /(?:^)\s*#\s*(define|elseif|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?:\r?\n|$)/gim;
+	
+		let lastindex = 0;
+		let match;
+		while ((match = reg.exec(code)) !== null) {
+			const command =  match[0];
+			const directive =  match[1];
+			const rest =  match[2];
 
-	private tryLex(): pawnLexer
+			const newlines = command.match(/\r?\n/g) || [];
+			const preStr = code.substring(lastindex, match.index);
+			const replaceCommand = ' '.repeat(command.length - newlines.join('').length) + newlines.join('');
+			const postStr = code.substring(match.index + command.length);
+
+			const range = new Range(this.file.positionAt(match.index), this.file.positionAt(match.index + command.length));
+			const pos = new Position(match.index, match.index + command.length);
+
+			const postPPStr = this.evalPreproc(directive, rest, range, pos, postStr);
+
+			code = preStr + replaceCommand + postPPStr;
+		}
+
+	
+		console.log(code);
+
+		return code;
+	}
+	private evalPreproc(command: string, text: string, range: Range, pos: Position, str: string): string {
+		switch(command.toLowerCase()) {
+			case "define": 
+				return this.evalDefine(text, range, pos, str);
+			case "include": 
+			{
+				this.evalInclude(text, range, pos);
+				return str;
+			}
+			default:
+				throw new Error("Неизвестная команда препроцессора");
+		}
+	}
+	private evalInclude(text: string, range: Range, pos: Position) {
+		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
+		const match = reg.exec(text);
+
+		if (match) {
+			const path = match[1];
+			this.ppCmds.push(new Include(path, range, pos));
+		} else {
+			throw new Error('Invalid #define syntax:' + text);
+		}
+	}
+	private evalDefine(text: string, range: Range, pos: Position, str: string): string {
+		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
+		const match = reg.exec(text);
+
+		if (match) {
+			const pattern = match[1];
+
+			const findParams = /%(\d+)/g;
+			let patternRegStr = "";
+			let lastindex = 0;
+			let paramMatch: RegExpExecArray  | null;
+			const patternPrepared = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+			const parameters: number[] = [];
+
+			while(paramMatch = findParams.exec(patternPrepared)) {
+				patternRegStr += patternPrepared.substring(lastindex, paramMatch.index) + "(.)+\s*";
+				lastindex = paramMatch.index+paramMatch[0].length;
+				parameters.push(+paramMatch[1]);
+			}
+			patternRegStr += patternPrepared.substring(lastindex);
+
+			const replacement = match[2] ? match[2].trim() : "";
+			const patternReg  = new RegExp(patternRegStr, "g")
+
+			this.ppCmds.push(new Define(patternReg, replacement, range, pos));
+			
+			lastindex = 0;
+			while(paramMatch = patternReg.exec(str)) {
+				const prestr = str.substring(lastindex, paramMatch.index);
+				const poststr = str.substring(paramMatch.index + paramMatch[0].length);
+				let newStr = replacement;
+
+				let index = 1;
+				let param = paramMatch;
+				parameters.forEach(el => {
+					newStr = newStr.replace(`%${el}`, param[index++]);
+				});
+				str = prestr + newStr + poststr;
+				
+				lastindex = paramMatch.index;
+			}
+
+			return str;
+		} else {
+			throw new Error('Invalid #define syntax:' + text);
+		}
+	}
+	private tryLex(text: string): pawnLexer
 	{
-		const stream = CharStreams.fromString(this.file.getText());
+		const stream = CharStreams.fromString(text);
 		return new pawnLexer(stream);
 	}
 
