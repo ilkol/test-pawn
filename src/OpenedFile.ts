@@ -209,7 +209,7 @@ export class OpenedFile extends AbstractOpenFile{
 		// });
 	}
 
-	public getComplitions(complitions: CompletionItem[]) {
+	// public getComplitions(complitions: CompletionItem[]) {
 		// this.env.functions.forEach((value, key) => {	
 		// 	complitions.push(value.complition);
 		// });
@@ -224,5 +224,5 @@ export class OpenedFile extends AbstractOpenFile{
 			
 		// 	complitions.push(complition);
 		// });
-	}
+	// }
 }

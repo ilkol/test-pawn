@@ -85,6 +85,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 		if(connect[0].text == ";") {
+			console.error(e.contentChanges);
 			fileManage.onDidOpenTextDocument(e.document);
 			// documentLinkProvider.provideDocumentLinks(e.document);
 		}
@@ -158,10 +159,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	const provider1 = vscode.languages.registerCompletionItemProvider('pawn', {
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
 			
-			const complitions: vscode.CompletionItem[] = getDefaultComplitions();
+			let complitions: vscode.CompletionItem[] = [];
 			
 			const file: AbstractOpenFile | undefined = fileManage.openedFiles.get(document.uri.path);
-			// if(file) file.getComplitions(complitions);
+			if(file) complitions = complitions.concat(file.getComplitions());
 
 			// a simple completion item which inserts `Hello World!`
 			// const simpleCompletion = new vscode.CompletionItem('Hello World!');
@@ -176,15 +177,15 @@ export async function activate(context: vscode.ExtensionContext) {
 			// docs.baseUri = vscode.Uri.parse('http://example.com/a/b/c/');
 
 			
-			defines.forEach(defineEl => {
-				const complition = new vscode.CompletionItem(defineEl.name);
-				complition.documentation = new vscode.MarkdownString('');
-				complition.documentation.appendCodeblock(`#define ${defineEl.name} ${defineEl.value}`, "pawn");
-				complition.kind = vscode.CompletionItemKind.Constant;
-				complition.detail = `define constant`;
+			// defines.forEach(defineEl => {
+			// 	const complition = new vscode.CompletionItem(defineEl.name);
+			// 	complition.documentation = new vscode.MarkdownString('');
+			// 	complition.documentation.appendCodeblock(`#define ${defineEl.name} ${defineEl.value}`, "pawn");
+			// 	complition.kind = vscode.CompletionItemKind.Constant;
+			// 	complition.detail = `define constant`;
 				
-				complitions.push(complition);
-			});
+			// 	complitions.push(complition);
+			// });
 
 
 			

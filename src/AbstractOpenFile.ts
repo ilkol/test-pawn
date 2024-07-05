@@ -1,4 +1,4 @@
-import { TextDocument } from "vscode";
+import { CompletionItem, TextDocument } from "vscode";
 import { FileManager } from "./Managers/FileManager";
 import { DiagnosticManager } from "./Managers/diagnostic";
 import { SemanticTokensManager, Token } from "./Managers/SemanticTokensManager";
@@ -10,6 +10,7 @@ export abstract class AbstractOpenFile
 	protected diagnositcManager: DiagnosticManager;
 	public readonly tokensManager: SemanticTokensManager = new SemanticTokensManager();
 	public readonly symbolsManager: SymbolsManager = new SymbolsManager();
+	private readonly complitions: CompletionItem[] = [];
 	
 	constructor(protected file: TextDocument, public readonly fileManager: FileManager) {
 		this.diagnositcManager = fileManager.getDiagnostic();
@@ -21,4 +22,10 @@ export abstract class AbstractOpenFile
 	}
 
 	public abstract tryParse(): void;
+	public getComplitions(): CompletionItem[] {
+		return this.complitions;
+	}
+	public addComplition(comp: CompletionItem) {
+		this.complitions.push(comp);
+	}
 }

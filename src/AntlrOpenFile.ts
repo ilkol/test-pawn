@@ -20,6 +20,7 @@ import { Define } from "./Prepocessor/Define";
 import { PPCommand } from "./Prepocessor/PPComand";
 import { Include } from "./Prepocessor/Include";
 import { ReplacedCode } from "./Prepocessor/ReplacedCode";
+import { SemanticTokens } from "./SemanticTokens";
 
 export class AntrlOpenFile extends AbstractOpenFile
 {
@@ -33,14 +34,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 	{
 
 		let code = this.file.getText()
-		try {
-			code = this.preprocessor(code);
-		}
-		catch(e) {
-			console.error(e);
-		}
+		code = this.preprocessor(code);
+		this.preprocessorTokens();
 
-		console.error(this.replacedCode);
+		// console.error(this.replacedCode);
 		// vscode.workspace.openTextDocument({ content: code, language: "txt" }).then(document => {
         //     // Открытие документа в редакторе
         //     vscode.window.showTextDocument(document);
@@ -75,6 +72,31 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 		console.log(this.AST);
 	}
+	private preprocessorTokens()
+	{
+		
+		this.ppCmds.forEach(el => {
+			if(el instanceof Define) {
+				const range = el.range;
+				this.symbolsManager.addSymbol(new vscode.DocumentSymbol(el.patterntext, "define", vscode.SymbolKind.Constant, range, range));
+				
+				const complition = new vscode.CompletionItem(el.patterntext);
+				complition.documentation = new vscode.MarkdownString('');
+				complition.documentation.appendCodeblock(`#define ${el.patterntext} ${el.replace}`, "pawn");
+				// if(value.file) complition.documentation.appendText(value.file.toString());
+				complition.kind = vscode.CompletionItemKind.Constant;
+				complition.detail = `define`;
+
+				this.addComplition(complition);
+			}
+		});
+		this.replacedCode.forEach(el => {
+			const range = el.getRange(this.file);
+			this.tokensManager.addToken(range, SemanticTokens.macro);
+			this.symbolsManager.addSymbol(new vscode.DocumentSymbol(el.text, "define", vscode.SymbolKind.Constant, range, range));
+		});
+
+	}
 	private ppCmds: PPCommand[] = [];
 	private replacedCode: ReplacedCode[] = [];
 
@@ -101,7 +123,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			code = preStr + replaceCommand + postPPStr;
 		}
 
-		console.log(code);
+		// console.log(code);
 
 		return code;
 	}
@@ -156,9 +178,9 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 			const replacement = match[2] ? match[2].trim() : "";
 			const patternReg = new RegExp(patternRegStr, "g")
-			console.log(patternReg);
+			// console.log(patternReg);
 
-			const define = new Define(patternReg, replacement, range, pos);
+			const define = new Define(pattern, patternReg, replacement, range, pos);
 			this.ppCmds.push(define);
 
 			lastindex = 0;
