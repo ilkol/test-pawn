@@ -37,17 +37,19 @@ assigments:
 	ASSIGMENT_AND | ASSIGMENT_OR | ASSIGMENT_XOR | ASSIGMENT_RIGHT | ASSIGMENT_RIGHT_LOG | ASSIGMENT_LEFT;
 
 grouping:			OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
+constGrouping:		OPEN_PARENTHESIS constExpresion CLOSE_PARENTHESIS;
 
 expresion:		(preOperators)? (rValue operation? | grouping | ternarOperator);
+constExpresion:	varOrLiteral operation? | constGrouping;
 
 ternarOperator:	(rValue operation? | grouping) QUESTION expresion COLON expresion;
 
 preOperators:	NOT | MINUS | INCREMENTS | DECREMENTS | SIZEOF;
 
 operation:			operator expresion?;
-varOrLiteral:		(variable) | literal;
+varOrLiteral:		variable | literal;
 
-declParams:			(CONST)? (reference)? variable (ASSIGMENT literal)?;	
+declParams:			(CONST)? (reference)? variable (ASSIGMENT constExpresion)?;	
 ellipse:			COMA tag? PERIOD_FUNC;
 
 reference:			BIT_AND;
@@ -55,11 +57,13 @@ reference:			BIT_AND;
 varModifires:		(CONST|STATIC|STOCK)*;
 
 rValue:				(varOrLiteral | functionCall | grouping);
+constRValue:		(varOrLiteral | constGrouping);
 sizeof:				SIZEOF;
 
-number: 			integer | float;
+number: 			integer | float | hex;
 integer:			INTEGER;
 float:				FLOAT;
+hex:				HEX;
 
 operator:			arefmeticOperator | logicOperator | bitwiseOperator;
 
@@ -256,8 +260,9 @@ fragment SIMPLEESCAPESEQUENCE:
 
 IDENTIFIER:		[a-zA-Z_][a-zA-Z0-9_]*;
 
+HEX:			'0x'[a-fA-F0-9]+;
 INTEGER:		[0-9]+;
-FLOAT:		[0-9]+'.'[0-9]+;
+FLOAT:			[0-9]+'.'[0-9]+;
 
 Whitespace: [ \t]+ -> skip;
 

@@ -22,7 +22,9 @@ import { ArrayInitContext } from "./pawnParser";
 import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
 import { GroupingContext } from "./pawnParser";
+import { ConstGroupingContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
+import { ConstExpresionContext } from "./pawnParser";
 import { TernarOperatorContext } from "./pawnParser";
 import { PreOperatorsContext } from "./pawnParser";
 import { OperationContext } from "./pawnParser";
@@ -32,10 +34,12 @@ import { EllipseContext } from "./pawnParser";
 import { ReferenceContext } from "./pawnParser";
 import { VarModifiresContext } from "./pawnParser";
 import { RValueContext } from "./pawnParser";
+import { ConstRValueContext } from "./pawnParser";
 import { SizeofContext } from "./pawnParser";
 import { NumberContext } from "./pawnParser";
 import { IntegerContext } from "./pawnParser";
 import { FloatContext } from "./pawnParser";
+import { HexContext } from "./pawnParser";
 import { OperatorContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
 import { LogicOperatorContext } from "./pawnParser";
@@ -277,6 +281,17 @@ export interface pawnListener extends ParseTreeListener {
 	exitGrouping?: (ctx: GroupingContext) => void;
 
 	/**
+	 * Enter a parse tree produced by `pawnParser.constGrouping`.
+	 * @param ctx the parse tree
+	 */
+	enterConstGrouping?: (ctx: ConstGroupingContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.constGrouping`.
+	 * @param ctx the parse tree
+	 */
+	exitConstGrouping?: (ctx: ConstGroupingContext) => void;
+
+	/**
 	 * Enter a parse tree produced by `pawnParser.expresion`.
 	 * @param ctx the parse tree
 	 */
@@ -286,6 +301,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitExpresion?: (ctx: ExpresionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.constExpresion`.
+	 * @param ctx the parse tree
+	 */
+	enterConstExpresion?: (ctx: ConstExpresionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.constExpresion`.
+	 * @param ctx the parse tree
+	 */
+	exitConstExpresion?: (ctx: ConstExpresionContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.ternarOperator`.
@@ -387,6 +413,17 @@ export interface pawnListener extends ParseTreeListener {
 	exitRValue?: (ctx: RValueContext) => void;
 
 	/**
+	 * Enter a parse tree produced by `pawnParser.constRValue`.
+	 * @param ctx the parse tree
+	 */
+	enterConstRValue?: (ctx: ConstRValueContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.constRValue`.
+	 * @param ctx the parse tree
+	 */
+	exitConstRValue?: (ctx: ConstRValueContext) => void;
+
+	/**
 	 * Enter a parse tree produced by `pawnParser.sizeof`.
 	 * @param ctx the parse tree
 	 */
@@ -429,6 +466,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitFloat?: (ctx: FloatContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.hex`.
+	 * @param ctx the parse tree
+	 */
+	enterHex?: (ctx: HexContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.hex`.
+	 * @param ctx the parse tree
+	 */
+	exitHex?: (ctx: HexContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.operator`.

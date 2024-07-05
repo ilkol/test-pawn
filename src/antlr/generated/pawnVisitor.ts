@@ -22,7 +22,9 @@ import { ArrayInitContext } from "./pawnParser";
 import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
 import { GroupingContext } from "./pawnParser";
+import { ConstGroupingContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
+import { ConstExpresionContext } from "./pawnParser";
 import { TernarOperatorContext } from "./pawnParser";
 import { PreOperatorsContext } from "./pawnParser";
 import { OperationContext } from "./pawnParser";
@@ -32,10 +34,12 @@ import { EllipseContext } from "./pawnParser";
 import { ReferenceContext } from "./pawnParser";
 import { VarModifiresContext } from "./pawnParser";
 import { RValueContext } from "./pawnParser";
+import { ConstRValueContext } from "./pawnParser";
 import { SizeofContext } from "./pawnParser";
 import { NumberContext } from "./pawnParser";
 import { IntegerContext } from "./pawnParser";
 import { FloatContext } from "./pawnParser";
+import { HexContext } from "./pawnParser";
 import { OperatorContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
 import { LogicOperatorContext } from "./pawnParser";
@@ -204,11 +208,25 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitGrouping?: (ctx: GroupingContext) => Result;
 
 	/**
+	 * Visit a parse tree produced by `pawnParser.constGrouping`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitConstGrouping?: (ctx: ConstGroupingContext) => Result;
+
+	/**
 	 * Visit a parse tree produced by `pawnParser.expresion`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	visitExpresion?: (ctx: ExpresionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.constExpresion`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitConstExpresion?: (ctx: ConstExpresionContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.ternarOperator`.
@@ -274,6 +292,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitRValue?: (ctx: RValueContext) => Result;
 
 	/**
+	 * Visit a parse tree produced by `pawnParser.constRValue`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitConstRValue?: (ctx: ConstRValueContext) => Result;
+
+	/**
 	 * Visit a parse tree produced by `pawnParser.sizeof`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -300,6 +325,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitFloat?: (ctx: FloatContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.hex`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitHex?: (ctx: HexContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.operator`.
