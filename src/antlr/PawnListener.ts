@@ -255,14 +255,14 @@ export class PawnListener implements pawnListener
 		let node = <Tag>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
-			try {
-				let id = ctx.IDENTIFIER();
-				node.id = id.text;
-				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+			// try {
+			// 	let id = ctx.IDENTIFIER();
+			// 	node.id = id.text;
+			// 	node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
-			} catch(e) {
-				this.addDiagnostic("Ожидается идентификатор тэга", DiagnosticSeverity.Error, node.pos);
-			}
+			// } catch(e) {
+			// 	this.addDiagnostic("Ожидается идентификатор тэга", DiagnosticSeverity.Error, node.pos);
+			// }
 			let last = this.nodes.peek();
 			if(last && 'tag' in last) {
 				last.tag = node;
@@ -302,6 +302,9 @@ export class PawnListener implements pawnListener
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
 				last.expresion = node;
+			}
+			else if(last instanceof FunctionDeclarationParameter) {
+				last.defaultValue = node;
 			}
 			else {
 				console.debug(last);
@@ -562,6 +565,7 @@ export class PawnListener implements pawnListener
 	}
 	enterFloat(ctx: FloatContext): void {
 		const node = new FloatLiteral();
+		this.nodes.push(node);
 	}
 
 	exitFloat(ctx: FloatContext): void {
@@ -573,6 +577,9 @@ export class PawnListener implements pawnListener
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
 				last.expresion = node;
+			}
+			else if(last instanceof FunctionDeclarationParameter) {
+				last.defaultValue = node;
 			}
 			else {
 				console.debug(last);
