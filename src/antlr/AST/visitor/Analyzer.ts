@@ -25,7 +25,7 @@ import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 import { SemanticTokensManager } from "../../../Managers/SemanticTokensManager";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
-import { DiagnosticTag } from "vscode";
+import { CompletionItem, CompletionItemKind, DiagnosticTag, DocumentSymbol, Range, SnippetString, SymbolKind, SymbolTag } from "vscode";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
@@ -34,6 +34,7 @@ import { Expresion } from "../Nodes/Expresion";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 import { Array } from "../Nodes/Variables/Array";
 import { SemanticTokens, SemanticTokensModifires } from "../../../SemanticTokens";
+import { SymbolsManager } from "../../../Managers/SymbolsManager";
 
 export class Analyzer extends BaseVisitor
 {
@@ -270,7 +271,23 @@ export class Analyzer extends BaseVisitor
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		if(node.id !== "main") {
 			this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
+
+			const compl = new CompletionItem(node.id, CompletionItemKind.Function);
+			compl.insertText = new SnippetString(`${node.id}($0)`);
+			this.addComplition(compl)
+
+			
 		}
+		let symbolRange:Range = node.idPos;
+		let selectRange = node.idPos;
+		if(node.code) {
+			symbolRange = new Range(symbolRange.start, node.code.pos.end);
+			selectRange = node.code.pos;
+		}
+		const symbol = new DocumentSymbol(node.id, "function", SymbolKind.Function, symbolRange, selectRange);
+		// symbol.tags = [SymbolTag.Deprecated];
+		this.symbolsManager.addSymbol(symbol);
+
 		this.extendScope();
 		this.curScope.returnTag = node.tag;
 	}
@@ -291,10 +308,17 @@ export class Analyzer extends BaseVisitor
 		this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(node.modifires).concat(SemanticTokensModifires.declaration));
 	}
 		
-	constructor(public readonly diagnostics: DiagnosticMessage[], public readonly tokens: SemanticTokensManager) {
+	constructor(
+		public readonly diagnostics: DiagnosticMessage[],
+		public readonly tokens: SemanticTokensManager,
+		public readonly symbolsManager: SymbolsManager,
+		public readonly complitions: CompletionItem[]) {
 		super();
 	}
 	
+	private addComplition(compl: CompletionItem) {
+		this.complitions.push(compl);
+	}
 	private addDiagnostic(msg: DiagnosticMessage) {
 		this.diagnostics.push(msg);
 	}

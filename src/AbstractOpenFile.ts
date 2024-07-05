@@ -10,7 +10,7 @@ export abstract class AbstractOpenFile
 	protected diagnositcManager: DiagnosticManager;
 	public readonly tokensManager: SemanticTokensManager = new SemanticTokensManager();
 	public readonly symbolsManager: SymbolsManager = new SymbolsManager();
-	private readonly complitions: CompletionItem[] = [];
+	protected readonly complitions: CompletionItem[] = [];
 	
 	constructor(protected file: TextDocument, public readonly fileManager: FileManager) {
 		this.diagnositcManager = fileManager.getDiagnostic();

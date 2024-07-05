@@ -58,7 +58,12 @@ export class AntrlOpenFile extends AbstractOpenFile
 		let listen = (<PawnListener>listener);
 		this.AST = <Declarations>listen.Root;
 
-		let analyzer = new Analyzer(listen.diagnostics.concat(parserErrorListener.diagnostic).concat(lexerErrorListener.diagnostic), this.tokensManager);
+		let analyzer = new Analyzer(
+			listen.diagnostics.concat(parserErrorListener.diagnostic).concat(lexerErrorListener.diagnostic), 
+			this.tokensManager,
+			this.symbolsManager,
+			this.complitions
+		);
 		try {
 			this.AST.accept(analyzer);
 		}
