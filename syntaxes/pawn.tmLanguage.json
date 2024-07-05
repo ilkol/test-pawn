@@ -15,6 +15,9 @@
 			"include": "#keywords_operators"
 		},
 		{
+			"include": "#function"
+		},
+		{
 			"include": "#evaluation_context"
 		},
 		{
@@ -22,9 +25,6 @@
 		},
 		{
 			"include": "#new_var"
-		},
-		{
-			"include": "#function"
 		},
 		{
 			"include": "#comments"
