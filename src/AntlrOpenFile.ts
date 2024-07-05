@@ -77,11 +77,12 @@ export class AntrlOpenFile extends AbstractOpenFile
 	private ppCmds: PPCommand[] = [];
 	private preprocessor(text: string): string {
 		let code = text;
-		const reg = /(?:^)\s*#\s*(define|elseif|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?:\r?\n|$)/gim;
+		const reg = /(?=^)\s*#\s*(define|elseif|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
 
 		let match;
 		while ((match = reg.exec(code)) !== null) {
 			const command = match[0];
+			console.log(command.length);
 			const directive = match[1];
 			const rest = match[2];
 
