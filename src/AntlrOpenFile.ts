@@ -78,16 +78,15 @@ export class AntrlOpenFile extends AbstractOpenFile
 	private preprocessor(text: string): string {
 		let code = text;
 		const reg = /(?:^)\s*#\s*(define|elseif|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?:\r?\n|$)/gim;
-	
-		let lastindex = 0;
+
 		let match;
 		while ((match = reg.exec(code)) !== null) {
-			const command =  match[0];
-			const directive =  match[1];
-			const rest =  match[2];
+			const command = match[0];
+			const directive = match[1];
+			const rest = match[2];
 
 			const newlines = command.match(/\r?\n/g) || [];
-			const preStr = code.substring(lastindex, match.index);
+			const preStr = code.substring(0, match.index);
 			const replaceCommand = ' '.repeat(command.length - newlines.join('').length) + newlines.join('');
 			const postStr = code.substring(match.index + command.length);
 
@@ -99,24 +98,23 @@ export class AntrlOpenFile extends AbstractOpenFile
 			code = preStr + replaceCommand + postPPStr;
 		}
 
-	
 		console.log(code);
 
 		return code;
 	}
+
 	private evalPreproc(command: string, text: string, range: Range, pos: Position, str: string): string {
-		switch(command.toLowerCase()) {
-			case "define": 
+		switch (command.toLowerCase()) {
+			case "define":
 				return this.evalDefine(text, range, pos, str);
-			case "include": 
-			{
+			case "include":
 				this.evalInclude(text, range, pos);
 				return str;
-			}
 			default:
 				throw new Error("Неизвестная команда препроцессора");
 		}
 	}
+
 	private evalInclude(text: string, range: Range, pos: Position) {
 		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
 		const match = reg.exec(text);
@@ -125,9 +123,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 			const path = match[1];
 			this.ppCmds.push(new Include(path, range, pos));
 		} else {
-			throw new Error('Invalid #define syntax:' + text);
+			throw new Error('Invalid #include syntax:' + text);
 		}
 	}
+
 	private evalDefine(text: string, range: Range, pos: Position, str: string): string {
 		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
 		const match = reg.exec(text);
@@ -138,40 +137,41 @@ export class AntrlOpenFile extends AbstractOpenFile
 			const findParams = /%(\d+)/g;
 			let patternRegStr = "";
 			let lastindex = 0;
-			let paramMatch: RegExpExecArray  | null;
+			let paramMatch: RegExpExecArray | null;
 			const patternPrepared = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 			const parameters: number[] = [];
 
-			while(paramMatch = findParams.exec(patternPrepared)) {
-				patternRegStr += patternPrepared.substring(lastindex, paramMatch.index) + "(.)+\s*";
-				lastindex = paramMatch.index+paramMatch[0].length;
+			while (paramMatch = findParams.exec(patternPrepared)) {
+				patternRegStr += patternPrepared.substring(lastindex, paramMatch.index) + "(.*?)\\s*";
+				lastindex = paramMatch.index + paramMatch[0].length;
 				parameters.push(+paramMatch[1]);
 			}
 			patternRegStr += patternPrepared.substring(lastindex);
 
 			const replacement = match[2] ? match[2].trim() : "";
-			const patternReg  = new RegExp(patternRegStr, "g")
+			const patternReg = new RegExp(patternRegStr, "g")
 
 			this.ppCmds.push(new Define(patternReg, replacement, range, pos));
-			
+
 			lastindex = 0;
-			while(paramMatch = patternReg.exec(str)) {
+			let result = "";
+			while (paramMatch = patternReg.exec(str)) {
 				const prestr = str.substring(lastindex, paramMatch.index);
 				const poststr = str.substring(paramMatch.index + paramMatch[0].length);
 				let newStr = replacement;
 
 				let index = 1;
-				let param = paramMatch;
 				parameters.forEach(el => {
-					newStr = newStr.replace(`%${el}`, param[index++]);
+					newStr = newStr.replace(`%${el}`, paramMatch![index++]);
 				});
-				str = prestr + newStr + poststr;
-				
-				lastindex = paramMatch.index;
+				result += prestr + newStr;
+				lastindex = paramMatch.index + paramMatch[0].length;
 			}
 
-			return str;
+			result += str.substring(lastindex);
+
+			return result;
 		} else {
 			throw new Error('Invalid #define syntax:' + text);
 		}
