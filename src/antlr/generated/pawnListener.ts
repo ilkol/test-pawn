@@ -28,6 +28,7 @@ import { PreOperatorsContext } from "./pawnParser";
 import { OperationContext } from "./pawnParser";
 import { VarOrLiteralContext } from "./pawnParser";
 import { DeclParamsContext } from "./pawnParser";
+import { EllipseContext } from "./pawnParser";
 import { ReferenceContext } from "./pawnParser";
 import { VarModifiresContext } from "./pawnParser";
 import { RValueContext } from "./pawnParser";
@@ -340,6 +341,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitDeclParams?: (ctx: DeclParamsContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.ellipse`.
+	 * @param ctx the parse tree
+	 */
+	enterEllipse?: (ctx: EllipseContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.ellipse`.
+	 * @param ctx the parse tree
+	 */
+	exitEllipse?: (ctx: EllipseContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.reference`.

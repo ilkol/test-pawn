@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -35,6 +35,7 @@ import { ArrayIndexes } from "./AST/Nodes/Variables/ArrayIndexes";
 import { Array } from "./AST/Nodes/Variables/Array";
 import { ArrayDeclaration } from "./AST/Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "./AST/Nodes/Operators/AssigmentOperator";
+import { Ellipse } from "./AST/Nodes/Operators/Ellipse";
 
 export class PawnListener implements pawnListener
 {
@@ -270,6 +271,24 @@ export class PawnListener implements pawnListener
 		}
 	}
 
+	enterEllipse(ctx: EllipseContext): void
+	{
+		const node = new Ellipse();
+		this.nodes.push(node);
+	}
+	exitEllipse(ctx: EllipseContext): void {
+		let node = <Ellipse>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			let last = this.nodes.peek();
+			if(last instanceof FunctionDeclaration) {
+				last.ellipse = node;
+			}
+			else {
+				this.addDiagnostic("Неоижданый оператор ellipse", DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	}
 	enterCodeBlock(ctx: CodeBlockContext): void {
 		let node = new CodeBlock(new Statements());	
 		this.nodes.push(node);

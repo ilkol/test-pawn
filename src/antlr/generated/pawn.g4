@@ -9,7 +9,7 @@ enum:				ENUM (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA e
 enumMember:			variable (ASSIGMENT expresion)?;
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
-functionDecl:		(funcDeclModif)? tag? IDENTIFIER OPEN_PARENTHESIS (declParams (COMA declParams)*)? CLOSE_PARENTHESIS (SEMI | codeBlock);
+functionDecl:		(funcDeclModif)? tag? IDENTIFIER OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | codeBlock);
 
 tag:				(IDENTIFIER|(CURLY_OPEN_BRACKET IDENTIFIER (COMA IDENTIFIER)* CURLY_CLOSE_BRACKET)) COLON;
 
@@ -48,6 +48,7 @@ operation:			operator expresion?;
 varOrLiteral:		(variable) | literal;
 
 declParams:			(CONST)? (reference)? variable (ASSIGMENT literal)?;	
+ellipse:			COMA tag? PERIOD_FUNC;
 
 reference:			BIT_AND;
 
@@ -165,6 +166,7 @@ BIT_LEFT:	'<<';
 BIT_RIGHT_LOG:	'>>>';
 
 PERIOD:		'..';
+PERIOD_FUNC:	'...';
 
 ASSERT:		'assert';
 EXIT:		'exit';
@@ -223,7 +225,7 @@ UNDEF:		'undef';
 DYNAMIC:	'dynamic';
 WARNING:	'warning';
 DISABLE:	'disable';
-ENABLE:		'enable';
+// ENABLE:		'enable';
 
 TRUE:		'true';
 FALSE:		'false';

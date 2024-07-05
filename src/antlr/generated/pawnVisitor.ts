@@ -28,6 +28,7 @@ import { PreOperatorsContext } from "./pawnParser";
 import { OperationContext } from "./pawnParser";
 import { VarOrLiteralContext } from "./pawnParser";
 import { DeclParamsContext } from "./pawnParser";
+import { EllipseContext } from "./pawnParser";
 import { ReferenceContext } from "./pawnParser";
 import { VarModifiresContext } from "./pawnParser";
 import { RValueContext } from "./pawnParser";
@@ -243,6 +244,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitDeclParams?: (ctx: DeclParamsContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.ellipse`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitEllipse?: (ctx: EllipseContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.reference`.

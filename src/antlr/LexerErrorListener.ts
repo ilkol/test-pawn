@@ -7,6 +7,7 @@ export class LexerErrorListener implements ANTLRErrorListener<number>
 {
 	private _diagnostic: DiagnosticMessage[] = [];
 	syntaxError <T extends number>(recognizer: Recognizer<T, any>, offendingSymbol: T | undefined, line: number, charPositionInLine: number, msg: string, e: RecognitionException | undefined): void {
+		console.error("LEXER ERROR");
 		this.diagnostic.push(new DiagnosticError(msg, this.getPos(line - 1, charPositionInLine, charPositionInLine+1)));
 		
 	}

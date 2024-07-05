@@ -1,6 +1,7 @@
 import { IVisitor } from "../../visitor/IVisitor";
 import { CodeBlock } from "../CodeBlock";
 import { IContainsVars } from "../IContainsVars";
+import { Ellipse } from "../Operators/Ellipse";
 import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 import { FunctionDeclarationParameter } from "./FunctionDeclarationParameter";
 
@@ -19,6 +20,7 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	private _parameters: FunctionDeclarationParameter[] = [];
 	private _code: CodeBlock | undefined;
 	private _modifire: FunctionModifire = FunctionModifire.none;
+	private _ellipse: Ellipse | undefined;
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitFunctionDeclaration(this);
@@ -50,5 +52,14 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	}
 	public get stock(): boolean {
 		return this._modifire === FunctionModifire.stock;
+	}
+
+	public get ellipse(): Ellipse | undefined
+	{
+		return this._ellipse;
+	}
+	public set ellipse(v: Ellipse)
+	{
+		this._ellipse = v;
 	}
 }
