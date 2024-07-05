@@ -39,11 +39,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 			console.error(e);
 		}
 
-		console.error(this.ppCmds);
-		vscode.workspace.openTextDocument({ content: code, language: "txt" }).then(document => {
-            // Открытие документа в редакторе
-            vscode.window.showTextDocument(document);
-        });
+		// vscode.workspace.openTextDocument({ content: code, language: "txt" }).then(document => {
+        //     // Открытие документа в редакторе
+        //     vscode.window.showTextDocument(document);
+        // });
 
 		const lexer = this.tryLex(code);
 		const lexerErrorListener = new LexerErrorListener();
