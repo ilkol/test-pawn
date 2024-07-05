@@ -19,6 +19,7 @@ import { match } from "assert";
 import { Define } from "./Prepocessor/Define";
 import { PPCommand } from "./Prepocessor/PPComand";
 import { Include } from "./Prepocessor/Include";
+import { ReplacedCode } from "./Prepocessor/ReplacedCode";
 
 export class AntrlOpenFile extends AbstractOpenFile
 {
@@ -39,6 +40,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			console.error(e);
 		}
 
+		console.error(this.replacedCode);
 		// vscode.workspace.openTextDocument({ content: code, language: "txt" }).then(document => {
         //     // Открытие документа в редакторе
         //     vscode.window.showTextDocument(document);
@@ -74,6 +76,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 		console.log(this.AST);
 	}
 	private ppCmds: PPCommand[] = [];
+	private replacedCode: ReplacedCode[] = [];
+
 	private preprocessor(text: string): string {
 		let code = text;
 		const reg = /(?=^\s*)#\s*(define|elseif|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
@@ -81,8 +85,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 		let match;
 		while ((match = reg.exec(code)) !== null) {
 			const command = match[0];
-			console.log(command.length);
-			console.log(command);
 			const directive = match[1];
 			const rest = match[2];
 
@@ -150,10 +152,14 @@ export class AntrlOpenFile extends AbstractOpenFile
 			}
 			patternRegStr += patternPrepared.substring(lastindex);
 
+			patternRegStr = "(?<=[^\\w])" + patternRegStr + "(?=[^\\w])";
+
 			const replacement = match[2] ? match[2].trim() : "";
 			const patternReg = new RegExp(patternRegStr, "g")
+			console.log(patternReg);
 
-			this.ppCmds.push(new Define(patternReg, replacement, range, pos));
+			const define = new Define(patternReg, replacement, range, pos);
+			this.ppCmds.push(define);
 
 			lastindex = 0;
 			let result = "";
@@ -168,6 +174,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 				});
 				result += prestr + newStr;
 				lastindex = paramMatch.index + paramMatch[0].length;
+
+				this.replacedCode.push(new ReplacedCode(paramMatch[0], define, paramMatch.index + pos.character))
 			}
 
 			result += str.substring(lastindex);
