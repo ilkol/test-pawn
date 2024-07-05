@@ -40,10 +40,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 		}
 
 		console.error(this.ppCmds);
-		// vscode.workspace.openTextDocument({ content: code, language: "txt" }).then(document => {
-        //     // Открытие документа в редакторе
-        //     vscode.window.showTextDocument(document);
-        // });
+		vscode.workspace.openTextDocument({ content: code, language: "txt" }).then(document => {
+            // Открытие документа в редакторе
+            vscode.window.showTextDocument(document);
+        });
 
 		const lexer = this.tryLex(code);
 		const lexerErrorListener = new LexerErrorListener();
@@ -77,12 +77,13 @@ export class AntrlOpenFile extends AbstractOpenFile
 	private ppCmds: PPCommand[] = [];
 	private preprocessor(text: string): string {
 		let code = text;
-		const reg = /(?=^)\s*#\s*(define|elseif|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
+		const reg = /(?=^\s*)#\s*(define|elseif|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
 
 		let match;
 		while ((match = reg.exec(code)) !== null) {
 			const command = match[0];
 			console.log(command.length);
+			console.log(command);
 			const directive = match[1];
 			const rest = match[2];
 
