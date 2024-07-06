@@ -161,7 +161,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 		if (match) {
 			const pattern = match[1];
-
 			const findParams = /%(\d+)/g;
 			let patternRegStr = "";
 			let lastindex = 0;
@@ -170,7 +169,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 			const parameters: number[] = [];
 
-			while (paramMatch = findParams.exec(patternPrepared)) {
+			while ((paramMatch = findParams.exec(patternPrepared)) !== null) {
 				patternRegStr += patternPrepared.substring(lastindex, paramMatch.index) + "(.*?)\\s*";
 				lastindex = paramMatch.index + paramMatch[0].length;
 				parameters.push(+paramMatch[1]);
@@ -180,15 +179,14 @@ export class AntrlOpenFile extends AbstractOpenFile
 			patternRegStr = "(?<=[^\\w])" + patternRegStr + "(?=[^\\w])";
 
 			const replacement = match[2] ? match[2].trim() : "";
-			const patternReg = new RegExp(patternRegStr, "g")
-			// console.log(patternReg);
+			const patternReg = new RegExp(patternRegStr, "g");
 
 			const define = new Define(pattern, patternReg, replacement, range, pos);
 			this.ppCmds.push(define);
 
 			lastindex = 0;
 			let result = "";
-			while (paramMatch = patternReg.exec(str)) {
+			while ((paramMatch = patternReg.exec(str)) !== null) {
 				const prestr = str.substring(lastindex, paramMatch.index);
 				const poststr = str.substring(paramMatch.index + paramMatch[0].length);
 				let newStr = replacement;
@@ -197,12 +195,13 @@ export class AntrlOpenFile extends AbstractOpenFile
 				parameters.forEach(el => {
 					newStr = newStr.replace(`%${el}`, paramMatch![index++]);
 				});
+
 				result += prestr + newStr;
 				lastindex = paramMatch.index + paramMatch[0].length;
 
-				const shift =  paramMatch[0].length - newStr.length;
+				const shift = paramMatch[0].length - newStr.length;
 				this.updateShift(paramMatch.index + pos.character, shift);
-				this.replacedCode.push(new ReplacedCode(paramMatch[0], define, paramMatch.index + pos.character))
+				this.replacedCode.push(new ReplacedCode(paramMatch[0], define, paramMatch.index + pos.character));
 			}
 
 			result += str.substring(lastindex);
