@@ -128,8 +128,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 			code = preStr + replaceCommand + postPPStr;
 		}
 
-		// console.log(code);
-
 		return code;
 	}
 
@@ -202,6 +200,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 				result += prestr + newStr;
 				lastindex = paramMatch.index + paramMatch[0].length;
 
+				const shift =  paramMatch[0].length - newStr.length;
+				this.updateShift(paramMatch.index + pos.character, shift);
 				this.replacedCode.push(new ReplacedCode(paramMatch[0], define, paramMatch.index + pos.character))
 			}
 
@@ -211,6 +211,14 @@ export class AntrlOpenFile extends AbstractOpenFile
 		} else {
 			throw new Error('Invalid #define syntax:' + text);
 		}
+	}
+	private updateShift(startindex: number, shift: number) {
+		this.replacedCode.forEach(el => {
+			console.log(`${el.startIndex} >= ${startindex}`);
+			if(el.startIndex >= startindex) {
+				el.shift(shift);
+			}
+		});
 	}
 	private tryLex(text: string): pawnLexer
 	{

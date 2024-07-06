@@ -19,4 +19,9 @@ export class ReplacedCode
     public getRange(file: TextDocument): Range {
         return new Range(file.positionAt(this._startPos), file.positionAt(this._stopPos));
     }
+
+    public get startIndex(): number
+    {
+        return this._startPos;
+    }
 }
