@@ -24,6 +24,10 @@ import { SemanticTokens, SemanticTokensModifires } from "./SemanticTokens";
 import { Condition } from "./Prepocessor/Condition";
 import { Stack } from "./antlr/Stack/Stack";
 
+interface String {
+	value: string;
+}
+
 export class AntrlOpenFile extends AbstractOpenFile
 {
 	private AST: ASTNode | null = null;
@@ -108,9 +112,11 @@ export class AntrlOpenFile extends AbstractOpenFile
 	private defines: Map<string, Define> = new Map();
 	private replacedCode: ReplacedCode[] = [];
 
+	
+
 	private preprocessor(text: string): string {
 		let code = text;
-		const reg = /(?=^\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
+		const reg = /(?=^)(?:\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
 
 		let match;
 		while ((match = reg.exec(code)) !== null) {
@@ -132,19 +138,20 @@ export class AntrlOpenFile extends AbstractOpenFile
 				}
 			});
 			const range = new Range(this.file.positionAt(origIndex), this.file.positionAt(origIndex + command.length));
-			const pos = new Position(command.length - rest.length, origIndex + command.length);
+			const pos = new Position(match.index + command.length, origIndex + command.length);
 
-			const postPPStr = this.evalPreproc(directive, rest, range, pos, postStr);
+			let preStrObj =  {value: preStr};
+			const postPPStr = this.evalPreproc(directive, rest, range, pos, postStr,  preStrObj);
 
 			code = preStr + replaceCommand + postPPStr;
 
 		}
-
+		console.error(code);
 
 		return code;
 	}
 
-	private evalPreproc(command: string, text: string, range: Range, pos: Position, str: string): string {
+	private evalPreproc(command: string, text: string, range: Range, pos: Position, str: string, precode: String): string {
 		switch (command.toLowerCase()) {
 			case "define":
 				return this.evalDefine(text, range, pos, str);
@@ -154,19 +161,29 @@ export class AntrlOpenFile extends AbstractOpenFile
 			case "if":
 				return this.evalIf(text, range, pos, str);
 			case "endif":
-				return this.evalEndIf(text, range, pos, str);
+				return this.evalEndIf(text, range, pos, str, precode);
 			case "else":
 				return this.evalElse(text, range, pos, str);
+			case "enscript":
+			case "endinput":
+				return this.evaEndinput(text, range, pos, str);
 			default:
 				throw new Error("Неизвестная команда препроцессора");
 		}
 	}
 
 	private ppConditions: Stack<Condition> = new Stack<Condition>();
+	private evaEndinput(text: string, range: Range, pos: Position, str: string): string {
+		range = new Range(range.start, this.file.positionAt(this.file.getText().length));
+		this.diagnositcManager.addDiagnostic("Неисполняемый код", vscode.DiagnosticSeverity.Hint,this.file.uri.path, range, [vscode.DiagnosticTag.Unnecessary]);
+		
+		return "";
+	}
 	private evalElse(text: string, range: Range, pos: Position, str: string): string {
 		const cond = this.ppConditions.peek();
 		if(cond) {
 			cond.elsePos = range;
+			cond.elseIndex = pos.line;
 		}
 		else {
 			this.diagnositcManager.addDiagnostic("Не найдена директива #if", vscode.DiagnosticSeverity.Error, this.file.uri.path, range);
@@ -174,16 +191,44 @@ export class AntrlOpenFile extends AbstractOpenFile
 		
 		return str;
 	}
-	private evalEndIf(text: string, range: Range, pos: Position, str: string): string {
+	private evalEndIf(text: string, range: Range, pos: Position, str: string, precode: String): string {
 		const cond = this.ppConditions.pop();
 		if(cond) {
 			const elsePos = cond.elsePos;
 			if(!cond.condition) {
 				range = new Range(cond.range.end, elsePos ? elsePos.start : range.start);
+
+				
+				const preStr = precode.value.substring(0, cond.startIndex);
+				let replacing = "";
+				let postStr = "";
+				if(cond.elseIndex) {
+					replacing = precode.value.substring(cond.startIndex ? cond.startIndex : 0, cond.elseIndex);
+					postStr = precode.value.substring(cond.elseIndex);
+				}
+				else {
+					replacing = precode.value.substring(cond.startIndex ? cond.startIndex : 0, pos.line);
+					postStr = precode.value.substring(pos.line);
+				}
+				precode.value = preStr + ' '.repeat(replacing.length) + postStr;
+				// const postStr = precode.value.substring(cond.startIndex);
+
+
 				this.diagnositcManager.addDiagnostic("Неисполняемый код", vscode.DiagnosticSeverity.Hint,this.file.uri.path, range, [vscode.DiagnosticTag.Unnecessary]);
 			}
 			else if(elsePos){
 				range = new Range(elsePos.end, range.start);
+
+				if(cond.elseIndex) {
+
+					const preStr = precode.value.substring(0, cond.elseIndex);
+					let replacing = "";
+					let postStr = "";
+					replacing = precode.value.substring(cond.elseIndex, pos.line);
+					postStr = precode.value.substring(pos.line);
+					precode.value = preStr + ' '.repeat(replacing.length) + postStr;
+				}
+
 				this.diagnositcManager.addDiagnostic("Неисполняемый код", vscode.DiagnosticSeverity.Hint,this.file.uri.path, range, [vscode.DiagnosticTag.Unnecessary]);
 			}
 		}
@@ -210,6 +255,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			
 		}
 		const cmd = new Condition(range, pos, text, flag);
+		cmd.startIndex = pos.line;
 		this.ppConditions.push(cmd);
 		this.ppCmds.push(cmd);
 
