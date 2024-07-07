@@ -125,12 +125,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 			const postPPStr = this.evalPreproc(directive, rest, range, pos, postStr);
 
-			// console.error(postStr);
 			code = preStr + replaceCommand + postPPStr;
 
 		}
 
-		console.error(this.replacedCode);
 		return code;
 	}
 
@@ -158,7 +156,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 		}
 	}
 
-	private glreplacedCode: ReplacedCode[] = [];
 	private evalDefine(text: string, range: Range, pos: Position, str: string): string {
 		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
 		const match = reg.exec(text);
@@ -188,40 +185,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 			const define = new Define(pattern, patternReg, replacement, range, pos);
 			this.ppCmds.push(define);
 
-			// lastindex = 0;
-			// let result = "";
-			// while ((paramMatch = patternReg.exec(str)) !== null) {
-			// 	const prestr = str.substring(lastindex, paramMatch.index);
-			// 	const poststr = str.substring(paramMatch.index + paramMatch[0].length);
-			// 	let newStr = replacement;
-
-			// 	let index = 1;
-			// 	parameters.forEach(el => {
-			// 		newStr = newStr.replace(`%${el}`, paramMatch![index++]);
-			// 	});
-
-			// 	result += prestr + newStr;
-			// 	lastindex = paramMatch.index + paramMatch[0].length;
-
-			// 	const shift = paramMatch[0].length - newStr.length;
-			// 	this.updateShift(paramMatch.index + pos.character, shift);
-			// 	this.replacedCode.push(new ReplacedCode(paramMatch[0], define, paramMatch.index + pos.character));
-			// }
-
-			// result += str.substring(lastindex);
-
-
-
 			const tmpstr = (' '.repeat(pos.character)) + str;
 			const result = this.substringrRplaceing(tmpstr, define).substring(pos.character);
-			// console.log(this.substringrRplaceing(tmpstr, define));
-
-			// this.replacedCode.forEach(el => {
-			// 	el.moveOrig(pos.character);
-			// 	el.move(pos.character);
-			// });
-			// this.glreplacedCode = this.glreplacedCode.concat(this.replacedCode);
-			// this.replacedCode = [];
 			return result;
 		} else {
 			throw new Error('Invalid #define syntax:' + text);
@@ -245,7 +210,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 			let origIndex = curIndex;
 			const curShift = findedStr.length - toReplace.length;
 			this.replacedCode.forEach(element => {
-				console.error(`${element.newIndex} < ${curIndex}`);
 				if(element.newIndex < curIndex)
 				{
 					origIndex += element.shift;
