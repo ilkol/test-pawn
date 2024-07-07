@@ -95,11 +95,11 @@ export class AntrlOpenFile extends AbstractOpenFile
 				this.addComplition(complition);
 			}
 		});
-		this.replacedCode.forEach(el => {
-			const range = el.getRange(this.file);
-			this.tokensManager.addToken(range, SemanticTokens.macro);
-			this.symbolsManager.addSymbol(new vscode.DocumentSymbol(el.text, "define", vscode.SymbolKind.Constant, range, range));
-		});
+		// this.replacedCode.forEach(el => {
+		// 	const range = el.getRange(this.file);
+		// 	this.tokensManager.addToken(range, SemanticTokens.macro);
+		// 	this.symbolsManager.addSymbol(new vscode.DocumentSymbol(el.text, "define", vscode.SymbolKind.Constant, range, range));
+		// });
 
 	}
 	private ppCmds: PPCommand[] = [];
@@ -128,6 +128,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			code = preStr + replaceCommand + postPPStr;
 		}
 
+		console.error(this.glreplacedCode);
 		return code;
 	}
 
@@ -155,6 +156,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		}
 	}
 
+	private glreplacedCode: ReplacedCode[] = [];
 	private evalDefine(text: string, range: Range, pos: Position, str: string): string {
 		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
 		const match = reg.exec(text);
@@ -184,41 +186,85 @@ export class AntrlOpenFile extends AbstractOpenFile
 			const define = new Define(pattern, patternReg, replacement, range, pos);
 			this.ppCmds.push(define);
 
-			lastindex = 0;
-			let result = "";
-			while ((paramMatch = patternReg.exec(str)) !== null) {
-				const prestr = str.substring(lastindex, paramMatch.index);
-				const poststr = str.substring(paramMatch.index + paramMatch[0].length);
-				let newStr = replacement;
+			// lastindex = 0;
+			// let result = "";
+			// while ((paramMatch = patternReg.exec(str)) !== null) {
+			// 	const prestr = str.substring(lastindex, paramMatch.index);
+			// 	const poststr = str.substring(paramMatch.index + paramMatch[0].length);
+			// 	let newStr = replacement;
 
-				let index = 1;
-				parameters.forEach(el => {
-					newStr = newStr.replace(`%${el}`, paramMatch![index++]);
-				});
+			// 	let index = 1;
+			// 	parameters.forEach(el => {
+			// 		newStr = newStr.replace(`%${el}`, paramMatch![index++]);
+			// 	});
 
-				result += prestr + newStr;
-				lastindex = paramMatch.index + paramMatch[0].length;
+			// 	result += prestr + newStr;
+			// 	lastindex = paramMatch.index + paramMatch[0].length;
 
-				const shift = paramMatch[0].length - newStr.length;
-				this.updateShift(paramMatch.index + pos.character, shift);
-				this.replacedCode.push(new ReplacedCode(paramMatch[0], define, paramMatch.index + pos.character));
-			}
+			// 	const shift = paramMatch[0].length - newStr.length;
+			// 	this.updateShift(paramMatch.index + pos.character, shift);
+			// 	this.replacedCode.push(new ReplacedCode(paramMatch[0], define, paramMatch.index + pos.character));
+			// }
 
-			result += str.substring(lastindex);
+			// result += str.substring(lastindex);
 
+
+
+			const result = this.substringrRplaceing(str, define);
+
+			// this.replacedCode.forEach(el => {
+			// 	el.moveOrig(pos.character);
+			// 	el.move(pos.character);
+			// });
+			this.glreplacedCode = this.glreplacedCode.concat(this.replacedCode);
+			this.replacedCode = [];
 			return result;
 		} else {
 			throw new Error('Invalid #define syntax:' + text);
 		}
 	}
-	private updateShift(startindex: number, shift: number) {
-		this.replacedCode.forEach(el => {
-			console.log(`${el.startIndex} >= ${startindex}`);
-			if(el.startIndex >= startindex) {
-				el.shift(shift);
-			}
-		});
+
+	private substringrRplaceing(str: string, define: Define): string
+	{
+		const toReplace = define.replace;
+		const replacement = define.pattern;
+		let match: RegExpExecArray | null;
+		let lastindex = 0;
+		while((match = replacement.exec(str)) !== null) {
+			const length = match[0].length;
+			const curIndex = match.index;
+
+			const preStr = str.substring(lastindex, curIndex);
+			const findedStr = str.substring(curIndex, curIndex + length);
+			const postStr = str.substring(curIndex + length);
+
+			let origIndex = curIndex;
+			const curShift = findedStr.length - toReplace.length;
+			this.replacedCode.forEach(element => {
+				if(element.newIndex < curIndex)
+				{
+					origIndex += element.shift;
+				}
+				else {
+					element.move(-curShift);
+				}
+			});
+
+			this.replacedCode.push(new ReplacedCode(
+				findedStr,
+				toReplace,
+				define,
+				origIndex,
+				curIndex
+			));
+
+			str = preStr + toReplace + postStr;
+
+			lastindex = match.index;
+		}
+		return str;
 	}
+
 	private tryLex(text: string): pawnLexer
 	{
 		const stream = CharStreams.fromString(text);

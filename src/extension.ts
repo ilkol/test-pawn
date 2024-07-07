@@ -217,6 +217,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			return complitions;
 		}
 	});
+	
+	testing();
 	context.subscriptions.push(provider1);
 }
 
@@ -243,3 +245,85 @@ function findDefines(text: string, defines: Map<string, IDefine>): void {
 	}
 }
 
+function testing()
+{
+	let original = "                           \r\n                            \r\n\r\n\r\nnative PlayerText3D:CreatePlayer3DTextLabel(playerid, attachedplayer=INVALID_PLAYER_ID, attachedvehicle=INVALID_VEHICLE_ID, testLOS=0);";
+	// console.log(original.length);
+	// console.log(original);
+	original = substringrRplaceing(original, "INVALID_PLAYER_ID", "1");
+	original = substringrRplaceing(original, "INVALID_VEHICLE_ID", "1");
+	// console.log(original);
+
+
+	console.log(replacements);
+}
+
+class Replacing
+{
+	constructor(
+		public origText: string,
+		public newText: string,
+		public origIndex: number,
+		public newIndex: number)
+	{
+
+	}
+
+	//Длина, на которую УМЕНЬШИЛАСЬ строка
+	get shift(): number
+	{
+		return this.origText.length - this.newText.length;
+	}
+
+	//Сдвигает координату в новой строке на shift позиций
+	move(shift: number) {
+		this.newIndex += shift;
+	}
+}
+
+const replacements: Replacing[] = [];
+
+function substringrRplaceing(str: string, replacement: string, toReplace: string): string
+{
+	let regExp = new RegExp(replacement, "g");
+	let match: RegExpExecArray | null;
+	let lastindex = 0;
+	while((match = regExp.exec(str)) !== null) {
+		const length = match[0].length;
+		const curIndex = match.index;
+
+		const preStr = str.substring(lastindex, curIndex);
+		const findedStr = str.substring(curIndex, curIndex + length);
+		const postStr = str.substring(curIndex + length);
+
+		let origIndex = curIndex;
+		const curShift = findedStr.length - toReplace.length;
+		replacements.forEach(element => {
+			if(element.newIndex < curIndex)
+			{
+				origIndex += element.shift;
+			}
+			else {
+				element.move(-curShift);
+			}
+		});
+
+		//Hello, World! Hello, World and everyone!
+		//Hi, World! Hello, World and everyone!
+		//Hi, World! Hi, World and everyone!
+		//Hi, Ear! Hi, World and everyone!	
+		//Hi, Ear! Hi, Ear and everyone!
+
+		replacements.push(new Replacing(
+			findedStr,
+			toReplace,
+			origIndex,
+			curIndex
+		));
+		
+		str = preStr + toReplace + postStr;
+
+		lastindex = match.index;
+	}
+	return str;
+}

@@ -3,25 +3,40 @@ import { Define } from "./Define";
 
 export class ReplacedCode
 {
-    readonly length: number;
-    private _stopPos: number;
-
-    constructor(readonly text: string, readonly define: Define, private _startPos: number) {
-        this.length = text.length;
-        this._stopPos = this._startPos + this.length;
+    private _shift: number | undefined = undefined;
+    // private readonly newText: string;
+  
+    constructor(readonly text: string, private readonly _newText: string, readonly define: Define, private origPos: number, private curPos: number) {
+        // this.newText = this.define.replace;
     }
 
-    public shift(shift: number) {
-        this._startPos += shift;
-        this._stopPos += shift;
-    }
-
-    public getRange(file: TextDocument): Range {
-        return new Range(file.positionAt(this._startPos), file.positionAt(this._stopPos));
-    }
-
-    public get startIndex(): number
+    //Длина, на которую УМЕНЬШИЛАСЬ строка
+    get shift(): number
     {
-        return this._startPos;
+        if(!this._shift)
+            this._shift = this.text.length - this._newText.length;
+        return this._shift;
+    }
+
+    //Сдвигает координату в новой строке на shift позиций
+	move(shift: number) {
+		this.curPos += shift;
+	}
+    moveOrig(shift: number) {
+        this.origPos += shift;
+    }
+
+    get newIndex(): number
+    {
+        return this.curPos;
+    }
+
+    get origText(): string
+    {
+        return this.text;
+    }
+    get newText(): string
+    {
+        return this._newText;
     }
 }
