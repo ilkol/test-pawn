@@ -20,7 +20,9 @@ import { Define } from "./Prepocessor/Define";
 import { PPCommand } from "./Prepocessor/PPComand";
 import { Include } from "./Prepocessor/Include";
 import { ReplacedCode } from "./Prepocessor/ReplacedCode";
-import { SemanticTokens } from "./SemanticTokens";
+import { SemanticTokens, SemanticTokensModifires } from "./SemanticTokens";
+import { Condition } from "./Prepocessor/Condition";
+import { Stack } from "./antlr/Stack/Stack";
 
 export class AntrlOpenFile extends AbstractOpenFile
 {
@@ -114,7 +116,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		while ((match = reg.exec(code)) !== null) {
 			const command = match[0];
 			const directive = match[1];
-			const rest = match[2];
+			const rest = match[2] ?  match[2] : "";
 
 			const newlines = command.match(/\r?\n/g) || [];
 			const preStr = code.substring(0, match.index);
@@ -122,13 +124,15 @@ export class AntrlOpenFile extends AbstractOpenFile
 			const postStr = code.substring(match.index + command.length);
 			
 			const range = new Range(this.file.positionAt(match.index), this.file.positionAt(match.index + command.length));
-			const pos = new Position(match.index, match.index + command.length);
+			const pos = new Position(command.length - rest.length, match.index + command.length);
 
+			console.error(directive, rest);
 			const postPPStr = this.evalPreproc(directive, rest, range, pos, postStr);
 
 			code = preStr + replaceCommand + postPPStr;
 
 		}
+
 
 		return code;
 	}
@@ -142,18 +146,58 @@ export class AntrlOpenFile extends AbstractOpenFile
 				return str;
 			case "if":
 				return this.evalIf(text, range, pos, str);
+			case "endif":
+				return this.evalEndIf(text, range, pos, str);
 			default:
 				throw new Error("Неизвестная команда препроцессора");
 		}
 	}
 
+	private ppConditions: Stack<Condition> = new Stack<Condition>();
+	private evalEndIf(text: string, range: Range, pos: Position, str: string): string {
+		const cond = this.ppConditions.pop();
+		if(cond) {
+			if(!cond.condition) {
+				console.error(cond.condition);
+				range = new Range(cond.range.end, range.start);
+				this.diagnositcManager.addDiagnostic("Неисполняемый код", vscode.DiagnosticSeverity.Hint,this.file.uri.path, range, [vscode.DiagnosticTag.Unnecessary]);
+			}
+		}
+		else {
+			this.diagnositcManager.addDiagnostic("Не найдена директива #if", vscode.DiagnosticSeverity.Error, this.file.uri.path, range);
+		}
+		
+		return str;
+	}
 	private evalIf(text: string, range: Range, pos: Position, str: string): string {
 
+		let flag: boolean = false;
 		let match;
-		if(match = /\s*defined\s+(\w*)/.exec(text)) {
-			const define = match[1];
-			console.log(define);
+		if(match = /(?=\s*)defined\s+(\w+)?/.exec(text)) {
+			// const define = match[1];
+			// console.error(this.defines);
+			// console.error(define);
+			for(let element of this.replacedCode) {
+				
+				
+				range = new Range(this.file.positionAt(pos.character + match.index), range.end);
+				// console.log(element.getRange(this.file).start, range.start);
+				const defStart = element.getRange(this.file).start;
+				if(defStart.line == range.start.line && defStart.character == range.start.character) {
+					flag = true;
+					break;
+				}
+			}
+			
+			// if(this.defines.has(define)) {
+				// flag = true;
+				// this.tokensManager.addToken(range, SemanticTokens.enum, [SemanticTokensModifires.])
+			// }
+			// console.log(define);
 		}
+		const cmd = new Condition(range, pos, text, flag);
+		this.ppConditions.push(cmd);
+		this.ppCmds.push(cmd);
 		// console.log(text);
 
 		return str;
