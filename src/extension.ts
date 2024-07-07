@@ -299,6 +299,7 @@ function substringrRplaceing(str: string, replacement: string, toReplace: string
 		let origIndex = curIndex;
 		const curShift = findedStr.length - toReplace.length;
 		replacements.forEach(element => {
+			console.error(`${element.newIndex} < ${curIndex}`);
 			if(element.newIndex < curIndex)
 			{
 				origIndex += element.shift;
@@ -320,7 +321,6 @@ function substringrRplaceing(str: string, replacement: string, toReplace: string
 			origIndex,
 			curIndex
 		));
-		
 		str = preStr + toReplace + postStr;
 
 		lastindex = match.index;

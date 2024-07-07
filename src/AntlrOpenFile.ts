@@ -95,11 +95,11 @@ export class AntrlOpenFile extends AbstractOpenFile
 				this.addComplition(complition);
 			}
 		});
-		// this.replacedCode.forEach(el => {
-		// 	const range = el.getRange(this.file);
-		// 	this.tokensManager.addToken(range, SemanticTokens.macro);
-		// 	this.symbolsManager.addSymbol(new vscode.DocumentSymbol(el.text, "define", vscode.SymbolKind.Constant, range, range));
-		// });
+		this.replacedCode.forEach(el => {
+			const range = el.getRange(this.file);
+			this.tokensManager.addToken(range, SemanticTokens.macro);
+			this.symbolsManager.addSymbol(new vscode.DocumentSymbol(el.text, "define", vscode.SymbolKind.Constant, range, range));
+		});
 
 	}
 	private ppCmds: PPCommand[] = [];
@@ -128,7 +128,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			code = preStr + replaceCommand + postPPStr;
 		}
 
-		console.error(this.glreplacedCode);
+		console.error(this.replacedCode);
 		return code;
 	}
 
@@ -210,14 +210,14 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 
 
-			const result = this.substringrRplaceing(str, define);
+			const result = this.substringrRplaceing(' '.repeat(pos.character) + str, define).substring(pos.character);
 
 			// this.replacedCode.forEach(el => {
 			// 	el.moveOrig(pos.character);
 			// 	el.move(pos.character);
 			// });
-			this.glreplacedCode = this.glreplacedCode.concat(this.replacedCode);
-			this.replacedCode = [];
+			// this.glreplacedCode = this.glreplacedCode.concat(this.replacedCode);
+			// this.replacedCode = [];
 			return result;
 		} else {
 			throw new Error('Invalid #define syntax:' + text);
@@ -228,9 +228,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 	{
 		const toReplace = define.replace;
 		const replacement = define.pattern;
+		
 		let match: RegExpExecArray | null;
 		let lastindex = 0;
-		while((match = replacement.exec(str)) !== null) {
+		while((match = define.pattern.exec(str)) !== null) {
 			const length = match[0].length;
 			const curIndex = match.index;
 
@@ -241,6 +242,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			let origIndex = curIndex;
 			const curShift = findedStr.length - toReplace.length;
 			this.replacedCode.forEach(element => {
+				console.error(`${element.newIndex} < ${curIndex}`);
 				if(element.newIndex < curIndex)
 				{
 					origIndex += element.shift;
@@ -250,6 +252,12 @@ export class AntrlOpenFile extends AbstractOpenFile
 				}
 			});
 
+			//Hello, World! Hello, World and everyone!
+			//Hi, World! Hello, World and everyone!
+			//Hi, World! Hi, World and everyone!
+			//Hi, Ear! Hi, World and everyone!	
+			//Hi, Ear! Hi, Ear and everyone!
+
 			this.replacedCode.push(new ReplacedCode(
 				findedStr,
 				toReplace,
@@ -257,7 +265,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 				origIndex,
 				curIndex
 			));
-
+			
 			str = preStr + toReplace + postStr;
 
 			lastindex = match.index;

@@ -4,10 +4,11 @@ import { Define } from "./Define";
 export class ReplacedCode
 {
     private _shift: number | undefined = undefined;
-    // private readonly newText: string;
-  
+    private range: Range | undefined = undefined;
+    private length: number;
+
     constructor(readonly text: string, private readonly _newText: string, readonly define: Define, private origPos: number, private curPos: number) {
-        // this.newText = this.define.replace;
+        this.length = text.length;
     }
 
     //Длина, на которую УМЕНЬШИЛАСЬ строка
@@ -38,5 +39,12 @@ export class ReplacedCode
     get newText(): string
     {
         return this._newText;
+    }
+
+    getRange(file: TextDocument): Range
+    {
+        if(!this.range)
+            this.range = new Range(file.positionAt(this.origPos), file.positionAt(this.origPos + this.length));
+        return this.range;
     }
 }
