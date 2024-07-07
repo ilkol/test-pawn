@@ -119,13 +119,15 @@ export class AntrlOpenFile extends AbstractOpenFile
 			const preStr = code.substring(0, match.index);
 			const replaceCommand = ' '.repeat(command.length - newlines.join('').length) + newlines.join('');
 			const postStr = code.substring(match.index + command.length);
-
+			
 			const range = new Range(this.file.positionAt(match.index), this.file.positionAt(match.index + command.length));
 			const pos = new Position(match.index, match.index + command.length);
 
 			const postPPStr = this.evalPreproc(directive, rest, range, pos, postStr);
 
+			// console.error(postStr);
 			code = preStr + replaceCommand + postPPStr;
+
 		}
 
 		console.error(this.replacedCode);
@@ -210,7 +212,9 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 
 
-			const result = this.substringrRplaceing(' '.repeat(pos.character) + str, define).substring(pos.character);
+			const tmpstr = (' '.repeat(pos.character)) + str;
+			const result = this.substringrRplaceing(tmpstr, define).substring(pos.character);
+			// console.log(this.substringrRplaceing(tmpstr, define));
 
 			// this.replacedCode.forEach(el => {
 			// 	el.moveOrig(pos.character);
@@ -230,12 +234,11 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const replacement = define.pattern;
 		
 		let match: RegExpExecArray | null;
-		let lastindex = 0;
 		while((match = define.pattern.exec(str)) !== null) {
 			const length = match[0].length;
 			const curIndex = match.index;
-
-			const preStr = str.substring(lastindex, curIndex);
+			
+			const preStr = str.substring(0, curIndex);
 			const findedStr = str.substring(curIndex, curIndex + length);
 			const postStr = str.substring(curIndex + length);
 
@@ -252,11 +255,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 				}
 			});
 
-			//Hello, World! Hello, World and everyone!
-			//Hi, World! Hello, World and everyone!
-			//Hi, World! Hi, World and everyone!
-			//Hi, Ear! Hi, World and everyone!	
-			//Hi, Ear! Hi, Ear and everyone!
 
 			this.replacedCode.push(new ReplacedCode(
 				findedStr,
@@ -267,8 +265,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			));
 			
 			str = preStr + toReplace + postStr;
-
-			lastindex = match.index;
+			
 		}
 		return str;
 	}
