@@ -110,7 +110,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 	private preprocessor(text: string): string {
 		let code = text;
-		const reg = /(?=^\s*)#\s*(define|if|elseif|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
+		const reg = /(?=^\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
 
 		let match;
 		while ((match = reg.exec(code)) !== null) {
@@ -123,10 +123,17 @@ export class AntrlOpenFile extends AbstractOpenFile
 			const replaceCommand = ' '.repeat(command.length - newlines.join('').length) + newlines.join('');
 			const postStr = code.substring(match.index + command.length);
 			
-			const range = new Range(this.file.positionAt(match.index), this.file.positionAt(match.index + command.length));
-			const pos = new Position(command.length - rest.length, match.index + command.length);
+			const curIndex = match.index;
+			let origIndex = match.index;
+			this.replacedCode.forEach(element => {
+				if(element.newIndex < curIndex)
+				{
+					origIndex += element.shift;
+				}
+			});
+			const range = new Range(this.file.positionAt(origIndex), this.file.positionAt(origIndex + command.length));
+			const pos = new Position(command.length - rest.length, origIndex + command.length);
 
-			console.error(directive, rest);
 			const postPPStr = this.evalPreproc(directive, rest, range, pos, postStr);
 
 			code = preStr + replaceCommand + postPPStr;
@@ -148,18 +155,35 @@ export class AntrlOpenFile extends AbstractOpenFile
 				return this.evalIf(text, range, pos, str);
 			case "endif":
 				return this.evalEndIf(text, range, pos, str);
+			case "else":
+				return this.evalElse(text, range, pos, str);
 			default:
 				throw new Error("Неизвестная команда препроцессора");
 		}
 	}
 
 	private ppConditions: Stack<Condition> = new Stack<Condition>();
+	private evalElse(text: string, range: Range, pos: Position, str: string): string {
+		const cond = this.ppConditions.peek();
+		if(cond) {
+			cond.elsePos = range;
+		}
+		else {
+			this.diagnositcManager.addDiagnostic("Не найдена директива #if", vscode.DiagnosticSeverity.Error, this.file.uri.path, range);
+		}
+		
+		return str;
+	}
 	private evalEndIf(text: string, range: Range, pos: Position, str: string): string {
 		const cond = this.ppConditions.pop();
 		if(cond) {
+			const elsePos = cond.elsePos;
 			if(!cond.condition) {
-				console.error(cond.condition);
-				range = new Range(cond.range.end, range.start);
+				range = new Range(cond.range.end, elsePos ? elsePos.start : range.start);
+				this.diagnositcManager.addDiagnostic("Неисполняемый код", vscode.DiagnosticSeverity.Hint,this.file.uri.path, range, [vscode.DiagnosticTag.Unnecessary]);
+			}
+			else if(elsePos){
+				range = new Range(elsePos.end, range.start);
 				this.diagnositcManager.addDiagnostic("Неисполняемый код", vscode.DiagnosticSeverity.Hint,this.file.uri.path, range, [vscode.DiagnosticTag.Unnecessary]);
 			}
 		}
@@ -174,10 +198,9 @@ export class AntrlOpenFile extends AbstractOpenFile
 		let flag: boolean = false;
 		let match;
 		if(match = /(?=\s*)defined\s+(\w+)?/.exec(text)) {
+			range = new Range(this.file.positionAt(pos.character + match.index), range.end);
 			for(let element of this.replacedCode) {
-				
-				
-				range = new Range(this.file.positionAt(pos.character + match.index), range.end);
+							
 				const defStart = element.getRange(this.file).start;
 				if(defStart.line == range.start.line && defStart.character == range.start.character) {
 					flag = true;
