@@ -174,14 +174,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 		let flag: boolean = false;
 		let match;
 		if(match = /(?=\s*)defined\s+(\w+)?/.exec(text)) {
-			// const define = match[1];
-			// console.error(this.defines);
-			// console.error(define);
 			for(let element of this.replacedCode) {
 				
 				
 				range = new Range(this.file.positionAt(pos.character + match.index), range.end);
-				// console.log(element.getRange(this.file).start, range.start);
 				const defStart = element.getRange(this.file).start;
 				if(defStart.line == range.start.line && defStart.character == range.start.character) {
 					flag = true;
@@ -189,16 +185,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 				}
 			}
 			
-			// if(this.defines.has(define)) {
-				// flag = true;
-				// this.tokensManager.addToken(range, SemanticTokens.enum, [SemanticTokensModifires.])
-			// }
-			// console.log(define);
 		}
 		const cmd = new Condition(range, pos, text, flag);
 		this.ppConditions.push(cmd);
 		this.ppCmds.push(cmd);
-		// console.log(text);
 
 		return str;
 	}
