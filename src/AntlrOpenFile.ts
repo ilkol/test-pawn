@@ -103,11 +103,12 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 	}
 	private ppCmds: PPCommand[] = [];
+	private defines: Map<string, Define> = new Map();
 	private replacedCode: ReplacedCode[] = [];
 
 	private preprocessor(text: string): string {
 		let code = text;
-		const reg = /(?=^\s*)#\s*(define|elseif|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
+		const reg = /(?=^\s*)#\s*(define|if|elseif|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
 
 		let match;
 		while ((match = reg.exec(code)) !== null) {
@@ -139,11 +140,24 @@ export class AntrlOpenFile extends AbstractOpenFile
 			case "include":
 				this.evalInclude(text, range, pos);
 				return str;
+			case "if":
+				return this.evalIf(text, range, pos, str);
 			default:
 				throw new Error("Неизвестная команда препроцессора");
 		}
 	}
 
+	private evalIf(text: string, range: Range, pos: Position, str: string): string {
+
+		let match;
+		if(match = /\s*defined\s+(\w*)/.exec(text)) {
+			const define = match[1];
+			console.log(define);
+		}
+		// console.log(text);
+
+		return str;
+	}
 	private evalInclude(text: string, range: Range, pos: Position) {
 		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
 		const match = reg.exec(text);
@@ -183,6 +197,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			const patternReg = new RegExp(patternRegStr, "g");
 
 			const define = new Define(pattern, patternReg, replacement, range, pos);
+			this.defines.set(define.patterntext, define);
 			this.ppCmds.push(define);
 
 			const tmpstr = (' '.repeat(pos.character)) + str;
