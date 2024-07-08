@@ -31,7 +31,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 		const ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 		let code = ppParser.parse();
-		ppParser.preprocessorTokens();
+		const complitions = ppParser.preprocessorTokens();
+		complitions.forEach(el => {
+			this.complitions.push(el);
+		});
 
 		const lexer = this.tryLex(code);
 		const lexerErrorListener = new LexerErrorListener();

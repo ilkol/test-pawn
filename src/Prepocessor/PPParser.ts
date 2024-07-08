@@ -17,11 +17,13 @@ import { Pragma } from "./Pragma";
 
 export class PPParser
 {
-	private directives: PreprocessorDirective[] = [];
-	private defines: Map<string, Define> = new Map();
-	private replacedCode: ReplacedCode[] = [];
+	private readonly directives: PreprocessorDirective[] = [];
+	private readonly defines: Map<string, Define> = new Map();
+	private readonly replacedCode: ReplacedCode[] = [];
 
-	private ppConditions: Stack<Condition> = new Stack<Condition>();
+	private readonly ppConditions: Stack<Condition> = new Stack<Condition>();
+
+	private readonly complitions: CompletionItem[] = [];
 
 	constructor(private file: TextDocument, 
 		readonly symbolsManager: SymbolsManager,
@@ -151,6 +153,10 @@ export class PPParser
 				}
 				
 				this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
+				
+				const complition = new CompletionItem(element.pattern, CompletionItemKind.Constant); 
+				complition.documentation = new MarkdownString("").appendCodeblock(`#define ${element.pattern} ${element.replacement}`, "pawn");;
+				this.complitions.push(complition);
 			}
 			else if(element instanceof Endinput) {
 				code = code.substring(0, element.curEndIndex);
@@ -268,12 +274,14 @@ export class PPParser
 		return str;
 	}
 
-	preprocessorTokens()
+	preprocessorTokens(): CompletionItem[]
 	{
 		this.replacedCode.forEach(el => {
 			const range = el.getRange(this.file);
 			this.tokensManager.addToken(range, SemanticTokens.macro);
 			this.symbolsManager.addSymbol(new DocumentSymbol(el.text, "define", SymbolKind.Constant, range, range));
 		});
+
+		return this.complitions;
 	}
 }
