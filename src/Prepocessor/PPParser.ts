@@ -141,9 +141,16 @@ export class PPParser
 				const preDirective = code.substring(0, element.curEndIndex);
 				const postDirective = code.substring(element.curEndIndex);
 
+				const lastCount = this.replacedCode.length;
 				const result = this.substringrReplacing(postDirective, element, element.curEndIndex);
 				code = preDirective + result;
-
+				if(lastCount < this.replacedCode.length) {
+					element.used = true;
+				}
+				else {
+					this.diagnosticManager.addDiagnostic("Неиспользуемый #define", DiagnosticSeverity.Hint, this.file.uri.path, element.range, [DiagnosticTag.Unnecessary]);
+				}
+				
 				this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
 			}
 			else if(element instanceof Endinput) {
