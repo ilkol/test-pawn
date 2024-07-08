@@ -33,12 +33,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 		let code = ppParser.parse();
 		ppParser.preprocessorTokens();
 
-		// console.error(this.replacedCode);
-		// vscode.workspace.openTextDocument({ content: code, language: "txt" }).then(document => {
-        //     // Открытие документа в редакторе
-        //     vscode.window.showTextDocument(document);
-        // });
-
 		const lexer = this.tryLex(code);
 		const lexerErrorListener = new LexerErrorListener();
 		lexer.addErrorListener(lexerErrorListener);
