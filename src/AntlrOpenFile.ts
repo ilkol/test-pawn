@@ -29,8 +29,9 @@ export class AntrlOpenFile extends AbstractOpenFile
 	public tryParse(): void
 	{
 
-		const ppParser = new PPParser(this.file);
+		const ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 		let code = ppParser.parse();
+		ppParser.preprocessorTokens();
 
 		// console.error(this.replacedCode);
 		// vscode.workspace.openTextDocument({ content: code, language: "txt" }).then(document => {

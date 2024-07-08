@@ -1,4 +1,4 @@
-import { Position, Range, TextDocument } from "vscode";
+import { CompletionItem, CompletionItemKind, DiagnosticSeverity, DiagnosticTag, DocumentSymbol, MarkdownString, Position, Range, SymbolKind, TextDocument } from "vscode";
 import { PreprocessorDirective } from "./PreprocessorDirective";
 import { ReplacedCode } from "./ReplacedCode";
 import { Define } from "./Define";
@@ -8,6 +8,12 @@ import { Include } from "./Include";
 import { Endinput } from "./Endinput";
 import { Endif } from "./Endif";
 import { Else } from "./Else";
+import { SymbolsManager } from "../Managers/SymbolsManager";
+import { SemanticTokensManager } from "../Managers/SemanticTokensManager";
+import { DiagnosticManager } from "../Managers/diagnostic";
+import { SemanticTokens } from "../SemanticTokens";
+import { EndInput } from "../Errors";
+import { Pragma } from "./Pragma";
 
 export class PPParser
 {
@@ -17,7 +23,10 @@ export class PPParser
 
 	private ppConditions: Stack<Condition> = new Stack<Condition>();
 
-	constructor(private file: TextDocument) {
+	constructor(private file: TextDocument, 
+		readonly symbolsManager: SymbolsManager,
+		readonly tokensManager: SemanticTokensManager,
+		readonly diagnosticManager: DiagnosticManager) {
 
 	}
 
@@ -87,6 +96,8 @@ export class PPParser
 				return new Include(this.file, rest, startIndex, restIndex, endIndex);
 			case "if":
 				return new Condition(this.file, rest, startIndex, restIndex, endIndex);
+			case "pragma":
+				return new Pragma(this.file, rest, startIndex, restIndex, endIndex);
 			case "endif": {
 				const direct = new Endif(this.file, startIndex,endIndex)
 				const cond = this.ppConditions.pop();
@@ -109,7 +120,7 @@ export class PPParser
 			case "endinput":
 				return new Endinput(this.file, startIndex, endIndex);
 			default:
-				throw new Error("Неизвестная команда препроцессора");
+				throw new Error(`Неизвестная команда препроцессора "${directive}"`);
 		}
 	}
 
@@ -118,18 +129,30 @@ export class PPParser
 	{
 		let skipFrom = code.length;
 		let skipTo = 0;
-		this.directives.forEach(element => {
+		console.log(this.directives);
+		for(let element of this.directives) {
+
+			if(skipFrom < element.startIndex) {
+				if(skipTo > element.startIndex) continue;
+				skipFrom = code.length;
+				skipTo = 0;
+			}
 			if(element instanceof Define) {
-				if(skipFrom < element.startIndex) {
-					if(skipTo > element.startIndex) return;
-					skipFrom = code.length;
-					skipTo = 0;
-				}
 				const preDirective = code.substring(0, element.curEndIndex);
 				const postDirective = code.substring(element.curEndIndex);
 
 				const result = this.substringrReplacing(postDirective, element, element.curEndIndex);
 				code = preDirective + result;
+
+				this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
+			}
+			else if(element instanceof Endinput) {
+				code = code.substring(0, element.curEndIndex);
+				const range = new Range(
+					element.range.end,
+					this.file.positionAt(this.file.getText().length)
+				);
+				this.diagnosticManager.addDiagnostic("Неисполняыемый код", DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
 			}
 			else if(element instanceof Condition) {
 				if(element.endIf) {
@@ -166,9 +189,33 @@ export class PPParser
 					}
 
 					code = preDirective + mainBlock + elseBlock + postDirective;
-				}
+
+					if(element.conditionResult) {
+						if(element.elseBlock) {
+							const range = new Range(
+								element.elseBlock.range.end,
+								element.endIf.range.start
+							);
+							this.diagnosticManager.addDiagnostic("Неисполняыемый код", DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+						}
+					}
+					else {
+						let range: Range;
+						if(element.elseBlock) {
+							range = new Range(
+								element.range.end,
+								element.elseBlock.range.start
+							);
+						}
+						else range = new Range(
+							element.range.end,
+							element.endIf.range.start
+						);
+						this.diagnosticManager.addDiagnostic("Неисполняыемый код", DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+					}
+				}					
 			}
-		});
+		}
 		return code;
 	}
 
@@ -215,27 +262,12 @@ export class PPParser
 		return str;
 	}
 
-	// preprocessorTokens(symbolsManager: SymbolsManager, )
-	// {
-	// 	this.ppCmds.forEach(el => {
-	// 		if(el instanceof Define) {
-	// 			const range = el.range;
-	// 			this.symbolsManager.addSymbol(new vscode.DocumentSymbol(el.patterntext, "define", vscode.SymbolKind.Constant, range, range));
-				
-	// 			const complition = new vscode.CompletionItem(el.patterntext);
-	// 			complition.documentation = new vscode.MarkdownString('');
-	// 			complition.documentation.appendCodeblock(`#define ${el.patterntext} ${el.replace}`, "pawn");
-	// 			// if(value.file) complition.documentation.appendText(value.file.toString());
-	// 			complition.kind = vscode.CompletionItemKind.Constant;
-	// 			complition.detail = `define`;
-
-	// 			this.addComplition(complition);
-	// 		}
-	// 	});
-	// 	this.replacedCode.forEach(el => {
-	// 		const range = el.getRange(this.file);
-	// 		this.tokensManager.addToken(range, SemanticTokens.macro);
-	// 		this.symbolsManager.addSymbol(new vscode.DocumentSymbol(el.text, "define", vscode.SymbolKind.Constant, range, range));
-	// 	});
-	// }
+	preprocessorTokens()
+	{
+		this.replacedCode.forEach(el => {
+			const range = el.getRange(this.file);
+			this.tokensManager.addToken(range, SemanticTokens.macro);
+			this.symbolsManager.addSymbol(new DocumentSymbol(el.text, "define", SymbolKind.Constant, range, range));
+		});
+	}
 }
