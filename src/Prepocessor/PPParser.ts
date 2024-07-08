@@ -129,7 +129,6 @@ export class PPParser
 	{
 		let skipFrom = code.length;
 		let skipTo = 0;
-		console.log(this.directives);
 		for(let element of this.directives) {
 
 			if(skipFrom < element.startIndex) {

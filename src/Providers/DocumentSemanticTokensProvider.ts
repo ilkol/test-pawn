@@ -14,7 +14,6 @@ export class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTo
 	
 		const file: AbstractOpenFile | undefined = this.fileManager.openedFiles.get(document.uri.path);
 		if(file) {
-			// console.error(file.tokens);
 			file.tokens.forEach((value) => {
 				tokensBuilder.push(value.pos, value.type, value.modifers);
 			});
