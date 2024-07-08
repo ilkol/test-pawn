@@ -1,21 +1,21 @@
 import { Position, Range, TextDocument } from "vscode";
-import { SymbolsManager } from "../Managers/SymbolsManager";
-import { PPCommand } from "./PPComand";
+import { PreprocessorDirective } from "./PreprocessorDirective";
 import { ReplacedCode } from "./ReplacedCode";
 import { Define } from "./Define";
 import { Stack } from "../antlr/Stack/Stack";
 import { Condition } from "./Condition";
 import { Include } from "./Include";
-
-interface String {
-	value: string;
-}
+import { Endinput } from "./Endinput";
+import { Endif } from "./Endif";
+import { Else } from "./Else";
 
 export class PPParser
 {
-	private ppCmds: PPCommand[] = [];
+	private directives: PreprocessorDirective[] = [];
 	private defines: Map<string, Define> = new Map();
 	private replacedCode: ReplacedCode[] = [];
+
+	private ppConditions: Stack<Condition> = new Stack<Condition>();
 
 	constructor(private file: TextDocument) {
 
@@ -24,213 +24,160 @@ export class PPParser
 	parse(): string
 	{
 		let code = this.file.getText()
-		code = this.preprocessor(code);
+		code = this.collectDirectives(code);
+		code = this.processDirectives(code);
 		return code;
 	}
-	private preprocessor(text: string): string {
-		let code = text;
-		const reg = /(?=^)(?:\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
 
+
+	//Ищет и уадляет все директивы препроцессора
+	private collectDirectives(code: string): string {
+
+		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
+		
 		let match;
 		while ((match = reg.exec(code)) !== null) {
-			const command = match[0];
-			const directive = match[1];
-			const rest = match[2] ?  match[2] : "";
-
-			const newlines = command.match(/\r?\n/g) || [];
-			const preStr = code.substring(0, match.index);
-			const replaceCommand = ' '.repeat(command.length - newlines.join('').length) + newlines.join('');
-			const postStr = code.substring(match.index + command.length);
+			const [fullMatch, leadingWhitespace, directive, restA] = match;
 			
-			const curIndex = match.index;
-			let origIndex = match.index;
-			this.replacedCode.forEach(element => {
-				if(element.newIndex < curIndex)
-				{
-					origIndex += element.shift;
-				}
-			});
-			const range = new Range(this.file.positionAt(origIndex), this.file.positionAt(origIndex + command.length));
-			const pos = new Position(match.index + command.length, origIndex + command.length);
+			// Координата начала директивы (#)
+  			const directiveIndex = match.index + leadingWhitespace.length;
+			// Окончания директивы
+			let rest = restA ? restA : "";
+			// Координата начала оставшейся части
+			const restIndex = restA ? match.index + fullMatch.indexOf(rest) : -1;
+			const endIndex = match.index + fullMatch.length;
 
-			let preStrObj =  {value: preStr};
-			const postPPStr = this.evalPreproc(directive, rest, range, pos, postStr,  preStrObj);
 
-			code = preStr + replaceCommand + postPPStr;
+			const preStr = code.substring(0, directiveIndex);
+			const replaceCommand = ' '.repeat(endIndex - directiveIndex);
+			const postStr = code.substring(endIndex);
+			
+			this.addNewDirective(directive, rest, directiveIndex, restIndex, endIndex);
 
-		}
-		console.error(code);
-
+			// Итоговый код, после удаления директивы
+			code = preStr + replaceCommand + postStr;
+		}		
 		return code;
 	}
 
-	private evalPreproc(command: string, text: string, range: Range, pos: Position, str: string, precode: String): string {
-		switch (command.toLowerCase()) {
+	//Добавляет новую директиву во все списки
+	private addNewDirective(directiveText: string, rest: string, startIndex: number, restIndex: number, endIndex: number)
+	{
+		const directive = this.createDirective(directiveText, rest, startIndex, restIndex, endIndex);
+		if(directive)
+		{
+			this.directives.push(directive);
+
+			if(directive instanceof Define) {
+				this.defines.set(directive.pattern, directive);
+			}
+			else if(directive instanceof Condition) {
+				directive.checkCondition(this.file, this.defines);
+				this.ppConditions.push(directive);
+			}
+		}
+	}
+
+	//Создает директиву
+	private createDirective(directive: string, rest: string, startIndex: number, restIndex: number, endIndex: number): PreprocessorDirective | undefined {
+		switch (directive.toLowerCase()) {
 			case "define":
-				return this.evalDefine(text, range, pos, str);
+				return new Define(this.file, rest, startIndex, restIndex, endIndex);
 			case "include":
-				this.evalInclude(text, range, pos);
-				return str;
+				return new Include(this.file, rest, startIndex, restIndex, endIndex);
 			case "if":
-				return this.evalIf(text, range, pos, str);
-			case "endif":
-				return this.evalEndIf(text, range, pos, str, precode);
-			case "else":
-				return this.evalElse(text, range, pos, str);
+				return new Condition(this.file, rest, startIndex, restIndex, endIndex);
+			case "endif": {
+				const direct = new Endif(this.file, startIndex,endIndex)
+				const cond = this.ppConditions.pop();
+				if(cond) {
+					cond.endIf = direct;
+				}
+				return direct;	
+			}
+			case "else": {
+				const direct = new Else(this.file, startIndex,endIndex)
+				const cond = this.ppConditions.peek();
+				if(cond) {
+					cond.elseBlock = direct;
+				}
+					
+				return direct;
+			}
+				
 			case "enscript":
 			case "endinput":
-				return this.evaEndinput(text, range, pos, str);
+				return new Endinput(this.file, startIndex, endIndex);
 			default:
 				throw new Error("Неизвестная команда препроцессора");
 		}
 	}
 
-	private ppConditions: Stack<Condition> = new Stack<Condition>();
-	private evaEndinput(text: string, range: Range, pos: Position, str: string): string {
-		range = new Range(range.start, this.file.positionAt(this.file.getText().length));
-		// this.diagnositcManager.addDiagnostic("Неисполняемый код", vscode.DiagnosticSeverity.Hint,this.file.uri.path, range, [vscode.DiagnosticTag.Unnecessary]);
-		
-		return "";
-	}
-	private evalElse(text: string, range: Range, pos: Position, str: string): string {
-		const cond = this.ppConditions.peek();
-		if(cond) {
-			cond.elsePos = range;
-			cond.elseIndex = pos.line;
-		}
-		else {
-			// this.diagnositcManager.addDiagnostic("Не найдена директива #if", vscode.DiagnosticSeverity.Error, this.file.uri.path, range);
-		}
-		
-		return str;
-	}
-	private evalEndIf(text: string, range: Range, pos: Position, str: string, precode: String): string {
-		const cond = this.ppConditions.pop();
-		if(cond) {
-			const elsePos = cond.elsePos;
-			if(!cond.condition) {
-				range = new Range(cond.range.end, elsePos ? elsePos.start : range.start);
-
-				
-				const preStr = precode.value.substring(0, cond.startIndex);
-				let replacing = "";
-				let postStr = "";
-				if(cond.elseIndex) {
-					replacing = precode.value.substring(cond.startIndex ? cond.startIndex : 0, cond.elseIndex);
-					postStr = precode.value.substring(cond.elseIndex);
-				}
-				else {
-					replacing = precode.value.substring(cond.startIndex ? cond.startIndex : 0, pos.line);
-					postStr = precode.value.substring(pos.line);
-				}
-				precode.value = preStr + ' '.repeat(replacing.length) + postStr;
-				// const postStr = precode.value.substring(cond.startIndex);
-
-
-				// this.diagnositcManager.addDiagnostic("Неисполняемый код", vscode.DiagnosticSeverity.Hint,this.file.uri.path, range, [vscode.DiagnosticTag.Unnecessary]);
-			}
-			else if(elsePos){
-				range = new Range(elsePos.end, range.start);
-
-				if(cond.elseIndex) {
-
-					const preStr = precode.value.substring(0, cond.elseIndex);
-					let replacing = "";
-					let postStr = "";
-					replacing = precode.value.substring(cond.elseIndex, pos.line);
-					postStr = precode.value.substring(pos.line);
-					precode.value = preStr + ' '.repeat(replacing.length) + postStr;
-				}
-
-				// this.diagnositcManager.addDiagnostic("Неисполняемый код", vscode.DiagnosticSeverity.Hint,this.file.uri.path, range, [vscode.DiagnosticTag.Unnecessary]);
-			}
-		}
-		else {
-			// this.diagnositcManager.addDiagnostic("Не найдена директива #if", vscode.DiagnosticSeverity.Error, this.file.uri.path, range);
-		}
-		
-		return str;
-	}
-	private evalIf(text: string, range: Range, pos: Position, str: string): string {
-
-		let flag: boolean = false;
-		let match;
-		if(match = /(?=\s*)defined\s+(\w+)?/.exec(text)) {
-			range = new Range(this.file.positionAt(pos.character + match.index), range.end);
-			for(let element of this.replacedCode) {
-							
-				const defStart = element.getRange(this.file).start;
-				if(defStart.line == range.start.line && defStart.character == range.start.character) {
-					flag = true;
-					break;
-				}
-			}
-			
-		}
-		const cmd = new Condition(range, pos, text, flag);
-		cmd.startIndex = pos.line;
-		this.ppConditions.push(cmd);
-		this.ppCmds.push(cmd);
-
-		return str;
-	}
-	private evalInclude(text: string, range: Range, pos: Position) {
-		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
-		const match = reg.exec(text);
-
-		if (match) {
-			const path = match[1];
-			this.ppCmds.push(new Include(path, range, pos));
-		} else {
-			throw new Error('Invalid #include syntax:' + text);
-		}
-	}
-
-	private evalDefine(text: string, range: Range, pos: Position, str: string): string {
-		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
-		const match = reg.exec(text);
-
-		if (match) {
-			const pattern = match[1];
-			const findParams = /%(\d+)/g;
-			let patternRegStr = "";
-			let lastindex = 0;
-			let paramMatch: RegExpExecArray | null;
-			const patternPrepared = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-			const parameters: number[] = [];
-
-			while ((paramMatch = findParams.exec(patternPrepared)) !== null) {
-				patternRegStr += patternPrepared.substring(lastindex, paramMatch.index) + "(.*?)\\s*";
-				lastindex = paramMatch.index + paramMatch[0].length;
-				parameters.push(+paramMatch[1]);
-			}
-			patternRegStr += patternPrepared.substring(lastindex);
-
-			patternRegStr = "(?<=[^\\w])" + patternRegStr + "(?=[^\\w])";
-
-			const replacement = match[2] ? match[2].trim() : "";
-			const patternReg = new RegExp(patternRegStr, "g");
-
-			const define = new Define(pattern, patternReg, replacement, range, pos);
-			this.defines.set(define.patterntext, define);
-			this.ppCmds.push(define);
-
-			const tmpstr = (' '.repeat(pos.character)) + str;
-			const result = this.substringrRplaceing(tmpstr, define).substring(pos.character);
-			return result;
-		} else {
-			throw new Error('Invalid #define syntax:' + text);
-		}
-	}
-
-	private substringrRplaceing(str: string, define: Define): string
+	//Обрабатывает все директивы, удаляя лишний код и выполняя замены
+	private	processDirectives(code: string): string
 	{
-		const toReplace = define.replace;
-		const replacement = define.pattern;
-		
+		let skipFrom = code.length;
+		let skipTo = 0;
+		this.directives.forEach(element => {
+			if(element instanceof Define) {
+				if(skipFrom < element.startIndex) {
+					if(skipTo > element.startIndex) return;
+					skipFrom = code.length;
+					skipTo = 0;
+				}
+				const preDirective = code.substring(0, element.curEndIndex);
+				const postDirective = code.substring(element.curEndIndex);
+
+				const result = this.substringrReplacing(postDirective, element, element.curEndIndex);
+				code = preDirective + result;
+			}
+			else if(element instanceof Condition) {
+				if(element.endIf) {
+					
+					const preDirective = code.substring(0, element.curEndIndex);
+					const postDirective = code.substring(element.endIf.curStartIndex);
+					
+					let mainBlock = "";
+					let elseBlock = "";
+					if(element.elseBlock) {
+						mainBlock = code.substring(element.curEndIndex, element.elseBlock.curEndIndex);
+						elseBlock = code.substring(element.elseBlock.curEndIndex, element.endIf.curStartIndex);
+						
+					}
+					else {
+						mainBlock = code.substring(element.curEndIndex, element.endIf.curStartIndex);
+					}
+					
+
+					if(element.conditionResult) {
+						if(element.elseBlock) {
+							skipFrom = element.elseBlock.curStartIndex;
+							skipTo = element.endIf.curStartIndex;
+						}
+						elseBlock = elseBlock.replace(/[^\r\n]/g, ' ');
+					}
+					else {
+						mainBlock = mainBlock.replace(/[^\r\n]/g, ' ');
+						skipFrom = element.curStartIndex;
+						if(element.elseBlock) {
+							skipTo = element.elseBlock.curStartIndex;
+						}
+						else skipTo = element.endIf.curStartIndex;
+					}
+
+					code = preDirective + mainBlock + elseBlock + postDirective;
+				}
+			}
+		});
+		return code;
+	}
+
+	private substringrReplacing(str: string, define: Define, preShift: number): string
+	{
+		const toReplace = define.replacement;
+
 		let match: RegExpExecArray | null;
-		while((match = define.pattern.exec(str)) !== null) {
+		while((match = define.patternReg.exec(str)) !== null) {
 			const length = match[0].length;
 			const curIndex = match.index;
 			
@@ -238,10 +185,11 @@ export class PPParser
 			const findedStr = str.substring(curIndex, curIndex + length);
 			const postStr = str.substring(curIndex + length);
 
-			let origIndex = curIndex;
+			let origIndex = curIndex + preShift;
 			const curShift = findedStr.length - toReplace.length;
+			
 			this.replacedCode.forEach(element => {
-				if(element.newIndex < curIndex)
+				if(element.newIndex < curIndex + preShift)
 				{
 					origIndex += element.shift;
 				}
@@ -249,18 +197,20 @@ export class PPParser
 					element.move(-curShift);
 				}
 			});
-
+			for(let element of this.directives) {
+				if(element.startIndex < origIndex) continue;
+				element.move(-curShift);
+			}
 
 			this.replacedCode.push(new ReplacedCode(
 				findedStr,
 				toReplace,
 				define,
 				origIndex,
-				curIndex
+				curIndex + preShift
 			));
 			
 			str = preStr + toReplace + postStr;
-			
 		}
 		return str;
 	}
