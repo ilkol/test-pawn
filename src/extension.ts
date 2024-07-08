@@ -42,12 +42,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	console.debug('Активация расширения!');
 	
-	let defines: Map<string ,IDefine> = new Map<string, IDefine>;
-	vscode.window.onDidChangeActiveTextEditor((e) => {
-		if(!e) return;
-		if(e.document.languageId != "pawn") return;
-		findDefines(e.document.getText(), defines);
-	});	
 	const documentLinkProvider = new DocumentLinkProvider(fileManage);
 	
 	const tokenTypes = [
@@ -219,27 +213,4 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	
 	context.subscriptions.push(provider1);
-}
-
-function findDefines(text: string, defines: Map<string, IDefine>): void {
-	defines.clear();
-	const lines = text.split(/\r\n|\r|\n/);
-	// console.log(text);
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i];
-		if(line[0] != "#") continue;
-		if(!line.startsWith("#define")) continue;
-		let pattern = /^\s*(?:#)\s*define\s*(\w+)(?:\s+([\w]+))*/;
-		let m: RegExpExecArray | null;
-		m = pattern.exec(line);
-		if(m) {
-			defines.set(m[1], 
-			{
-				name: m[1],
-				pos: new vscode.Position(i, 0),
-				value: m[2] == undefined ? "" : m[2]
-			});
-		}
-		
-	}
 }
