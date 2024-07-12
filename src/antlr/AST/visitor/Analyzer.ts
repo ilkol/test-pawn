@@ -166,6 +166,7 @@ export class Analyzer extends BaseVisitor
 					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" не является массивом", node.idPos));
 			}
 			this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(variable.modifires));
+			node.tag = variable.tag;
 		}
 		else {	
 			const func = this.curScope.findFunction(node.id);
@@ -174,7 +175,7 @@ export class Analyzer extends BaseVisitor
 				this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является функцией", node.idPos));
 		
 			}
-			else this.addDiagnostic(new DiagnosticError("Переменная \"" + node.id + "\" ненайдена", node.idPos));
+			else this.addDiagnostic(new DiagnosticError("Неизвестная переменная \"" + node.id + "\"", node.idPos));
 		}
 	}
 	private curScope: IScope = new Scope();
