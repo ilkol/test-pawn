@@ -35,6 +35,7 @@ import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 import { Array } from "../Nodes/Variables/Array";
 import { SemanticTokens, SemanticTokensModifires } from "../../../SemanticTokens";
 import { SymbolsManager } from "../../../Managers/SymbolsManager";
+import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 
 export class Analyzer extends BaseVisitor
 {
@@ -269,7 +270,7 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		if(node.id !== "main") {
+		if(node.id !== "main" && !(node instanceof OperatorOverload)) {
 			this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
 
 			const compl = new CompletionItem(node.id, CompletionItemKind.Function);
@@ -327,6 +328,13 @@ export class Analyzer extends BaseVisitor
 		public readonly symbolsManager: SymbolsManager,
 		public readonly complitions: CompletionItem[]) {
 		super();
+
+		let varInit = new VariableInit();
+		varInit.id = "cellmin";
+		this.curScope.addVar(varInit);
+		varInit = new VariableInit();
+		varInit.id = "cellmax";
+		this.curScope.addVar(varInit);
 	}
 	
 	private addComplition(compl: CompletionItem) {
