@@ -167,7 +167,8 @@ export class Analyzer extends BaseVisitor
 					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" не является массивом", node.idPos));
 			}
 			this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(variable.modifires));
-			node.tag = variable.tag;
+			if(!node.isTaged)
+				node.tag = variable.tag;
 		}
 		else {	
 			const func = this.curScope.findFunction(node.id);
@@ -195,10 +196,15 @@ export class Analyzer extends BaseVisitor
 	afterVisitFunctionCall(node: FunctionCall): void {
 		let func = this.curScope.findFunction(node.id);
 		this.tokens.addToken(node.idPos, SemanticTokens.function);
-		if(func)
+		if(func) {
 			func.used = true;
+			if(!node.isTaged)
+				node.tag = func.tag;
+		}
 		else 
 			this.addDiagnostic(new DiagnosticError("Функция \"" + node.id + "\" ненайдена", node.idPos));
+		
+		
 	}
 	beforeVisitOperatorNew(node: OperatorNew): void {
 	
@@ -229,8 +235,20 @@ export class Analyzer extends BaseVisitor
 
 		if(node.left && node.right) {
 			if(this.compareTag(node.left, node.right, node.pos)) {
-				node.tag = node.left.tag;
+				if(!node.isTaged)
+					node.tag = node.left.tag;
 			}
+		}
+
+		switch(node.operator) {
+			case "<":
+			case ">":
+			case "!=":
+			case ">=":
+			case "<=":
+			case "==":
+			case "==":
+				(<BinarOperator>node).tag = new Tag("bool");
 		}
 	}
 	beforeVisitReturn(node: ReturnStatement): void {
