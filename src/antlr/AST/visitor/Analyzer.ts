@@ -37,6 +37,7 @@ import { SemanticTokens, SemanticTokensModifires } from "../../../SemanticTokens
 import { SymbolsManager } from "../../../Managers/SymbolsManager";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 import { Tag } from "../Nodes/Tag";
+import { IHasTag } from "../Nodes/IHasTag";
 
 export class Analyzer extends BaseVisitor
 {
@@ -185,7 +186,8 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVarInit(node: VariableInit): void {
 		this.checkUsed(node, (variable: VariableInit) => this.curScope.addVar(variable));
-
+		if(node.var)
+			this.compareTag(node.var, node.rightValue, node.rightValue.pos);
 	}
 	beforeVisitFunctionCall(node: FunctionCall): void {
 
@@ -225,8 +227,10 @@ export class Analyzer extends BaseVisitor
 			node.setRange(node.left.pos.start, node.right.pos.end);
 		}
 
-		if(node.left && node.right && this.compareTag(node.left.tag, node.right.tag)) {
-			this.addDiagnostic(new DiagnosticWarning(`Несовпадение типов (${node.left?.tag.id}, ${node.right?.tag.id}))`, node.pos));
+		if(node.left && node.right) {
+			if(this.compareTag(node.left, node.right, node.pos)) {
+				node.tag = node.left.tag;
+			}
 		}
 	}
 	beforeVisitReturn(node: ReturnStatement): void {
@@ -356,6 +360,7 @@ export class Analyzer extends BaseVisitor
 
 	private checkIds(ids: Map<string, Declaration>) {
 		ids.forEach((element, key) => {
+			if(key == "cellmin" || key == "cellmax") return;
 			if(!element.used && !element.native) {
 				let diagnostic: DiagnosticMessage, diagnosticMsg: string;
 				let stock = element.stock;
@@ -416,8 +421,15 @@ export class Analyzer extends BaseVisitor
 	}
 
 
+	private isEqualTag(a: Tag, b: Tag): boolean {
+		return a.id == b.id;
 
-	private compareTag(a: Tag, b: Tag): boolean {
-		return a.id != b.id;
+	}
+	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
+		if(!this.isEqualTag(a.tag, b.tag)) {
+			this.addDiagnostic(new DiagnosticWarning(`Несовпадение типов (${a.tag.id}, ${b.tag.id}))`, errorRange));
+			return false;
+		}
+		return true;
 	}
 }
