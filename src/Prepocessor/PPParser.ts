@@ -20,6 +20,7 @@ export class PPParser
 	private readonly directives: PreprocessorDirective[] = [];
 	private readonly defines: Map<string, Define> = new Map();
 	private readonly replacedCode: ReplacedCode[] = [];
+	readonly includes: Include[] = [];
 
 	private readonly ppConditions: Stack<Condition> = new Stack<Condition>();
 
@@ -86,6 +87,7 @@ export class PPParser
 				directive.checkCondition(this.file, this.defines);
 				this.ppConditions.push(directive);
 			}
+			
 		}
 	}
 
@@ -95,7 +97,8 @@ export class PPParser
 			case "define":
 				return new Define(this.file, rest, startIndex, restIndex, endIndex);
 			case "include":
-				return new Include(this.file, rest, startIndex, restIndex, endIndex);
+				this.includes.push(new Include(this.file, rest, startIndex, restIndex, endIndex));
+				return;
 			case "if":
 				return new Condition(this.file, rest, startIndex, restIndex, endIndex);
 			case "pragma":

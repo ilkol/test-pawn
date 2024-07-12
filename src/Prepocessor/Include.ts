@@ -1,29 +1,42 @@
 import { Range, TextDocument } from "vscode";
 import { PreprocessorDirective } from "./PreprocessorDirective";
 
+export enum IncludeType {
+	system,
+	default
+}
+
 export class Include extends PreprocessorDirective
 {
-	private readonly path: string;
-	private readonly pathRange: Range;
+	readonly path: string;
+	readonly pathRange: Range;
+	type: IncludeType = IncludeType.default;
+	private delLength = 0;
 
 	constructor(file: TextDocument, private readonly rest: string, startIndex: number, restIndex: number, endIndex: number) {
 		super(file, startIndex, endIndex);
 
 		this.path = this.preparePath();
 
+		const end = restIndex + rest.length - this.delLength;
 		this.pathRange = new Range(
-			file.positionAt(restIndex),
-			file.positionAt(restIndex + rest.length)
+			file.positionAt(end - this.path.length),
+			file.positionAt(end)
 		);
 	}
 
 	private preparePath(): string
 	{
-		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
+		const reg = /\s*(?:(["<])([^\s"<]+)[">]|([^\s">]+))/;
 		const match = reg.exec(this.rest);
 
 		if (match) {
-			return match[1];
+			if(match[1] == "<") {
+				this.type = IncludeType.system;
+			}
+			if(match[1])
+				this.delLength = 1;
+			return match[2];
 		} 
 		return "";
 	}

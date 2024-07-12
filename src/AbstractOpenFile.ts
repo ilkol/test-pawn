@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind, DocumentSymbol, MarkdownString, SnippetString, TextDocument } from "vscode";
+import { CompletionItem, CompletionItemKind, DocumentSymbol, MarkdownString, Range, SnippetString, TextDocument, Uri } from "vscode";
 import { FileManager } from "./Managers/FileManager";
 import { DiagnosticManager } from "./Managers/diagnostic";
 import { SemanticTokensManager, Token } from "./Managers/SemanticTokensManager";
@@ -124,5 +124,10 @@ export abstract class AbstractOpenFile
 	}
 	public addComplition(comp: CompletionItem) {
 		this.complitions.push(comp);
+	}
+
+	private readonly _documentsLinks: Map<Range, Uri> = new Map<Range, Uri>();
+	get documentsLinks(): Map<Range, Uri> {
+		return this._documentsLinks;
 	}
 }

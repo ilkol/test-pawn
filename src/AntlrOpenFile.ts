@@ -31,10 +31,22 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 		const ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 		let code = ppParser.parse();
+
+		//регистрируем дефайны
 		const complitions = ppParser.preprocessorTokens();
 		complitions.forEach(el => {
 			this.complitions.push(el);
 		});
+
+		//регистрируем инклуды
+		const pawnDir = this.fileManager._includePath;
+		if(pawnDir)
+			ppParser.includes.forEach(el => {
+				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
+				this.documentsLinks.set(el.pathRange, uri);
+				console.log(uri.toString());
+			});
+		
 
 		const lexer = this.tryLex(code);
 		const lexerErrorListener = new LexerErrorListener();

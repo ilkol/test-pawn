@@ -99,7 +99,7 @@ export class FileManager {
 	
 		if(!file) return new Map;
 		
-		return new Map<Range, Uri>();
+		return file.documentsLinks;
 		// return file.Env.includes;
 	}
 	// public getFileFunctionsDefinitions(document: TextDocument): Map<string, FunctionData> {
