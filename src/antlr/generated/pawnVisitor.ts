@@ -8,6 +8,7 @@ import { DeclarationContext } from "./pawnParser";
 import { EnumContext } from "./pawnParser";
 import { EnumMemberContext } from "./pawnParser";
 import { EnumIteratorContext } from "./pawnParser";
+import { Var_definitionContext } from "./pawnParser";
 import { FunctionDeclContext } from "./pawnParser";
 import { OperatorOverloadContext } from "./pawnParser";
 import { NativeAssigmentContext } from "./pawnParser";
@@ -18,7 +19,6 @@ import { FuncDeclModifContext } from "./pawnParser";
 import { FuncModifContext } from "./pawnParser";
 import { StatementContext } from "./pawnParser";
 import { ControlStatmentsContext } from "./pawnParser";
-import { Var_definitionContext } from "./pawnParser";
 import { AssigmentContext } from "./pawnParser";
 import { ArrayInitContext } from "./pawnParser";
 import { ArrayInitMemberContext } from "./pawnParser";
@@ -114,6 +114,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitEnumIterator?: (ctx: EnumIteratorContext) => Result;
 
 	/**
+	 * Visit a parse tree produced by `pawnParser.var_definition`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitVar_definition?: (ctx: Var_definitionContext) => Result;
+
+	/**
 	 * Visit a parse tree produced by `pawnParser.functionDecl`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -182,13 +189,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitControlStatments?: (ctx: ControlStatmentsContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.var_definition`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitVar_definition?: (ctx: Var_definitionContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.assigment`.

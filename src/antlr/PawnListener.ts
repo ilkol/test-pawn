@@ -129,9 +129,9 @@ export class PawnListener implements pawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 
-			this.checkModif(ctx.varModifires().CONST(), node, VariableModifire.const, "const");
-			this.checkModif(ctx.varModifires().STATIC(), node, VariableModifire.static, "static");
-			this.checkModif(ctx.varModifires().STOCK(), node, VariableModifire.stock, "stock");
+			// this.checkModif(ctx.varModifires().CONST(), node, VariableModifire.const, "const");
+			// this.checkModif(ctx.varModifires().STATIC(), node, VariableModifire.static, "static");
+			// this.checkModif(ctx.varModifires().STOCK(), node, VariableModifire.stock, "stock");
 				
 			let last = this.nodes.peek();
 			node.vars.forEach(element => {
@@ -300,6 +300,8 @@ export class PawnListener implements pawnListener
 			let last = this.nodes.peek();
 			if(last && 'tag' in last) {
 				last.tag = node;
+				if('isTaged' in last)
+					last.isTaged = true;
 			}
 		}
 	}
@@ -497,7 +499,7 @@ export class PawnListener implements pawnListener
 		let node = this.nodes.pop();
 		if(node && ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
-			const last = this.nodes.pop();
+			const last = this.nodes.pop();``
 			if(last instanceof Expresion) {
 				if(node instanceof BinarOperator) {
 					node.left = last;

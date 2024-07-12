@@ -5,10 +5,11 @@ file:				(declaration)* EOF;
 
 declaration:		(functionDecl|operatorOverload|var_definition SEMI) | enum;
 
-enum:				ENUM (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA enumMember)* )? CURLY_CLOSE_BRACKET;
+enum:				ENUM (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA enumMember)*  COMA?)? CURLY_CLOSE_BRACKET;
 enumMember:			variable (ASSIGMENT expresion)?;
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
+var_definition: 	((NEW varModifires*) | (varModifires+)) (variable | assigment) (COMA (variable | assigment))*;
 functionDecl:		(funcDeclModif)? tag? IDENTIFIER OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | codeBlock | nativeAssigment);
 operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | codeBlock | nativeAssigment);
 nativeAssigment:	ASSIGMENT IDENTIFIER SEMI;
@@ -25,7 +26,6 @@ funcModif:			STOCK | PUBLIC;
 statement:			((var_definition|assigment|functionCall|return) SEMI) | controlStatments;
 controlStatments:	if_statement | cycles | switch;
 /* Объявление переменной */
-var_definition: 	NEW varModifires (variable | assigment) (COMA (variable | assigment))*;
 
 assigment:			variable assigments (expresion | arrayInit) (assigments (expresion | arrayInit))*;
 
@@ -50,20 +50,20 @@ preOperators:	NOT | MINUS | INCREMENTS | DECREMENTS | SIZEOF;
 operation:			operator expresion?;
 varOrLiteral:		variable | literal;
 
-declParams:			(CONST)? (reference)? variable (ASSIGMENT constExpresion)?;	
+declParams:			(CONST)? (reference)? variable (ASSIGMENT (constExpresion | (sizeof variable)))?;	
 ellipse:			COMA tag? PERIOD_FUNC;
 
 reference:			BIT_AND;
 
-varModifires:		(CONST|STATIC|STOCK)*;
+varModifires:		CONST|STATIC|STOCK;
 
 rValue:				(varOrLiteral | functionCall | grouping);
 constRValue:		(varOrLiteral | constGrouping);
 sizeof:				SIZEOF;
 
 number: 			integer | float | hex;
-integer:			INTEGER;
-float:				FLOAT;
+integer:			MINUS? INTEGER;
+float:				MINUS? FLOAT;
 hex:				HEX;
 
 operator:			arefmeticOperator | logicOperator | bitwiseOperator;
@@ -232,7 +232,7 @@ UNDEF:		'undef';
 
 DYNAMIC:	'dynamic';
 WARNING:	'warning';
-DISABLE:	'disable';
+// DISABLE:	'disable';
 // ENABLE:		'enable';
 
 TRUE:		'true';
@@ -262,7 +262,7 @@ fragment SIMPLEESCAPESEQUENCE:
     | '\\v'
 ;
 
-IDENTIFIER:		[a-zA-Z_][a-zA-Z0-9_]*;
+IDENTIFIER:		[@a-zA-Z_][@a-zA-Z0-9_]*;
 
 HEX:			'0x'[a-fA-F0-9]+;
 INTEGER:		[0-9]+;
