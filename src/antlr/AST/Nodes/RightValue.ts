@@ -7,6 +7,7 @@ import { Tag } from "./Tag";
 
 export abstract class RightValue extends ASTNode implements IHasTag 
 {
+	private translateTag: boolean = false;
 	private _tag: Tag = new DefaultTag();
 
 	public get tag() : Tag {
@@ -20,6 +21,15 @@ export abstract class RightValue extends ASTNode implements IHasTag
 
 	public set tag(v : Tag) {
 		this._tag = v;
+	}
+
+	public get isTaged(): boolean
+	{
+		return this.translateTag;
+	}
+	public set isTaged(v: true)
+	{
+		this.translateTag = v;
 	}
 }
 
