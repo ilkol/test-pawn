@@ -37,8 +37,6 @@ export class PPParser
 		let code = this.file.getText()
 		code = this.collectDirectives(code);
 		code = this.processDirectives(code);
-		console.log(code);
-		
 		return code;
 	}
 
