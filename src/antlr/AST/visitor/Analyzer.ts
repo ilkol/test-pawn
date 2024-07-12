@@ -276,8 +276,21 @@ export class Analyzer extends BaseVisitor
 			compl.insertText = new SnippetString(`${node.id}($0)`);
 			this.addComplition(compl)
 
-			
 		}
+
+		if(node.assigmentFunctionID) {
+			if(!node.native) {
+				this.addDiagnostic(new DiagnosticError("Присвоение возможно только нативной функции", node.idPos));
+				return;
+			}
+			
+			let id = this.curScope.find(node.assigmentFunctionID);
+			if (!id) {
+				this.addDiagnostic(new DiagnosticError(`Идентификатор "${node.assigmentFunctionID}" не найден`, node.pos));
+			}
+
+		}
+
 		let symbolRange:Range = node.idPos;
 		let selectRange = node.idPos;
 		if(node.code) {

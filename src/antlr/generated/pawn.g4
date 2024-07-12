@@ -3,14 +3,15 @@ grammar pawn;
 /* Содержание файла */
 file:				(declaration)* EOF;
 
-declaration:		(functionDecl|var_definition SEMI) | enum;
+declaration:		(functionDecl|operatorOverload|var_definition SEMI) | enum;
 
 enum:				ENUM (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA enumMember)* )? CURLY_CLOSE_BRACKET;
 enumMember:			variable (ASSIGMENT expresion)?;
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
-functionDecl:		(funcDeclModif)? tag? IDENTIFIER OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | codeBlock);
-
+functionDecl:		(funcDeclModif)? tag? IDENTIFIER OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | codeBlock | nativeAssigment);
+operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | codeBlock | nativeAssigment);
+nativeAssigment:	ASSIGMENT IDENTIFIER SEMI;
 tag:				(IDENTIFIER|(CURLY_OPEN_BRACKET IDENTIFIER (COMA IDENTIFIER)* CURLY_CLOSE_BRACKET)) COLON;
 
 variable:			tag? IDENTIFIER (arrayIndex)*;
@@ -67,8 +68,11 @@ hex:				HEX;
 
 operator:			arefmeticOperator | logicOperator | bitwiseOperator;
 
+canBeOverloaded:	arefmeticOperator | compareOperator | ASSIGMENT;
+
 arefmeticOperator:	PLUS | MINUS | MULTY | DIV | REMAINDE | INCREMENTS | DECREMENTS;
-logicOperator:		OR | AND | NOT | EQUAL | NOTEQUAL | LESS | LARGER | LESSEQ | LARGEREQ;
+logicOperator:		OR | AND | compareOperator;
+compareOperator:	NOT | EQUAL | NOTEQUAL | LESS | LARGER | LESSEQ | LARGEREQ;
 bitwiseOperator:	BIT_AND | BIT_OR | BIT_RIGHT | BIT_LEFT  | BIT_XOR | BIT_COMPLEMEN | BIT_RIGHT_LOG;
 
 

@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NumberContext, OperationContext, OperatorContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -36,6 +36,7 @@ import { Array } from "./AST/Nodes/Variables/Array";
 import { ArrayDeclaration } from "./AST/Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "./AST/Nodes/Operators/AssigmentOperator";
 import { Ellipse } from "./AST/Nodes/Operators/Ellipse";
+import { OperatorOverload } from "./AST/Nodes/Operators/OperatorOverload";
 
 export class PawnListener implements pawnListener
 {
@@ -68,6 +69,32 @@ export class PawnListener implements pawnListener
 			node.setPos(ctx.start, ctx.stop);
 	}
 
+	enterOperatorOverload(ctx: OperatorOverloadContext):void
+	{
+		let node = new OperatorOverload();	
+		(<Declarations>this.nodes.peek()).declarations.push(node);
+		this.nodes.push(node);
+	}
+	exitOperatorOverload(ctx: OperatorOverloadContext):void
+	{
+		let node = <OperatorOverload>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			node.operator = ctx.canBeOverloaded().text;
+			node.id = node.tag.id + `:operator` + node.operator;
+
+			node.setIDPos(
+				ctx.OPERATOR().symbol.line, ctx.OPERATOR().symbol.charPositionInLine, 
+				ctx.OPEN_PARENTHESIS().symbol.charPositionInLine);
+
+		}
+	}
+	exitNativeAssigment(ctx: NativeAssigmentContext): void
+	{
+		let last = <FunctionDeclaration>this.nodes.peek();
+
+		last.assigmentFunctionID = ctx.IDENTIFIER().text;
+	}
 	enterFunctionDecl(ctx: FunctionDeclContext): void {
 		let node = new FunctionDeclaration();	
 		(<Declarations>this.nodes.peek()).declarations.push(node);
@@ -256,6 +283,12 @@ export class PawnListener implements pawnListener
 		let node = <Tag>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
+			let ids = ctx.IDENTIFIER();
+			if(ids.length == 1) {
+				let id = ids[0];
+				node.id = id.text;
+				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+			}
 			// try {
 			// 	let id = ctx.IDENTIFIER();
 			// 	node.id = id.text;
@@ -640,7 +673,8 @@ export class PawnListener implements pawnListener
 			else if(ctx.FORWARD())
 				last.modifire = FunctionModifire.forward;
 			else if(ctx.NATIVE())
-				last.modifire = FunctionModifire.native;
+				last.native = true;
+				// last.modifire = FunctionModifire.native;
 		}
 		else if(ctx.stop) {
 			console.debug(last);

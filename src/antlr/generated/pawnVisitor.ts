@@ -9,6 +9,8 @@ import { EnumContext } from "./pawnParser";
 import { EnumMemberContext } from "./pawnParser";
 import { EnumIteratorContext } from "./pawnParser";
 import { FunctionDeclContext } from "./pawnParser";
+import { OperatorOverloadContext } from "./pawnParser";
+import { NativeAssigmentContext } from "./pawnParser";
 import { TagContext } from "./pawnParser";
 import { VariableContext } from "./pawnParser";
 import { ArrayIndexContext } from "./pawnParser";
@@ -41,8 +43,10 @@ import { IntegerContext } from "./pawnParser";
 import { FloatContext } from "./pawnParser";
 import { HexContext } from "./pawnParser";
 import { OperatorContext } from "./pawnParser";
+import { CanBeOverloadedContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
 import { LogicOperatorContext } from "./pawnParser";
+import { CompareOperatorContext } from "./pawnParser";
 import { BitwiseOperatorContext } from "./pawnParser";
 import { If_statementContext } from "./pawnParser";
 import { Else_statementContext } from "./pawnParser";
@@ -115,6 +119,20 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitFunctionDecl?: (ctx: FunctionDeclContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.operatorOverload`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitOperatorOverload?: (ctx: OperatorOverloadContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.nativeAssigment`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitNativeAssigment?: (ctx: NativeAssigmentContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.tag`.
@@ -341,6 +359,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitOperator?: (ctx: OperatorContext) => Result;
 
 	/**
+	 * Visit a parse tree produced by `pawnParser.canBeOverloaded`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitCanBeOverloaded?: (ctx: CanBeOverloadedContext) => Result;
+
+	/**
 	 * Visit a parse tree produced by `pawnParser.arefmeticOperator`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -353,6 +378,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitLogicOperator?: (ctx: LogicOperatorContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.compareOperator`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitCompareOperator?: (ctx: CompareOperatorContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.bitwiseOperator`.

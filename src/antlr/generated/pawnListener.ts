@@ -9,6 +9,8 @@ import { EnumContext } from "./pawnParser";
 import { EnumMemberContext } from "./pawnParser";
 import { EnumIteratorContext } from "./pawnParser";
 import { FunctionDeclContext } from "./pawnParser";
+import { OperatorOverloadContext } from "./pawnParser";
+import { NativeAssigmentContext } from "./pawnParser";
 import { TagContext } from "./pawnParser";
 import { VariableContext } from "./pawnParser";
 import { ArrayIndexContext } from "./pawnParser";
@@ -41,8 +43,10 @@ import { IntegerContext } from "./pawnParser";
 import { FloatContext } from "./pawnParser";
 import { HexContext } from "./pawnParser";
 import { OperatorContext } from "./pawnParser";
+import { CanBeOverloadedContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
 import { LogicOperatorContext } from "./pawnParser";
+import { CompareOperatorContext } from "./pawnParser";
 import { BitwiseOperatorContext } from "./pawnParser";
 import { If_statementContext } from "./pawnParser";
 import { Else_statementContext } from "./pawnParser";
@@ -136,6 +140,28 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitFunctionDecl?: (ctx: FunctionDeclContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.operatorOverload`.
+	 * @param ctx the parse tree
+	 */
+	enterOperatorOverload?: (ctx: OperatorOverloadContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.operatorOverload`.
+	 * @param ctx the parse tree
+	 */
+	exitOperatorOverload?: (ctx: OperatorOverloadContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.nativeAssigment`.
+	 * @param ctx the parse tree
+	 */
+	enterNativeAssigment?: (ctx: NativeAssigmentContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.nativeAssigment`.
+	 * @param ctx the parse tree
+	 */
+	exitNativeAssigment?: (ctx: NativeAssigmentContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.tag`.
@@ -490,6 +516,17 @@ export interface pawnListener extends ParseTreeListener {
 	exitOperator?: (ctx: OperatorContext) => void;
 
 	/**
+	 * Enter a parse tree produced by `pawnParser.canBeOverloaded`.
+	 * @param ctx the parse tree
+	 */
+	enterCanBeOverloaded?: (ctx: CanBeOverloadedContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.canBeOverloaded`.
+	 * @param ctx the parse tree
+	 */
+	exitCanBeOverloaded?: (ctx: CanBeOverloadedContext) => void;
+
+	/**
 	 * Enter a parse tree produced by `pawnParser.arefmeticOperator`.
 	 * @param ctx the parse tree
 	 */
@@ -510,6 +547,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitLogicOperator?: (ctx: LogicOperatorContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.compareOperator`.
+	 * @param ctx the parse tree
+	 */
+	enterCompareOperator?: (ctx: CompareOperatorContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.compareOperator`.
+	 * @param ctx the parse tree
+	 */
+	exitCompareOperator?: (ctx: CompareOperatorContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.bitwiseOperator`.

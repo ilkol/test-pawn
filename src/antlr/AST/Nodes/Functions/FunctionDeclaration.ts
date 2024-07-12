@@ -22,6 +22,8 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	private _modifire: FunctionModifire = FunctionModifire.none;
 	private _ellipse: Ellipse | undefined;
 
+	private _assigmentNative?: string;
+
 	public accept(visitor: IVisitor): void {
 		visitor.visitFunctionDeclaration(this);
 	}
@@ -61,5 +63,14 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	public set ellipse(v: Ellipse)
 	{
 		this._ellipse = v;
+	}
+
+	get assigmentFunctionID(): string | undefined
+	{
+		return this._assigmentNative;
+	}
+	set assigmentFunctionID(v: string)
+	{
+		this._assigmentNative = v;
 	}
 }
