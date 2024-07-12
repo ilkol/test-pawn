@@ -621,6 +621,9 @@ export class PawnListener implements pawnListener
 			if(last instanceof Expresion) {
 				last.expresion = node;
 			}
+			else if(last instanceof FunctionDeclarationParameter) {
+				last.defaultValue = node;
+			}
 			else {
 				console.debug(last);
 				this.addDiagnostic("Неожиданная строка", DiagnosticSeverity.Error, node.pos);
