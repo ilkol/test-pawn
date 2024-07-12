@@ -37,6 +37,8 @@ export class PPParser
 		let code = this.file.getText()
 		code = this.collectDirectives(code);
 		code = this.processDirectives(code);
+		console.log(code);
+		
 		return code;
 	}
 
@@ -44,8 +46,8 @@ export class PPParser
 	//Ищет и уадляет все директивы препроцессора
 	private collectDirectives(code: string): string {
 
-		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)?(?=\r?\n|$)/gim;
-		
+		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)(?=\s*\/\/|(?=\r?\n|$))/gim;
+				    
 		let match;
 		while ((match = reg.exec(code)) !== null) {
 			const [fullMatch, leadingWhitespace, directive, restA] = match;
