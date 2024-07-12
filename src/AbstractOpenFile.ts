@@ -16,15 +16,27 @@ export abstract class AbstractOpenFile
 		this.diagnositcManager = fileManager.getDiagnostic();
 		console.debug("Был открыт файл!");
 
-		this.loadDefaultKeywords();
+		
+		this.loadDefaultComplitions();
 	}
 
+	private loadDefaultComplitions()
+	{
+		this.loadDefaultKeywords();	
+		
+		// const conplition = new CompletionItem("switch", CompletionItemKind.Struct);
+		// conplition.insertText = new SnippetString("switch ($1)\r\n{\r\n\tcase $2:\r\n\t{\r\n\t\t$3\r\n\t}\r\n\tdefault:\r\n\t{\r\n\t\t$0\r\n\t}\r\n}");
+		// this.complitions.push(conplition);
+	}
 	private loadDefaultKeywords()
 	{
 		interface compl {
 			label: string;
 			insertText?: string;
+			kind?: CompletionItemKind;
+			detail?: string;
 		}
+		
 		const keywords: compl[] = [
 			{label: "new", insertText: "new ${0};"},
 			{label: "if", insertText: "if ($1)$0"},
@@ -32,9 +44,14 @@ export abstract class AbstractOpenFile
 			{label: "return", insertText: "return $0;"},
 			{label: "true"},
 			{label: "false"},
-			{label: "switch"},
-			{label: "case", insertText: "case $1:\r\n$0"},
-			{label: "default", insertText: "default:\r\n$0"},
+			{label: "switch", insertText: "switch ($0)"},
+			{label: "switch", insertText: "switch ($1)\r\n{\r\n\tcase $2:\r\n\t{\r\n\t\t$3\r\n\t}\r\n\tdefault:\r\n\t{\r\n\t\t$0\r\n\t}\r\n}", kind: CompletionItemKind.Struct, detail: "Switch Statement"},
+			{label: "for"},
+			{label: "while"},
+			{label: "case", insertText: "case $0"},
+			{label: "case", insertText: "case $1:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: "Case Statement"},
+			{label: "default", insertText: "default"},
+			{label: "default", insertText: "default:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: "Default Statement"},
 			{label: "break", insertText: "break;\r\n$0"},
 			{label: "continue", insertText: "continue;\r\n$0"},
 			{label: "enum", insertText: "enum $1 {\r\n\t$0\r\n}"},
@@ -49,9 +66,10 @@ export abstract class AbstractOpenFile
 		];
 
 		keywords.forEach(key => {
-			const conplition = new CompletionItem(key.label, CompletionItemKind.Keyword);
+			const conplition = new CompletionItem(key.label, key.kind ? key.kind : CompletionItemKind.Keyword);
 			if(key.insertText)
 				conplition.insertText = new SnippetString(key.insertText);
+			conplition.detail = key.detail;
 			this.complitions.push(conplition);
 
 		});
