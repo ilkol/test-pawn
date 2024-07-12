@@ -623,7 +623,7 @@ export class PawnListener implements pawnListener
 	exitFloat(ctx: FloatContext): void {
 		let node = <FloatLiteral>this.nodes.pop();
 		if(ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
+			node.range = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.start.line - 1, ctx.start.charPositionInLine + ctx.FLOAT().text.length); 
 			node.value = +ctx.FLOAT().text;
 
 			const last = this.nodes.peek();

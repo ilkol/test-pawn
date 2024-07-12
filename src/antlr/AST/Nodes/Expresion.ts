@@ -8,9 +8,14 @@ export class Expresion extends RightValue {
 	private exp: Expresion|undefined;
 
 	public accept(visitor: IVisitor): void {
-		this.exp?.accept(visitor);
-		if(this.exp?.tag)
-			this.tag = this.exp?.tag;
+		if(this.exp) {
+			this.exp?.accept(visitor);
+			if(this.exp?.tag) {
+				this.tag = this.exp.tag;
+				
+			}
+			this.range = this.exp.pos;
+		}
 	}
 
 	public get expresion(): Expresion|undefined {

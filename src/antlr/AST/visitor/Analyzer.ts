@@ -216,9 +216,13 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	beforeVisitBinarOperator(node: BinarOperator): void {
-	
+		
+			
 	}
 	afterVisitBinarOperator(node: BinarOperator): void {
+		if(node.left && node.right) {
+			node.setRange(node.left.pos.start, node.right.pos.end);
+		}
 
 		if(node.left && node.right && this.compareTag(node.left.tag, node.right.tag)) {
 			this.addDiagnostic(new DiagnosticWarning(`Несовпадение типов (${node.left?.tag.id}, ${node.right?.tag.id}))`, node.pos));
