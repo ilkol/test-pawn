@@ -36,6 +36,7 @@ import { Array } from "../Nodes/Variables/Array";
 import { SemanticTokens, SemanticTokensModifires } from "../../../SemanticTokens";
 import { SymbolsManager } from "../../../Managers/SymbolsManager";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
+import { Tag } from "../Nodes/Tag";
 
 export class Analyzer extends BaseVisitor
 {
@@ -183,6 +184,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVarInit(node: VariableInit): void {
 		this.checkUsed(node, (variable: VariableInit) => this.curScope.addVar(variable));
+
 	}
 	beforeVisitFunctionCall(node: FunctionCall): void {
 
@@ -217,7 +219,10 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	afterVisitBinarOperator(node: BinarOperator): void {
-	
+
+		if(node.left && node.right && this.compareTag(node.left.tag, node.right.tag)) {
+			this.addDiagnostic(new DiagnosticWarning(`Несовпадение типов (${node.left?.tag.id}, ${node.right?.tag.id}))`, node.pos));
+		}
 	}
 	beforeVisitReturn(node: ReturnStatement): void {
 	
@@ -403,5 +408,11 @@ export class Analyzer extends BaseVisitor
 		this.checkIds(this.curScope.variables());
 		if(this.curScope.parent)
 			this.curScope = this.curScope.parent;
+	}
+
+
+
+	private compareTag(a: Tag, b: Tag): boolean {
+		return a.id != b.id;
 	}
 }

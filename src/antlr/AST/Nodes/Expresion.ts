@@ -9,6 +9,8 @@ export class Expresion extends RightValue {
 
 	public accept(visitor: IVisitor): void {
 		this.exp?.accept(visitor);
+		if(this.exp?.tag)
+			this.tag = this.exp?.tag;
 	}
 
 	public get expresion(): Expresion|undefined {
