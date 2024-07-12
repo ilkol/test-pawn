@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind, DocumentSymbol, SnippetString, TextDocument } from "vscode";
+import { CompletionItem, CompletionItemKind, DocumentSymbol, MarkdownString, SnippetString, TextDocument } from "vscode";
 import { FileManager } from "./Managers/FileManager";
 import { DiagnosticManager } from "./Managers/diagnostic";
 import { SemanticTokensManager, Token } from "./Managers/SemanticTokensManager";
@@ -22,11 +22,50 @@ export abstract class AbstractOpenFile
 
 	private loadDefaultComplitions()
 	{
+		this.loadDefaultConstatns();	
 		this.loadDefaultKeywords();	
+		this.loadDefaultOperator();	
 		
-		// const conplition = new CompletionItem("switch", CompletionItemKind.Struct);
-		// conplition.insertText = new SnippetString("switch ($1)\r\n{\r\n\tcase $2:\r\n\t{\r\n\t\t$3\r\n\t}\r\n\tdefault:\r\n\t{\r\n\t\t$0\r\n\t}\r\n}");
-		// this.complitions.push(conplition);
+	}
+	private loadDefaultOperator()
+	{
+		interface compl {
+			label: string;
+			doc?: string;
+		}
+		const keywords: compl[] = [
+			{label: "sizeof", doc: "Возвращает размер массива (количество ячеек)"},
+			{label: "tagof", doc: "Возвращает идентификатор тэга"},
+			{label: "char", doc: "Приводит к количеству ячеек, необходимых для хранения упакованного массива символов"},
+		];
+
+		keywords.forEach(key => {
+			const conplition = new CompletionItem(key.label, CompletionItemKind.Operator);
+			conplition.documentation = new MarkdownString(key.doc);
+			this.complitions.push(conplition);
+
+		});
+	}
+	private loadDefaultConstatns()
+	{
+		interface compl {
+			label: string;
+			doc?: string;
+		}
+		const keywords: compl[] = [
+			{label: "cellbits", doc: "The size of a cell in bits; usually `32`."},
+			{label: "cellmax", doc: "The largest valid positive value that a cell can hold; usually `214748364`."},
+			{label: "cellmin", doc: "The largest valid negative value that a cell can hold; usually `-214748364`."},
+			{label: "charbit", doc: "The size of a packed character in bits; usually `8`"},
+			{label: "charmax", doc: "The largest valid packed character value; a packed character is usually 8-bit and the maximum valid value isthus `25`"},
+		];
+
+		keywords.forEach(key => {
+			const conplition = new CompletionItem(key.label, CompletionItemKind.Constant);
+			conplition.documentation = new MarkdownString(key.doc);
+			this.complitions.push(conplition);
+
+		});
 	}
 	private loadDefaultKeywords()
 	{
