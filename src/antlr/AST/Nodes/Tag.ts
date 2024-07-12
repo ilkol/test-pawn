@@ -9,4 +9,9 @@ export class Tag extends HasID
 	public accept(visitor: IVisitor): void {
 		throw new Error("Method not implemented.");
 	}
+	constructor(tagName?: string) {
+		super();
+		if(tagName)
+			this.id = tagName;
+	}
 }
