@@ -1,9 +1,6 @@
 import * as vscode from 'vscode';
-import { getDefaultComplitions } from './DefaultComplitions/DefaultComplitions';
 import { DiagnosticManager } from './Managers/diagnostic';
 import { FileManager } from './Managers/FileManager';
-import { CodelensProvider } from './Providers/CodelensProvider';
-import { OpenedFile } from './OpenedFile';
 import { DocumentLinkProvider } from './Providers/DocumentLinkProvider';
 import { SignatureProvider } from './Providers/SignatureProvider';
 import { DocumentSemanticTokensProvider } from './Providers/DocumentSemanticTokensProvider';
@@ -13,11 +10,6 @@ import { PawnColorProvider } from './Providers/ColorProvider';
 import { AbstractOpenFile } from './AbstractOpenFile';
 import { SemanticTokens, SemanticTokensModifires } from './SemanticTokens';
 
-interface IDefine {
-	name: string
-	pos: vscode.Position,
-	value?: string
-}
 
 interface RakeTaskDefinition extends vscode.TaskDefinition {
 	/**
@@ -35,15 +27,14 @@ let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
 
 export async function activate(context: vscode.ExtensionContext) {
+	console.debug('Активация расширения!');
+
 	diagnosticManager = new DiagnosticManager(vscode.languages.createDiagnosticCollection("pawn"));
 	fileManage = new FileManager(diagnosticManager);
 
 	await fileManage.findPawnDir();
-
-	console.debug('Активация расширения!');
-	
 	const documentLinkProvider = new DocumentLinkProvider(fileManage);
-	
+
 	const tokenTypes = [
 		SemanticTokens.type, 
 		SemanticTokens.enum, 
@@ -71,17 +62,17 @@ export async function activate(context: vscode.ExtensionContext) {
 	const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
 
 	const documentSemanticTokensProvider = new DocumentSemanticTokensProvider(fileManage, legend);
+
+
 	vscode.workspace.onDidChangeTextDocument((e) => {
 		if(e.document.languageId != "pawn") return;
 		let connect = e.contentChanges;
 		if(!connect.length) {
-			
 			return;
 		}
 		if(connect[0].text == ";") {
 			console.error(e.contentChanges);
 			fileManage.onDidOpenTextDocument(e.document);
-			// documentLinkProvider.provideDocumentLinks(e.document);
 		}
 	});
 	vscode.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument);
@@ -92,9 +83,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		return fileManage.onDidOpenTextDocument(file);
 	});
 
-	// const codelensProvider = new CodelensProvider(fileManage);
 	const signatureProvider = new SignatureProvider(fileManage);
-	// context.subscriptions.push(vscode.languages.registerCodeLensProvider('pawn', codelensProvider));
 	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider('pawn', documentLinkProvider));
 
 	const symbolProvider = new SymbolProvider(fileManage);
@@ -104,6 +93,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	const callHierarchyProvider = new CallHierarchyProvider();
 	context.subscriptions.push(vscode.languages.registerCallHierarchyProvider('pawn', callHierarchyProvider));
 	//пока бесполезно
+
+
 	const colorProvider = new PawnColorProvider();
 	context.subscriptions.push(vscode.languages.registerColorProvider('pawn', colorProvider));
 	context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider('pawn', documentSemanticTokensProvider, legend));
@@ -150,7 +141,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	// 	}
 	// 	}));
 
-	const provider1 = vscode.languages.registerCompletionItemProvider('pawn', {
+	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('pawn', {
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
 			
 			let complitions: vscode.CompletionItem[] = [];
@@ -210,7 +201,6 @@ export async function activate(context: vscode.ExtensionContext) {
 			// return all completion items as array
 			return complitions;
 		}
-	});
-	
-	context.subscriptions.push(provider1);
+	})
+	);
 }
