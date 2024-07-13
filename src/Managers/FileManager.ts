@@ -135,12 +135,15 @@ export class FileManager {
 		if(!this.openedFiles.has(path))
 			this.onDidOpenTextDocument(file);
 			
+		const doc: AbstractOpenFile | undefined = this.openedFiles.get(path);
 
-		this.diagnosticManager.clear();
-		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
-		doc.tryParse();
-		this.openedFiles.set(path, doc);
-		this.diagnosticManager.updateDiagnostic();
+
+		if(doc) {
+			this.diagnosticManager.clear();
+			doc.tryParse();
+			this.diagnosticManager.updateDiagnostic();
+		}
+
 		return;
 	}
 }

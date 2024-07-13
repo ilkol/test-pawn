@@ -80,6 +80,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.workspace.onDidSaveTextDocument((file) => {
 		if(file.languageId != "pawn") return;
+		console.error("SAVE FILE");
 		return fileManage.onDidChangeDocument(file);
 	});
 
