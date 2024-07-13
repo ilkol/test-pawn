@@ -41,11 +41,13 @@ export class AntrlOpenFile extends AbstractOpenFile
 		//регистрируем инклуды
 		const pawnDir = this.fileManager._includePath;
 		if(pawnDir)
+		{
 			ppParser.includes.forEach(el => {
 				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
 				this.documentsLinks.set(el.pathRange, uri);
 				console.log(uri.toString());
 			});
+		}
 		
 
 		const lexer = this.tryLex(code);
