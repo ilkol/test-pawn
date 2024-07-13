@@ -1,8 +1,9 @@
-import { DiagnosticSeverity, FileSystemError, FileType, Hover, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
+import { CompletionItem, DiagnosticSeverity, FileSystemError, FileType, Hover, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
 import { OpenedFile } from "../OpenedFile";
 import { DiagnosticManager } from "./diagnostic";
 import { AntrlOpenFile } from "../AntlrOpenFile";
 import { AbstractOpenFile } from "../AbstractOpenFile";
+import { stringify } from "querystring";
 
 export class FileManager {
 	public readonly openedFiles: Map<string, AbstractOpenFile> = new Map<string, OpenedFile>;
@@ -145,5 +146,17 @@ export class FileManager {
 		}
 
 		return;
+	}
+	
+	getFile(path: string): AbstractOpenFile | undefined {
+		return this.openedFiles.get(path);
+	}
+	getFileComplitions(path: string): CompletionItem[] {
+		const file = this.getFile(path);
+		// console.log(path);
+		// console.log(this.openedFiles);
+		if(file)
+			return file.getComplitions();
+		return [];	
 	}
 }

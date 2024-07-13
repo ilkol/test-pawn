@@ -28,7 +28,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 	public tryParse(): void
 	{
-
+		this.complitions = [];
 		const ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 		let code = ppParser.parse();
 
@@ -46,6 +46,9 @@ export class AntrlOpenFile extends AbstractOpenFile
 				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
 				this.documentsLinks.set(el.pathRange, uri);
 				this.fileManager.openFile(uri);
+				this.fileManager.getFileComplitions(uri.path).forEach(compl => {
+					this.complitions.push(compl);
+				});
 			});
 		}
 
