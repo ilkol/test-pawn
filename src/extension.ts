@@ -80,7 +80,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.workspace.onDidSaveTextDocument((file) => {
 		if(file.languageId != "pawn") return;
-		return fileManage.onDidOpenTextDocument(file);
+		return fileManage.onDidChangeDocument(file);
 	});
 
 	const signatureProvider = new SignatureProvider(fileManage);
