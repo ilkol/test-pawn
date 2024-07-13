@@ -45,9 +45,11 @@ export class AntrlOpenFile extends AbstractOpenFile
 			ppParser.includes.forEach(el => {
 				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
 				this.documentsLinks.set(el.pathRange, uri);
-				console.log(uri.toString());
+				this.fileManager.openFile(uri);
 			});
 		}
+
+
 		
 
 		const lexer = this.tryLex(code);

@@ -8,6 +8,7 @@ export class FileManager {
 	public readonly openedFiles: Map<string, AbstractOpenFile> = new Map<string, OpenedFile>;
 	public root = workspace.workspaceFolders;
 	public _includePath?: Uri = undefined;
+
 	constructor(private diagnosticManager: DiagnosticManager) {
 		// if(this.includePath == "") {
 		// 	// let notifAboutInclude = window.showInputBox({title: "test"});
@@ -114,10 +115,30 @@ export class FileManager {
 	public onDidOpenTextDocument = (file: TextDocument) => {
 		if(file.languageId != "pawn") return;
 
+		let path = file.uri.path;
+		if(this.openedFiles.has(path))
+			return;
+			
+
 		this.diagnosticManager.clear();
 		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
 		doc.tryParse();
+		this.openedFiles.set(path, doc);
+		this.diagnosticManager.updateDiagnostic();
+		return;
+	}
+
+	public onDidChangeDocument(file: TextDocument) {
+		if(file.languageId != "pawn") return;
+
 		let path = file.uri.path;
+		if(!this.openedFiles.has(path))
+			this.onDidOpenTextDocument(file);
+			
+
+		this.diagnosticManager.clear();
+		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
+		doc.tryParse();
 		this.openedFiles.set(path, doc);
 		this.diagnosticManager.updateDiagnostic();
 		return;

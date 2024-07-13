@@ -72,7 +72,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 		if(connect[0].text == ";") {
 			console.error(e.contentChanges);
-			fileManage.onDidOpenTextDocument(e.document);
+			fileManage.onDidChangeDocument(e.document);
 		}
 	});
 	vscode.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument);

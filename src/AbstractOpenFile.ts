@@ -14,7 +14,7 @@ export abstract class AbstractOpenFile
 	
 	constructor(protected file: TextDocument, public readonly fileManager: FileManager) {
 		this.diagnositcManager = fileManager.getDiagnostic();
-		console.debug("Был открыт файл!");
+		console.debug(`Был открыт файл! ${file.fileName}`);
 
 		
 		this.loadDefaultComplitions();
