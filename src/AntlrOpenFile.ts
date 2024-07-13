@@ -15,6 +15,7 @@ import { LexerErrorListener } from "./antlr/LexerErrorListener";
 import { ParserErrorListener } from "./antlr/ParserErrorListener";
 import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
 import { PPParser } from "./Prepocessor/PPParser";
+import path = require("path");
 
 
 
@@ -41,12 +42,14 @@ export class AntrlOpenFile extends AbstractOpenFile
 		//регистрируем инклуды
 		const pawnDir = this.fileManager._includePath;
 		if(pawnDir)
-		{
+		{	
 			ppParser.includes.forEach(el => {
 				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
 				this.documentsLinks.set(el.pathRange, uri);
 				this.fileManager.openFile(uri);
 				this.fileManager.getFileComplitions(uri.path).forEach(compl => {
+					if(!compl.detail)
+						compl.detail = path.parse(path.basename(uri.fsPath)).name;
 					this.complitions.push(compl);
 				});
 			});
