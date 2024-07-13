@@ -20,6 +20,10 @@ export class DiagnosticManager {
 			this.diagnosticCollection.set(vscode.Uri.parse(filePath), diags);
 		});
 	}
+	public updateFileDiagnostic(filePath: string) {
+		const diags = this.diagnosticMap.get(filePath);
+		this.diagnosticCollection.set(vscode.Uri.parse(filePath), diags);
+	}
 	public clear() {
 		console.log("Clear diagnostic!");
 		// this.diagnosticCollection.clear();
