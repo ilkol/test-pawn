@@ -387,8 +387,18 @@ export class Analyzer extends BaseVisitor
 					if(element.modifire !== FunctionModifire.none)
 						stock = true;
 				}
+				else if(element instanceof EnumDeclaration){
+					stock = true;
+					diagnosticMsg = "Идентификатор перечисления"
+				}
+				else if(element instanceof EnumMember){
+					stock = true;
+					diagnosticMsg = "Константа перечисления"
+				}
 				else {
-					diagnosticMsg = "Переменная";
+					if((<VarDeclaration>element).isConstant)
+						diagnosticMsg = "Константа";
+					else diagnosticMsg = "Переменная";
 				}
 				
 				if(!stock) {
