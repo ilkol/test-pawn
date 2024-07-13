@@ -4,8 +4,7 @@
     "errorWorkspaceNotSelected": "Для корректной работы расширения следует открыть папку с директорией компилятора",
 
     
-    "buildPacket": "Собрать проект",
-
+    
     "defaultComplitionOperatorSizeofDescription": "Возвращает размер массива (количество ячеек)",
     "defaultComplitionOperatorTagofDescription": "Возвращает идентификатор тэга",
     "defaultComplitionOperatorCharDescription": "Приводит к количеству ячеек, необходимых для хранения упакованного массива символов",
@@ -20,7 +19,55 @@
     "defaultComplitionKeywordCaseStatmentDetail": "Case Statement",
     "defaultComplitionKeywordDefaultStatmentDetail": "Default Statement",
 
+    
     "hintUnusedDefine": "Неиспользуемый",
-    "hintUnusedCode": "Неиспользуемый код"
+    "hintUnusedCode": "Неиспользуемый код",
 
+    "parserErrorExpectedFunctionButFoundNode": "Ожидается идентификатор функции, а найден узел",
+    "parserErrorExpectingVarId": "Ожидается идентификатор переменной",
+    "parserErrorExpectingFunctionId": "Ожидается идентификатор функции",
+    "parserErrorUnexpectedVariable": "Неожиданная переменная",
+    "parserErrorUnexpectedEllipse": "Неоижданый оператор ellipse",
+    "parserErrorUnexpectedCode": "Неоижданый код",
+    "parserErrorUnexpectedIntLiteeral": "Неожиданная целочисленная константа",
+    "parserErrorUnexpectedFloatLiteeral": "Неожиданная вещественная константа",
+    "parserErrorUnexpectedStringLiteeral": "Неожиданная строка",
+    "parserErrorUnexpectedExpresion": "Неожиданное вырожение",
+    "parserErrorUnexpectedOperator": "Неожиданный оператор",
+    "parserErrorUnarOperatorIsAlreadyUsed": "Унарный оператор уже применён к другмоу вырожению",
+    "parserErrorUnexpectedOperation": "Неожиданая операция",
+    "parserErrorUnexpectedFunctionCall": "Неожиданный вызов функции",
+    "parserErrorUnexpectedInitialization": "Неоижданная инициализация",
+    "parserErrorUnexpectedFunctionParameter": "Неоижданный параметр функции",
+    "parserErrorUnexpectedFunctionModifire": "Неожиданный модификатор функции",
+    "parserErrorUnexpectedWhile": "Неожиданный цикл while",
+    "parserErrorUnexpectedFor": "Неожиданный цикл for",
+
+    "analyzerErrorExpectedIntLiteralOrEnumMemberButFound": "Ожидается целочисленная константа или перечисление, а найдено",
+    "analyzerErrorIsArray": "является массивом",
+    "analyzerErrorArraySizeMismatch": "Несовпадение размерности массива",
+    "analyzerErrorExpectedConstant": "Ожидается константа",
+    "analyzerErrorArrayIndexCanNotBeNegative": "Индекс не может быть отрицательным",
+    "analyzerErrorArrayIndexOutSize": "Выход за границы массива. Максимальный индекс",
+    "analyzerErrorExpectedEnumMember": "Ожидается константа из перечисления",
+    "analyzerErrorIsNotArray": "не является массивом",
+    "analyzerErrorIsFunction": "является функцией",
+    "analyzerErrorUndefindedVariable": "неизвестная переменная",
+    "analyzerErrorFunctionNotFound": "Неизвестная функция",
+    "analyzerErrorReturnValueMustBeWithTag": "Возвращаемое вырожение должно быть с тэгом",
+    "analyzerErrorButFoundTag": ", а найден тэг",
+    "analyzerErrorAssigmentCanBeOnlyOnNativeFunctin": "Присвоение возможно только нативной функции",
+    "analyzerErrorIdentificatorNotFoundStart": "Идентификатор",
+    "analyzerErrorIdentificatorNotFoundEnd": "не найден",
+    "analyzerFunction": "Функция",
+    "analyzerEnumId": "Идентификатор перечисления",
+    "analyzerEnumMember": "Константа перечисления",
+    "analyzerConstant": "Константа",
+    "analyzerVariable": "Переменная",
+    "analyzerErrorNeverUsed": "нигде не используется",
+    "analyzerErrorIdAlreadyExistsStart": "Идентификатор",
+    "analyzerErrorIdAlreadyExistsEnd": "уже занят",
+    "analyzerErrorTagMismatch": "Несовпадение типов",
+
+    "buildPacket": "Собрать проект"
 }

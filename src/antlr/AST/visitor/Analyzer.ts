@@ -25,7 +25,7 @@ import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 import { SemanticTokensManager } from "../../../Managers/SemanticTokensManager";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
-import { CompletionItem, CompletionItemKind, DiagnosticTag, DocumentSymbol, ParameterInformation, Range, SignatureHelp, SignatureInformation, SnippetString, SymbolKind, SymbolTag } from "vscode";
+import { CompletionItem, CompletionItemKind, DiagnosticTag, DocumentSymbol, l10n, ParameterInformation, Range, SignatureHelp, SignatureInformation, SnippetString, SymbolKind, SymbolTag } from "vscode";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
@@ -67,7 +67,7 @@ export class Analyzer extends BaseVisitor
 					const variable = this.curScope.findVar(el.expresion.id);
 					if(variable) {
 						if(!(variable instanceof EnumDeclaration)) {
-							this.addDiagnostic(new DiagnosticError("Ожидается целочисленная константа или перечисление, а найдено \""+el.expresion.name+"\"", el.pos));
+							this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorExpectedIntLiteralOrEnumMemberButFound") + ' "'+el.expresion.name+"\"", el.pos));
 						}
 						else {
 							variable.used = true;
@@ -116,10 +116,10 @@ export class Analyzer extends BaseVisitor
 			variable.used = true;
 			if(variable instanceof ArrayDeclaration) {
 				if(!(node instanceof Array))
-					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является массивом", node.idPos));
+					this.addDiagnostic(new DiagnosticError("\"" + node.id + '" ' + l10n.t("analyzerErrorIsArray"), node.idPos));
 				else {
 					if(variable.indexes.length != node.indexes.length) {
-						this.addDiagnostic(new DiagnosticError("Несовпадение размерности массива", node.pos));
+						this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorArraySizeMismatch"), node.pos));
 					}
 					else {
 						let iter = -1;
@@ -128,14 +128,14 @@ export class Analyzer extends BaseVisitor
 							if(el.expresion instanceof IntLiteral) {
 								const size = variable.size.at(iter);
 								if(!size)
-									this.addDiagnostic(new DiagnosticError("Ожидается константа", el.pos));
+									this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorExpectedConstant"), el.pos));
 								else {
 									const val = el.expresion.value;
 									if(val < 0) {
-										this.addDiagnostic(new DiagnosticError("Индекс не может быть отрицательным", el.pos));
+										this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorArrayIndexCanNotBeNegative"), el.pos));
 									}
 									else if(val >= size) {
-										this.addDiagnostic(new DiagnosticError(`Выход за границы массива. Максимальный индекс ${size-1}`, el.pos));
+										this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorArrayIndexOutSize") + ` ${size-1}`, el.pos));
 									}
 								}
 								return el.expresion;
@@ -148,10 +148,10 @@ export class Analyzer extends BaseVisitor
 								} else {
 									if(checkVar instanceof EnumMember) {
 										if(enumer !== checkVar.parent)
-											this.addDiagnostic(new DiagnosticError("Ожидается константа из перечисления \""+enumer.id+"\"", el.pos));
+											this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorExpectedEnumMember") + ' "' +enumer.id+"\"", el.pos)); 
 									}
 									else {
-										this.addDiagnostic(new DiagnosticError("Ожидается константа из перечисления \""+enumer.id+"\"", el.pos));
+										this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorExpectedEnumMember") + ' "' + enumer.id+"\"", el.pos));
 									}
 								}
 							}
@@ -164,7 +164,7 @@ export class Analyzer extends BaseVisitor
 			}
 			else {
 				if(node instanceof Array)
-					this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" не является массивом", node.idPos));
+					this.addDiagnostic(new DiagnosticError("\"" + node.id + '" ' + l10n.t("analyzerErrorIsNotArray"), node.idPos));
 			}
 			this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(variable.modifires));
 			if(!node.isTaged)
@@ -174,10 +174,10 @@ export class Analyzer extends BaseVisitor
 			const func = this.curScope.findFunction(node.id);
 			if(func) {
 				this.tokens.addToken(node.idPos, SemanticTokens.function);
-				this.addDiagnostic(new DiagnosticError("\"" + node.id + "\" является функцией", node.idPos));
+				this.addDiagnostic(new DiagnosticError("\"" + node.id + '"' + l10n.t("analyzerErrorIsFunction"), node.idPos));
 		
 			}
-			else this.addDiagnostic(new DiagnosticError("Неизвестная переменная \"" + node.id + "\"", node.idPos));
+			else this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorUndefindedVariable") + ' "' + node.id + "\"", node.idPos));
 		}
 	}
 	private curScope: IScope = new Scope();
@@ -202,7 +202,7 @@ export class Analyzer extends BaseVisitor
 				node.tag = func.tag;
 		}
 		else 
-			this.addDiagnostic(new DiagnosticError("Функция \"" + node.id + "\" ненайдена", node.idPos));
+			this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorFunction") + ' "' + node.id + '"', node.idPos));
 		
 		
 	}
@@ -260,10 +260,10 @@ export class Analyzer extends BaseVisitor
 				if(node.value.expresion instanceof Variable) {
 					const variable = this.curScope.findVar(node.value.expresion.id);
 					if(variable?.tag.id !== this.curScope.returnTag?.id) {
-						this.addDiagnostic(new DiagnosticError(`Возвращаемое вырожение должно быть с тэгом "${this.curScope.returnTag?.id}", а найден тэг "${variable?.tag.id}"`, node.value.pos));
+						this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorReturnValueMustBeWithTag") + ` "${this.curScope.returnTag?.id}"` + l10n.t("analyzerErrorButFoundTag") + ` "${variable?.tag.id}"`, node.value.pos));
 					}
 				}
-				else this.addDiagnostic(new DiagnosticError(`Возвращаемое вырожение должно быть с тэгом "${this.curScope.returnTag?.id}", а найден тэг "${node.value.tag.id}"`, node.value.pos));
+				else this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorReturnValueMustBeWithTag") + ` "${this.curScope.returnTag?.id}"` + l10n.t("analyzerErrorButFoundTag") + ` "${node.value.tag.id}"`, node.value.pos));
 			}
 		}
 	}
@@ -312,13 +312,13 @@ export class Analyzer extends BaseVisitor
 
 		if(node.assigmentFunctionID) {
 			if(!node.native) {
-				this.addDiagnostic(new DiagnosticError("Присвоение возможно только нативной функции", node.idPos));
+				this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorAssigmentCanBeOnlyOnNativeFunctin"), node.idPos));
 				return;
 			}
 			
 			let id = this.curScope.find(node.assigmentFunctionID);
 			if (!id) {
-				this.addDiagnostic(new DiagnosticError(`Идентификатор "${node.assigmentFunctionID}" не найден`, node.pos));
+				this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorIdentificatorNotFoundStart") + ` "${node.assigmentFunctionID}" ` + l10n.t("analyzerErrorIdentificatorNotFoundEnd"), node.pos));
 			}
 
 		}
@@ -385,30 +385,30 @@ export class Analyzer extends BaseVisitor
 				let diagnostic: DiagnosticMessage, diagnosticMsg: string;
 				let stock = element.stock;
 				if(element instanceof FunctionDeclaration) {
-					diagnosticMsg = "Функция";
+					diagnosticMsg = l10n.t("analyzerFunction");
 					if(element.modifire !== FunctionModifire.none)
 						stock = true;
 				}
 				else if(element instanceof EnumDeclaration){
 					stock = true;
-					diagnosticMsg = "Идентификатор перечисления"
+					diagnosticMsg = l10n.t("analyzerEnumId");
 				}
 				else if(element instanceof EnumMember){
 					stock = true;
-					diagnosticMsg = "Константа перечисления"
+					diagnosticMsg = l10n.t("analyzerEnumMember");
 				}
 				else {
 					if((<VarDeclaration>element).isConstant)
-						diagnosticMsg = "Константа";
-					else diagnosticMsg = "Переменная";
+						diagnosticMsg = l10n.t("analyzerConstant");
+					else diagnosticMsg = l10n.t("analyzerVariable");
 				}
 				
 				if(!stock) {
-					diagnostic = new DiagnosticWarning(`${diagnosticMsg} "${key}" нигде не используется`, element.idPos);
+					diagnostic = new DiagnosticWarning(`${diagnosticMsg} "${key}" ` + l10n.t("analyzerErrorNeverUsed"), element.idPos);
 					diagnostic.tags = [DiagnosticTag.Unnecessary];
 				}
 				else
-					diagnostic = new DiagnosticUnused(`${diagnosticMsg} "${key}" нигде не используется`, element.idPos);
+					diagnostic = new DiagnosticUnused(`${diagnosticMsg} "${key}" ` + l10n.t("analyzerErrorNeverUsed"), element.idPos);
 				this.addDiagnostic(diagnostic);
 			}
 		});
@@ -417,7 +417,7 @@ export class Analyzer extends BaseVisitor
 	private checkUsed<T extends Declaration>(node: T, callback: (variable: T) => void) {
 		let id = this.curScope.find(node.id);
 		if (id) {
-			this.addDiagnostic(new DiagnosticError(`Идентификатор "${node.id}" уже занят`, node.idPos));
+			this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorIdAlreadyExistsStart") + ` "${node.id}" ` + l10n.t("analyzerErrorIdAlreadyExistsEnd"), node.idPos));
 		} else {
 			callback(node);
 		}
@@ -457,7 +457,7 @@ export class Analyzer extends BaseVisitor
 	}
 	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
 		if(!this.isEqualTag(a.tag, b.tag)) {
-			this.addDiagnostic(new DiagnosticWarning(`Несовпадение типов (${a.tag.id}, ${b.tag.id}))`, errorRange));
+			this.addDiagnostic(new DiagnosticWarning(l10n.t("analyzerErrorTagMismatch") + ` (${a.tag.id}, ${b.tag.id}))`, errorRange));
 			return false;
 		}
 		return true;

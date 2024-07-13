@@ -1,5 +1,5 @@
 /* eslint-disable curly */
-import { DiagnosticSeverity, Range } from "vscode";
+import { DiagnosticSeverity, l10n, Range } from "vscode";
 import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
@@ -111,7 +111,7 @@ export class PawnListener implements pawnListener
 
 			} catch(e) {
 				let last = this.nodes.peek();
-				this.addDiagnostic("Ожидается идентификатор функции, а найден узел \"" + node.name + '"', DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorExpectedFunctionButFoundNode") + ' "' + node.name + '"', DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -183,7 +183,7 @@ export class PawnListener implements pawnListener
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
 			} catch(e) {
-				this.addDiagnostic("Ожидается идентификатор переменной", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorExpectingVarId"), DiagnosticSeverity.Error, node.pos);
 			}
 
 			// let decl = this.nodes.peek();
@@ -227,7 +227,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.log(last);
-				this.addDiagnostic("Неожиданная переменная", DiagnosticSeverity.Error, node.idPos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedVariable"), DiagnosticSeverity.Error, node.idPos);
 			}
 		}
 	}
@@ -320,7 +320,7 @@ export class PawnListener implements pawnListener
 				last.ellipse = node;
 			}
 			else {
-				this.addDiagnostic("Неоижданый оператор ellipse", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedEllipse"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -338,7 +338,7 @@ export class PawnListener implements pawnListener
 				last.code = node;
 			}
 			else {
-				this.addDiagnostic("Неоижданый код", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedCode"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -362,7 +362,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic("Неожиданная целочисленная константа", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedIntLiteeral"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -417,7 +417,7 @@ export class PawnListener implements pawnListener
 				}
 				catch(e) {
 					console.log(last);
-					this.addDiagnostic("Неожиданное вырожение", DiagnosticSeverity.Error, node.pos);
+					this.addDiagnostic(l10n.t("parserErrorUnexpectedExpresion"), DiagnosticSeverity.Error, node.pos);
 				}
 			}
 			else if(last instanceof Cycle) {
@@ -439,7 +439,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic("Неожиданное вырожение", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedExpresion"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 
@@ -487,7 +487,7 @@ export class PawnListener implements pawnListener
 		}
 		else if(node){
 			this.nodes.push(node);
-			this.addDiagnostic("Неожиданный оператор", DiagnosticSeverity.Error, node.pos);
+			this.addDiagnostic(l10n.t("parserErrorUnexpectedOperator"), DiagnosticSeverity.Error, node.pos);
 		}
 	}
 	enterOperation(ctx: OperationContext): void {
@@ -507,19 +507,19 @@ export class PawnListener implements pawnListener
 				}
 				else if(node instanceof UnarOperator) {
 					if(node.expresion)
-						this.addDiagnostic("Унарный оператор уже применён к другмоу вырожению", DiagnosticSeverity.Error, node.expresion.pos);
+						this.addDiagnostic(l10n.t("parserErrorUnarOperatorIsAlreadyUsed"), DiagnosticSeverity.Error, node.expresion.pos);
 					node.expresion = last;
 					this.nodes.push(node);
 				} else {
 					this.nodes.push(last);
-					this.addDiagnostic("Неожиданая операция", DiagnosticSeverity.Error, node.pos);
+					this.addDiagnostic(l10n.t("parserErrorUnexpectedOperation"), DiagnosticSeverity.Error, node.pos);
 				}
 			}
 			else {
 				if(last)
 					this.nodes.push(last);
 				console.log(last, node);
-				this.addDiagnostic("Неожиданая операция", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedOperation"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -541,7 +541,7 @@ export class PawnListener implements pawnListener
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
 			} catch(e) {
-				this.addDiagnostic("Ожидается идентификатор функции", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorExpectingFunctionId"), DiagnosticSeverity.Error, node.pos);
 			}
 			
 			let last = this.nodes.peek();
@@ -553,7 +553,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic("Неожиданный вызов функции", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedFunctionCall"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -590,7 +590,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.log(last);
-				this.addDiagnostic("Неоижданная инициализация", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedInitialization"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -613,7 +613,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic("Неожиданный параметр функции", DiagnosticSeverity.Error, node.idPos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedFunctionParameter"), DiagnosticSeverity.Error, node.idPos);
 			}
 		}
 	}
@@ -637,7 +637,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic("Неожиданная вещественная константа", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedFloatLiteeral"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -661,7 +661,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic("Неожиданная строка", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedStringLiteeral"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -681,7 +681,7 @@ export class PawnListener implements pawnListener
 		else if(ctx.stop) {
 			console.debug(last);
 			const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop.line - 1, ctx.stop.charPositionInLine);
-			this.addDiagnostic("Неожиданный модификатор функции", DiagnosticSeverity.Error, pos);
+			this.addDiagnostic(l10n.t("parserErrorUnexpectedFunctionModifire"), DiagnosticSeverity.Error, pos);
 		}
 	}
 
@@ -698,7 +698,7 @@ export class PawnListener implements pawnListener
 				last.statements.push(node);
 			}
 			else {
-				this.addDiagnostic("Неожиданный цикл while", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedWhile"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -727,7 +727,7 @@ export class PawnListener implements pawnListener
 				last.statements.push(node);
 			}
 			else {
-				this.addDiagnostic("Неожиданный цикл for", DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("parserErrorUnexpectedFor"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
