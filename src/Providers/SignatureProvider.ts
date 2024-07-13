@@ -15,17 +15,8 @@ export class SignatureProvider implements vscode.SignatureHelpProvider {
 			return;
 		const signatur = signatures.get(functionName);
 
-		/*const signatureHelp  =  new vscode.SignatureHelp();
-		const signature = new vscode.SignatureInformation('function(param1: string, param2: number)');
-        signature.documentation = 'Это пример помощи с параметрами';
-
-		const param1 = new vscode.ParameterInformation('param1', 'Первый параметр');
-        const param2 = new vscode.ParameterInformation('param2', 'Второй параметр');
-        signature.parameters = [param1, param2];
-
-		signatureHelp.signatures = [signature];
-        // signatureHelp.activeSignature = 0;
-        signatureHelp.activeParameter = this.getActiveParameter(document, position);*/
+		if(signatur)
+	        signatur.activeParameter = this.getActiveParameter(document, position);
 
         return signatur;
 	}

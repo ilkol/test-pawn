@@ -36,7 +36,9 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	get vars(): FunctionDeclarationParameter[] {
 		return this._parameters;
 	}
-
+	get parameters(): FunctionDeclarationParameter[] {
+		return this.vars;
+	}
 	
 	public set code(v : CodeBlock) {
 		this._code = v;

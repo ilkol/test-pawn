@@ -25,7 +25,7 @@ import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 import { SemanticTokensManager } from "../../../Managers/SemanticTokensManager";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
-import { CompletionItem, CompletionItemKind, DiagnosticTag, DocumentSymbol, Range, SnippetString, SymbolKind, SymbolTag } from "vscode";
+import { CompletionItem, CompletionItemKind, DiagnosticTag, DocumentSymbol, ParameterInformation, Range, SignatureHelp, SignatureInformation, SnippetString, SymbolKind, SymbolTag } from "vscode";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
@@ -308,7 +308,6 @@ export class Analyzer extends BaseVisitor
 			const compl = new CompletionItem(node.id, CompletionItemKind.Function);
 			compl.insertText = new SnippetString(`${node.id}($0)`);
 			this.addComplition(compl)
-
 		}
 
 		if(node.assigmentFunctionID) {
@@ -343,7 +342,8 @@ export class Analyzer extends BaseVisitor
 		if(node.code != undefined)
 			modif.push(SemanticTokensModifires.declaration);
 
-		this.tokens.addToken(node.idPos, SemanticTokens.function, modif);			
+		this.tokens.addToken(node.idPos, SemanticTokens.function, modif);		
+		this.addFunctionSignature(node);	
 	}
 	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
@@ -358,7 +358,9 @@ export class Analyzer extends BaseVisitor
 		public readonly diagnostics: DiagnosticMessage[],
 		public readonly tokens: SemanticTokensManager,
 		public readonly symbolsManager: SymbolsManager,
-		public readonly complitions: CompletionItem[]) {
+		public readonly complitions: CompletionItem[],
+		public readonly signatures: Map<string, SignatureHelp>
+	) {
 		super();
 
 		let varInit = new VariableInit();
@@ -459,5 +461,39 @@ export class Analyzer extends BaseVisitor
 			return false;
 		}
 		return true;
+	}
+
+	private addFunctionSignature(func: FunctionDeclaration) {
+
+		interface parameterInfo {
+			name: string
+			tag: string
+			const: boolean
+			ref: boolean
+		}
+		const params: parameterInfo[] = [];
+		const signatureHelp  =  new SignatureHelp();
+
+		const parameters: ParameterInformation[] = [];
+		let label = `${func.tag.id}:${func.id}(`;
+		func.parameters.forEach(el => {
+			parameters.push(new ParameterInformation(el.id));
+			params.push({
+				name: el.id,
+				tag: el.tag.id,
+				const: el.const,
+				ref: el.reference
+			});
+		});
+		label += params.map(item => `${item.const ? "const " : ""}${item.ref ? "&" : ""}${item.tag}:${item.name}`).join(", ") + ")";
+
+		const signature = new SignatureInformation(label);
+		
+        // signature.documentation = 'Это пример помощи с параметрами';
+
+        signature.parameters = parameters;
+		signatureHelp.signatures = [signature];
+
+		this.signatures.set(func.id, signatureHelp);
 	}
 }

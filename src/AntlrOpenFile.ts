@@ -47,11 +47,17 @@ export class AntrlOpenFile extends AbstractOpenFile
 				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
 				this.documentsLinks.set(el.pathRange, uri);
 				this.fileManager.openFile(uri);
-				this.fileManager.getFileComplitions(uri.path).forEach(compl => {
-					if(!compl.detail)
-						compl.detail = path.parse(path.basename(uri.fsPath)).name;
-					this.complitions.push(compl);
-				});
+				const file = this.fileManager.getFile(uri.path);
+				if(file) {
+					file.getComplitions().forEach(compl => {
+						if(!compl.detail)
+							compl.detail = path.parse(path.basename(uri.fsPath)).name;
+						this.complitions.push(compl);
+					});
+					file.signatures.forEach((value, key) => {
+						this.signatures.set(key, value);
+					});
+				}
 			});
 		}
 
@@ -77,7 +83,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 			listen.diagnostics.concat(parserErrorListener.diagnostic).concat(lexerErrorListener.diagnostic), 
 			this.tokensManager,
 			this.symbolsManager,
-			this.complitions
+			this.complitions,
+			this.signatures
 		);
 		try {
 			this.AST.accept(analyzer);
@@ -91,6 +98,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this.diagnostic(analyzer.diagnostics);
 
 		console.log(this.AST);
+
 	}
 
 	private tryLex(text: string): pawnLexer
