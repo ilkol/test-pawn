@@ -485,7 +485,22 @@ export class Analyzer extends BaseVisitor
 				ref: el.reference
 			});
 		});
-		label += params.map(item => `${item.const ? "const " : ""}${item.ref ? "&" : ""}${item.tag}:${item.name}`).join(", ") + ")";
+		const ellipse = func.ellipse;
+		if(ellipse) {
+			parameters.push(new ParameterInformation("..."));
+			params.push({
+				name: "...",
+				tag: ellipse.tag.id,
+				const: false,
+				ref: false
+			});
+		}
+
+		label += params.map(item => `${item.const ? "const " : ""}${item.ref ? "&" : ""}${item.tag}:${item.name}`).join(", ");
+
+		
+		label += ")";
+
 
 		const signature = new SignatureInformation(label);
 		
