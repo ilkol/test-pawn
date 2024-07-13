@@ -1,6 +1,5 @@
-import { CompletionItem, CompletionItemKind, DiagnosticSeverity, Hover, MarkdownString, Position, Range, TextDocument, Uri } from "vscode";
+import { DiagnosticSeverity, Hover, MarkdownString, Position, Range, TextDocument, Uri } from "vscode";
 import { DiagnosticManager } from "./Managers/diagnostic";
-import { CaseAfterDefault, ExtraDefault, InputError, SymbolIsNeverUsed, TypeMismatch, UndefinedVariable, UnhandleCharacter } from "./Errors";
 import { FileManager } from "./Managers/FileManager";
 
 import { AbstractOpenFile } from "./AbstractOpenFile";

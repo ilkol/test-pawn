@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind, DocumentSymbol, MarkdownString, Range, SignatureHelp, SnippetString, TextDocument, Uri } from "vscode";
+import { CompletionItem, CompletionItemKind, DocumentSymbol, l10n, MarkdownString, Range, SignatureHelp, SnippetString, TextDocument, Uri } from "vscode";
 import { FileManager } from "./Managers/FileManager";
 import { DiagnosticManager } from "./Managers/diagnostic";
 import { SemanticTokensManager, Token } from "./Managers/SemanticTokensManager";
@@ -34,9 +34,9 @@ export abstract class AbstractOpenFile
 			doc?: string;
 		}
 		const keywords: compl[] = [
-			{label: "sizeof", doc: "Возвращает размер массива (количество ячеек)"},
-			{label: "tagof", doc: "Возвращает идентификатор тэга"},
-			{label: "char", doc: "Приводит к количеству ячеек, необходимых для хранения упакованного массива символов"},
+			{label: "sizeof", doc: l10n.t("defaultComplitionOperatorSizeofDescription")},
+			{label: "tagof", doc: l10n.t("defaultComplitionOperatorSizeofDescription")},
+			{label: "char", doc: l10n.t("defaultComplitionOperatorCharDescription")},
 		];
 
 		keywords.forEach(key => {
@@ -53,11 +53,11 @@ export abstract class AbstractOpenFile
 			doc?: string;
 		}
 		const keywords: compl[] = [
-			{label: "cellbits", doc: "The size of a cell in bits; usually `32`."},
-			{label: "cellmax", doc: "The largest valid positive value that a cell can hold; usually `214748364`."},
-			{label: "cellmin", doc: "The largest valid negative value that a cell can hold; usually `-214748364`."},
-			{label: "charbit", doc: "The size of a packed character in bits; usually `8`"},
-			{label: "charmax", doc: "The largest valid packed character value; a packed character is usually 8-bit and the maximum valid value isthus `25`"},
+			{label: "cellbits", doc: l10n.t("defaultComplitionConstantCellbitsDescription")},
+			{label: "cellmax", doc: l10n.t("defaultComplitionConstantCellmaxDescription")},
+			{label: "cellmin", doc: l10n.t("defaultComplitionConstantCellminDescription")},
+			{label: "charbit", doc: l10n.t("defaultComplitionConstantCharbitDescription")},
+			{label: "charmax", doc: l10n.t("defaultComplitionConstantCharminDescription")},
 		];
 
 		keywords.forEach(key => {
@@ -84,13 +84,13 @@ export abstract class AbstractOpenFile
 			{label: "true"},
 			{label: "false"},
 			{label: "switch", insertText: "switch ($0)"},
-			{label: "switch", insertText: "switch ($1)\r\n{\r\n\tcase $2:\r\n\t{\r\n\t\t$3\r\n\t}\r\n\tdefault:\r\n\t{\r\n\t\t$0\r\n\t}\r\n}", kind: CompletionItemKind.Struct, detail: "Switch Statement"},
+			{label: "switch", insertText: "switch ($1)\r\n{\r\n\tcase $2:\r\n\t{\r\n\t\t$3\r\n\t}\r\n\tdefault:\r\n\t{\r\n\t\t$0\r\n\t}\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("defaultComplitionKeywordSwitchStatmentDetail")},
 			{label: "for"},
 			{label: "while"},
 			{label: "case", insertText: "case $0"},
-			{label: "case", insertText: "case $1:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: "Case Statement"},
+			{label: "case", insertText: "case $1:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("defaultComplitionKeywordCaseStatmentDetail")},
 			{label: "default", insertText: "default"},
-			{label: "default", insertText: "default:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: "Default Statement"},
+			{label: "default", insertText: "default:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("defaultComplitionKeywordDefaultStatmentDetail")},
 			{label: "break", insertText: "break;\r\n$0"},
 			{label: "continue", insertText: "continue;\r\n$0"},
 			{label: "enum", insertText: "enum $1 {\r\n\t$0\r\n}"},

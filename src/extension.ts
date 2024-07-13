@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+// import * as l10n from 'vscode-l10n';
 import { DiagnosticManager } from './Managers/diagnostic';
 import { FileManager } from './Managers/FileManager';
 import { DocumentLinkProvider } from './Providers/DocumentLinkProvider';
@@ -27,6 +28,8 @@ let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
 
 export async function activate(context: vscode.ExtensionContext) {
+	;
+	console.log(vscode.l10n.t("test"));
 	console.debug('Активация расширения!');
 
 	diagnosticManager = new DiagnosticManager(vscode.languages.createDiagnosticCollection("pawn"));
@@ -111,7 +114,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 				 },
 					vscode.TaskScope.Workspace,
-					"Собрать проект",
+					vscode.l10n.t("buildPacket"),
 					context.extension.id,
 					new vscode.ShellExecution("echo Hello world")
 				)

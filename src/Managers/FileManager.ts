@@ -1,9 +1,8 @@
-import { CompletionItem, DiagnosticSeverity, FileSystemError, FileType, Hover, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
+import { CompletionItem, FileSystemError, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
 import { OpenedFile } from "../OpenedFile";
 import { DiagnosticManager } from "./diagnostic";
 import { AntrlOpenFile } from "../AntlrOpenFile";
 import { AbstractOpenFile } from "../AbstractOpenFile";
-import { stringify } from "querystring";
 
 export class FileManager {
 	public readonly openedFiles: Map<string, AbstractOpenFile> = new Map<string, OpenedFile>;
@@ -33,7 +32,7 @@ export class FileManager {
 	}
 	public async findPawnDir() {
 		if(!this.root || !this.root[0])
-			return window.showErrorMessage("Для корректной работы расширения следует открыть папку с директорией компилятора");
+			return window.showErrorMessage(l10n.t("errorWorkspaceNotSelected"));
 		let pawno = Uri.joinPath(this.root[0].uri, "/pawno");
 		try {
 			await workspace.fs.stat(pawno);
@@ -43,13 +42,13 @@ export class FileManager {
 				this._includePath = pawno;
 			} catch(e) {
 				if(e instanceof FileSystemError) {
-					return window.showErrorMessage("Не найдена папка include");
+					return window.showErrorMessage(l10n.t("errorIncludeDirNotFound"));
 				}
 				else console.error(e);
 			}
 		} catch(e) {
 			if(e instanceof FileSystemError) {
-				return window.showErrorMessage("Не найдена папка pawno");
+				return window.showErrorMessage(l10n.t("errorPawnoDirNotFound"));
 			}
 			else console.error(e);
 		}

@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind, DiagnosticSeverity, DiagnosticTag, DocumentSymbol, MarkdownString, Position, Range, SymbolKind, TextDocument } from "vscode";
+import { CompletionItem, CompletionItemKind, DiagnosticSeverity, DiagnosticTag, DocumentSymbol, l10n, MarkdownString, Position, Range, SymbolKind, TextDocument } from "vscode";
 import { PreprocessorDirective } from "./PreprocessorDirective";
 import { ReplacedCode } from "./ReplacedCode";
 import { Define } from "./Define";
@@ -12,7 +12,6 @@ import { SymbolsManager } from "../Managers/SymbolsManager";
 import { SemanticTokensManager } from "../Managers/SemanticTokensManager";
 import { DiagnosticManager } from "../Managers/diagnostic";
 import { SemanticTokens } from "../SemanticTokens";
-import { EndInput } from "../Errors";
 import { Pragma } from "./Pragma";
 
 export class PPParser
@@ -152,7 +151,7 @@ export class PPParser
 					element.used = true;
 				}
 				else {
-					this.diagnosticManager.addDiagnostic("Неиспользуемый #define", DiagnosticSeverity.Hint, this.file.uri.path, element.range, [DiagnosticTag.Unnecessary]);
+					this.diagnosticManager.addDiagnostic(l10n.t("hintUnusedDefine") + " #define", DiagnosticSeverity.Hint, this.file.uri.path, element.range, [DiagnosticTag.Unnecessary]);
 				}
 				
 				this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
@@ -167,7 +166,7 @@ export class PPParser
 					element.range.end,
 					this.file.positionAt(this.file.getText().length)
 				);
-				this.diagnosticManager.addDiagnostic("Неисполняыемый код", DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+				this.diagnosticManager.addDiagnostic(l10n.t("hintUnusedCode"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
 			}
 			else if(element instanceof Condition) {
 				if(element.endIf) {
@@ -211,7 +210,7 @@ export class PPParser
 								element.elseBlock.range.end,
 								element.endIf.range.start
 							);
-							this.diagnosticManager.addDiagnostic("Неисполняыемый код", DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+							this.diagnosticManager.addDiagnostic(l10n.t("hintUnusedCode"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
 						}
 					}
 					else {
@@ -226,7 +225,7 @@ export class PPParser
 							element.range.end,
 							element.endIf.range.start
 						);
-						this.diagnosticManager.addDiagnostic("Неисполняыемый код", DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+						this.diagnosticManager.addDiagnostic(l10n.t("hintUnusedCode"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
 					}
 				}					
 			}
