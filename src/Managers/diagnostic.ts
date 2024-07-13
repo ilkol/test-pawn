@@ -22,7 +22,7 @@ export class DiagnosticManager {
 	}
 	public clear() {
 		console.log("Clear diagnostic!");
-		this.diagnosticCollection.clear();
+		// this.diagnosticCollection.clear();
 		this.diagnosticMap.clear();
 	}
 }
