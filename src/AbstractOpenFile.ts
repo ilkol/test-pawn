@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind, DocumentSymbol, MarkdownString, Range, SnippetString, TextDocument, Uri } from "vscode";
+import { CompletionItem, CompletionItemKind, DocumentSymbol, MarkdownString, Range, SignatureHelp, SnippetString, TextDocument, Uri } from "vscode";
 import { FileManager } from "./Managers/FileManager";
 import { DiagnosticManager } from "./Managers/diagnostic";
 import { SemanticTokensManager, Token } from "./Managers/SemanticTokensManager";
@@ -129,5 +129,10 @@ export abstract class AbstractOpenFile
 	private readonly _documentsLinks: Map<Range, Uri> = new Map<Range, Uri>();
 	get documentsLinks(): Map<Range, Uri> {
 		return this._documentsLinks;
+	}
+
+	private readonly _signatures: Map<string, SignatureHelp> = new Map<string, SignatureHelp>();
+	get signatures(): Map<string, SignatureHelp> {
+		return this._signatures;
 	}
 }
