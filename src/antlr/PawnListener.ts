@@ -37,6 +37,7 @@ import { ArrayDeclaration } from "./AST/Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "./AST/Nodes/Operators/AssigmentOperator";
 import { Ellipse } from "./AST/Nodes/Operators/Ellipse";
 import { OperatorOverload } from "./AST/Nodes/Operators/OperatorOverload";
+import { Literal } from "./AST/Nodes/Literals/Literal";
 
 export class PawnListener implements pawnListener
 {
@@ -385,7 +386,7 @@ export class PawnListener implements pawnListener
 		this.nodes.push(node);
 	}
 	exitExpresion(ctx: ExpresionContext): void {
-		const node = <Expresion>this.nodes.pop();
+		let node = <Expresion>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 
@@ -399,6 +400,10 @@ export class PawnListener implements pawnListener
 					node.expresion = oper;
 				}
 
+			}
+
+			if(node.expresion instanceof Literal) {
+				node = node.expresion;
 			}
 
 			const last = this.nodes.peek();
@@ -432,6 +437,9 @@ export class PawnListener implements pawnListener
 			else if(last instanceof FunctionCall)
 			{
 				last.push(new FunctionParameter(node));
+			}
+			else if(last instanceof EnumMember) {
+				// last.value = node;
 			}
 			else if(last instanceof Expresion)
 			{
@@ -496,10 +504,11 @@ export class PawnListener implements pawnListener
 	}
 	exitOperation(ctx: OperationContext): void 
 	{
-		let node = this.nodes.pop();
+		let node = <Expresion>this.nodes.pop();
 		if(node && ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
-			const last = this.nodes.pop();``
+			const last = this.nodes.pop();
+			// console.log(last);
 			if(last instanceof Expresion) {
 				if(node instanceof BinarOperator) {
 					node.left = last;
@@ -516,10 +525,18 @@ export class PawnListener implements pawnListener
 				}
 			}
 			else {
-				if(last)
+				if(last) {
+					if(last instanceof FunctionDeclarationParameter) {
+						last.defaultValue = node;
+					}
+					else
+						this.addDiagnostic(l10n.t("parserErrorUnexpectedOperation"), DiagnosticSeverity.Error, node.pos);
 					this.nodes.push(last);
-				console.log(last, node);
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedOperation"), DiagnosticSeverity.Error, node.pos);
+
+				}
+				else
+					this.addDiagnostic(l10n.t("parserErrorUnexpectedOperation"), DiagnosticSeverity.Error, node.pos);
+				// console.error(last, node);
 			}
 		}
 	}
