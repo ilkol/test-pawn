@@ -50,7 +50,7 @@ preOperators:	NOT | MINUS | INCREMENTS | DECREMENTS | SIZEOF;
 operation:			operator expresion?;
 varOrLiteral:		variable | literal;
 
-declParams:			(CONST)? (reference)? variable (ASSIGMENT (constExpresion | (sizeof variable)))?;	
+declParams:			(CONST)? (reference)? variable (ASSIGMENT (constExpresion | (sizeof (variable | OPEN_PARENTHESIS variable CLOSE_PARENTHESIS))))?;	
 ellipse:			COMA tag? PERIOD_FUNC;
 
 reference:			BIT_AND;
