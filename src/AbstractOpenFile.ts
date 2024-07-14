@@ -1,8 +1,54 @@
-import { CompletionItem, CompletionItemKind, DocumentSymbol, l10n, MarkdownString, Range, SignatureHelp, SnippetString, TextDocument, Uri } from "vscode";
+import { CompletionItem, CompletionItemKind, DocumentSymbol, l10n, MarkdownString, ParameterInformation, Range, SignatureHelp, SignatureInformation, SnippetString, TextDocument, Uri } from "vscode";
 import { FileManager } from "./Managers/FileManager";
 import { DiagnosticManager } from "./Managers/diagnostic";
 import { SemanticTokensManager, Token } from "./Managers/SemanticTokensManager";
 import { SymbolsManager } from "./Managers/SymbolsManager";
+
+export class FunctionInfo
+{
+	private _parameters: FunctionParameterInfo[] = [];
+	private _text?: string;
+
+	constructor(
+		public readonly name: string,
+		public readonly tag: string
+	) {
+
+	}
+
+	pushParameter(param: FunctionParameterInfo) {
+		this._parameters.push(param);
+	}
+
+	get parameters(): FunctionParameterInfo[] {
+		return this._parameters;
+	}
+
+	get label(): string {
+		if(!this._text) 
+			this._text = this.makeText();
+		return this._text;
+	}
+
+	private makeText(): string {
+		let label = `${this.tag}:${this.name}(`;
+		label += this.parameters.map(item => `${item.constant ? "const " : ""}${item.reference ? "&" : ""}${item.tag}:${item.name}`).join(", ");
+		label += ")";
+		return label;
+	}
+}
+export class FunctionParameterInfo
+{
+	public constant: boolean = false;
+	public reference: boolean = false;
+
+	constructor(
+		public readonly name: string,
+		public readonly tag: string,
+	) {
+
+	}
+}
 
 export abstract class AbstractOpenFile
 {
@@ -11,6 +57,8 @@ export abstract class AbstractOpenFile
 	public readonly tokensManager: SemanticTokensManager = new SemanticTokensManager();
 	public readonly symbolsManager: SymbolsManager = new SymbolsManager();
 	protected complitions: CompletionItem[] = [];
+	protected functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
+
 	
 	constructor(protected file: TextDocument, public readonly fileManager: FileManager) {
 		this.diagnositcManager = fileManager.getDiagnostic();
@@ -19,6 +67,14 @@ export abstract class AbstractOpenFile
 		
 		this.loadDefaultComplitions();
 	}
+
+	public getHover(word: string): MarkdownString {
+		
+		const funct = this.functions.get(word);
+
+		return new MarkdownString(funct?.label);
+	}
+
 
 	private loadDefaultComplitions()
 	{
@@ -134,5 +190,29 @@ export abstract class AbstractOpenFile
 	private readonly _signatures: Map<string, SignatureHelp> = new Map<string, SignatureHelp>();
 	get signatures(): Map<string, SignatureHelp> {
 		return this._signatures;
+	}
+	get functionsInfo(): Map<string, FunctionInfo> {
+		return this.functions;
+	}
+
+	protected prepareSignatures() {
+		this.functions.forEach((functionInfo, name) => {
+			const signatureHelp  =  new SignatureHelp();
+
+			const parameters: ParameterInformation[] = [];
+			functionInfo.parameters.forEach(parameter =>{
+				const paramInfo = new ParameterInformation(parameter.name);
+				parameters.push(paramInfo);
+			});
+
+			const signature = new SignatureInformation(functionInfo.label);
+		
+			// signature.documentation = 'Это пример помощи с параметрами';
+
+			signature.parameters = parameters;
+			signatureHelp.signatures = [signature];
+
+			this.signatures.set(name, signatureHelp);
+		});
 	}
 }

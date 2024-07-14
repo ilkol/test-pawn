@@ -139,11 +139,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		},
 	}));
 
-	// context.subscriptions.push(vscode.languages.registerHoverProvider('pawn', {
-	// 	async provideHover(document, position, token) {
-	// 		return fileManage.registerHover(document, position);
-	// 	}
-	// 	}));
+	context.subscriptions.push(vscode.languages.registerHoverProvider('pawn', {
+		async provideHover(document, position, token) {
+			return fileManage.registerHover(document, position);
+		}
+		}));
 
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('pawn', {
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {

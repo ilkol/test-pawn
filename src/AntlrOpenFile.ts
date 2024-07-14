@@ -1,4 +1,4 @@
-import { AbstractOpenFile } from "./AbstractOpenFile";
+import { AbstractOpenFile, FunctionInfo } from "./AbstractOpenFile";
 import { FileManager } from "./Managers/FileManager";
 import * as vscode from 'vscode';
 
@@ -57,6 +57,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 					file.signatures.forEach((value, key) => {
 						this.signatures.set(key, value);
 					});
+					file.functionsInfo.forEach((value, key) => {
+						this.functionsInfo.set(key, value);
+					});
+					
 				}
 			});
 		}
@@ -96,6 +100,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 		console.debug("Обход дерева окончен");
 
 		this.diagnostic(analyzer.diagnostics);
+		this.functions = analyzer.functions;
+		this.prepareSignatures();
 
 		console.log(this.AST);
 

@@ -1,4 +1,4 @@
-import { CompletionItem, FileSystemError, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
+import { CompletionItem, FileSystemError, Hover, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
 import { OpenedFile } from "../OpenedFile";
 import { DiagnosticManager } from "./diagnostic";
 import { AntrlOpenFile } from "../AntlrOpenFile";
@@ -89,10 +89,10 @@ export class FileManager {
 
 		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
 
-		// if(!file) return;
-		// else {
-		// 	return new Hover(file.getHover(word, document), range);
-		// }
+		if(!file) return;
+		else {
+			return new Hover(file.getHover(word), range);
+		}
 	}
 	public getFileFunctionsIncludes(document: TextDocument): Map<Range, Uri> {
 

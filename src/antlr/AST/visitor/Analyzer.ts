@@ -38,6 +38,7 @@ import { SymbolsManager } from "../../../Managers/SymbolsManager";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 import { Tag } from "../Nodes/Tag";
 import { IHasTag } from "../Nodes/IHasTag";
+import { FunctionInfo, FunctionParameterInfo } from "../../../AbstractOpenFile";
 
 export class Analyzer extends BaseVisitor
 {
@@ -463,52 +464,23 @@ export class Analyzer extends BaseVisitor
 		return true;
 	}
 
+	public functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
+
 	private addFunctionSignature(func: FunctionDeclaration) {
 
-		interface parameterInfo {
-			name: string
-			tag: string
-			const: boolean
-			ref: boolean
-		}
-		const params: parameterInfo[] = [];
-		const signatureHelp  =  new SignatureHelp();
-
-		const parameters: ParameterInformation[] = [];
-		let label = `${func.tag.id}:${func.id}(`;
+		const functionInfo: FunctionInfo = new FunctionInfo(func.id, func.tag.id);
 		func.parameters.forEach(el => {
-			parameters.push(new ParameterInformation(el.id));
-			params.push({
-				name: el.id,
-				tag: el.tag.id,
-				const: el.const,
-				ref: el.reference
-			});
+			const param: FunctionParameterInfo = new FunctionParameterInfo(el.id, el.tag.id);
+			param.constant = el.const;
+			param.reference = el.reference;
+
+			functionInfo.pushParameter(param)
 		});
-		const ellipse = func.ellipse;
-		if(ellipse) {
-			parameters.push(new ParameterInformation("..."));
-			params.push({
-				name: "...",
-				tag: ellipse.tag.id,
-				const: false,
-				ref: false
-			});
+		if(func.ellipse) {
+			const param: FunctionParameterInfo = new FunctionParameterInfo("...", func.ellipse.tag.id);
+			functionInfo.pushParameter(param)
 		}
-
-		label += params.map(item => `${item.const ? "const " : ""}${item.ref ? "&" : ""}${item.tag}:${item.name}`).join(", ");
-
-		
-		label += ")";
-
-
-		const signature = new SignatureInformation(label);
-		
-        // signature.documentation = 'Это пример помощи с параметрами';
-
-        signature.parameters = parameters;
-		signatureHelp.signatures = [signature];
-
-		this.signatures.set(func.id, signatureHelp);
+	
+		this.functions.set(func.id, functionInfo);
 	}
 }
