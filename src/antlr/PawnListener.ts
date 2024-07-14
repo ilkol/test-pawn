@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, If_statementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -38,6 +38,7 @@ import { AssigmentOperator } from "./AST/Nodes/Operators/AssigmentOperator";
 import { Ellipse } from "./AST/Nodes/Operators/Ellipse";
 import { OperatorOverload } from "./AST/Nodes/Operators/OperatorOverload";
 import { Literal } from "./AST/Nodes/Literals/Literal";
+import { IfStatement } from "./AST/Nodes/Conditions/IfStatement";
 
 export class PawnListener implements pawnListener
 {
@@ -338,6 +339,9 @@ export class PawnListener implements pawnListener
 			if(last instanceof FunctionDeclaration) {
 				last.code = node;
 			}
+			else if(last instanceof IfStatement) {
+				last.else = node;
+			}
 			else {
 				this.addDiagnostic(l10n.t("parserErrorUnexpectedCode"), DiagnosticSeverity.Error, node.pos);
 			}
@@ -412,6 +416,9 @@ export class PawnListener implements pawnListener
 			}
 			else if(last instanceof AbstractOperator) {
 				last.expresion = node;
+			}
+			else if(last instanceof IfStatement) {
+				last.condition = node;
 			}
 			else if(last instanceof ArrayIndexes) {
 				last.push(node);
@@ -763,6 +770,28 @@ export class PawnListener implements pawnListener
 		else {
 			this.nodes.push(new Array(<Variable>last, node.indexes));
 			
+		}
+	}
+
+	enterIf_statement(ctx: If_statementContext): void {
+		const node = new IfStatement();
+		this.nodes.push(node);
+	}
+	exitIf_statement(ctx: If_statementContext): void {
+		const node = <IfStatement>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			
+			const last = this.nodes.peek();
+			if(last instanceof CodeBlock) {
+				last.statements.push(node);
+			}
+			else if(last instanceof IfStatement) {
+				last.else = node;
+			}
+			else {
+				this.addDiagnostic(l10n.t("Unexpected condition statement"), DiagnosticSeverity.Error, node.pos);
+			}
 		}
 	}
 }

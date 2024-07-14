@@ -25,9 +25,16 @@ import * as ArrayNode from "../Nodes/Variables/Array";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
+import { IfStatement } from "../Nodes/Conditions/IfStatement";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitItStatement(node: IfStatement): void {
+		this.beforeVisitIfStatemnt(node);
+		node.else?.accept(this);
+		node.condition?.accept(this);
+		this.afterVisitIfStatemnt(node);
+	}
 	visitArray(node: ArrayNode.Array): void {
 		this.visitVariable(node);
 		this.acceptArray(node.indexes);
@@ -235,4 +242,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitAssigment(node: AssigmentOperator): void;
 	abstract afterVisitAssigment(node: AssigmentOperator): void;
+
+	abstract beforeVisitIfStatemnt(node: IfStatement): void;
+	abstract afterVisitIfStatemnt(node: IfStatement): void;
 }

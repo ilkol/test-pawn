@@ -39,9 +39,16 @@ import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 import { Tag } from "../Nodes/Tag";
 import { IHasTag } from "../Nodes/IHasTag";
 import { FunctionInfo, FunctionParameterInfo } from "../../../AbstractOpenFile";
+import { IfStatement } from "../Nodes/Conditions/IfStatement";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitIfStatemnt(node: IfStatement): void {
+	
+	}
+	afterVisitIfStatemnt(node: IfStatement): void {
+	
+	}
 	beforeVisitAssigment(node: AssigmentOperator): void {
 
 	}

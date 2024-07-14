@@ -20,6 +20,7 @@ import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { Array } from "../Nodes/Variables/Array";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
+import { IfStatement } from "../Nodes/Conditions/IfStatement";
 
 export interface IVisitor
 {
@@ -48,5 +49,7 @@ export interface IVisitor
 	
 	visitArray(ndoe: Array): void;
 	visitArrayDeclaration(node: ArrayDeclaration): void;
+
+	visitItStatement(node: IfStatement): void;
 
 }
