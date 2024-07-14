@@ -221,7 +221,7 @@ EMIT:		'emit';
 ENDIF:		'endif';
 ENDINPUT:	'endinput';
 ENDSCRIPT:	'endscript';
-ERROR:		'error';
+// ERROR:		'error';
 FILE: 		'file';
 INCLUDE:	'include';
 LINE:		'line';

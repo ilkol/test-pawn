@@ -110,29 +110,28 @@ export class pawnParser extends Parser {
 	public static readonly ENDIF = 80;
 	public static readonly ENDINPUT = 81;
 	public static readonly ENDSCRIPT = 82;
-	public static readonly ERROR = 83;
-	public static readonly FILE = 84;
-	public static readonly INCLUDE = 85;
-	public static readonly LINE = 86;
-	public static readonly PRAGMA = 87;
-	public static readonly SECTION = 88;
-	public static readonly TRYINCLUDE = 89;
-	public static readonly UNDEF = 90;
-	public static readonly DYNAMIC = 91;
-	public static readonly WARNING = 92;
-	public static readonly TRUE = 93;
-	public static readonly FALSE = 94;
-	public static readonly SHARPSTRING = 95;
-	public static readonly STRING = 96;
-	public static readonly ANGLEDSTRING = 97;
-	public static readonly IDENTIFIER = 98;
-	public static readonly HEX = 99;
-	public static readonly INTEGER = 100;
-	public static readonly FLOAT = 101;
-	public static readonly Whitespace = 102;
-	public static readonly Newline = 103;
-	public static readonly BlockComment = 104;
-	public static readonly LineComment = 105;
+	public static readonly FILE = 83;
+	public static readonly INCLUDE = 84;
+	public static readonly LINE = 85;
+	public static readonly PRAGMA = 86;
+	public static readonly SECTION = 87;
+	public static readonly TRYINCLUDE = 88;
+	public static readonly UNDEF = 89;
+	public static readonly DYNAMIC = 90;
+	public static readonly WARNING = 91;
+	public static readonly TRUE = 92;
+	public static readonly FALSE = 93;
+	public static readonly SHARPSTRING = 94;
+	public static readonly STRING = 95;
+	public static readonly ANGLEDSTRING = 96;
+	public static readonly IDENTIFIER = 97;
+	public static readonly HEX = 98;
+	public static readonly INTEGER = 99;
+	public static readonly FLOAT = 100;
+	public static readonly Whitespace = 101;
+	public static readonly Newline = 102;
+	public static readonly BlockComment = 103;
+	public static readonly LineComment = 104;
 	public static readonly RULE_file = 0;
 	public static readonly RULE_declaration = 1;
 	public static readonly RULE_enum = 2;
@@ -225,9 +224,8 @@ export class pawnParser extends Parser {
 		"'operator'", "'if'", "'else'", "'switch'", "'case'", "'default'", "'while'", 
 		"'for'", "'do'", "'continue'", "'break'", "'char'", "'defined'", "'sizeof'", 
 		"'tagof'", "'define'", "'elseif'", "'emit'", "'endif'", "'endinput'", 
-		"'endscript'", "'error'", "'file'", "'include'", "'line'", "'pragma'", 
-		"'section'", "'tryinclude'", "'undef'", "'dynamic'", "'warning'", "'true'", 
-		"'false'",
+		"'endscript'", "'file'", "'include'", "'line'", "'pragma'", "'section'", 
+		"'tryinclude'", "'undef'", "'dynamic'", "'warning'", "'true'", "'false'",
 	];
 	private static readonly _SYMBOLIC_NAMES: Array<string | undefined> = [
 		undefined, "OPEN_PARENTHESIS", "CLOSE_PARENTHESIS", "CURLY_OPEN_BRACKET", 
@@ -243,9 +241,9 @@ export class pawnParser extends Parser {
 		"STOCK", "FORWARD", "NATIVE", "PUBLIC", "OPERATOR", "IF", "ELSE", "SWITCH", 
 		"CASE", "DEFAULT", "WHILE", "FOR", "DO", "CONTINUE", "BREAK", "CHAR", 
 		"DEFINED", "SIZEOF", "TAGOF", "DEFINE", "ELSEIF", "EMIT", "ENDIF", "ENDINPUT", 
-		"ENDSCRIPT", "ERROR", "FILE", "INCLUDE", "LINE", "PRAGMA", "SECTION", 
-		"TRYINCLUDE", "UNDEF", "DYNAMIC", "WARNING", "TRUE", "FALSE", "SHARPSTRING", 
-		"STRING", "ANGLEDSTRING", "IDENTIFIER", "HEX", "INTEGER", "FLOAT", "Whitespace", 
+		"ENDSCRIPT", "FILE", "INCLUDE", "LINE", "PRAGMA", "SECTION", "TRYINCLUDE", 
+		"UNDEF", "DYNAMIC", "WARNING", "TRUE", "FALSE", "SHARPSTRING", "STRING", 
+		"ANGLEDSTRING", "IDENTIFIER", "HEX", "INTEGER", "FLOAT", "Whitespace", 
 		"Newline", "BlockComment", "LineComment",
 	];
 	public static readonly VOCABULARY: Vocabulary = new VocabularyImpl(pawnParser._LITERAL_NAMES, pawnParser._SYMBOLIC_NAMES, []);
@@ -3596,7 +3594,7 @@ export class pawnParser extends Parser {
 
 	private static readonly _serializedATNSegments: number = 2;
 	private static readonly _serializedATNSegment0: string =
-		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03k\u0272\x04\x02" +
+		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03j\u0272\x04\x02" +
 		"\t\x02\x04\x03\t\x03\x04\x04\t\x04\x04\x05\t\x05\x04\x06\t\x06\x04\x07" +
 		"\t\x07\x04\b\t\b\x04\t\t\t\x04\n\t\n\x04\v\t\v\x04\f\t\f\x04\r\t\r\x04" +
 		"\x0E\t\x0E\x04\x0F\t\x0F\x04\x10\t\x10\x04\x11\t\x11\x04\x12\t\x12\x04" +
@@ -3664,7 +3662,7 @@ export class pawnParser extends Parser {
 		"r\x02t\x02v\x02x\x02z\x02|\x02~\x02\x80\x02\x82\x02\x02\r\x05\x02\f\f" +
 		"\x0E\x0E\x16\x16\x04\x02<<??\x03\x02\v\x16\x06\x02\x18\x18\x1C\x1D((M" +
 		"M\x03\x02:<\x03\x02\x17\x1D\x04\x02\x1E#((\x03\x02)/\x03\x02IJ\x03\x02" +
-		"_`\x03\x02ab\x02\u0296\x02\x87\x03\x02\x02\x02\x04\x94\x03\x02\x02\x02" +
+		"^_\x03\x02`a\x02\u0296\x02\x87\x03\x02\x02\x02\x04\x94\x03\x02\x02\x02" +
 		"\x06\x96\x03\x02\x02\x02\b\xAF\x03\x02\x02\x02\n\xB4\x03\x02\x02\x02\f" +
 		"\xC5\x03\x02\x02\x02\x0E\xD6\x03\x02\x02\x02\x10\xF0\x03\x02\x02\x02\x12" +
 		"\u010A\x03\x02\x02\x02\x14\u0119\x03\x02\x02\x02\x16\u011E\x03\x02\x02" +
@@ -3694,7 +3692,7 @@ export class pawnParser extends Parser {
 		"\x03\x02\x02\x02\x91\x8D\x03\x02\x02\x02\x91\x8E\x03\x02\x02\x02\x92\x95" +
 		"\x03\x02\x02\x02\x93\x95\x05\x06\x04\x02\x94\x91\x03\x02\x02\x02\x94\x93" +
 		"\x03\x02\x02\x02\x95\x05\x03\x02\x02\x02\x96\x98\x079\x02\x02\x97\x99" +
-		"\x07d\x02\x02\x98\x97\x03\x02\x02\x02\x98\x99\x03\x02\x02\x02\x99\x9B" +
+		"\x07c\x02\x02\x98\x97\x03\x02\x02\x02\x98\x99\x03\x02\x02\x02\x99\x9B" +
 		"\x03\x02\x02\x02\x9A\x9C\x05\n\x06\x02\x9B\x9A\x03\x02\x02\x02\x9B\x9C" +
 		"\x03\x02\x02\x02\x9C\x9D\x03\x02\x02\x02\x9D\xA9\x07\x05\x02\x02\x9E\xA3" +
 		"\x05\b\x05\x02\x9F\xA0\x07\t\x02\x02\xA0\xA2\x05\b\x05\x02\xA1\x9F\x03" +
@@ -3706,7 +3704,7 @@ export class pawnParser extends Parser {
 		"\x02\x02\x02\xAD\xAE\x03\x02\x02\x02\xAE\x07\x03\x02\x02\x02\xAF\xB2\x05" +
 		"\x16\f\x02\xB0\xB1\x07\v\x02\x02\xB1\xB3\x05.\x18\x02\xB2\xB0\x03\x02" +
 		"\x02\x02\xB2\xB3\x03\x02\x02\x02\xB3\t\x03\x02\x02\x02\xB4\xB5\x07\x03" +
-		"\x02\x02\xB5\xB6\t\x02\x02\x02\xB6\xB7\x07f\x02\x02\xB7\xB8\x07\x04\x02" +
+		"\x02\x02\xB5\xB6\t\x02\x02\x02\xB6\xB7\x07e\x02\x02\xB7\xB8\x07\x04\x02" +
 		"\x02\xB8\v\x03\x02\x02\x02\xB9\xBD\x078\x02\x02\xBA\xBC\x05@!\x02\xBB" +
 		"\xBA\x03\x02\x02\x02\xBC\xBF\x03\x02\x02\x02\xBD\xBB\x03\x02\x02\x02\xBD" +
 		"\xBE\x03\x02\x02\x02\xBE\xC6\x03\x02\x02\x02\xBF\xBD\x03\x02\x02\x02\xC0" +
@@ -3721,7 +3719,7 @@ export class pawnParser extends Parser {
 		"\x02\x02\xD4\xD2\x03\x02\x02\x02\xD5\xD7\x05\x1A\x0E\x02\xD6\xD5\x03\x02" +
 		"\x02\x02\xD6\xD7\x03\x02\x02\x02\xD7\xD9\x03\x02\x02\x02\xD8\xDA\x05\x14" +
 		"\v\x02\xD9\xD8\x03\x02\x02\x02\xD9\xDA\x03\x02\x02\x02\xDA\xDB\x03\x02" +
-		"\x02\x02\xDB\xDC\x07d\x02\x02\xDC\xE8\x07\x03\x02\x02\xDD\xE2\x05:\x1E" +
+		"\x02\x02\xDB\xDC\x07c\x02\x02\xDC\xE8\x07\x03\x02\x02\xDD\xE2\x05:\x1E" +
 		"\x02\xDE\xDF\x07\t\x02\x02\xDF\xE1\x05:\x1E\x02\xE0\xDE\x03\x02\x02\x02" +
 		"\xE1\xE4\x03\x02\x02\x02\xE2\xE0\x03\x02\x02\x02\xE2\xE3\x03\x02\x02\x02" +
 		"\xE3\xE6\x03\x02\x02\x02\xE4\xE2\x03\x02\x02\x02\xE5\xE7\x05<\x1F\x02" +
@@ -3741,16 +3739,16 @@ export class pawnParser extends Parser {
 		"\x04\x02\x02\u0105\u0109\x07\n\x02\x02\u0106\u0109\x05j6\x02\u0107\u0109" +
 		"\x05\x12\n\x02\u0108\u0105\x03\x02\x02\x02\u0108\u0106\x03\x02\x02\x02" +
 		"\u0108\u0107\x03\x02\x02\x02\u0109\x11\x03\x02\x02\x02\u010A\u010B\x07" +
-		"\v\x02\x02\u010B\u010C\x07d\x02\x02\u010C\u010D\x07\n\x02\x02\u010D\x13" +
-		"\x03\x02\x02\x02\u010E\u011A\x07d\x02\x02\u010F\u0110\x07\x05\x02\x02" +
-		"\u0110\u0115\x07d\x02\x02\u0111\u0112\x07\t\x02\x02\u0112\u0114\x07d\x02" +
+		"\v\x02\x02\u010B\u010C\x07c\x02\x02\u010C\u010D\x07\n\x02\x02\u010D\x13" +
+		"\x03\x02\x02\x02\u010E\u011A\x07c\x02\x02\u010F\u0110\x07\x05\x02\x02" +
+		"\u0110\u0115\x07c\x02\x02\u0111\u0112\x07\t\x02\x02\u0112\u0114\x07c\x02" +
 		"\x02\u0113\u0111\x03\x02\x02\x02\u0114\u0117\x03\x02\x02\x02\u0115\u0113" +
 		"\x03\x02\x02\x02\u0115\u0116\x03\x02\x02\x02\u0116\u0118\x03\x02\x02\x02" +
 		"\u0117\u0115\x03\x02\x02\x02\u0118\u011A\x07\x06\x02\x02\u0119\u010E\x03" +
 		"\x02\x02\x02\u0119\u010F\x03\x02\x02\x02\u011A\u011B\x03\x02\x02\x02\u011B" +
 		"\u011C\x07%\x02\x02\u011C\x15\x03\x02\x02\x02\u011D\u011F\x05\x14\v\x02" +
 		"\u011E\u011D\x03\x02\x02\x02\u011E\u011F\x03\x02\x02\x02\u011F\u0120\x03" +
-		"\x02\x02\x02\u0120\u0124\x07d\x02\x02\u0121\u0123\x05\x18\r\x02\u0122" +
+		"\x02\x02\x02\u0120\u0124\x07c\x02\x02\u0121\u0123\x05\x18\r\x02\u0122" +
 		"\u0121\x03\x02\x02\x02\u0123\u0126\x03\x02\x02\x02\u0124\u0122\x03\x02" +
 		"\x02\x02\u0124\u0125\x03\x02\x02\x02\u0125\x17\x03\x02\x02\x02\u0126\u0124" +
 		"\x03\x02\x02\x02\u0127\u0129\x07\x07\x02\x02\u0128\u012A\x05.\x18\x02" +
@@ -3779,7 +3777,7 @@ export class pawnParser extends Parser {
 		"\u0156\x03\x02\x02\x02\u0159\u015C\x03\x02\x02\x02\u015A\u0158\x03\x02" +
 		"\x02\x02\u015A\u015B\x03\x02\x02\x02\u015B\u015D\x03\x02\x02\x02\u015C" +
 		"\u015A\x03\x02\x02\x02\u015D\u015E\x07\x06\x02\x02\u015E%\x03\x02\x02" +
-		"\x02\u015F\u0164\x07d\x02\x02\u0160\u0164\x05H%\x02\u0161\u0164\x05~@" +
+		"\x02\u015F\u0164\x07c\x02\x02\u0160\u0164\x05H%\x02\u0161\u0164\x05~@" +
 		"\x02\u0162\u0164\x05$\x13\x02\u0163\u015F\x03\x02\x02\x02\u0163\u0160" +
 		"\x03\x02\x02\x02\u0163\u0161\x03\x02\x02\x02\u0163\u0162\x03\x02\x02\x02" +
 		"\u0164\'\x03\x02\x02\x02\u0165\u0166\t\x04\x02\x02\u0166)\x03\x02\x02" +
@@ -3827,10 +3825,10 @@ export class pawnParser extends Parser {
 		"\x05N(\x02\u01C4\u01C1\x03\x02\x02\x02\u01C4\u01C2\x03\x02\x02\x02\u01C4" +
 		"\u01C3\x03\x02\x02\x02\u01C5I\x03\x02\x02\x02\u01C6\u01C8\x07\x18\x02" +
 		"\x02\u01C7\u01C6\x03\x02\x02\x02\u01C7\u01C8\x03\x02\x02\x02\u01C8\u01C9" +
-		"\x03\x02\x02\x02\u01C9\u01CA\x07f\x02\x02\u01CAK\x03\x02\x02\x02\u01CB" +
+		"\x03\x02\x02\x02\u01C9\u01CA\x07e\x02\x02\u01CAK\x03\x02\x02\x02\u01CB" +
 		"\u01CD\x07\x18\x02\x02\u01CC\u01CB\x03\x02\x02\x02\u01CC\u01CD\x03\x02" +
-		"\x02\x02\u01CD\u01CE\x03\x02\x02\x02\u01CE\u01CF\x07g\x02\x02\u01CFM\x03" +
-		"\x02\x02\x02\u01D0\u01D1\x07e\x02\x02\u01D1O\x03\x02\x02\x02\u01D2\u01D6" +
+		"\x02\x02\u01CD\u01CE\x03\x02\x02\x02\u01CE\u01CF\x07f\x02\x02\u01CFM\x03" +
+		"\x02\x02\x02\u01D0\u01D1\x07d\x02\x02\u01D1O\x03\x02\x02\x02\u01D2\u01D6" +
 		"\x05T+\x02\u01D3\u01D6\x05V,\x02\u01D4\u01D6\x05Z.\x02\u01D5\u01D2\x03" +
 		"\x02\x02\x02\u01D5\u01D3\x03\x02\x02\x02\u01D5\u01D4\x03\x02\x02\x02\u01D6" +
 		"Q\x03\x02\x02\x02\u01D7\u01DB\x05T+\x02\u01D8\u01DB\x05X-\x02\u01D9\u01DB" +
@@ -3855,10 +3853,10 @@ export class pawnParser extends Parser {
 		"d3\x02\u0204\u0205\x07\t\x02\x02\u0205\u0207\x05d3\x02\u0206\u0204\x03" +
 		"\x02\x02\x02\u0207\u020A\x03\x02\x02\x02\u0208\u0206\x03\x02\x02\x02\u0208" +
 		"\u0209\x03\x02\x02\x02\u0209c\x03\x02\x02\x02\u020A\u0208\x03\x02\x02" +
-		"\x02\u020B\u020E\x07d\x02\x02\u020C\u020E\x05H%\x02\u020D\u020B\x03\x02" +
+		"\x02\u020B\u020E\x07c\x02\x02\u020C\u020E\x05H%\x02\u020D\u020B\x03\x02" +
 		"\x02\x02\u020D\u020C\x03\x02\x02\x02\u020E\u0210\x03\x02\x02\x02\u020F" +
 		"\u0211\x05f4\x02\u0210\u020F\x03\x02\x02\x02\u0210\u0211\x03\x02\x02\x02" +
-		"\u0211e\x03\x02\x02\x02\u0212\u0215\x070\x02\x02\u0213\u0216\x07d\x02" +
+		"\u0211e\x03\x02\x02\x02\u0212\u0215\x070\x02\x02\u0213\u0216\x07c\x02" +
 		"\x02\u0214\u0216\x05H%\x02\u0215\u0213\x03\x02\x02\x02\u0215\u0214\x03" +
 		"\x02\x02\x02\u0216g\x03\x02\x02\x02\u0217\u0218\x07\x03\x02\x02\u0218" +
 		"\u0219\x05.\x18\x02\u0219\u021A\x07\x04\x02\x02\u021Ai\x03\x02\x02\x02" +
@@ -3893,8 +3891,8 @@ export class pawnParser extends Parser {
 		"\u0259\t\v\x02\x02\u0259}\x03\x02\x02\x02\u025A\u025E\t\f\x02\x02\u025B" +
 		"\u025D\x05~@\x02\u025C\u025B\x03\x02\x02\x02\u025D\u0260\x03\x02\x02\x02" +
 		"\u025E\u025C\x03\x02\x02\x02\u025E\u025F\x03\x02\x02\x02\u025F\x7F\x03" +
-		"\x02\x02\x02\u0260\u025E\x03\x02\x02\x02\u0261\u0262\x07c\x02\x02\u0262" +
-		"\x81\x03\x02\x02\x02\u0263\u0264\x07d\x02\x02\u0264\u026D\x07\x03\x02" +
+		"\x02\x02\x02\u0260\u025E\x03\x02\x02\x02\u0261\u0262\x07b\x02\x02\u0262" +
+		"\x81\x03\x02\x02\x02\u0263\u0264\x07c\x02\x02\u0264\u026D\x07\x03\x02" +
 		"\x02\u0265\u026A\x05.\x18\x02\u0266\u0267\x07\t\x02\x02\u0267\u0269\x05" +
 		".\x18\x02\u0268\u0266\x03\x02\x02\x02\u0269\u026C\x03\x02\x02\x02\u026A" +
 		"\u0268\x03\x02\x02\x02\u026A\u026B\x03\x02\x02\x02\u026B\u026E\x03\x02" +
