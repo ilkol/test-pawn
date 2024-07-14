@@ -181,7 +181,7 @@ export class Analyzer extends BaseVisitor
 			else this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorUndefindedVariable") + ' "' + node.id + "\"", node.idPos));
 		}
 	}
-	private curScope: IScope = new Scope();
+	private curScope: IScope;
 
 	beforeVisitVarInit(node: VariableInit): void {
 
@@ -356,6 +356,7 @@ export class Analyzer extends BaseVisitor
 	}
 		
 	constructor(
+		scope: IScope,
 		public readonly diagnostics: DiagnosticMessage[],
 		public readonly tokens: SemanticTokensManager,
 		public readonly symbolsManager: SymbolsManager,
@@ -363,6 +364,7 @@ export class Analyzer extends BaseVisitor
 		public readonly signatures: Map<string, SignatureHelp>
 	) {
 		super();
+		this.curScope = scope;
 
 		let varInit = new VariableInit();
 		varInit.id = "cellmin";
