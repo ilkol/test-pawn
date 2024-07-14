@@ -16,6 +16,8 @@ import { ParserErrorListener } from "./antlr/ParserErrorListener";
 import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
 import { PPParser } from "./Prepocessor/PPParser";
 import path = require("path");
+import { Scope } from "./antlr/Scopes/Scope";
+import { IScope } from "./antlr/Scopes/IScope";
 
 
 
@@ -27,8 +29,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 		super(file, fileManager);
 	}
 
+	
 	public tryParse(): void
 	{
+		this.scope = new Scope();
 		this.complitions = [];
 		const ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 		let code = ppParser.parse();
@@ -61,6 +65,13 @@ export class AntrlOpenFile extends AbstractOpenFile
 						this.functionsInfo.set(key, value);
 					});
 					
+					file.scope.variables().forEach((value) => {
+						this.scope.addVar(value);
+					});
+					file.scope.functions().forEach((value) => {
+						this.scope.addFunction(value);
+					});
+
 				}
 			});
 		}
@@ -84,6 +95,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this.AST = <Declarations>listen.Root;
 
 		let analyzer = new Analyzer(
+			this.scope,
 			listen.diagnostics.concat(parserErrorListener.diagnostic).concat(lexerErrorListener.diagnostic), 
 			this.tokensManager,
 			this.symbolsManager,

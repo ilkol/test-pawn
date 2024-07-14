@@ -3,6 +3,8 @@ import { FileManager } from "./Managers/FileManager";
 import { DiagnosticManager } from "./Managers/diagnostic";
 import { SemanticTokensManager, Token } from "./Managers/SemanticTokensManager";
 import { SymbolsManager } from "./Managers/SymbolsManager";
+import { IScope } from "./antlr/Scopes/IScope";
+import { Scope } from "./antlr/Scopes/Scope";
 
 export class FunctionInfo
 {
@@ -58,6 +60,8 @@ export abstract class AbstractOpenFile
 	public readonly symbolsManager: SymbolsManager = new SymbolsManager();
 	protected complitions: CompletionItem[] = [];
 	protected functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
+
+	public scope: IScope = new Scope();
 
 	
 	constructor(protected file: TextDocument, public readonly fileManager: FileManager) {
