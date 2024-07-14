@@ -1,26 +1,26 @@
 {
-    "errorPawnoDirNotFound": "Не найдена папка pawno",
-    "errorIncludeDirNotFound": "Не найдена папка include",
-    "errorWorkspaceNotSelected": "Для корректной работы расширения следует открыть папку с директорией компилятора",
+    "The pawno folder was not found": "Папка pawno не найдена",
+    "The include folder was not found": "Папка include не найдена",
+    "For the extension to work correctly, open the folder with the compiler directory": "Для корректной работы расширения следует открыть папку с директорией компилятора",
 
     
     
-    "defaultComplitionOperatorSizeofDescription": "Возвращает размер массива (количество ячеек)",
-    "defaultComplitionOperatorTagofDescription": "Возвращает идентификатор тэга",
-    "defaultComplitionOperatorCharDescription": "Приводит к количеству ячеек, необходимых для хранения упакованного массива символов",
+    "Returns the size of the array (number of cells)": "Возвращает размер массива (количество ячеек)",
+    "Returns the tag ID": "Возвращает идентификатор тэга",
+    "Results in the number of cells needed to store a packed array of characters": "Приводит к количеству ячеек, необходимых для хранения упакованного массива символов",
 
-    "defaultComplitionConstantCellbitsDescription": "The size of a cell in bits; usually `32`.",
-    "defaultComplitionConstantCellmaxDescription": "The largest valid positive value that a cell can hold; usually `214748364`.",
-    "defaultComplitionConstantCellminDescription": "The largest valid negative value that a cell can hold; usually `-214748364`.",
-    "defaultComplitionConstantCharbitDescription": "The size of a packed character in bits; usually `8`.",
-    "defaultComplitionConstantCharminDescription": "The largest valid packed character value; a packed character is usually 8-bit and the maximum valid value isthus `25`",
+    "The size of a cell in bits; usually `32`.": "The size of a cell in bits; usually `32`.",
+    "The largest valid positive value that a cell can hold; usually `214748364`.": "The largest valid positive value that a cell can hold; usually `214748364`.",
+    "The largest valid negative value that a cell can hold; usually `-214748364`.": "The largest valid negative value that a cell can hold; usually `-214748364`.",
+    "The size of a packed character in bits; usually `8`.": "The size of a packed character in bits; usually `8`.",
+    "The largest valid packed character value; a packed character is usually 8-bit and the maximum valid value isthus `25`": "The largest valid packed character value; a packed character is usually 8-bit and the maximum valid value isthus `25`",
 
-    "defaultComplitionKeywordSwitchStatmentDetail": "Switch Statement",
-    "defaultComplitionKeywordCaseStatmentDetail": "Case Statement",
-    "defaultComplitionKeywordDefaultStatmentDetail": "Default Statement",
+    "Switch Statement": "Switch Statement",
+    "Case Statement": "Case Statement",
+    "Default Statement": "Default Statement",
 
     
-    "hintUnusedDefine": "Неиспользуемый",
+    "Unused #define": "Неиспользуемый",
     "hintUnusedCode": "Неиспользуемый код",
 
     "parserErrorExpectedFunctionButFoundNode": "Ожидается идентификатор функции, а найден узел",

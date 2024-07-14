@@ -151,7 +151,7 @@ export class PPParser
 					element.used = true;
 				}
 				else {
-					this.diagnosticManager.addDiagnostic(l10n.t("hintUnusedDefine") + " #define", DiagnosticSeverity.Hint, this.file.uri.path, element.range, [DiagnosticTag.Unnecessary]);
+					this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, this.file.uri.path, element.range, [DiagnosticTag.Unnecessary]);
 				}
 				
 				this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));

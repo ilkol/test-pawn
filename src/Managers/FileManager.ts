@@ -32,7 +32,7 @@ export class FileManager {
 	}
 	public async findPawnDir() {
 		if(!this.root || !this.root[0])
-			return window.showErrorMessage(l10n.t("errorWorkspaceNotSelected"));
+			return window.showErrorMessage(l10n.t("For the extension to work correctly, open the folder with the compiler directory"));
 		let pawno = Uri.joinPath(this.root[0].uri, "/pawno");
 		try {
 			await workspace.fs.stat(pawno);
@@ -42,13 +42,13 @@ export class FileManager {
 				this._includePath = pawno;
 			} catch(e) {
 				if(e instanceof FileSystemError) {
-					return window.showErrorMessage(l10n.t("errorIncludeDirNotFound"));
+					return window.showErrorMessage(l10n.t("The include folder was not found"));
 				}
 				else console.error(e);
 			}
 		} catch(e) {
 			if(e instanceof FileSystemError) {
-				return window.showErrorMessage(l10n.t("errorPawnoDirNotFound"));
+				return window.showErrorMessage(l10n.t("The pawno folder was not found"));
 			}
 			else console.error(e);
 		}

@@ -90,9 +90,9 @@ export abstract class AbstractOpenFile
 			doc?: string;
 		}
 		const keywords: compl[] = [
-			{label: "sizeof", doc: l10n.t("defaultComplitionOperatorSizeofDescription")},
-			{label: "tagof", doc: l10n.t("defaultComplitionOperatorSizeofDescription")},
-			{label: "char", doc: l10n.t("defaultComplitionOperatorCharDescription")},
+			{label: "sizeof", doc: l10n.t("Returns the size of the array (number of cells)")},
+			{label: "tagof", doc: l10n.t("Returns the tag ID")},
+			{label: "char", doc: l10n.t("Results in the number of cells needed to store a packed array of characters")},
 		];
 
 		keywords.forEach(key => {
@@ -109,11 +109,11 @@ export abstract class AbstractOpenFile
 			doc?: string;
 		}
 		const keywords: compl[] = [
-			{label: "cellbits", doc: l10n.t("defaultComplitionConstantCellbitsDescription")},
-			{label: "cellmax", doc: l10n.t("defaultComplitionConstantCellmaxDescription")},
-			{label: "cellmin", doc: l10n.t("defaultComplitionConstantCellminDescription")},
-			{label: "charbit", doc: l10n.t("defaultComplitionConstantCharbitDescription")},
-			{label: "charmax", doc: l10n.t("defaultComplitionConstantCharminDescription")},
+			{label: "cellbits", doc: l10n.t("The size of a cell in bits; usually `32`.")},
+			{label: "cellmax", doc: l10n.t("The largest valid positive value that a cell can hold; usually `214748364`.")},
+			{label: "cellmin", doc: l10n.t("The largest valid negative value that a cell can hold; usually `-214748364`.")},
+			{label: "charbit", doc: l10n.t("The size of a packed character in bits; usually `8`.")},
+			{label: "charmax", doc: l10n.t("The largest valid packed character value; a packed character is usually 8-bit and the maximum valid value isthus `25`")},
 		];
 
 		keywords.forEach(key => {
@@ -140,11 +140,11 @@ export abstract class AbstractOpenFile
 			{label: "true"},
 			{label: "false"},
 			{label: "switch", insertText: "switch ($0)"},
-			{label: "switch", insertText: "switch ($1)\r\n{\r\n\tcase $2:\r\n\t{\r\n\t\t$3\r\n\t}\r\n\tdefault:\r\n\t{\r\n\t\t$0\r\n\t}\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("defaultComplitionKeywordSwitchStatmentDetail")},
+			{label: "switch", insertText: "switch ($1)\r\n{\r\n\tcase $2:\r\n\t{\r\n\t\t$3\r\n\t}\r\n\tdefault:\r\n\t{\r\n\t\t$0\r\n\t}\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("Switch Statement")},
 			{label: "for"},
 			{label: "while"},
 			{label: "case", insertText: "case $0"},
-			{label: "case", insertText: "case $1:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("defaultComplitionKeywordCaseStatmentDetail")},
+			{label: "case", insertText: "case $1:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("Case Statement")},
 			{label: "default", insertText: "default"},
 			{label: "default", insertText: "default:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("defaultComplitionKeywordDefaultStatmentDetail")},
 			{label: "break", insertText: "break;\r\n$0"},
