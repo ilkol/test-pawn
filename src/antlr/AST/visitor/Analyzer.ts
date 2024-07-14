@@ -203,7 +203,7 @@ export class Analyzer extends BaseVisitor
 				node.tag = func.tag;
 		}
 		else 
-			this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorFunction") + ' "' + node.id + '"', node.idPos));
+			this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorFunctionNotFound") + ' "' + node.id + '"', node.idPos));
 		
 		
 	}
@@ -386,6 +386,7 @@ export class Analyzer extends BaseVisitor
 				let diagnostic: DiagnosticMessage, diagnosticMsg: string;
 				let stock = element.stock;
 				if(element instanceof FunctionDeclaration) {
+					console.log(l10n.t("analyzerFunction"));
 					diagnosticMsg = l10n.t("analyzerFunction");
 					if(element.modifire !== FunctionModifire.none)
 						stock = true;
