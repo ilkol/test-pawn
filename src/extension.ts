@@ -67,7 +67,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	const documentSemanticTokensProvider = new DocumentSemanticTokensProvider(fileManage, legend);
 
 
-	vscode.workspace.onDidChangeTextDocument((e) => {
+	vscode.workspace.onDidChangeTextDocument(async (e) => {
 		if(e.document.languageId != "pawn") return;
 		let connect = e.contentChanges;
 		if(!connect.length) {
@@ -75,11 +75,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 		if(connect[0].text == ";") {
 			console.error(e.contentChanges);
-			fileManage.onDidChangeDocument(e.document);
+			await fileManage.onDidChangeDocument(e.document);
 		}
 	});
-	vscode.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument);
-	vscode.workspace.textDocuments.forEach(fileManage.onDidOpenTextDocument);
+	vscode.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument, fileManage);
+	vscode.workspace.textDocuments.forEach(fileManage.onDidOpenTextDocument, fileManage);
 
 	vscode.workspace.onDidSaveTextDocument((file) => {
 		if(file.languageId != "pawn") return;

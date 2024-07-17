@@ -10,6 +10,8 @@ export class FileManager {
 	public _includePath?: Uri = undefined;
 
 	constructor(private diagnosticManager: DiagnosticManager) {
+		this.openFile.bind(this);
+		// this.onDidOpenTextDocument.bind(this);
 		// if(this.includePath == "") {
 		// 	// let notifAboutInclude = window.showInputBox({title: "test"});
 		// 	window.showInformationMessage("Не выбрана папка с подгружаемыми библиотеками.\nНеобходимо выбрать папку, чтобы избежать ошибок", "Выбрать", "Нет").then(but => {
@@ -112,7 +114,7 @@ export class FileManager {
 	// 	return new Map<string, FunctionData>();
 	// 	// return file.Env.functions;
 	// }
-	public onDidOpenTextDocument = (file: TextDocument) => {
+	public async onDidOpenTextDocument(file: TextDocument): Promise<void> {
 		if(file.languageId != "pawn") return;
 
 		let path = file.uri.path;
@@ -122,13 +124,13 @@ export class FileManager {
 
 		this.diagnosticManager.clear();
 		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
-		doc.tryParse();
+		await doc.tryParse();
 		this.openedFiles.set(path, doc);
 		this.diagnosticManager.updateDiagnostic();
 		return;
 	}
 
-	public onDidChangeDocument(file: TextDocument) {
+	public async onDidChangeDocument(file: TextDocument) {
 		if(file.languageId != "pawn") return;
 
 		let path = file.uri.path;

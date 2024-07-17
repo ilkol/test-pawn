@@ -30,7 +30,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 
 	
-	public tryParse(): void
+	public async tryParse(): Promise<void>
 	{
 		this.scope = new Scope();
 		this.complitions = [];
@@ -47,10 +47,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const pawnDir = this.fileManager._includePath;
 		if(pawnDir)
 		{	
-			ppParser.includes.forEach(el => {
+			ppParser.includes.forEach(async el => {
 				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
 				this.documentsLinks.set(el.pathRange, uri);
-				this.fileManager.openFile(uri);
+				await this.fileManager.openFile(uri);
 				const file = this.fileManager.getFile(uri.path);
 				if(file) {
 					file.getComplitions().forEach(compl => {

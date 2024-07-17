@@ -36,7 +36,7 @@ export class Include extends PreprocessorDirective
 			}
 			if(match[1])
 				this.delLength = 1;
-			return match[2];
+			return match[2] ? match[2] : match[3];
 		} 
 		return "";
 	}
