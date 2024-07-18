@@ -47,7 +47,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const pawnDir = this.fileManager._includePath;
 		if(pawnDir)
 		{	
-			ppParser.includes.forEach(async el => {
+			await ppParser.includes.forEach(async el => {
 				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
 				this.documentsLinks.set(el.pathRange, uri);
 				await this.fileManager.openFile(uri);

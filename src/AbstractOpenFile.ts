@@ -178,7 +178,7 @@ export abstract class AbstractOpenFile
 		return this.tokensManager.tokens;
 	}
 
-	public abstract tryParse(): void;
+	public abstract tryParse(): Promise<void>;
 	public getComplitions(): CompletionItem[] {
 		return this.complitions;
 	}

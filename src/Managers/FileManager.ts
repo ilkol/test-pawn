@@ -142,7 +142,7 @@ export class FileManager {
 
 		if(doc) {
 			this.diagnosticManager.clear();
-			doc.tryParse();
+			await doc.tryParse();
 			this.diagnosticManager.updateFileDiagnostic(path);
 		}
 
