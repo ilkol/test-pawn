@@ -13,6 +13,7 @@ import { SemanticTokensManager } from "../Managers/SemanticTokensManager";
 import { DiagnosticManager } from "../Managers/diagnostic";
 import { SemanticTokens } from "../SemanticTokens";
 import { Pragma } from "./Pragma";
+import { Undef } from "./Undef";
 
 export class PPParser
 {
@@ -110,6 +111,14 @@ export class PPParser
 				}
 				return direct;	
 			}
+			case "undef": { 
+				const direct = new Undef(this.file, rest, startIndex, restIndex, endIndex);
+				const define = this.defines.get(direct.define);
+				if(define) {
+					define.undef = direct;
+				}
+				return direct;	
+			}
 			case "else": {
 				const direct = new Else(this.file, startIndex,endIndex)
 				const cond = this.ppConditions.peek();
@@ -121,6 +130,8 @@ export class PPParser
 			}
 				
 			case "enscript":
+			case "endinput":
+				return new Endinput(this.file, startIndex, endIndex);
 			case "endinput":
 				return new Endinput(this.file, startIndex, endIndex);
 			default:
@@ -142,7 +153,11 @@ export class PPParser
 			}
 			if(element instanceof Define) {
 				const preDirective = code.substring(0, element.curEndIndex);
-				const postDirective = code.substring(element.curEndIndex);
+				let lastindex = undefined;
+				if(element.undef) {
+					lastindex = element.undef.curStartIndex;
+				}
+				const postDirective = code.substring(element.curEndIndex, lastindex);
 
 				const lastCount = this.replacedCode.length;
 				const result = this.substringrReplacing(postDirective, element, element.curEndIndex);
