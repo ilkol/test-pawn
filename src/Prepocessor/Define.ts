@@ -1,5 +1,6 @@
 import { Range, TextDocument } from "vscode";
 import { PreprocessorDirective } from "./PreprocessorDirective";
+import { Undef } from "./Undef";
 
 interface RestData
 {
@@ -14,6 +15,7 @@ export class Define extends PreprocessorDirective
 	readonly pattern: string;
 	readonly patternRange: Range;
 	readonly replacement: string;
+	undef?: Undef;
 	used: boolean = false;
 	
 	constructor(file: TextDocument, readonly rest: string, startIndex: number, restIndex: number, endIndex: number) {
