@@ -19,7 +19,40 @@ import path = require("path");
 import { Scope } from "./antlr/Scopes/Scope";
 import { IScope } from "./antlr/Scopes/IScope";
 
+class Semaphore {
+    private tasks: (() => void)[] = [];
+    private count: number;
 
+    constructor(count: number) {
+        this.count = count;
+    }
+
+    public acquire(): Promise<void> {
+        if (this.count > 0) {
+            this.count--;
+            return Promise.resolve();
+        }
+
+        return new Promise(resolve => {
+            this.tasks.push(resolve);
+        });
+    }
+
+    public release(): void {
+        this.count++;
+        if (this.tasks.length > 0) {
+            const resolve = this.tasks.shift();
+            if (resolve) {
+                this.count--;
+                resolve();
+            }
+        }
+    }
+}
+
+// Пример использования в вашем коде
+
+const semaphore = new Semaphore(1);
 
 export class AntrlOpenFile extends AbstractOpenFile
 {
@@ -29,32 +62,36 @@ export class AntrlOpenFile extends AbstractOpenFile
 		super(file, fileManager);
 	}
 
+	fileName() {
+		return this.file.fileName;
+	}
 	
-	public async tryParse(): Promise<void>
-	{
+	public async tryParse(): Promise<void> {
+		console.log(`tryParse started for ${this.file.uri.path}`);
 		this.scope = new Scope();
 		this.complitions = [];
 		const ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 		let code = ppParser.parse();
-
-		//регистрируем дефайны
+	
+		// Регистрируем дефайны
 		const complitions = ppParser.preprocessorTokens();
 		complitions.forEach(el => {
 			this.complitions.push(el);
 		});
-
-		//регистрируем инклуды
+	
+		// Регистрируем инклуды
 		const pawnDir = this.fileManager._includePath;
-		if(pawnDir)
-		{	
-			await ppParser.includes.forEach(async el => {
+		if (pawnDir) {
+			for (let el of ppParser.includes) {
 				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
 				this.documentsLinks.set(el.pathRange, uri);
+				console.log(`Opening file: ${uri.path}`);
 				await this.fileManager.openFile(uri);
 				const file = this.fileManager.getFile(uri.path);
-				if(file) {
+				console.log(`File opened: ${uri.path}`);
+				if (file) {
 					file.getComplitions().forEach(compl => {
-						if(!compl.detail)
+						if (!compl.detail)
 							compl.detail = path.parse(path.basename(uri.fsPath)).name;
 						this.complitions.push(compl);
 					});
@@ -64,21 +101,18 @@ export class AntrlOpenFile extends AbstractOpenFile
 					file.functionsInfo.forEach((value, key) => {
 						this.functionsInfo.set(key, value);
 					});
-					
+	
 					file.scope.variables().forEach((value) => {
 						this.scope.addVar(value);
 					});
 					file.scope.functions().forEach((value) => {
 						this.scope.addFunction(value);
 					});
-
 				}
-			});
+			}
 		}
-
-
-		
-
+	
+		console.log(`Starting lexer for ${this.file.uri.path}`);
 		const lexer = this.tryLex(code);
 		const lexerErrorListener = new LexerErrorListener();
 		lexer.addErrorListener(lexerErrorListener);
@@ -89,34 +123,67 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const ruleContext = parser.file();
 		const listener: pawnListener = new PawnListener();
 		
+		console.log(`Starting ParseTreeWalker for ${this.file.uri.path}`);
 		ParseTreeWalker.DEFAULT.walk(listener, ruleContext);
-
+		console.log(`ParseTreeWalker completed for ${this.file.uri.path}`);
+	
 		let listen = (<PawnListener>listener);
 		this.AST = <Declarations>listen.Root;
-
+	
 		let analyzer = new Analyzer(
 			this.scope,
-			listen.diagnostics.concat(parserErrorListener.diagnostic).concat(lexerErrorListener.diagnostic), 
+			listen.diagnostics.concat(parserErrorListener.diagnostic).concat(lexerErrorListener.diagnostic),
 			this.tokensManager,
 			this.symbolsManager,
 			this.complitions,
 			this.signatures
 		);
+	
 		try {
-			this.AST.accept(analyzer);
+			console.log(`Starting AST accept for ${this.file.uri.path}`);
+			this.AST.accept(analyzer); // Здесь тоже может быть нужен await, если accept асинхронный
+			console.log(`AST accept completed for ${this.file.uri.path}`);
 		}
-		catch(e) {
-			console.error("Error on tree visit")
+		catch (e) {
+			console.error("Error on tree visit");
 			console.error(e);
 		}
+	
 		console.debug("Обход дерева окончен");
-
+	
 		this.diagnostic(analyzer.diagnostics);
 		this.functions = analyzer.functions;
 		this.prepareSignatures();
-
+	
 		console.log(this.AST);
+		console.log(`tryParse completed for ${this.file.uri.path}`);
+	}
 
+	private async handleInclude(uri: vscode.Uri): Promise<void> {
+		await this.fileManager.openFile(uri);
+		const file = this.fileManager.getFile(uri.path);
+		console.log(uri.path);
+		console.error(file);
+		if (file) {
+			file.getComplitions().forEach(compl => {
+				if (!compl.detail)
+					compl.detail = path.parse(path.basename(uri.fsPath)).name;
+				this.complitions.push(compl);
+			});
+			file.signatures.forEach((value, key) => {
+				this.signatures.set(key, value);
+			});
+			file.functionsInfo.forEach((value, key) => {
+				this.functionsInfo.set(key, value);
+			});
+	
+			file.scope.variables().forEach((value) => {
+				this.scope.addVar(value);
+			});
+			file.scope.functions().forEach((value) => {
+				this.scope.addFunction(value);
+			});
+		}
 	}
 
 	private tryLex(text: string): pawnLexer

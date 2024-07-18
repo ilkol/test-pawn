@@ -116,16 +116,19 @@ export class FileManager {
 	// }
 	public async onDidOpenTextDocument(file: TextDocument): Promise<void> {
 		if(file.languageId != "pawn") return;
-
+	
 		let path = file.uri.path;
-		if(this.openedFiles.has(path))
+		if(this.openedFiles.has(path)) {
+			console.log(`File already opened: ${path}`);
 			return;
-			
-
+		}
+	
 		this.diagnosticManager.clear();
 		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
-		await doc.tryParse();
 		this.openedFiles.set(path, doc);
+		console.log(`123 for ${doc.fileName()}`);
+		await doc.tryParse();
+		console.log(`321 for ${doc.fileName()}`);
 		this.diagnosticManager.updateDiagnostic();
 		return;
 	}
