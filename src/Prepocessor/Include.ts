@@ -1,4 +1,4 @@
-import { Range, TextDocument } from "vscode";
+import { Range, TextDocument, Uri } from "vscode";
 import { PreprocessorDirective } from "./PreprocessorDirective";
 
 export enum IncludeType {
@@ -12,6 +12,7 @@ export class Include extends PreprocessorDirective
 	readonly pathRange: Range;
 	type: IncludeType = IncludeType.default;
 	private delLength = 0;
+	public uri?: Uri;
 
 	constructor(file: TextDocument, private readonly rest: string, startIndex: number, restIndex: number, endIndex: number) {
 		super(file, startIndex, endIndex);

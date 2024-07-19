@@ -18,6 +18,7 @@ import { PPParser } from "./Prepocessor/PPParser";
 import path = require("path");
 import { Scope } from "./antlr/Scopes/Scope";
 import { IScope } from "./antlr/Scopes/IScope";
+import { IncludeType } from "./Prepocessor/Include";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -75,8 +76,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const pawnDir = this.fileManager._includePath;
 		if(pawnDir) {
 			for (let el of this.ppParser.includes) {
-				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
-				this.handleInclude(uri);
+				if(el.uri)
+					this.handleInclude(el.uri);
 			}
 		}
 		
@@ -144,9 +145,21 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const pawnDir = this.fileManager._includePath;
 		if (pawnDir) {
 			for (let el of this.ppParser.includes) {
-				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
-				this.documentsLinks.set(el.pathRange, uri);
-				await this.fileManager.openFile(uri);
+				switch(el.type) {
+					case IncludeType.default: {
+						const directoryPath = path.dirname(this.file.uri.fsPath);
+						el.uri = vscode.Uri.joinPath(vscode.Uri.file(directoryPath), el.path + ".inc");
+						break;
+					}
+					default:
+						el.uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
+
+				}
+				if(el.uri) {
+
+					this.documentsLinks.set(el.pathRange, el.uri);
+					await this.fileManager.openFile(el.uri);
+				}
 			}
 			
 		}

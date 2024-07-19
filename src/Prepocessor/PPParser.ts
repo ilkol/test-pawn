@@ -94,8 +94,12 @@ export class PPParser
 	//Создает директиву
 	private createDirective(directive: string, rest: string, startIndex: number, restIndex: number, endIndex: number): PreprocessorDirective | undefined {
 		switch (directive.toLowerCase()) {
+			case "emit":
+			case "error":
+				break;
 			case "define":
 				return new Define(this.file, rest, startIndex, restIndex, endIndex);
+			case "tryinclude":
 			case "include":
 				this.includes.push(new Include(this.file, rest, startIndex, restIndex, endIndex));
 				return;
@@ -118,6 +122,13 @@ export class PPParser
 					define.undef = direct;
 				}
 				return direct;	
+			}
+			case "elseif": {
+				const direct = new Condition(this.file, rest, startIndex, restIndex, endIndex);
+				const cond = this.ppConditions.peek();
+				if(cond && cond.elseBlock) {
+					cond.elseBlock.elseif = direct;
+				}
 			}
 			case "else": {
 				const direct = new Else(this.file, startIndex,endIndex)
