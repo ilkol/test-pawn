@@ -38,7 +38,7 @@ import { SymbolsManager } from "../../../Managers/SymbolsManager";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 import { Tag } from "../Nodes/Tag";
 import { IHasTag } from "../Nodes/IHasTag";
-import { FunctionInfo, FunctionParameterInfo } from "../../../AbstractOpenFile";
+import { AbstractOpenFile, FunctionInfo, FunctionParameterInfo } from "../../../AbstractOpenFile";
 import { IfStatement } from "../Nodes/Conditions/IfStatement";
 
 export class Analyzer extends BaseVisitor
@@ -364,6 +364,7 @@ export class Analyzer extends BaseVisitor
 	}
 		
 	constructor(
+		protected file: AbstractOpenFile,
 		scope: IScope,
 		public readonly diagnostics: DiagnosticMessage[],
 		public readonly tokens: SemanticTokensManager,
@@ -391,6 +392,7 @@ export class Analyzer extends BaseVisitor
 
 	private checkIds(ids: Map<string, Declaration>) {
 		ids.forEach((element, key) => {
+			if(element.file != this.file) return;
 			if(key == "cellmin" || key == "cellmax") return;
 			if(!element.used && !element.native) {
 				let diagnostic: DiagnosticMessage, diagnosticMsg: string;
@@ -454,7 +456,7 @@ export class Analyzer extends BaseVisitor
 	}
 
 	private extendScope() {
-		this.curScope = new Scope(this.curScope);
+		this.curScope = new Scope(this.file, this.curScope);
 	}
 	private restrictScope() {
 		this.checkIds(this.curScope.variables());

@@ -1,3 +1,4 @@
+import { AbstractOpenFile } from "../../../AbstractOpenFile";
 import { HasID } from "./HasID";
 
 export abstract class Declaration extends HasID
@@ -6,6 +7,8 @@ export abstract class Declaration extends HasID
 	public used: boolean = false;
 	protected _stocked: boolean = false;
 	protected _native: boolean = false;
+
+	public file?: AbstractOpenFile;
 
 	constructor(instance: Declaration|undefined = undefined) {
 		super(instance);

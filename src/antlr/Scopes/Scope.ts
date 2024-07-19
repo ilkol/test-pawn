@@ -3,6 +3,7 @@ import { Declaration } from "../AST/Nodes/Declaration";
 import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
 import { IScope } from "./IScope";
 import { Tag } from "../AST/Nodes/Tag";
+import { AbstractOpenFile } from "../../AbstractOpenFile";
 
 export class Scope implements IScope
 {
@@ -11,8 +12,9 @@ export class Scope implements IScope
 	protected _functions: Map<string, FunctionDeclaration> = new Map();
 	protected _variables: Map<string, VarDeclaration> = new Map();
 	protected _tag: Tag | undefined;
+	;
 	
-	public constructor(IScope: IScope|undefined = undefined)
+	public constructor(protected _file: AbstractOpenFile, IScope: IScope|undefined = undefined)
 	{
 		this._parent = IScope;
 		this._tag = IScope?.returnTag;
@@ -64,10 +66,11 @@ export class Scope implements IScope
 	}
 
 	public extend(): IScope {
-		return new Scope(this);
+		return new Scope(this._file, this);
 	}
 
 	private addIdent(id: Declaration) {
+		id.file = this._file;
 		this._ids.set(id.id, id);
 	}
 	public addVar(variable: VarDeclaration) {

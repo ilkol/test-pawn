@@ -3,11 +3,14 @@ import { OpenedFile } from "../OpenedFile";
 import { DiagnosticManager } from "./diagnostic";
 import { AntrlOpenFile } from "../AntlrOpenFile";
 import { AbstractOpenFile } from "../AbstractOpenFile";
+import { Stack } from "../antlr/Stack/Stack";
 
 export class FileManager {
 	public readonly openedFiles: Map<string, AbstractOpenFile> = new Map<string, OpenedFile>;
 	public root = workspace.workspaceFolders;
 	public _includePath?: Uri = undefined;
+
+	private parsingStack: Stack<AbstractOpenFile> = new Stack<AbstractOpenFile>();
 
 	constructor(private diagnosticManager: DiagnosticManager) {
 		this.openFile.bind(this);
@@ -128,7 +131,8 @@ export class FileManager {
 		this.diagnosticManager.clear();
 		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
 		this.openedFiles.set(path, doc);
-		await doc.tryParse();
+		this.parsingStack.push(doc);
+		await doc.tryParse()
 		this.diagnosticManager.updateDiagnostic();
 		return;
 	}
@@ -137,16 +141,18 @@ export class FileManager {
 		if(file.languageId != "pawn") return;
 
 		let path = file.uri.path;
-		if(!this.openedFiles.has(path))
+		const newFile = !this.openedFiles.has(path);
+		if(newFile)
 			this.onDidOpenTextDocument(file);
 			
 		const doc: AbstractOpenFile | undefined = this.openedFiles.get(path);
 
 
 		if(doc) {
-			this.diagnosticManager.clear();
-			await doc.tryParse();
-			this.diagnosticManager.updateFileDiagnostic(path);
+				this.diagnosticManager.clear();
+				await doc.tryParse();
+				doc.parseCode();
+				this.diagnosticManager.updateFileDiagnostic(path);
 		}
 
 		return;
@@ -160,5 +166,13 @@ export class FileManager {
 		if(file)
 			return file.getComplitions();
 		return [];	
+	}
+
+
+	public async parseAll() {
+		let doc;
+		while(doc = this.parsingStack.pop()) {
+			await doc.parseCode();
+		}
 	}
 }

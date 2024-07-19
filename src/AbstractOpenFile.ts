@@ -61,7 +61,7 @@ export abstract class AbstractOpenFile
 	protected complitions: CompletionItem[] = [];
 	protected functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
 
-	public scope: IScope = new Scope();
+	public scope: IScope = new Scope(this);
 
 	
 	constructor(protected file: TextDocument, public readonly fileManager: FileManager) {
@@ -219,4 +219,6 @@ export abstract class AbstractOpenFile
 			this.signatures.set(name, signatureHelp);
 		});
 	}
+
+	public abstract parseCode(): Promise<void>;
 }

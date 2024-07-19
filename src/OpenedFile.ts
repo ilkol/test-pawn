@@ -5,6 +5,9 @@ import { FileManager } from "./Managers/FileManager";
 import { AbstractOpenFile } from "./AbstractOpenFile";
 
 export class OpenedFile extends AbstractOpenFile{
+	public parseCode(): Promise<void> {
+		throw new Error("Method not implemented.");
+	}
 	// private ast: TokenStruct[] = [];
 	// private env: Environment = new Environment();
 	private _changed: boolean = true;
