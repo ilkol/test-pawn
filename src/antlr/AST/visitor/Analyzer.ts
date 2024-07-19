@@ -266,8 +266,9 @@ export class Analyzer extends BaseVisitor
 		if(node.value) {
 			if(node.value.tag.id !== this.curScope.returnTag?.id) {
 				if(node.value.expresion instanceof Variable) {
+					// console.log("1");
 					const variable = this.curScope.findVar(node.value.expresion.id);
-					if(variable?.tag.id !== this.curScope.returnTag?.id) {
+					if(variable && this.curScope.returnTag && this.isEqualTag(variable?.tag, this.curScope.returnTag)) {
 						this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorReturnValueMustBeWithTag") + ` "${this.curScope.returnTag?.id}"` + l10n.t("analyzerErrorButFoundTag") + ` "${variable?.tag.id}"`, node.value.pos));
 					}
 				}
@@ -463,7 +464,7 @@ export class Analyzer extends BaseVisitor
 
 
 	private isEqualTag(a: Tag, b: Tag): boolean {
-		return a.id == b.id;
+		return a.id == b.id || (a.id == "_" && b.id == "bool") || (b.id == "_" && a.id == "bool");
 
 	}
 	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {

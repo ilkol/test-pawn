@@ -77,12 +77,16 @@ export class FileManager {
 			uri = path;
 		else uri = Uri.parse("file:" + path);
 		let result = true;
-		await workspace.openTextDocument(uri).then((doc) => {
-			
-		}).then(undefined, err => {
+		try {
+			console.error("start calling event for " + uri.path);
+			const doc = await workspace.openTextDocument(uri);
+			console.error("custom for " + doc.uri.path);
+			// await this.onDidOpenTextDocument(doc);
+			// Process document here if needed
+		} catch (err) {
+			console.log("НЕ УДАЛОСЬ ОТКРЫТЬ ФАЙЛ: " + err);
 			result = false;
-		});
-		// this.diagnosticManager.addDiagnostic(""+result, DiagnosticSeverity.Warning, uri.path, new Range(0,0,1,1))
+		}
 		return result;
 	}
 	public registerHover(document: TextDocument, position: Position) {
@@ -115,6 +119,7 @@ export class FileManager {
 	// 	// return file.Env.functions;
 	// }
 	public async onDidOpenTextDocument(file: TextDocument): Promise<void> {
+		console.error("called event for " + file.uri.path);
 		if(file.languageId != "pawn") return;
 	
 		let path = file.uri.path;

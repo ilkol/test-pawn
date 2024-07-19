@@ -86,29 +86,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
 				this.documentsLinks.set(el.pathRange, uri);
 				console.log(`Opening file: ${uri.path}`);
-				await this.fileManager.openFile(uri);
-				const file = this.fileManager.getFile(uri.path);
-				console.log(`File opened: ${uri.path}`);
-				if (file) {
-					file.getComplitions().forEach(compl => {
-						if (!compl.detail)
-							compl.detail = path.parse(path.basename(uri.fsPath)).name;
-						this.complitions.push(compl);
-					});
-					file.signatures.forEach((value, key) => {
-						this.signatures.set(key, value);
-					});
-					file.functionsInfo.forEach((value, key) => {
-						this.functionsInfo.set(key, value);
-					});
-	
-					file.scope.variables().forEach((value) => {
-						this.scope.addVar(value);
-					});
-					file.scope.functions().forEach((value) => {
-						this.scope.addFunction(value);
-					});
-				}
+				await this.handleInclude(uri);
 			}
 		}
 	
@@ -162,8 +140,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	private async handleInclude(uri: vscode.Uri): Promise<void> {
 		await this.fileManager.openFile(uri);
 		const file = this.fileManager.getFile(uri.path);
-		console.log(uri.path);
-		console.error(file);
+		console.log(`File opened: ${uri.path}`);
 		if (file) {
 			file.getComplitions().forEach(compl => {
 				if (!compl.detail)
