@@ -120,7 +120,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			console.error(e);
 		}
 	
-		console.debug("Обход дерева окончен");
+		console.debug("Обход дерева окончен для файла ", this.file.uri.path);
 	
 		this.diagnostic(analyzer.diagnostics);
 		this.functions = analyzer.functions;
