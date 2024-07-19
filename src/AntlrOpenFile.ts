@@ -67,7 +67,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 	
 	public async tryParse(): Promise<void> {
-		console.log(`tryParse started for ${this.file.uri.path}`);
 		this.scope = new Scope();
 		this.complitions = [];
 		const ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
@@ -85,12 +84,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 			for (let el of ppParser.includes) {
 				const uri: vscode.Uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
 				this.documentsLinks.set(el.pathRange, uri);
-				console.log(`Opening file: ${uri.path}`);
 				await this.handleInclude(uri);
 			}
 		}
 	
-		console.log(`Starting lexer for ${this.file.uri.path}`);
 		const lexer = this.tryLex(code);
 		const lexerErrorListener = new LexerErrorListener();
 		lexer.addErrorListener(lexerErrorListener);
@@ -101,9 +98,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const ruleContext = parser.file();
 		const listener: pawnListener = new PawnListener();
 		
-		console.log(`Starting ParseTreeWalker for ${this.file.uri.path}`);
 		ParseTreeWalker.DEFAULT.walk(listener, ruleContext);
-		console.log(`ParseTreeWalker completed for ${this.file.uri.path}`);
 	
 		let listen = (<PawnListener>listener);
 		this.AST = <Declarations>listen.Root;
@@ -118,9 +113,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		);
 	
 		try {
-			console.log(`Starting AST accept for ${this.file.uri.path}`);
 			this.AST.accept(analyzer); // Здесь тоже может быть нужен await, если accept асинхронный
-			console.log(`AST accept completed for ${this.file.uri.path}`);
 		}
 		catch (e) {
 			console.error("Error on tree visit");
@@ -134,13 +127,11 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this.prepareSignatures();
 	
 		console.log(this.AST);
-		console.log(`tryParse completed for ${this.file.uri.path}`);
 	}
 
 	private async handleInclude(uri: vscode.Uri): Promise<void> {
 		await this.fileManager.openFile(uri);
 		const file = this.fileManager.getFile(uri.path);
-		console.log(`File opened: ${uri.path}`);
 		if (file) {
 			file.getComplitions().forEach(compl => {
 				if (!compl.detail)

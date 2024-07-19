@@ -28,8 +28,6 @@ let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
 
 export async function activate(context: vscode.ExtensionContext) {
-	;
-	console.log(vscode.l10n.t("test"));
 	console.debug('Активация расширения!');
 
 	diagnosticManager = new DiagnosticManager(vscode.languages.createDiagnosticCollection("pawn"));

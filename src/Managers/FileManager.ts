@@ -78,9 +78,7 @@ export class FileManager {
 		else uri = Uri.parse("file:" + path);
 		let result = true;
 		try {
-			console.error("start calling event for " + uri.path);
 			const doc = await workspace.openTextDocument(uri);
-			console.error("custom for " + doc.uri.path);
 			// await this.onDidOpenTextDocument(doc);
 			// Process document here if needed
 		} catch (err) {
@@ -119,7 +117,6 @@ export class FileManager {
 	// 	// return file.Env.functions;
 	// }
 	public async onDidOpenTextDocument(file: TextDocument): Promise<void> {
-		console.error("called event for " + file.uri.path);
 		if(file.languageId != "pawn") return;
 	
 		let path = file.uri.path;
@@ -131,9 +128,7 @@ export class FileManager {
 		this.diagnosticManager.clear();
 		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
 		this.openedFiles.set(path, doc);
-		console.log(`123 for ${doc.fileName()}`);
 		await doc.tryParse();
-		console.log(`321 for ${doc.fileName()}`);
 		this.diagnosticManager.updateDiagnostic();
 		return;
 	}
@@ -162,8 +157,6 @@ export class FileManager {
 	}
 	getFileComplitions(path: string): CompletionItem[] {
 		const file = this.getFile(path);
-		// console.log(path);
-		// console.log(this.openedFiles);
 		if(file)
 			return file.getComplitions();
 		return [];	
