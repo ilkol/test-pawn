@@ -398,7 +398,6 @@ export class Analyzer extends BaseVisitor
 				let diagnostic: DiagnosticMessage, diagnosticMsg: string;
 				let stock = element.stock;
 				if(element instanceof FunctionDeclaration) {
-					console.log(l10n.t("analyzerFunction"));
 					diagnosticMsg = l10n.t("analyzerFunction");
 					if(element.modifire !== FunctionModifire.none)
 						stock = true;
