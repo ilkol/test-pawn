@@ -6,7 +6,7 @@ import { Statement } from "../Statement";
 export class IfStatement extends Statement
 {
 	public condition?: Expresion;
-	public else?: CodeBlock | Statement | IfStatement;
+	public else?: CodeBlock | Statement;
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitItStatement(this);
