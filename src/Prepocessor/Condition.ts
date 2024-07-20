@@ -26,11 +26,14 @@ export class Condition extends PreprocessorDirective
 	public checkCondition(file: TextDocument, defines: Map<string, Define>)
 	{
 		let match;
-		if(match = /(?=\s*)defined\s+(\w+)?/.exec(this.rest)) {
-			const macro = match[1];
+		if(match = /(?=\s*)(!)?(?:\s*)defined\s+(\w+)?/.exec(this.rest)) {
+			const macro = match[2];
 			if(defines.has(macro)) {
 				this.conditionResult = true;
 			}			
+			if(match[1]) {
+				this.conditionResult = !this.conditionResult;
+			}
 		}
 	}
 }
