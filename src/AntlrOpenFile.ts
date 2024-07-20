@@ -76,6 +76,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const pawnDir = this.fileManager._includePath;
 		if(pawnDir) {
 			for (let el of this.ppParser.includes) {
+				if(el.skiped) continue;
 				if(el.uri)
 					this.handleInclude(el.uri);
 			}
@@ -136,7 +137,15 @@ export class AntrlOpenFile extends AbstractOpenFile
 			this.complitions.push(el);
 		});
 	
-		if(this.ppParser.includes.length == 0 ) {
+		let startParse = true;
+		for(let element of this.ppParser.includes) {
+			if(!element.skiped) {
+				startParse = false; 
+				break;
+			}
+		};
+
+		if(startParse) {
 			await this.fileManager.parseAll();
 			return;
 		}
