@@ -52,6 +52,7 @@ import { If_statementContext } from "./pawnParser";
 import { Else_statementContext } from "./pawnParser";
 import { SwitchContext } from "./pawnParser";
 import { CaseContext } from "./pawnParser";
+import { DefaultContext } from "./pawnParser";
 import { Case_listContext } from "./pawnParser";
 import { RangeContext } from "./pawnParser";
 import { ConditionContext } from "./pawnParser";
@@ -420,6 +421,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitCase?: (ctx: CaseContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.default`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitDefault?: (ctx: DefaultContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.case_list`.

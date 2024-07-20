@@ -26,9 +26,25 @@ import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 import { IfStatement } from "../Nodes/Conditions/IfStatement";
+import { CaseStatement } from "../Nodes/Conditions/switch/CaseStatement";
+import { DefaultStatement } from "../Nodes/Conditions/switch/DefaultStatement";
+import { SwitchStatement } from "../Nodes/Conditions/switch/SwitchStatement";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitSwitchStatement(node: SwitchStatement): void {
+		node.condition?.accept(this);
+		node.cases.forEach(el => {
+			el.accept(this);
+		});
+		node.default?.accept(this);
+	}
+	visitCaseStatement(node: CaseStatement): void {
+		node.code?.accept(this);
+	}
+	visitDefaultSwitchStatement(node: DefaultStatement): void {
+		node.code?.accept(this);
+	}
 	visitItStatement(node: IfStatement): void {
 		this.beforeVisitIfStatemnt(node);
 		node.else?.accept(this);

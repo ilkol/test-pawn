@@ -82,8 +82,9 @@ if_statement:		IF condition
 					(else_statement)?;
 else_statement: 	ELSE (if_statement | codeBlock);
 
-switch:				SWITCH condition CURLY_OPEN_BRACKET ((case | DEFAULT) COLON codeBlock)* CURLY_CLOSE_BRACKET;
-case:				CASE case_list (COMA case_list)*;
+switch:				SWITCH condition CURLY_OPEN_BRACKET (case)* default? CURLY_CLOSE_BRACKET;
+case:				CASE case_list (COMA case_list)* COLON codeBlock;
+default:            DEFAULT COLON codeBlock;
 case_list:			(IDENTIFIER | number) range?;
 range:				PERIOD (IDENTIFIER | number);
 

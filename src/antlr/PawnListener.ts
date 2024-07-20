@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, AssigmentContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, If_statementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, AssigmentContext, CaseContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, DefaultContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, If_statementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, SwitchContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -39,6 +39,9 @@ import { Ellipse } from "./AST/Nodes/Operators/Ellipse";
 import { OperatorOverload } from "./AST/Nodes/Operators/OperatorOverload";
 import { Literal } from "./AST/Nodes/Literals/Literal";
 import { IfStatement } from "./AST/Nodes/Conditions/IfStatement";
+import { SwitchStatement } from "./AST/Nodes/Conditions/switch/SwitchStatement";
+import { CaseStatement } from "./AST/Nodes/Conditions/switch/CaseStatement";
+import { DefaultStatement } from "./AST/Nodes/Conditions/switch/DefaultStatement";
 
 export class PawnListener implements pawnListener
 {
@@ -342,6 +345,12 @@ export class PawnListener implements pawnListener
 			else if(last instanceof IfStatement) {
 				last.else = node;
 			}
+			else if(last instanceof CaseStatement) {
+				last.code = node;
+			}
+			else if(last instanceof DefaultStatement) {
+				last.code = node;
+			}
 			else {
 				this.addDiagnostic(l10n.t("parserErrorUnexpectedCode"), DiagnosticSeverity.Error, node.pos);
 			}
@@ -364,6 +373,9 @@ export class PawnListener implements pawnListener
 			}
 			else if(last instanceof FunctionDeclarationParameter) {
 				last.defaultValue = node;
+			}
+			else if(last instanceof CaseStatement) {
+				last.condition = node;
 			}
 			else {
 				console.debug(last);
@@ -418,6 +430,9 @@ export class PawnListener implements pawnListener
 				last.expresion = node;
 			}
 			else if(last instanceof IfStatement) {
+				last.condition = node;
+			}
+			else if(last instanceof SwitchStatement) {
 				last.condition = node;
 			}
 			else if(last instanceof ArrayIndexes) {
@@ -791,6 +806,63 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				this.addDiagnostic(l10n.t("Unexpected condition statement"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	}
+
+	enterSwitch(ctx: SwitchContext): void {
+		const node = new SwitchStatement();
+		this.nodes.push(node);
+	}
+	exitSwitch(ctx: SwitchContext): void {
+		const node = <SwitchStatement>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			
+			const last = this.nodes.peek();
+			if(last instanceof CodeBlock) {
+				last.statements.push(node);
+			}
+			else {
+				this.addDiagnostic(l10n.t("Unexpected switch statement"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	}
+
+	enterCase(ctx: CaseContext): void {
+		const node = new CaseStatement();
+		this.nodes.push(node);
+	}
+	exitCase(ctx: CaseContext): void {
+		const node = <CaseStatement>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			
+			const last = this.nodes.peek();
+			if(last instanceof SwitchStatement) {
+				last.cases.push(node);
+			}
+			else {
+				this.addDiagnostic(l10n.t("Unexpected case statement"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	}
+
+	enterDefault(ctx: DefaultContext): void {
+		const node = new DefaultStatement();
+		this.nodes.push(node);
+	}
+	exitDefault(ctx: DefaultContext): void {
+		const node = <DefaultStatement>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			
+			const last = this.nodes.peek();
+			if(last instanceof SwitchStatement) {
+				last.default = node;
+			}
+			else {
+				this.addDiagnostic(l10n.t("Unexpected default statement"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}

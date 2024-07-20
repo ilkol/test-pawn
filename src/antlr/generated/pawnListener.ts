@@ -52,6 +52,7 @@ import { If_statementContext } from "./pawnParser";
 import { Else_statementContext } from "./pawnParser";
 import { SwitchContext } from "./pawnParser";
 import { CaseContext } from "./pawnParser";
+import { DefaultContext } from "./pawnParser";
 import { Case_listContext } from "./pawnParser";
 import { RangeContext } from "./pawnParser";
 import { ConditionContext } from "./pawnParser";
@@ -613,6 +614,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitCase?: (ctx: CaseContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.default`.
+	 * @param ctx the parse tree
+	 */
+	enterDefault?: (ctx: DefaultContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.default`.
+	 * @param ctx the parse tree
+	 */
+	exitDefault?: (ctx: DefaultContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.case_list`.

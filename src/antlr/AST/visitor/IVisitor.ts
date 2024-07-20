@@ -21,6 +21,9 @@ import { Array } from "../Nodes/Variables/Array";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 import { IfStatement } from "../Nodes/Conditions/IfStatement";
+import { SwitchStatement } from "../Nodes/Conditions/switch/SwitchStatement";
+import { DefaultStatement } from "../Nodes/Conditions/switch/DefaultStatement";
+import { CaseStatement } from "../Nodes/Conditions/switch/CaseStatement";
 
 export interface IVisitor
 {
@@ -51,5 +54,9 @@ export interface IVisitor
 	visitArrayDeclaration(node: ArrayDeclaration): void;
 
 	visitItStatement(node: IfStatement): void;
+
+	visitSwitchStatement(node: SwitchStatement): void;
+	visitCaseStatement(node: CaseStatement): void;
+	visitDefaultSwitchStatement(node: DefaultStatement): void;
 
 }
