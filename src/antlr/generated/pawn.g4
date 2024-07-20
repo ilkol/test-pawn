@@ -41,7 +41,7 @@ grouping:			OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
 constGrouping:		OPEN_PARENTHESIS constExpresion CLOSE_PARENTHESIS;
 
 expresion:		(preOperators)? (rValue operation? | grouping | ternarOperator);
-constExpresion:	varOrLiteral operation? | constGrouping;
+constExpresion:	varOrLiteral operation? | constGrouping | arrayInit;
 
 ternarOperator:	(rValue operation? | grouping) QUESTION expresion COLON expresion;
 
@@ -55,7 +55,7 @@ ellipse:			COMA tag? PERIOD_FUNC;
 
 reference:			BIT_AND;
 
-varModifires:		CONST|STATIC|STOCK;
+varModifires:		CONST|STATIC|STOCK|PUBLIC;
 
 rValue:				(varOrLiteral | functionCall | grouping);
 constRValue:		(varOrLiteral | constGrouping);
