@@ -123,8 +123,10 @@ export class Analyzer extends BaseVisitor
 		if(variable) {
 			variable.used = true;
 			if(variable instanceof ArrayDeclaration) {
-				if(!(node instanceof Array))
-					this.addDiagnostic(new DiagnosticError("\"" + node.id + '" ' + l10n.t("analyzerErrorIsArray"), node.idPos));
+				if(!(node instanceof Array)) {
+
+				}
+					// this.addDiagnostic(new DiagnosticError("\"" + node.id + '" ' + l10n.t("analyzerErrorIsArray"), node.idPos));
 				else {
 					if(variable.indexes.length != node.indexes.length) {
 						this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorArraySizeMismatch"), node.pos));
@@ -311,8 +313,19 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		if(node.id !== "main" && !(node instanceof OperatorOverload)) {
-			this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
+		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
+			let id = this.curScope.find(node.id);
+			if (id) {
+				if(id instanceof FunctionDeclaration) {
+					if(id.modifire != FunctionModifire.forward && node.modifire == FunctionModifire.public) {
+						this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorIdAlreadyExistsStart") + ` "${node.id}" ` + l10n.t("analyzerErrorIdAlreadyExistsEnd"), node.idPos));
+					}
+				}
+				else this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorIdAlreadyExistsStart") + ` "${node.id}" ` + l10n.t("analyzerErrorIdAlreadyExistsEnd"), node.idPos));
+			} else {
+				this.curScope.addFunction(node);
+			}
+			// this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
 
 			const compl = new CompletionItem(node.id, CompletionItemKind.Function);
 			compl.insertText = new SnippetString(`${node.id}($0)`);
