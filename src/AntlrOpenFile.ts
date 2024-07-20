@@ -126,6 +126,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 
 	public async parsePreprocessor() {
+		this.documentsLinks.clear();
 		this.scope = new Scope(this);
 		this.complitions = [];
 		this.ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
@@ -155,25 +156,47 @@ export class AntrlOpenFile extends AbstractOpenFile
 		if (pawnDir) {
 			for (let el of this.ppParser.includes) {
 				if(el.skiped) continue;
+				let directive;
 				switch(el.type) {
 					case IncludeType.default: {
 						const directoryPath = path.dirname(this.file.uri.fsPath);
-						el.uri = vscode.Uri.joinPath(vscode.Uri.file(directoryPath), el.path + ".inc");
+						directive = vscode.Uri.file(directoryPath);
 						break;
 					}
 					default:
-						el.uri = vscode.Uri.joinPath(pawnDir, el.path + ".inc");
+						directive = pawnDir;
 
 				}
+
+				el.uri = await this.checkInclude(directive, el.path, "");
+				if(!el.uri) {
+					el.uri = await this.checkInclude(directive, el.path, ".inc");
+				}
+				else if(!el.uri) {
+					el.uri = await this.checkInclude(directive, el.path, ".pwn");
+				}
+				else if(!el.uri) {
+					el.uri = await this.checkInclude(directive, el.path, ".pawn");
+				}
+			
 				if(el.uri) {
 					// if(el.uri.path.indexOf("YSI") != -1 || el.uri.path.indexOf("y_") != -1) return;
 		
 					this.documentsLinks.set(el.pathRange, el.uri);
 					await this.fileManager.openFile(el.uri);
 				}
+				else {
+					this.diagnositcManager.addDiagnostic("Файл не найден", vscode.DiagnosticSeverity.Error, this.file.uri.path, el.pathRange);
+			
+				}
 			}
 			
 		}
+	}
+
+	private async checkInclude(directive: vscode.Uri, path: string, ex: string): Promise<vscode.Uri|undefined> {
+		let uri = vscode.Uri.joinPath(directive, path + ex);	
+		return await this.fileManager.isFileExist(uri) ? uri : undefined;
 	}
 
 	public async tryParse(): Promise<void> {

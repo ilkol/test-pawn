@@ -68,6 +68,15 @@ export class FileManager {
 		// 		// console.log(element[0]);
 		// });
 	}
+	public async isFileExist(uri: Uri): Promise<boolean> {
+		try {
+			await workspace.fs.stat(uri);
+			return true;
+		}
+		catch(e) {
+			return false;
+		}
+	}
 	get includePath() {
 		return this._includePath;
 	}
