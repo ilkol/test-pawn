@@ -100,9 +100,11 @@ export class PPParser
 			case "define":
 				return new Define(this.file, rest, startIndex, restIndex, endIndex);
 			case "tryinclude":
-			case "include":
-				this.includes.push(new Include(this.file, rest, startIndex, restIndex, endIndex));
-				return;
+			case "include": {
+				const directive = new Include(this.file, rest, startIndex, restIndex, endIndex)
+				this.includes.push(directive);
+				return directive;
+			}
 			case "if":
 				return new Condition(this.file, rest, startIndex, restIndex, endIndex);
 			case "pragma":
@@ -158,7 +160,10 @@ export class PPParser
 		for(let element of this.directives) {
 
 			if(skipFrom < element.startIndex) {
-				if(skipTo > element.startIndex) continue;
+				if(skipTo > element.startIndex) {
+					element.skiped = true;
+					continue;
+				}
 				skipFrom = code.length;
 				skipTo = 0;
 			}

@@ -145,6 +145,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const pawnDir = this.fileManager._includePath;
 		if (pawnDir) {
 			for (let el of this.ppParser.includes) {
+				if(el.skiped) continue;
 				switch(el.type) {
 					case IncludeType.default: {
 						const directoryPath = path.dirname(this.file.uri.fsPath);
@@ -156,7 +157,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 				}
 				if(el.uri) {
-
+					// if(el.uri.path.indexOf("YSI") != -1 || el.uri.path.indexOf("y_") != -1) return;
+		
 					this.documentsLinks.set(el.pathRange, el.uri);
 					await this.fileManager.openFile(el.uri);
 				}
@@ -171,7 +173,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 
 	private async handleInclude(uri: vscode.Uri): Promise<void> {
-		
+		if(uri.path.indexOf("YSI") != -1 || uri.path.indexOf("y_") != -1) return;
 		const file = this.fileManager.getFile(uri.path);
 		if (file) {
 			file.getComplitions().forEach(compl => {

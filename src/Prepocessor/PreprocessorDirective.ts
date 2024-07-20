@@ -2,6 +2,7 @@ import { Position, Range, TextDocument } from "vscode";
 
 export abstract class PreprocessorDirective
 {
+	public skiped: boolean = false;
 	readonly range: Range;
 	public curStartIndex: number;
 	public curEndIndex: number;
