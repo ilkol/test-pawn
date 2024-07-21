@@ -6,6 +6,7 @@ import { SymbolsManager } from "./Managers/SymbolsManager";
 import { IScope } from "./antlr/Scopes/IScope";
 import { Scope } from "./antlr/Scopes/Scope";
 import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
+import { Define } from "./Prepocessor/Define";
 
 export class FunctionInfo
 {
@@ -61,6 +62,7 @@ export abstract class AbstractOpenFile
 	public readonly symbolsManager: SymbolsManager = new SymbolsManager();
 	protected complitions: CompletionItem[] = [];
 	protected functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
+	protected defines: Map<string, Define>  = new Map<string, Define>();
 
 	public scope: IScope = new Scope(this);
 
@@ -75,9 +77,14 @@ export abstract class AbstractOpenFile
 
 	public getHover(word: string): MarkdownString {
 		
-		const funct = this.functions.get(word);
-
-		return new MarkdownString(funct?.label);
+		let someThing;
+		if(someThing = this.functions.get(word)) {
+			return new MarkdownString(someThing.label);
+		}
+		else if(someThing = this.defines.get(word)){
+			return someThing.doc;
+		}
+		return new MarkdownString();
 	}
 
 
