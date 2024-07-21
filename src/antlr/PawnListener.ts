@@ -403,6 +403,7 @@ export class PawnListener implements pawnListener
 	}
 	exitExpresion(ctx: ExpresionContext): void {
 		let node = <Expresion>this.nodes.pop();
+					
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 
@@ -418,7 +419,8 @@ export class PawnListener implements pawnListener
 
 			}
 
-			if(node.expresion instanceof Literal) {
+			
+			if(node.expresion instanceof Literal && !(node instanceof AbstractOperator)) {
 				node = node.expresion;
 			}
 
@@ -522,6 +524,9 @@ export class PawnListener implements pawnListener
 	}
 	enterOperation(ctx: OperationContext): void {
 		let node = new AbstractOperator();
+		// const last = this.nodes.pop();
+		// if(last instanceof Expresion)
+			// node.expresion = last;
 		this.nodes.push(node);
 	}
 	exitOperation(ctx: OperationContext): void 
@@ -530,7 +535,6 @@ export class PawnListener implements pawnListener
 		if(node && ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			const last = this.nodes.pop();
-			// console.log(last);
 			if(last instanceof Expresion) {
 				if(node instanceof BinarOperator) {
 					node.left = last;
