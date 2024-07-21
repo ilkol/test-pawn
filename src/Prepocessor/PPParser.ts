@@ -196,7 +196,7 @@ export class PPParser
 					element.used = true;
 				}
 				else {
-					this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, this.file.uri.path, element.range, [DiagnosticTag.Unnecessary]);
+					this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, this.file.uri.path, element.patternRange, [DiagnosticTag.Unnecessary]);
 				}
 				
 				this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
@@ -211,7 +211,7 @@ export class PPParser
 					element.range.end,
 					this.file.positionAt(this.file.getText().length)
 				);
-				this.diagnosticManager.addDiagnostic(l10n.t("hintUnusedCode"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+				this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
 			}
 			else if(element instanceof Condition) {
 				if(element.endIf) {
@@ -255,7 +255,7 @@ export class PPParser
 								element.elseBlock.range.end,
 								element.endIf.range.start
 							);
-							this.diagnosticManager.addDiagnostic(l10n.t("hintUnusedCode"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+							this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
 						}
 					}
 					else {
@@ -270,7 +270,7 @@ export class PPParser
 							element.range.end,
 							element.endIf.range.start
 						);
-						this.diagnosticManager.addDiagnostic(l10n.t("hintUnusedCode"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+						this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
 					}
 				}					
 			}

@@ -7,6 +7,7 @@ interface RestData
 	patternReg: RegExp,
 	pattern: string,
 	replacement: string
+	patternStart: number
 }
 
 export class Define extends PreprocessorDirective
@@ -27,17 +28,18 @@ export class Define extends PreprocessorDirective
 		this.patternReg = result.patternReg;
 
 		this.patternRange = new Range(
-			file.positionAt(restIndex),
-			file.positionAt(restIndex + rest.length)
+			file.positionAt(restIndex + result.patternStart),
+			file.positionAt(restIndex + result.patternStart + result.pattern.length)
 		);
 	}
 	private preparePattern(rest: string): RestData
 	{
-		const reg = /(?:\s*)([^\s]+)(?:\s+(.+))?/;
+		const reg = /(\s*)([^\s]+)(?:\s+(.+))?/;
 		const match = reg.exec(rest);
 
 		if (match) {
-			const pattern = match[1];
+			const patterStart = match[1] ? match[1].length : 0;
+			const pattern = match[2];
 			const findParams = /%(\d+)/g;
 			let patternRegStr = "";
 			let lastindex = 0;
@@ -55,18 +57,20 @@ export class Define extends PreprocessorDirective
 
 			patternRegStr = "(?<=[^\\w])" + patternRegStr + "(?=[^\\w])";
 
-			const replacement = match[2] ? match[2].trim() : "";
+			const replacement = match[3] ? match[3].trim() : "";
 			return {
 				patternReg: RegExp(patternRegStr, "g"),
 				pattern: pattern,
-				replacement: replacement
+				replacement: replacement,
+				patternStart: patterStart
 			}
 		}
 
 		return {
 			patternReg: RegExp(""),
 			pattern: "",
-			replacement: ""
+			replacement: "",
+			patternStart: 0
 		}
 	}
 	

@@ -20,8 +20,8 @@
     "Default Statement": "Default Statement",
 
     
-    "Unused #define": "Неиспользуемый",
-    "hintUnusedCode": "Неиспользуемый код",
+    "Unused #define": "Неиспользуемый #define",
+    "Non-executable code": "Неисполняемый код",
 
     "parserErrorExpectedFunctionButFoundNode": "Ожидается идентификатор функции, а найден узел",
     "parserErrorExpectingVarId": "Ожидается идентификатор переменной",
