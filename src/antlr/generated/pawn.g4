@@ -30,7 +30,7 @@ controlStatments:	if_statement | cycles | switch;
 assigment:			variable assigments (expresion | arrayInit) (assigments (expresion | arrayInit))*;
 
 arrayInit:		CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* CURLY_CLOSE_BRACKET;
-arrayInitMember:	IDENTIFIER | number | string | (arrayInit);
+arrayInitMember:	tag? (IDENTIFIER | number | string) | (arrayInit);
 
 
 assigments:
@@ -48,7 +48,7 @@ ternarOperator:	(rValue operation? | grouping) QUESTION expresion COLON expresio
 preOperators:	NOT | MINUS | INCREMENTS | DECREMENTS | SIZEOF;
 
 operation:			operator expresion?;
-varOrLiteral:		(variable | tag? literal);
+varOrLiteral:		(variable | literal);
 
 declParams:			(CONST)? (reference)? variable (ASSIGMENT (constExpresion | (sizeof (variable | OPEN_PARENTHESIS variable CLOSE_PARENTHESIS))))?;	
 ellipse:			COMA tag? PERIOD_FUNC;
@@ -106,7 +106,7 @@ cycleBody:
 cycleKeywords:		(BREAK|CONTINUE) SEMI;
 
 
-literal:			string | number | bool_const;
+literal:			tag? (string | number | bool_const);
 bool_const:			TRUE | FALSE;
 
 string:				(STRING | SHARPSTRING) (string)*;
