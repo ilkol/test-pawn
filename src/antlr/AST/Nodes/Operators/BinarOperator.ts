@@ -10,7 +10,7 @@ export class BinarOperator extends AbstractOperator
 	constructor(oper: AbstractOperator | string) {
 		super(oper instanceof AbstractOperator ? oper.operator : oper);
 		if(oper instanceof AbstractOperator && oper.expresion)
-			this.expresion = oper.expresion;
+			this._left = oper.expresion;
 	
 	}
 
