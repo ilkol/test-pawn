@@ -37,18 +37,18 @@ assigments:
 	ASSIGMENT | ASSIGMENT_PLUS | ASSIGMENT_MINUS | ASSIGMENT_MULT | ASSIGMENT_DIV | ASSIGMENT_REMAINDE |
 	ASSIGMENT_AND | ASSIGMENT_OR | ASSIGMENT_XOR | ASSIGMENT_RIGHT | ASSIGMENT_RIGHT_LOG | ASSIGMENT_LEFT;
 
-grouping:			OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
-constGrouping:		OPEN_PARENTHESIS constExpresion CLOSE_PARENTHESIS;
+grouping:			tag? OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
+constGrouping:		tag? OPEN_PARENTHESIS constExpresion CLOSE_PARENTHESIS;
 
 expresion:		(preOperators)? (rValue operation? | grouping | ternarOperator);
-constExpresion:	varOrLiteral operation? | constGrouping | arrayInit;
+constExpresion:	(preOperators)? (varOrLiteral operation? | constGrouping | arrayInit);
 
 ternarOperator:	(rValue operation? | grouping) QUESTION expresion COLON expresion;
 
 preOperators:	NOT | MINUS | INCREMENTS | DECREMENTS | SIZEOF;
 
 operation:			operator expresion?;
-varOrLiteral:		variable | literal;
+varOrLiteral:		tag? (variable | literal);
 
 declParams:			(CONST)? (reference)? variable (ASSIGMENT (constExpresion | (sizeof (variable | OPEN_PARENTHESIS variable CLOSE_PARENTHESIS))))?;	
 ellipse:			COMA tag? PERIOD_FUNC;
@@ -57,7 +57,7 @@ reference:			BIT_AND;
 
 varModifires:		CONST|STATIC|STOCK|PUBLIC;
 
-rValue:				(varOrLiteral | functionCall | grouping);
+rValue:			    (varOrLiteral | functionCall | grouping);
 constRValue:		(varOrLiteral | constGrouping);
 sizeof:				SIZEOF;
 
