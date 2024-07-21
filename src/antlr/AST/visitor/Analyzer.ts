@@ -257,7 +257,6 @@ export class Analyzer extends BaseVisitor
 			case ">=":
 			case "<=":
 			case "==":
-			case "==":
 				(<BinarOperator>node).tag = new Tag("bool");
 		}
 	}
