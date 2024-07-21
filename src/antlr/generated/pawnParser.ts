@@ -1902,44 +1902,36 @@ export class pawnParser extends Parser {
 	public varOrLiteral(): VarOrLiteralContext {
 		let _localctx: VarOrLiteralContext = new VarOrLiteralContext(this._ctx, this.state);
 		this.enterRule(_localctx, 54, pawnParser.RULE_varOrLiteral);
+		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 414;
+			this.state = 418;
 			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 52, this._ctx) ) {
+			switch ( this.interpreter.adaptivePredict(this._input, 53, this._ctx) ) {
 			case 1:
 				{
 				this.state = 413;
-				this.tag();
-				}
-				break;
-			}
-			this.state = 418;
-			this._errHandler.sync(this);
-			switch (this._input.LA(1)) {
-			case pawnParser.CURLY_OPEN_BRACKET:
-			case pawnParser.IDENTIFIER:
-				{
-				this.state = 416;
 				this.variable();
 				}
 				break;
-			case pawnParser.MINUS:
-			case pawnParser.TRUE:
-			case pawnParser.FALSE:
-			case pawnParser.SHARPSTRING:
-			case pawnParser.STRING:
-			case pawnParser.HEX:
-			case pawnParser.INTEGER:
-			case pawnParser.FLOAT:
+
+			case 2:
 				{
+				this.state = 415;
+				this._errHandler.sync(this);
+				_la = this._input.LA(1);
+				if (_la === pawnParser.CURLY_OPEN_BRACKET || _la === pawnParser.IDENTIFIER) {
+					{
+					this.state = 414;
+					this.tag();
+					}
+				}
+
 				this.state = 417;
 				this.literal();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 			}
 		}
@@ -3685,7 +3677,7 @@ export class pawnParser extends Parser {
 		"\n\x19\x03\x19\x03\x19\x05\x19\u0188\n\x19\x03\x19\x03\x19\x05\x19\u018C" +
 		"\n\x19\x03\x1A\x03\x1A\x05\x1A\u0190\n\x1A\x03\x1A\x05\x1A\u0193\n\x1A" +
 		"\x03\x1A\x03\x1A\x03\x1A\x03\x1A\x03\x1A\x03\x1B\x03\x1B\x03\x1C\x03\x1C" +
-		"\x05\x1C\u019E\n\x1C\x03\x1D\x05\x1D\u01A1\n\x1D\x03\x1D\x03\x1D\x05\x1D" +
+		"\x05\x1C\u019E\n\x1C\x03\x1D\x03\x1D\x05\x1D\u01A2\n\x1D\x03\x1D\x05\x1D" +
 		"\u01A5\n\x1D\x03\x1E\x05\x1E\u01A8\n\x1E\x03\x1E\x05\x1E\u01AB\n\x1E\x03" +
 		"\x1E\x03\x1E\x03\x1E\x03\x1E\x03\x1E\x03\x1E\x03\x1E\x03\x1E\x03\x1E\x05" +
 		"\x1E\u01B6\n\x1E\x05\x1E\u01B8\n\x1E\x05\x1E\u01BA\n\x1E\x03\x1F\x03\x1F" +
@@ -3722,7 +3714,7 @@ export class pawnParser extends Parser {
 		"\"\u0146\x03\x02\x02\x02$\u0156\x03\x02\x02\x02&\u0165\x03\x02\x02\x02" +
 		"(\u0167\x03\x02\x02\x02*\u016A\x03\x02\x02\x02,\u0171\x03\x02\x02\x02" +
 		".\u0178\x03\x02\x02\x020\u0183\x03\x02\x02\x022\u0192\x03\x02\x02\x02" +
-		"4\u0199\x03\x02\x02\x026\u019B\x03\x02\x02\x028\u01A0\x03\x02\x02\x02" +
+		"4\u0199\x03\x02\x02\x026\u019B\x03\x02\x02\x028\u01A4\x03\x02\x02\x02" +
 		":\u01A7\x03\x02\x02\x02<\u01BB\x03\x02\x02\x02>\u01C1\x03\x02\x02\x02" +
 		"@\u01C3\x03\x02\x02\x02B\u01C8\x03\x02\x02\x02D\u01CC\x03\x02\x02\x02" +
 		"F\u01CE\x03\x02\x02\x02H\u01D3\x03\x02\x02\x02J\u01D6\x03\x02\x02\x02" +
@@ -3857,10 +3849,10 @@ export class pawnParser extends Parser {
 		"\u0196\u0197\x07%\x02\x02\u0197\u0198\x05.\x18\x02\u01983\x03\x02\x02" +
 		"\x02\u0199\u019A\t\x05\x02\x02\u019A5\x03\x02\x02\x02\u019B\u019D\x05" +
 		"P)\x02\u019C\u019E\x05.\x18\x02\u019D\u019C\x03\x02\x02\x02\u019D\u019E" +
-		"\x03\x02\x02\x02\u019E7\x03\x02\x02\x02\u019F\u01A1\x05\x14\v\x02\u01A0" +
-		"\u019F\x03\x02\x02\x02\u01A0\u01A1\x03\x02\x02\x02\u01A1\u01A4\x03\x02" +
-		"\x02\x02\u01A2\u01A5\x05\x16\f\x02\u01A3\u01A5\x05|?\x02\u01A4\u01A2\x03" +
-		"\x02\x02\x02\u01A4\u01A3\x03\x02\x02\x02\u01A59\x03\x02\x02\x02\u01A6" +
+		"\x03\x02\x02\x02\u019E7\x03\x02\x02\x02\u019F\u01A5\x05\x16\f\x02\u01A0" +
+		"\u01A2\x05\x14\v\x02\u01A1\u01A0\x03\x02\x02\x02\u01A1\u01A2\x03\x02\x02" +
+		"\x02\u01A2\u01A3\x03\x02\x02\x02\u01A3\u01A5\x05|?\x02\u01A4\u019F\x03" +
+		"\x02\x02\x02\u01A4\u01A1\x03\x02\x02\x02\u01A59\x03\x02\x02\x02\u01A6" +
 		"\u01A8\x07:\x02\x02\u01A7\u01A6\x03\x02\x02\x02\u01A7\u01A8\x03\x02\x02" +
 		"\x02\u01A8\u01AA\x03\x02\x02\x02\u01A9\u01AB\x05> \x02\u01AA\u01A9\x03" +
 		"\x02\x02\x02\u01AA\u01AB\x03\x02\x02\x02\u01AB\u01AC\x03\x02\x02\x02\u01AC" +
@@ -3962,7 +3954,7 @@ export class pawnParser extends Parser {
 		"\xC7\xCB\xD0\xD4\xD8\xDB\xE4\xE8\xEA\xF0\xF4\xFE\u0102\u0104\u010A\u0117" +
 		"\u011B\u0120\u0126\u012B\u0132\u013A\u013F\u0144\u014A\u014F\u0153\u015C" +
 		"\u0165\u016A\u0171\u0178\u017C\u0180\u0183\u0187\u018B\u018F\u0192\u019D" +
-		"\u01A0\u01A4\u01A7\u01AA\u01B5\u01B7\u01B9\u01BD\u01C8\u01CC\u01D3\u01D6" +
+		"\u01A1\u01A4\u01A7\u01AA\u01B5\u01B7\u01B9\u01BD\u01C8\u01CC\u01D3\u01D6" +
 		"\u01DB\u01E4\u01E9\u01F0\u01FA\u01FF\u0207\u020B\u0215\u0221\u0224\u0229" +
 		"\u0233\u0238\u023C\u0241\u0247\u025B\u025D\u0262\u026A\u0272\u027E\u0281";
 	public static readonly _serializedATN: string = Utils.join(

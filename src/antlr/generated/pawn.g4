@@ -48,7 +48,7 @@ ternarOperator:	(rValue operation? | grouping) QUESTION expresion COLON expresio
 preOperators:	NOT | MINUS | INCREMENTS | DECREMENTS | SIZEOF;
 
 operation:			operator expresion?;
-varOrLiteral:		tag? (variable | literal);
+varOrLiteral:		(variable | tag? literal);
 
 declParams:			(CONST)? (reference)? variable (ASSIGMENT (constExpresion | (sizeof (variable | OPEN_PARENTHESIS variable CLOSE_PARENTHESIS))))?;	
 ellipse:			COMA tag? PERIOD_FUNC;
