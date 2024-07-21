@@ -18,7 +18,7 @@ import { Undef } from "./Undef";
 export class PPParser
 {
 	private readonly directives: PreprocessorDirective[] = [];
-	private readonly defines: Map<string, Define> = new Map();
+	public readonly defines: Map<string, Define> = new Map();
 	private readonly replacedCode: ReplacedCode[] = [];
 	readonly includes: Include[] = [];
 
@@ -202,7 +202,7 @@ export class PPParser
 				this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
 				
 				const complition = new CompletionItem(element.pattern, CompletionItemKind.Constant); 
-				complition.documentation = new MarkdownString("").appendCodeblock(`#define ${element.pattern} ${element.replacement}`, "pawn");;
+				complition.documentation = element.doc;
 				this.complitions.push(complition);
 			}
 			else if(element instanceof Endinput) {

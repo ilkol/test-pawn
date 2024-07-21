@@ -141,6 +141,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this.complitions = [];
 		this.ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 		this.curCode = this.ppParser.parse();
+
+		this.defines = this.ppParser.defines;
 	
 		// Регистрируем дефайны
 		const complitions = this.ppParser.preprocessorTokens();

@@ -1,4 +1,4 @@
-import { Range, TextDocument } from "vscode";
+import { MarkdownString, Range, TextDocument } from "vscode";
 import { PreprocessorDirective } from "./PreprocessorDirective";
 import { Undef } from "./Undef";
 
@@ -12,6 +12,7 @@ interface RestData
 
 export class Define extends PreprocessorDirective
 {
+	readonly doc: MarkdownString;
 	readonly patternReg: RegExp;
 	readonly pattern: string;
 	readonly patternRange: Range;
@@ -31,6 +32,8 @@ export class Define extends PreprocessorDirective
 			file.positionAt(restIndex + result.patternStart),
 			file.positionAt(restIndex + result.patternStart + result.pattern.length)
 		);
+
+		this.doc = this.prepareDoc();
 	}
 	private preparePattern(rest: string): RestData
 	{
@@ -72,6 +75,11 @@ export class Define extends PreprocessorDirective
 			replacement: "",
 			patternStart: 0
 		}
+	}
+
+	prepareDoc(): MarkdownString
+	{
+		return new MarkdownString("").appendCodeblock(`#define ${this.pattern} ${this.replacement}`, "pawn");
 	}
 	
 }
