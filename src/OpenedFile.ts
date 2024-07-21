@@ -3,8 +3,15 @@ import { DiagnosticManager } from "./Managers/diagnostic";
 import { FileManager } from "./Managers/FileManager";
 
 import { AbstractOpenFile } from "./AbstractOpenFile";
+import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 
 export class OpenedFile extends AbstractOpenFile{
+	processIncludededDirectives(array: PreprocessorDirective[]): void {
+		throw new Error("Method not implemented.");
+	}
+	get exportDirectives(): PreprocessorDirective[] {
+		throw new Error("Method not implemented.");
+	}
 	public parseCode(): Promise<void> {
 		throw new Error("Method not implemented.");
 	}

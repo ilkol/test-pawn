@@ -5,6 +5,7 @@ import { SemanticTokensManager, Token } from "./Managers/SemanticTokensManager";
 import { SymbolsManager } from "./Managers/SymbolsManager";
 import { IScope } from "./antlr/Scopes/IScope";
 import { Scope } from "./antlr/Scopes/Scope";
+import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 
 export class FunctionInfo
 {
@@ -87,6 +88,8 @@ export abstract class AbstractOpenFile
 		this.loadDefaultOperator();	
 		
 	}
+	abstract processIncludededDirectives(array: PreprocessorDirective[]): void;
+	abstract get exportDirectives(): PreprocessorDirective[];
 	private loadDefaultOperator()
 	{
 		interface compl {

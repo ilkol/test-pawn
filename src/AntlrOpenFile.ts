@@ -19,6 +19,7 @@ import path = require("path");
 import { Scope } from "./antlr/Scopes/Scope";
 import { IScope } from "./antlr/Scopes/IScope";
 import { IncludeType } from "./Prepocessor/Include";
+import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -69,6 +70,15 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 	fileName() {
 		return this.file.fileName;
+	}
+
+	get exportDirectives(): PreprocessorDirective[] {
+		return this.ppParser.exportDirectives;
+	}
+
+	processIncludededDirectives(array: PreprocessorDirective[]) {
+
+		this.curCode = this.ppParser.processIncludedDirectives(this.curCode, array);
 	}
 	
 	public async parseCode() {
@@ -228,6 +238,9 @@ export class AntrlOpenFile extends AbstractOpenFile
 				this.scope.addFunction(value);
 				value.file = file;
 			});
+			console.error(file.exportDirectives);
+			this.processIncludededDirectives(file.exportDirectives);
+			// file.processIncludededDirectives();
 		}
 	}
 

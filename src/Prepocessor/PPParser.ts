@@ -37,8 +37,22 @@ export class PPParser
 	{
 		let code = this.file.getText()
 		code = this.collectDirectives(code);
-		code = this.processDirectives(code);
+		code = this.processDirectives(code, this.directives);
 		return code;
+	}
+
+	get exportDirectives(): PreprocessorDirective[] {
+		const dirs: PreprocessorDirective[] = [];
+		for(let dir of this.directives) {
+			if(dir instanceof Define && !dir.skiped) {
+				dirs.push(dir);
+			}
+		}
+		return dirs;
+	}
+
+	processIncludedDirectives(code: string, array: PreprocessorDirective[]) {
+		return this.processDirectives(code, array);
 	}
 
 
@@ -153,11 +167,11 @@ export class PPParser
 	}
 
 	//Обрабатывает все директивы, удаляя лишний код и выполняя замены
-	private	processDirectives(code: string): string
+	private	processDirectives(code: string, array: PreprocessorDirective[]): string
 	{
 		let skipFrom = code.length;
 		let skipTo = 0;
-		for(let element of this.directives) {
+		for(let element of array) {
 
 			if(skipFrom < element.startIndex) {
 				if(skipTo > element.startIndex) {
