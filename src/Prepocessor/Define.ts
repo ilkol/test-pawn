@@ -16,7 +16,10 @@ export class Define extends PreprocessorDirective
 	readonly patternReg: RegExp;
 	readonly pattern: string;
 	readonly patternRange: Range;
-	readonly replacement: string;
+
+	parameters: number[] = [];
+
+	replacement: string;
 	undef?: Undef;
 	used: boolean = false;
 	
@@ -32,6 +35,8 @@ export class Define extends PreprocessorDirective
 			file.positionAt(restIndex + result.patternStart),
 			file.positionAt(restIndex + result.patternStart + result.pattern.length)
 		);
+
+		console.log(this.parameters);
 
 		this.doc = this.prepareDoc();
 	}
@@ -49,16 +54,16 @@ export class Define extends PreprocessorDirective
 			let paramMatch: RegExpExecArray | null;
 			const patternPrepared = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-			const parameters: number[] = [];
+			// const parameters: number[] = [];
 
 			while ((paramMatch = findParams.exec(patternPrepared)) !== null) {
 				patternRegStr += patternPrepared.substring(lastindex, paramMatch.index) + "(.*?)\\s*";
 				lastindex = paramMatch.index + paramMatch[0].length;
-				parameters.push(+paramMatch[1]);
+				this.parameters.push(+paramMatch[1]);
 			}
 			patternRegStr += patternPrepared.substring(lastindex);
 
-			patternRegStr = "(?<=[^\\w])" + patternRegStr + "(?=[^\\w])";
+			patternRegStr = "(?<=[^\\w]|)" + patternRegStr + "(?=[^\\w]|)";
 
 			const replacement = match[3] ? match[3].trim() : "";
 			return {

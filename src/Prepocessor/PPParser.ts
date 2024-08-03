@@ -191,6 +191,9 @@ export class PPParser
 
 				const lastCount = this.replacedCode.length;
 				const result = this.substringrReplacing(postDirective, element, element.curEndIndex);
+
+				this.definesReplacing(element);
+
 				code = preDirective + result;
 				if(lastCount < this.replacedCode.length) {
 					element.used = true;
@@ -278,6 +281,47 @@ export class PPParser
 		return code;
 	}
 
+	private definesReplacing(def: Define) {
+		const toReplace = def.replacement;
+
+		let match: RegExpExecArray | null;
+		for(let defineStruct of this.defines) {
+			let define = defineStruct[1];
+			if(def == define) continue;
+			if(define.startIndex < def.endIndex) continue;
+			let str = define.replacement;
+			while((match = def.patternReg.exec(str)) !== null) {
+				const length = match[0].length;
+				const curIndex = match.index;
+			
+				const preStr = str.substring(0, curIndex);
+				const findedStr = str.substring(curIndex, curIndex + length);
+				const postStr = str.substring(curIndex + length);
+
+				let origIndex = curIndex;
+
+				const curShift = findedStr.length - toReplace.length;
+			
+				this.replacedCode.forEach(element => {
+					if(element.newIndex < curIndex)
+					{
+						origIndex += element.shift;
+					}
+					else {
+						element.move(-curShift);
+					}
+				});
+				for(let element of this.directives) {
+					if(element.startIndex < origIndex) continue;
+					element.move(-curShift);
+				}
+
+				str = preStr + toReplace + postStr;
+				define.replacement = str;
+			}	
+		}
+	}
+
 	private substringrReplacing(str: string, define: Define, preShift: number): string
 	{
 		const toReplace = define.replacement;
@@ -292,6 +336,15 @@ export class PPParser
 			const postStr = str.substring(curIndex + length);
 
 			let origIndex = curIndex + preShift;
+
+			// let index = 1;
+			// define.parameters.forEach(el => {
+				
+			// 	// toReplace = toReplace.replace();
+			// 	index++;
+			// });
+
+
 			const curShift = findedStr.length - toReplace.length;
 			
 			this.replacedCode.forEach(element => {
