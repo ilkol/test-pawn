@@ -562,7 +562,6 @@ export class PawnListener implements pawnListener
 				}
 				else
 					this.addDiagnostic(l10n.t("parserErrorUnexpectedOperation"), DiagnosticSeverity.Error, node.pos);
-				// console.error(last, node);
 			}
 		}
 	}
