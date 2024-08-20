@@ -36,7 +36,7 @@ export class Define extends PreprocessorDirective
 			file.positionAt(restIndex + result.patternStart + result.pattern.length)
 		);
 
-		console.log(this.parameters);
+		// console.log(this.parameters);
 
 		this.doc = this.prepareDoc();
 	}

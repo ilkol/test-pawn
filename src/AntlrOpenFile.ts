@@ -77,7 +77,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 
 	processIncludededDirectives(array: PreprocessorDirective[]) {
-
 		this.curCode = this.ppParser.processIncludedDirectives(this.curCode, array);
 	}
 	
@@ -240,7 +239,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 				this.scope.addFunction(value);
 				value.file = file;
 			});
-			console.error(file.exportDirectives);
 			this.processIncludededDirectives(file.exportDirectives);
 			// file.processIncludededDirectives();
 		}
