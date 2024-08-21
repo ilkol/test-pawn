@@ -18,8 +18,9 @@ import { PPParser } from "./Prepocessor/PPParser";
 import path = require("path");
 import { Scope } from "./antlr/Scopes/Scope";
 import { IScope } from "./antlr/Scopes/IScope";
-import { IncludeType } from "./Prepocessor/Include";
+import { Include, IncludeType } from "./Prepocessor/Include";
 import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
+import { Define } from "./Prepocessor/Define";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -72,7 +73,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		return this.file.fileName;
 	}
 
-	get exportDirectives(): PreprocessorDirective[] {
+	get exportDirectives(): Define[] {
 		return this.ppParser.exportDirectives;
 	}
 
@@ -80,16 +81,20 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this.curCode = this.ppParser.processIncludedDirectives(this.curCode, array);
 	}
 	
-	public async parseCode() {
-
+	public async processIncludes(): Promise<void> {
 		const pawnDir = this.fileManager._includePath;
 		if(pawnDir) {
 			for (let el of this.ppParser.includes) {
 				if(el.skiped) continue;
 				if(el.uri)
-					await this.handleInclude(el.uri);
+					await this.handleInclude(el);
 			}
 		}
+	}
+
+	public async parseCode() {
+
+		
 		
 
 		const lexer = this.tryLex(this.curCode);
@@ -134,31 +139,18 @@ export class AntrlOpenFile extends AbstractOpenFile
 		console.log(this.AST);
 	}
 
-	public async parsePreprocessor() {
-		this.documentsLinks.clear();
-		this.scope = new Scope(this);
-		this.complitions = [];
-		this.ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
-		this.curCode = this.ppParser.parse();
-
-		this.defines = this.ppParser.defines;
-	
-		// Регистрируем дефайны
-		const complitions = this.ppParser.preprocessorTokens();
-		complitions.forEach(el => {
-			this.complitions.push(el);
-		});
-	
-		let startParse = true;
-		for(let element of this.ppParser.includes) {
-			if(!element.skiped) {
-				startParse = false; 
-				break;
-			}
-		};
-
-
-		// Регистрируем инклуды
+	/**
+	 * Ищет все команды препрцоессора в файле
+	 */
+	private async findAllDirectives()
+	{
+		this.curCode = this.ppParser.collectDirectives(this.curCode);
+	}
+	/**
+	 * Открывает все инклуды в файле
+	 */
+	private async openAllIncludes()
+	{
 		const pawnDir = this.fileManager._includePath;
 		if (pawnDir) {
 			for (let el of this.ppParser.includes) {
@@ -194,7 +186,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 					const doc = this.fileManager.parsingStack.peek();
 					if(doc)
 					{
-						await doc.tryParse()
+						await doc.findAndOpenAllDirectives();
 					}
 					
 				}
@@ -207,17 +199,56 @@ export class AntrlOpenFile extends AbstractOpenFile
 		}
 	}
 
+	public async parsePreprocessor() {
+		// this.documentsLinks.clear();
+		// this.scope = new Scope(this);
+		// this.complitions = [];
+		
+
+		// this.defines = this.ppParser.defines;
+	
+		// Регистрируем дефайны
+		// const complitions = this.ppParser.preprocessorTokens();
+		// complitions.forEach(el => {
+		// 	this.complitions.push(el);
+		// });
+	
+		// let startParse = true;
+		// for(let element of this.ppParser.includes) {
+		// 	if(!element.skiped) {
+		// 		startParse = false; 
+		// 		break;
+		// 	}
+		// };
+
+
+		// Регистрируем инклуды
+		
+	}
+
 	private async checkInclude(directive: vscode.Uri, path: string, ex: string): Promise<vscode.Uri|undefined> {
 		let uri = vscode.Uri.joinPath(directive, path + ex);	
 		return await this.fileManager.isFileExist(uri) ? uri : undefined;
 	}
 
-	public async tryParse(): Promise<void> {
-		await this.parsePreprocessor();
+	/**
+	 * Находит и открывает все инклуды
+	 */
+	public async findAndOpenAllDirectives(): Promise<void> {
+		this.ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
+		this.curCode = this.file.getText();
 
+		await this.findAllDirectives();
+		await this.openAllIncludes();
+	}
+	public async processDirectives(): Promise<void>
+	{
+		this.curCode = this.ppParser.processAllDirectives(this.curCode);
 	}
 
-	private async handleInclude(uri: vscode.Uri): Promise<void> {
+	private async handleInclude(include: Include): Promise<void> {
+		const uri = include.uri;
+		if(!uri) return;
 		if(uri.path.indexOf("YSI") != -1 || uri.path.indexOf("y_") != -1) return;
 		const file = this.fileManager.getFile(uri.path);
 		if (file) {
@@ -237,12 +268,20 @@ export class AntrlOpenFile extends AbstractOpenFile
 			// 	this.scope.addVar(value);
 			// 	value.file = file;
 			// });
-			file.scope.functions().forEach((value) => {
-				this.scope.addFunction(value);
-				value.file = file;
+			// file.scope.functions().forEach((value) => {
+			// 	this.scope.addFunction(value);
+			// 	value.file = file;
+			// });
+			console.log(include.uri);
+			const directives: Define[] = [];
+			file.exportDirectives.forEach(el => {
+				const directive = el.copy();
+				directive.curStartIndex = include.curStartIndex;
+				directive.curEndIndex = include.curEndIndex;
+				directives.push(directive);
 			});
 
-			this.processIncludededDirectives(file.exportDirectives);
+			this.processIncludededDirectives(directives);
 			// file.processIncludededDirectives();
 		}
 	}

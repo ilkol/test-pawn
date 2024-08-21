@@ -4,12 +4,22 @@ import { FileManager } from "./Managers/FileManager";
 
 import { AbstractOpenFile } from "./AbstractOpenFile";
 import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
+import { Define } from "./Prepocessor/Define";
 
 export class OpenedFile extends AbstractOpenFile{
+	public processIncludes(): Promise<void> {
+		throw new Error("Method not implemented.");
+	}
+	public findAndOpenAllDirectives(): Promise<void> {
+		throw new Error("Method not implemented.");
+	}
+	public processDirectives(): Promise<void> {
+		throw new Error("Method not implemented.");
+	}
 	processIncludededDirectives(array: PreprocessorDirective[]): void {
 		throw new Error("Method not implemented.");
 	}
-	get exportDirectives(): PreprocessorDirective[] {
+	get exportDirectives(): Define[] {
 		throw new Error("Method not implemented.");
 	}
 	public parseCode(): Promise<void> {

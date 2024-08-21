@@ -23,7 +23,7 @@ export class Define extends PreprocessorDirective
 	undef?: Undef;
 	used: boolean = false;
 	
-	constructor(file: TextDocument, readonly rest: string, startIndex: number, restIndex: number, endIndex: number) {
+	constructor(file: TextDocument, private readonly rest: string, startIndex: number, private restIndex: number, endIndex: number) {
 		super(file, startIndex, endIndex);
 
 		const result = this.preparePattern(rest);
@@ -87,4 +87,11 @@ export class Define extends PreprocessorDirective
 		return new MarkdownString("").appendCodeblock(`#define ${this.pattern} ${this.replacement}`, "pawn");
 	}
 	
+	copy(): Define
+	{
+		const define = new Define(this.file, this.rest, this.startIndex, this.restIndex, this.endIndex);
+		define.curEndIndex = this.curEndIndex;
+		define.curStartIndex = this.curStartIndex;
+		return define;
+	}
 }

@@ -33,16 +33,23 @@ export class PPParser
 
 	}
 
-	parse(): string
+
+
+	// parse(): string
+	// {
+	// 	let code = this.file.getText()
+	// 	code = this.collectDirectives(code);
+	// 	code = this.processDirectives(code, this.directives);
+	// 	return code;
+	// }
+
+	public processAllDirectives(code: string): string
 	{
-		let code = this.file.getText()
-		code = this.collectDirectives(code);
-		code = this.processDirectives(code, this.directives);
-		return code;
+		return this.processDirectives(code, this.directives);
 	}
 
-	get exportDirectives(): PreprocessorDirective[] {
-		const dirs: PreprocessorDirective[] = [];
+	get exportDirectives(): Define[] {
+		const dirs: Define[] = [];
 		for(let dir of this.directives) {
 			if(dir instanceof Define && !dir.skiped) {
 				dirs.push(dir);
@@ -56,8 +63,12 @@ export class PPParser
 	}
 
 
-	//Ищет и уадляет все директивы препроцессора
-	private collectDirectives(code: string): string {
+	/**
+	 * Собирает все команды препроцессора и удаляет их из текста
+	 * @param code исходный код
+	 * @returns код с удаленными командами препроцессора
+	 */
+	public collectDirectives(code: string): string {
 
 		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)(?=\s*\/\/|(?=\r?\n|$))/gim;
 				    
@@ -167,7 +178,7 @@ export class PPParser
 	}
 
 	//Обрабатывает все директивы, удаляя лишний код и выполняя замены
-	private	processDirectives(code: string, array: PreprocessorDirective[]): string
+	public	processDirectives(code: string, array: PreprocessorDirective[]): string
 	{
 		let skipFrom = code.length;
 		let skipTo = 0;

@@ -96,7 +96,7 @@ export abstract class AbstractOpenFile
 		
 	}
 	abstract processIncludededDirectives(array: PreprocessorDirective[]): void;
-	abstract get exportDirectives(): PreprocessorDirective[];
+	abstract get exportDirectives(): Define[];
 	private loadDefaultOperator()
 	{
 		interface compl {
@@ -188,7 +188,7 @@ export abstract class AbstractOpenFile
 		return this.tokensManager.tokens;
 	}
 
-	public abstract tryParse(): Promise<void>;
+	public abstract findAndOpenAllDirectives(): Promise<void>;
 	public getComplitions(): CompletionItem[] {
 		return this.complitions;
 	}
@@ -231,4 +231,6 @@ export abstract class AbstractOpenFile
 	}
 
 	public abstract parseCode(): Promise<void>;
+	public abstract processDirectives(): Promise<void>;
+	public abstract processIncludes(): Promise<void>;
 }
