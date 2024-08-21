@@ -6,11 +6,15 @@ import { AbstractOpenFile } from "../AbstractOpenFile";
 import { Stack } from "../antlr/Stack/Stack";
 
 export class FileManager {
+
+	private activeFile?: AntrlOpenFile = undefined; 
+
+
 	public readonly openedFiles: Map<string, AbstractOpenFile> = new Map<string, OpenedFile>;
 	public root = workspace.workspaceFolders;
 	public _includePath?: Uri = undefined;
 
-	private parsingStack: Stack<AbstractOpenFile> = new Stack<AbstractOpenFile>();
+	public readonly parsingStack: Stack<AbstractOpenFile> = new Stack<AbstractOpenFile>();
 
 	constructor(private diagnosticManager: DiagnosticManager) {
 		this.openFile.bind(this);
@@ -91,6 +95,7 @@ export class FileManager {
 		let result = true;
 		try {
 			const doc = await workspace.openTextDocument(uri);
+			// return doc;
 			// await this.onDidOpenTextDocument(doc);
 			// Process document here if needed
 		} catch (err) {
@@ -141,7 +146,13 @@ export class FileManager {
 		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
 		this.openedFiles.set(path, doc);
 		this.parsingStack.push(doc);
-		await doc.tryParse()
+		if(!this.activeFile)
+		{	
+			this.activeFile = doc;
+			await doc.tryParse()
+			await this.parseAll();
+			
+		}
 		this.diagnosticManager.updateDiagnostic();
 		return;
 	}
