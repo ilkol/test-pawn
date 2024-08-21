@@ -41,8 +41,15 @@ import { IHasTag } from "../Nodes/IHasTag";
 import { AbstractOpenFile, FunctionInfo, FunctionParameterInfo } from "../../../AbstractOpenFile";
 import { IfStatement } from "../Nodes/Conditions/IfStatement";
 
+import * as funcDef from "../../../Linking/FunctionDefinition";
+import * as funcCall from "../../../Linking/FunctionCall";
+
 export class Analyzer extends BaseVisitor
 {
+
+	public readonly functionsDeclarations: Map<string, funcDef.FunctionDeclaration[]> = new Map<string, funcDef.FunctionDeclaration[]>();
+	public readonly functionsCalls: Map<string, funcCall.FunctionCall[]> = new Map<string, funcCall.FunctionCall[]>();
+
 	beforeVisitIfStatemnt(node: IfStatement): void {
 	
 	}
@@ -212,6 +219,17 @@ export class Analyzer extends BaseVisitor
 	afterVisitFunctionCall(node: FunctionCall): void {
 		let func = this.curScope.findFunction(node.id);
 		this.tokens.addToken(node.idPos, SemanticTokens.function);
+
+		const array = this.functionsCalls.get(node.id);
+		const el = new funcCall.FunctionCall(node, this.file.uri)
+		if(array)
+		{
+			array.push(el);
+		}
+		else {
+			this.functionsCalls.set(node.id, [el]);
+		}
+
 		if(func) {
 			func.used = true;
 			if(!node.isTaged)
@@ -328,6 +346,17 @@ export class Analyzer extends BaseVisitor
 				else this.addDiagnostic(new DiagnosticError(l10n.t("analyzerErrorIdAlreadyExistsStart") + ` "${node.id}" ` + l10n.t("analyzerErrorIdAlreadyExistsEnd"), node.idPos));
 			} else {
 				this.curScope.addFunction(node);
+
+				const array = this.functionsDeclarations.get(node.id);
+				const el = new funcDef.FunctionDeclaration(node, this.file.uri)
+				if(array)
+				{
+					array.push(el);
+				}
+				else {
+					this.functionsDeclarations.set(node.id, [el]);
+				}
+				
 			}
 			// this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
 
