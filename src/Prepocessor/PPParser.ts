@@ -337,15 +337,17 @@ export class PPParser
 
 			let origIndex = curIndex + preShift;
 
-			// let index = 1;
-			// define.parameters.forEach(el => {
-				
-			// 	// toReplace = toReplace.replace();
-			// 	index++;
-			// });
+			let replace = toReplace;
+			let index = 1;
+			if(match !== null) {
+				const matches = match;
+				define.parameters.forEach(element => {
+					replace = replace.replace(`%${element}`, matches[index]);
+					index++;
+				});
+			}
 
-
-			const curShift = findedStr.length - toReplace.length;
+			const curShift = findedStr.length - replace.length;
 			
 			this.replacedCode.forEach(element => {
 				if(element.newIndex < curIndex + preShift)
@@ -363,13 +365,13 @@ export class PPParser
 
 			this.replacedCode.push(new ReplacedCode(
 				findedStr,
-				toReplace,
+				replace,
 				define,
 				origIndex,
 				curIndex + preShift
 			));
 			
-			str = preStr + toReplace + postStr;
+			str = preStr + replace + postStr;
 		}
 		return str;
 	}
