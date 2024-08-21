@@ -116,7 +116,7 @@ export class PawnListener implements pawnListener
 
 			} catch(e) {
 				let last = this.nodes.peek();
-				this.addDiagnostic(l10n.t("parserErrorExpectedFunctionButFoundNode") + ' "' + node.name + '"', DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Expecting a function identifire, but finding node \"{0}\"", node.name), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -188,7 +188,7 @@ export class PawnListener implements pawnListener
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
 			} catch(e) {
-				this.addDiagnostic(l10n.t("parserErrorExpectingVarId"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Variable identifire expected"), DiagnosticSeverity.Error, node.pos);
 			}
 
 			// let decl = this.nodes.peek();
@@ -232,7 +232,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.log(last);
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedVariable"), DiagnosticSeverity.Error, node.idPos);
+				this.addDiagnostic(l10n.t("Unexpected variable"), DiagnosticSeverity.Error, node.idPos);
 			}
 		}
 	}
@@ -325,7 +325,7 @@ export class PawnListener implements pawnListener
 				last.ellipse = node;
 			}
 			else {
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedEllipse"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Unexpected ellipse operator"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -352,7 +352,7 @@ export class PawnListener implements pawnListener
 				last.code = node;
 			}
 			else {
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedCode"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Unexpected code"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -379,7 +379,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedIntLiteeral"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Unexpected integer literal"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -446,7 +446,7 @@ export class PawnListener implements pawnListener
 				}
 				catch(e) {
 					console.log(last);
-					this.addDiagnostic(l10n.t("parserErrorUnexpectedExpresion"), DiagnosticSeverity.Error, node.pos);
+					this.addDiagnostic(l10n.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
 				}
 			}
 			else if(last instanceof Cycle) {
@@ -471,7 +471,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedExpresion"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 
@@ -547,7 +547,7 @@ export class PawnListener implements pawnListener
 					this.nodes.push(node);
 				} else {
 					this.nodes.push(last);
-					this.addDiagnostic(l10n.t("parserErrorUnexpectedOperation"), DiagnosticSeverity.Error, node.pos);
+					this.addDiagnostic(l10n.t("Unexpected operation"), DiagnosticSeverity.Error, node.pos);
 				}
 			}
 			else {
@@ -556,12 +556,12 @@ export class PawnListener implements pawnListener
 						last.defaultValue = node;
 					}
 					else
-						this.addDiagnostic(l10n.t("parserErrorUnexpectedOperation"), DiagnosticSeverity.Error, node.pos);
+						this.addDiagnostic(l10n.t("Unexpected operation"), DiagnosticSeverity.Error, node.pos);
 					this.nodes.push(last);
 
 				}
 				else
-					this.addDiagnostic(l10n.t("parserErrorUnexpectedOperation"), DiagnosticSeverity.Error, node.pos);
+					this.addDiagnostic(l10n.t("Unexpected operation"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -583,7 +583,7 @@ export class PawnListener implements pawnListener
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
 			} catch(e) {
-				this.addDiagnostic(l10n.t("parserErrorExpectingFunctionId"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Function identifire expected"), DiagnosticSeverity.Error, node.pos);
 			}
 			
 			let last = this.nodes.peek();
@@ -595,7 +595,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedFunctionCall"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Unexpected function call"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -655,7 +655,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedFunctionParameter"), DiagnosticSeverity.Error, node.idPos);
+				this.addDiagnostic(l10n.t("Unexpected function parameter"), DiagnosticSeverity.Error, node.idPos);
 			}
 		}
 	}
@@ -679,7 +679,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedFloatLiteeral"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Unexpected float literal"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -703,7 +703,7 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				console.debug(last);
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedStringLiteeral"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Unexpected string"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -723,7 +723,7 @@ export class PawnListener implements pawnListener
 		else if(ctx.stop) {
 			console.debug(last);
 			const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop.line - 1, ctx.stop.charPositionInLine);
-			this.addDiagnostic(l10n.t("parserErrorUnexpectedFunctionModifire"), DiagnosticSeverity.Error, pos);
+			this.addDiagnostic(l10n.t("Unexpected function modifier"), DiagnosticSeverity.Error, pos);
 		}
 	}
 
@@ -740,7 +740,7 @@ export class PawnListener implements pawnListener
 				last.statements.push(node);
 			}
 			else {
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedWhile"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Unexpected while loop"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -769,7 +769,7 @@ export class PawnListener implements pawnListener
 				last.statements.push(node);
 			}
 			else {
-				this.addDiagnostic(l10n.t("parserErrorUnexpectedFor"), DiagnosticSeverity.Error, node.pos);
+				this.addDiagnostic(l10n.t("Unexpected for loop"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
