@@ -210,7 +210,7 @@ export class PPParser
 					element.used = true;
 				}
 				else {
-					this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, this.file.uri.path, element.patternRange, [DiagnosticTag.Unnecessary]);
+					this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, element.file.uri.path, element.patternRange, [DiagnosticTag.Unnecessary]);
 				}
 				
 				this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
@@ -299,9 +299,9 @@ export class PPParser
 		for(let defineStruct of this.defines) {
 			let define = defineStruct[1];
 			if(def == define) continue;
-			if(define.startIndex < def.endIndex) continue;
+			if(define.curStartIndex < def.curEndIndex) continue;
 			let str = define.replacement;
-			while((match = def.patternReg.exec(str)) !== null) {
+			while((match = def.patternReg.exec(str)) !== null) {	
 				const length = match[0].length;
 				const curIndex = match.index;
 			
@@ -311,7 +311,17 @@ export class PPParser
 
 				let origIndex = curIndex;
 
-				const curShift = findedStr.length - toReplace.length;
+				let replace = toReplace;
+				let index = 1;
+				if(match !== null) {
+					const matches = match;
+					def.parameters.forEach(element => {
+						replace = replace.replace(`%${element}`, matches[index]);
+						index++;
+					});
+				}
+
+				const curShift = findedStr.length - replace.length;
 			
 				this.replacedCode.forEach(element => {
 					if(element.newIndex < curIndex)
@@ -327,7 +337,7 @@ export class PPParser
 					element.move(-curShift);
 				}
 
-				str = preStr + toReplace + postStr;
+				str = preStr + replace + postStr;
 				define.replacement = str;
 				this.defines.set(defineStruct[0], define);
 				

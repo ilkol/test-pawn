@@ -7,7 +7,7 @@ export abstract class PreprocessorDirective
 	public curStartIndex: number;
 	public curEndIndex: number;
 
-	constructor(protected file: TextDocument, readonly startIndex: number, readonly endIndex: number) {
+	constructor(public readonly file: TextDocument, readonly startIndex: number, readonly endIndex: number) {
 		this.range = new Range(
 			file.positionAt(startIndex),
 			file.positionAt(endIndex)

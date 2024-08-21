@@ -182,12 +182,15 @@ export class AntrlOpenFile extends AbstractOpenFile
 					// if(el.uri.path.indexOf("YSI") != -1 || el.uri.path.indexOf("y_") != -1) return;
 		
 					this.documentsLinks.set(el.pathRange, el.uri);
-					await this.fileManager.openFile(el.uri);
-					const doc = this.fileManager.parsingStack.peek();
-					if(doc)
-					{
-						await doc.findAndOpenAllDirectives();
+					if(!this.fileManager.openedFiles.has(el.uri.path)) {
+						await this.fileManager.openFile(el.uri);
+						const doc = this.fileManager.parsingStack.peek();
+						if(doc)
+						{
+							await doc.findAndOpenAllDirectives();
+						}
 					}
+					
 					
 				}
 				else {
@@ -252,26 +255,26 @@ export class AntrlOpenFile extends AbstractOpenFile
 		if(uri.path.indexOf("YSI") != -1 || uri.path.indexOf("y_") != -1) return;
 		const file = this.fileManager.getFile(uri.path);
 		if (file) {
-			// file.getComplitions().forEach(compl => {
-			// 	if (!compl.detail)
-			// 		compl.detail = path.parse(path.basename(uri.fsPath)).name;
-			// 	this.complitions.push(compl);
-			// });
-			// file.signatures.forEach((value, key) => {
-			// 	this.signatures.set(key, value);
-			// });
-			// file.functionsInfo.forEach((value, key) => {
-			// 	this.functionsInfo.set(key, value);
-			// });
+			file.getComplitions().forEach(compl => {
+				if (!compl.detail)
+					compl.detail = path.parse(path.basename(uri.fsPath)).name;
+				this.complitions.push(compl);
+			});
+			file.signatures.forEach((value, key) => {
+				this.signatures.set(key, value);
+			});
+			file.functionsInfo.forEach((value, key) => {
+				this.functionsInfo.set(key, value);
+			});
 	
-			// file.scope.variables().forEach((value) => {
-			// 	this.scope.addVar(value);
-			// 	value.file = file;
-			// });
-			// file.scope.functions().forEach((value) => {
-			// 	this.scope.addFunction(value);
-			// 	value.file = file;
-			// });
+			file.scope.variables().forEach((value) => {
+				this.scope.addVar(value);
+				value.file = file;
+			});
+			file.scope.functions().forEach((value) => {
+				this.scope.addFunction(value);
+				value.file = file;
+			});
 			const directives: Define[] = [];
 			file.exportDirectives.forEach(el => {
 				const directive = el.copy();
@@ -279,6 +282,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 				directive.curEndIndex = include.curEndIndex;
 				directives.push(directive);
 			});
+
+			console.error(uri, directives);
 
 			this.processIncludededDirectives(directives);
 			// file.processIncludededDirectives();
