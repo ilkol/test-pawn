@@ -21,6 +21,7 @@ import { IScope } from "./antlr/Scopes/IScope";
 import { Include, IncludeType } from "./Prepocessor/Include";
 import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 import { Define } from "./Prepocessor/Define";
+import { Token } from "./Managers/SemanticTokensManager";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -60,6 +61,16 @@ const semaphore = new Semaphore(1);
 
 export class AntrlOpenFile extends AbstractOpenFile
 {
+	get tokens(): Token[] {
+		
+		// const functions = this.scope.functions();
+		// functions.forEach(element => {
+		// 	this.tokensManager.addToken();
+		// });
+		
+		const tokens = this.tokensManager.tokens;
+		return tokens;
+	}
 	private AST: ASTNode | null = null;
 	private ppParser: PPParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 	private curCode: string = "";
@@ -181,7 +192,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 				if(el.uri) {
 					// if(el.uri.path.indexOf("YSI") != -1 || el.uri.path.indexOf("y_") != -1) return;
 		
-					this.documentsLinks.set(el.pathRange, el.uri);
 					if(!this.fileManager.openedFiles.has(el.uri.path)) {
 						await this.fileManager.openFile(el.uri);
 						const doc = this.fileManager.parsingStack.peek();
@@ -208,22 +218,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 		// this.complitions = [];
 		
 
-		// this.defines = this.ppParser.defines;
-	
-		// Регистрируем дефайны
-		// const complitions = this.ppParser.preprocessorTokens();
-		// complitions.forEach(el => {
-		// 	this.complitions.push(el);
-		// });
-	
-		// let startParse = true;
-		// for(let element of this.ppParser.includes) {
-		// 	if(!element.skiped) {
-		// 		startParse = false; 
-		// 		break;
-		// 	}
-		// };
-
 
 		// Регистрируем инклуды
 		
@@ -244,9 +238,30 @@ export class AntrlOpenFile extends AbstractOpenFile
 		await this.findAllDirectives();
 		await this.openAllIncludes();
 	}
+	public getComplitions(): vscode.CompletionItem[] {
+
+		this.complitions = [];
+
+		// Регистрируем дефайны
+		const complitions = this.ppParser.preprocessorTokens();
+		complitions.forEach(el => {
+			this.complitions.push(el);
+		});
+
+		const functions = this.scope.functions();
+		functions.forEach(element => {
+			const compl = new vscode.CompletionItem(element.id, vscode.CompletionItemKind.Function);
+			compl.insertText = new vscode.SnippetString(`${element.id}($0)`);
+			this.complitions.push(compl);
+		});
+
+		return this.complitions;
+	}
 	public async processDirectives(): Promise<void>
 	{
 		this.curCode = this.ppParser.processAllDirectives(this.curCode);
+
+		this.defines = this.ppParser.defines;
 	}
 
 	private async handleInclude(include: Include): Promise<void> {
@@ -255,6 +270,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 		if(uri.path.indexOf("YSI") != -1 || uri.path.indexOf("y_") != -1) return;
 		const file = this.fileManager.getFile(uri.path);
 		if (file) {
+			this.documentsLinks.set(include.pathRange, uri);
+			
 			file.getComplitions().forEach(compl => {
 				if (!compl.detail)
 					compl.detail = path.parse(path.basename(uri.fsPath)).name;

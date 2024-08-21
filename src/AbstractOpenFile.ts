@@ -185,14 +185,10 @@ export abstract class AbstractOpenFile
 		});
 	}
 
-	get tokens(): Token[] {
-		return this.tokensManager.tokens;
-	}
+	abstract get tokens(): Token[];
 
 	public abstract findAndOpenAllDirectives(): Promise<void>;
-	public getComplitions(): CompletionItem[] {
-		return this.complitions;
-	}
+	public abstract getComplitions(): CompletionItem[];
 	public addComplition(comp: CompletionItem) {
 		this.complitions.push(comp);
 	}

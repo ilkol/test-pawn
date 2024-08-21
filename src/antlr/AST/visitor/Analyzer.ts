@@ -172,17 +172,14 @@ export class Analyzer extends BaseVisitor
 					}
 				}
 			}
-			else if(variable instanceof FunctionDeclarationParameter){
-				let checkvar = variable.variable;
-				if(!(checkvar instanceof Array)) {
-					this.addDiagnostic(new DiagnosticError("\"" + node.id + '" ' + l10n.t("analyzerErrorIsNotArray"), node.idPos));
-					console.error(variable);
-				}
-			}
 			else {
 				if(node instanceof Array) {
-					this.addDiagnostic(new DiagnosticError("\"" + node.id + '" ' + l10n.t("analyzerErrorIsNotArray"), node.idPos));
-					console.error(variable);
+					if(variable instanceof FunctionDeclarationParameter){
+						let checkvar = variable.variable;
+						if(!(checkvar instanceof Array)) {
+							this.addDiagnostic(new DiagnosticError("\"" + node.id + '" ' + l10n.t("analyzerErrorIsNotArray"), node.idPos));
+						}
+					}
 				}
 			}
 			this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(variable.modifires));
@@ -334,9 +331,6 @@ export class Analyzer extends BaseVisitor
 			}
 			// this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
 
-			const compl = new CompletionItem(node.id, CompletionItemKind.Function);
-			compl.insertText = new SnippetString(`${node.id}($0)`);
-			this.addComplition(compl)
 		}
 
 		if(node.assigmentFunctionID) {

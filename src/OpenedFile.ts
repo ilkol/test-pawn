@@ -1,4 +1,4 @@
-import { DiagnosticSeverity, Hover, MarkdownString, Position, Range, TextDocument, Uri } from "vscode";
+import { CompletionItem, DiagnosticSeverity, Hover, MarkdownString, Position, Range, TextDocument, Uri } from "vscode";
 import { DiagnosticManager } from "./Managers/diagnostic";
 import { FileManager } from "./Managers/FileManager";
 
@@ -7,6 +7,9 @@ import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 import { Define } from "./Prepocessor/Define";
 
 export class OpenedFile extends AbstractOpenFile{
+	public getComplitions(): CompletionItem[] {
+		throw new Error("Method not implemented.");
+	}
 	public processIncludes(): Promise<void> {
 		throw new Error("Method not implemented.");
 	}
