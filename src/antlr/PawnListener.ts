@@ -519,7 +519,7 @@ export class PawnListener implements pawnListener
 		}
 		else if(node){
 			this.nodes.push(node);
-			this.addDiagnostic(l10n.t("parserErrorUnexpectedOperator"), DiagnosticSeverity.Error, node.pos);
+			this.addDiagnostic(l10n.t("Unexpected Operator"), DiagnosticSeverity.Error, node.pos);
 		}
 	}
 	enterOperation(ctx: OperationContext): void {
@@ -542,7 +542,7 @@ export class PawnListener implements pawnListener
 				}
 				else if(node instanceof UnarOperator) {
 					if(node.expresion)
-						this.addDiagnostic(l10n.t("parserErrorUnarOperatorIsAlreadyUsed"), DiagnosticSeverity.Error, node.expresion.pos);
+						this.addDiagnostic(l10n.t("The unary operator has already been applied to another expression"), DiagnosticSeverity.Error, node.expresion.pos);
 					node.expresion = last;
 					this.nodes.push(node);
 				} else {

@@ -116,7 +116,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 				 },
 					vscode.TaskScope.Workspace,
-					vscode.l10n.t("buildPacket"),
+					vscode.l10n.t("Build project"),
 					context.extension.id,
 					new vscode.ShellExecution("echo Hello world")
 				)
