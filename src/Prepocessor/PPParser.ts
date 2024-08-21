@@ -50,11 +50,11 @@ export class PPParser
 
 	get exportDirectives(): Define[] {
 		const dirs: Define[] = [];
-		for(let dir of this.directives) {
-			if(dir instanceof Define && !dir.skiped) {
+		this.defines.forEach(dir => {
+			if(!dir.skiped) {
 				dirs.push(dir);
 			}
-		}
+		});
 		return dirs;
 	}
 
@@ -329,6 +329,8 @@ export class PPParser
 
 				str = preStr + toReplace + postStr;
 				define.replacement = str;
+				this.defines.set(defineStruct[0], define);
+				
 			}	
 		}
 	}

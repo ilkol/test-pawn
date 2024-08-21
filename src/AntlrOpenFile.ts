@@ -272,7 +272,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 			// 	this.scope.addFunction(value);
 			// 	value.file = file;
 			// });
-			console.log(include.uri);
 			const directives: Define[] = [];
 			file.exportDirectives.forEach(el => {
 				const directive = el.copy();

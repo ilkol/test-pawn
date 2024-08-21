@@ -36,8 +36,6 @@ export class Define extends PreprocessorDirective
 			file.positionAt(restIndex + result.patternStart + result.pattern.length)
 		);
 
-		// console.log(this.parameters);
-
 		this.doc = this.prepareDoc();
 	}
 	private preparePattern(rest: string): RestData
@@ -92,6 +90,7 @@ export class Define extends PreprocessorDirective
 		const define = new Define(this.file, this.rest, this.startIndex, this.restIndex, this.endIndex);
 		define.curEndIndex = this.curEndIndex;
 		define.curStartIndex = this.curStartIndex;
+		define.replacement = this.replacement;
 		return define;
 	}
 }
