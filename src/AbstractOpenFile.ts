@@ -206,6 +206,11 @@ export abstract class AbstractOpenFile
 		return this.functions;
 	}
 
+	get uri(): Uri
+	{
+		return this.file.uri;
+	}
+
 	protected prepareSignatures() {
 		this.functions.forEach((functionInfo, name) => {
 			const signatureHelp  =  new SignatureHelp();

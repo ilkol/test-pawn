@@ -10,6 +10,7 @@ import { SymbolProvider } from './Providers/SymbolProvider';
 import { PawnColorProvider } from './Providers/ColorProvider';
 import { AbstractOpenFile } from './AbstractOpenFile';
 import { SemanticTokens, SemanticTokensModifires } from './SemanticTokens';
+import { DefinitionProvider } from './Providers/DefinitionProvider';
 
 
 interface RakeTaskDefinition extends vscode.TaskDefinition {
@@ -87,6 +88,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const signatureProvider = new SignatureProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider('pawn', documentLinkProvider));
+
+	const definitionProvider = new DefinitionProvider(fileManage);
+	context.subscriptions.push(vscode.languages.registerDefinitionProvider('pawn', definitionProvider));
 
 	const symbolProvider = new SymbolProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider('pawn', symbolProvider));
