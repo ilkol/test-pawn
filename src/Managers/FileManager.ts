@@ -173,6 +173,9 @@ export class FileManager {
 				this.activeFile = doc;
 				await doc.findAndOpenAllDirectives()
 				await this.parseAll();
+
+				await this.parseFile(doc);
+
 				this.diagnosticManager.updateFileDiagnostic(path);
 		}
 
@@ -193,9 +196,14 @@ export class FileManager {
 	public async parseAll() {
 		let doc;
 		while(doc = this.parsingStack.pop()) {
-			await doc.processIncludes();
-			await doc.processDirectives()
-			await doc.parseCode();
+			await this.parseFile(doc);
 		}
+	}
+	
+	private async parseFile(doc: AbstractOpenFile)
+	{
+		await doc.processIncludes();
+		await doc.processDirectives()
+		await doc.parseCode();
 	}
 }
