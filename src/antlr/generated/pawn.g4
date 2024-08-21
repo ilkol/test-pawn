@@ -48,7 +48,7 @@ ternarOperator:	(rValue operation? | grouping) QUESTION expresion COLON expresio
 preOperators:	NOT | MINUS | INCREMENTS | DECREMENTS | SIZEOF;
 
 operation:			operator expresion?;
-varOrLiteral:		(variable | literal);
+varOrLiteral:		(literal | variable);
 
 declParams:			(CONST)? (reference)? variable (ASSIGMENT (constExpresion | (sizeof (variable | OPEN_PARENTHESIS variable CLOSE_PARENTHESIS))))?;	
 ellipse:			COMA tag? PERIOD_FUNC;
@@ -243,7 +243,7 @@ FALSE:		'false';
 
 SHARPSTRING:		HASHTAG CHARS* HASHTAG?;
 STRING:				'"' CHARS* '"';
-ANGLEDSTRING:		'<' SCHARS* '>';
+// ANGLEDSTRING:		'<' SCHARS* '>';
 
 fragment CHARS:				~ ["\\\r\n] | ESCAPESEQUENCE ;
 fragment SCHARS:				~ [>\\\r\n];
