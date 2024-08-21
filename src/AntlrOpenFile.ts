@@ -283,8 +283,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 				directives.push(directive);
 			});
 
-			console.error(uri, directives);
-
 			this.processIncludededDirectives(directives);
 			// file.processIncludededDirectives();
 		}

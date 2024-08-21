@@ -168,10 +168,11 @@ export class FileManager {
 		const doc: AbstractOpenFile | undefined = this.openedFiles.get(path);
 
 
-		if(doc) {
+		if(doc instanceof AntrlOpenFile) {
 				this.diagnosticManager.clear();
-				await doc.findAndOpenAllDirectives();
-				doc.parseCode();
+				this.activeFile = doc;
+				await doc.findAndOpenAllDirectives()
+				await this.parseAll();
 				this.diagnosticManager.updateFileDiagnostic(path);
 		}
 

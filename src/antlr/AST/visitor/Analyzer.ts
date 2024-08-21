@@ -172,9 +172,18 @@ export class Analyzer extends BaseVisitor
 					}
 				}
 			}
-			else {
-				if(node instanceof Array)
+			else if(variable instanceof FunctionDeclarationParameter){
+				let checkvar = variable.variable;
+				if(!(checkvar instanceof Array)) {
 					this.addDiagnostic(new DiagnosticError("\"" + node.id + '" ' + l10n.t("analyzerErrorIsNotArray"), node.idPos));
+					console.error(variable);
+				}
+			}
+			else {
+				if(node instanceof Array) {
+					this.addDiagnostic(new DiagnosticError("\"" + node.id + '" ' + l10n.t("analyzerErrorIsNotArray"), node.idPos));
+					console.error(variable);
+				}
 			}
 			this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(variable.modifires));
 			if(!node.isTaged)

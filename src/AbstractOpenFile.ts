@@ -79,7 +79,8 @@ export abstract class AbstractOpenFile
 		
 		let someThing;
 		if(someThing = this.functions.get(word)) {
-			return new MarkdownString(someThing.label);
+			// const label = someThing.label.replace(/([\\`*_\[\]{}()#+\-.!])/g, '\\$1');
+			return new MarkdownString("").appendCodeblock(someThing.label, "pawn");
 		}
 		else if(someThing = this.defines.get(word)){
 			return someThing.doc;
