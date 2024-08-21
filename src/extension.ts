@@ -32,7 +32,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	console.debug('Активация расширения!');
 
 	diagnosticManager = new DiagnosticManager(vscode.languages.createDiagnosticCollection("pawn"));
-	fileManage = new FileManager(diagnosticManager);
+	const definitionProvider = new DefinitionProvider();
+	fileManage = new FileManager(diagnosticManager, definitionProvider);
 
 	await fileManage.findPawnDir();
 	const documentLinkProvider = new DocumentLinkProvider(fileManage);
@@ -89,7 +90,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	const signatureProvider = new SignatureProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider('pawn', documentLinkProvider));
 
-	const definitionProvider = new DefinitionProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider('pawn', definitionProvider));
 
 	const symbolProvider = new SymbolProvider(fileManage);

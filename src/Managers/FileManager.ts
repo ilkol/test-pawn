@@ -4,6 +4,7 @@ import { DiagnosticManager } from "./diagnostic";
 import { AntrlOpenFile } from "../AntlrOpenFile";
 import { AbstractOpenFile } from "../AbstractOpenFile";
 import { Stack } from "../antlr/Stack/Stack";
+import { DefinitionProvider } from "../Providers/DefinitionProvider";
 
 export class FileManager {
 
@@ -16,7 +17,7 @@ export class FileManager {
 
 	public readonly parsingStack: Stack<AbstractOpenFile> = new Stack<AbstractOpenFile>();
 
-	constructor(private diagnosticManager: DiagnosticManager) {
+	constructor(private diagnosticManager: DiagnosticManager, public readonly definitionProvider: DefinitionProvider) {
 		this.openFile.bind(this);
 		// this.onDidOpenTextDocument.bind(this);
 		// if(this.includePath == "") {

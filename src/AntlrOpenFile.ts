@@ -22,6 +22,8 @@ import { Include, IncludeType } from "./Prepocessor/Include";
 import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 import { Define } from "./Prepocessor/Define";
 import { Token } from "./Managers/SemanticTokensManager";
+import { Definition } from "./Linking/Definition";
+import { Declaration } from "./antlr/AST/Nodes/Declaration";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -148,6 +150,19 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this.prepareSignatures();
 	
 		console.log(this.AST);
+
+		analyzer.functionsDeclarations.forEach((value, key) => {	
+			const keyMap = this.fileManager.definitionProvider.definitions.get(key);
+			if(keyMap) {
+				keyMap.set(this.file.uri, value);
+			}
+			else {
+				const map = new Map<vscode.Uri, Definition<Declaration>[]>();
+				map.set(this.file.uri, value);
+				this.fileManager.definitionProvider.definitions.set(key, map);
+			}
+		});
+
 	}
 
 	/**

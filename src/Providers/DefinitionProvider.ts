@@ -1,22 +1,27 @@
 import * as vscode from 'vscode';
 import { FileManager } from '../Managers/FileManager';
+import { Definition } from '../Linking/Definition';
+import { Declaration } from '../antlr/AST/Nodes/Declaration';
 
 export class DefinitionProvider implements vscode.DefinitionProvider {
-	constructor(private readonly fileManager: FileManager) {
-
-	}
+	public readonly definitions: Map<string, Map<vscode.Uri, Definition<Declaration>[]>> = new Map<string, Map<vscode.Uri, Definition<Declaration>[]>>;
 	provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Definition | vscode.DefinitionLink[]> {
-		const doc = this.fileManager.getFile(document.uri.path);
-		if(doc)
+		const result: vscode.Location[] = [];
+		
+		const wordRange = document.getWordRangeAtPosition(position);
+		const word = document.getText(wordRange);
+
+		const definitions = this.definitions.get(word);
+		if(definitions)
 		{
-			const wordRange = document.getWordRangeAtPosition(position);
-			const word = document.getText(wordRange);
-			const definition = doc.scope.functions().get(word);
-			if(definition && definition.file)
-			{
-				return new vscode.Location(definition.file.uri, definition.idPos);
-			}
+			definitions.forEach((definitionArray, file)  => {
+				definitionArray.forEach(definition => {
+					result.push(new vscode.Location(file, definition.pos));
+				});
+			});
 		}
+
+		return result;
 	}
 
 
