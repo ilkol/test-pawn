@@ -1,123 +1,123 @@
 {
-  "name": "pawnlanguage-test",
-  "version": "1.0.1",
-  "publisher": "ilkol",
-  "engines": {
-	"vscode": "^1.83.0"
-  },
-  "displayName": "Pawn Language TEST VERSION",
-  "description": "%config.description%",
-  "categories": [
-	"Programming Languages",
-	"Snippets"
-  ],
-  "keywords": [
-	"pawn",
-	"pawno"
-  ],
-  "galleryBanner": {
-	"color": "#C80000",
-    "theme": "dark"
-  },
-  "author": {
-    "name": "il_kol"
-  },
-  "repository": {
-    "type": "git",
-    "directory": "https://github.com/DmitryMukhlisov/test-pawn.git"
-  },
-  "icon": "pawn.png",
-  "main": "./dist/extension.js",
-  "l10n": "./l10n",
-  "contributes": {
-    "keybindings": [
-      {
-        "key": "f5",
-        "command": "workbench.action.tasks.build",
-        "when": "editorFocus && editorLangId == pawn"
-      }
-    ],
-    "taskDefinitions": [
-      {
-        "type": "rake",
-        "required": [
-          "task"
-        ],
-        "properties": {
-          "task": {
-            "type": "string",
-            "description": "The Rake task to customize"
-          },
-          "file": {
-            "type": "string",
-            "description": "The Rake file that provides the task. Can be omitted."
-          }
-        }
-      }
-    ],
-    "snippets": [
-      {
-        "language": "pawn",
-        "path": "./snippets/snippets.code-snippets"
-      }
-    ],
-    "languages": [
-      {
-        "id": "pawn",
-        "aliases": [
-          "pwn",
-          "pawno"
-        ],
-        "extensions": [
-          ".pwn",
-          ".inc"
-        ],
-        "icon": {
-          "light": "./pawn_dark.svg",
-          "dark": "./pawn_dark.svg"
-        },
-        "configuration": "./language-configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "pawn",
-        "scopeName": "source.pawn",
-        "path": "./syntaxes/pawn.tmLanguage.json"
-      }
-    ]
-  },
-  "dependencies": {
-    "@vscode/l10n": "^0.0.18",
-    "antlr4ts": "^0.5.0-alpha.4",
-    "findup-sync": "^5.0.0",
-    "vsce": "^2.15.0"
-  },
-  "scripts": {
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "compile": "npm run check-types && node esbuild.js",
-    "check-types": "tsc --noEmit",
-    "watch": "npm-run-all -p watch:*",
-    "watch:esbuild": "node esbuild.js --watch",
-    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "vscode:prepublish": "npm run package",
-    "package": "npm run check-types && node esbuild.js --production"
-  },
-  "devDependencies": {
-    "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.2",
-    "@types/node": "^20.8.6",
-    "@types/vscode": "^1.83.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.5",
-    "@typescript-eslint/parser": "^6.7.5",
-    "@vscode/l10n-dev": "^0.0.35",
-    "@vscode/test-electron": "^2.3.5",
-    "antlr4ts-cli": "^0.5.0-alpha.4",
-    "esbuild": "^0.23.1",
-    "eslint": "^8.51.0",
-    "glob": "^10.3.10",
-    "mocha": "^10.2.0",
-    "typescript": "^5.2.2"
-  }
+	"name": "pawnlanguage-test",
+	"version": "1.0.1",
+	"publisher": "ilkol",
+	"engines": {
+		"vscode": "^1.83.0"
+	},
+	"displayName": "Pawn Language TEST VERSION",
+	"description": "%config.description%",
+	"categories": [
+		"Programming Languages",
+		"Snippets"
+	],
+	"keywords": [
+		"pawn",
+		"pawno"
+	],
+	"main": "./dist/extension.js",
+	"galleryBanner": {
+		"color": "#005089",
+		"theme": "dark"
+	},
+	"author": {
+	"name": "il_kol"
+	},
+	"repository": {
+	"type": "git",
+	"directory": "https://github.com/DmitryMukhlisov/test-pawn.git"
+	},
+	"icon": "pawn.png",
+	"l10n": "./l10n",
+	"contributes": {
+	"keybindings": [
+		{
+		"key": "f5",
+		"command": "workbench.action.tasks.build",
+		"when": "editorFocus && editorLangId == pawn"
+		}
+	],
+	"taskDefinitions": [
+		{
+		"type": "rake",
+		"required": [
+			"task"
+		],
+		"properties": {
+			"task": {
+			"type": "string",
+			"description": "The Rake task to customize"
+			},
+			"file": {
+			"type": "string",
+			"description": "The Rake file that provides the task. Can be omitted."
+			}
+		}
+		}
+	],
+	"snippets": [
+		{
+			"language": "pawn",
+			"path": "./snippets/snippets.code-snippets"
+		}
+	],
+	"languages": [
+		{
+			"id": "pawn",
+			"aliases": [
+				"pwn",
+				"pawno"
+			],
+			"extensions": [
+				".pwn",
+				".inc"
+			],
+			"icon": {
+				"light": "./pawn_dark.svg",
+				"dark": "./pawn_dark.svg"
+			},
+			"configuration": "./language-configuration.json"
+		}
+	],
+	"grammars": [
+		{
+			"language": "pawn",
+			"scopeName": "source.pawn",
+			"path": "./syntaxes/pawn.tmLanguage.json"
+		}
+	]
+	},
+	"dependencies": {
+		"@vscode/l10n": "^0.0.18",
+		"antlr4ts": "^0.5.0-alpha.4",
+		"findup-sync": "^5.0.0",
+		"vsce": "^2.15.0"
+	},
+	"scripts": {
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"compile": "npm run check-types && node esbuild.js",
+		"check-types": "tsc --noEmit",
+		"watch": "npm-run-all -p watch:*",
+		"watch:esbuild": "node esbuild.js --watch",
+		"watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+		"vscode:prepublish": "npm run package",
+		"package": "npm run check-types && node esbuild.js --production"
+	},
+	"devDependencies": {
+		"@types/glob": "^8.1.0",
+		"@types/mocha": "^10.0.2",
+		"@types/node": "^20.8.6",
+		"@types/vscode": "^1.83.0",
+		"@typescript-eslint/eslint-plugin": "^6.7.5",
+		"@typescript-eslint/parser": "^6.7.5",
+		"@vscode/l10n-dev": "^0.0.35",
+		"@vscode/test-electron": "^2.3.5",
+		"antlr4ts-cli": "^0.5.0-alpha.4",
+		"esbuild": "^0.23.1",
+		"eslint": "^8.51.0",
+		"glob": "^10.3.10",
+		"mocha": "^10.2.0",
+		"typescript": "^5.2.2"
+	}
 }
