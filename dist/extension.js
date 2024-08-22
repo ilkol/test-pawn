@@ -20459,7 +20459,7 @@ __export(extension_exports, {
   activate: () => activate
 });
 module.exports = __toCommonJS(extension_exports);
-var vscode7 = __toESM(require("vscode"));
+var vscode8 = __toESM(require("vscode"));
 
 // src/Managers/diagnostic.ts
 var vscode = __toESM(require("vscode"));
@@ -31425,6 +31425,16 @@ var AntrlOpenFile = class extends AbstractOpenFile {
         this.fileManager.definitionProvider.definitions.set(key, map);
       }
     });
+    analyzer.functionsCalls.forEach((value, key) => {
+      const keyMap = this.fileManager.referenceProvider.references.get(key);
+      if (keyMap) {
+        keyMap.set(this.file.uri, value);
+      } else {
+        const map = /* @__PURE__ */ new Map();
+        map.set(this.file.uri, value);
+        this.fileManager.referenceProvider.references.set(key, map);
+      }
+    });
   }
   /**
    * Ищет все команды препрцоессора в файле
@@ -31554,9 +31564,10 @@ var AntrlOpenFile = class extends AbstractOpenFile {
 
 // src/Managers/FileManager.ts
 var FileManager = class {
-  constructor(diagnosticManager2, definitionProvider) {
+  constructor(diagnosticManager2, definitionProvider, referenceProvider) {
     this.diagnosticManager = diagnosticManager2;
     this.definitionProvider = definitionProvider;
+    this.referenceProvider = referenceProvider;
     this.activeFile = void 0;
     this.openedFiles = /* @__PURE__ */ new Map();
     this.root = import_vscode22.workspace.workspaceFolders;
@@ -31774,20 +31785,6 @@ var DocumentSemanticTokensProvider = class {
   // }
 };
 
-// src/Providers/CallHierarchyProvider.ts
-var CallHierarchyProvider = class {
-  prepareCallHierarchy(document, position, token) {
-    let items = [];
-    return items;
-  }
-  provideCallHierarchyIncomingCalls(item, token) {
-    return [];
-  }
-  provideCallHierarchyOutgoingCalls(item, token) {
-    return [];
-  }
-};
-
 // src/Providers/SymbolProvider.ts
 var SymbolProvider = class {
   constructor(fileManager) {
@@ -31875,14 +31872,37 @@ var DefinitionProvider = class {
   }
 };
 
+// src/Providers/ReferenceProvider.ts
+var vscode7 = __toESM(require("vscode"));
+var ReferenceProvider = class {
+  constructor() {
+    this.references = /* @__PURE__ */ new Map();
+  }
+  provideReferences(document, position, context, token) {
+    const result = [];
+    const wordRange = document.getWordRangeAtPosition(position);
+    const word = document.getText(wordRange);
+    const references = this.references.get(word);
+    if (references) {
+      references.forEach((referenceArray, file) => {
+        referenceArray.forEach((reference) => {
+          result.push(new vscode7.Location(file, reference.pos));
+        });
+      });
+    }
+    return result;
+  }
+};
+
 // src/extension.ts
 var diagnosticManager;
 var fileManage;
 async function activate(context) {
   console.debug("\u0410\u043A\u0442\u0438\u0432\u0430\u0446\u0438\u044F \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u0438\u044F!");
-  diagnosticManager = new DiagnosticManager(vscode7.languages.createDiagnosticCollection("pawn"));
+  diagnosticManager = new DiagnosticManager(vscode8.languages.createDiagnosticCollection("pawn"));
   const definitionProvider = new DefinitionProvider();
-  fileManage = new FileManager(diagnosticManager, definitionProvider);
+  const referenceProvider = new ReferenceProvider();
+  fileManage = new FileManager(diagnosticManager, definitionProvider, referenceProvider);
   await fileManage.findPawnDir();
   const documentLinkProvider = new DocumentLinkProvider(fileManage);
   const tokenTypes = [
@@ -31909,9 +31929,9 @@ async function activate(context) {
     "modification" /* modification */,
     "defaultLibrary" /* default */
   ];
-  const legend = new vscode7.SemanticTokensLegend(tokenTypes, tokenModifiers);
+  const legend = new vscode8.SemanticTokensLegend(tokenTypes, tokenModifiers);
   const documentSemanticTokensProvider = new DocumentSemanticTokensProvider(fileManage, legend);
-  vscode7.workspace.onDidChangeTextDocument(async (e) => {
+  vscode8.workspace.onDidChangeTextDocument(async (e) => {
     if (e.document.languageId !== "pawn") {
       return;
     }
@@ -31924,9 +31944,9 @@ async function activate(context) {
       await fileManage.onDidChangeDocument(e.document);
     }
   });
-  vscode7.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument, fileManage);
-  vscode7.workspace.textDocuments.forEach(fileManage.onDidOpenTextDocument, fileManage);
-  vscode7.workspace.onDidSaveTextDocument((file) => {
+  vscode8.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument, fileManage);
+  vscode8.workspace.textDocuments.forEach(fileManage.onDidOpenTextDocument, fileManage);
+  vscode8.workspace.onDidSaveTextDocument((file) => {
     if (file.languageId !== "pawn") {
       return;
     }
@@ -31934,27 +31954,26 @@ async function activate(context) {
     return fileManage.onDidChangeDocument(file);
   });
   const signatureProvider = new SignatureProvider(fileManage);
-  context.subscriptions.push(vscode7.languages.registerDocumentLinkProvider("pawn", documentLinkProvider));
-  context.subscriptions.push(vscode7.languages.registerDefinitionProvider("pawn", definitionProvider));
+  context.subscriptions.push(vscode8.languages.registerDocumentLinkProvider("pawn", documentLinkProvider));
+  context.subscriptions.push(vscode8.languages.registerReferenceProvider("pawn", referenceProvider));
+  context.subscriptions.push(vscode8.languages.registerDefinitionProvider("pawn", definitionProvider));
   const symbolProvider = new SymbolProvider(fileManage);
-  context.subscriptions.push(vscode7.languages.registerDocumentSymbolProvider("pawn", symbolProvider));
-  const callHierarchyProvider = new CallHierarchyProvider();
-  context.subscriptions.push(vscode7.languages.registerCallHierarchyProvider("pawn", callHierarchyProvider));
+  context.subscriptions.push(vscode8.languages.registerDocumentSymbolProvider("pawn", symbolProvider));
   const colorProvider = new PawnColorProvider();
-  context.subscriptions.push(vscode7.languages.registerColorProvider("pawn", colorProvider));
-  context.subscriptions.push(vscode7.languages.registerDocumentSemanticTokensProvider("pawn", documentSemanticTokensProvider, legend));
-  context.subscriptions.push(vscode7.languages.registerSignatureHelpProvider("pawn", signatureProvider, { triggerCharacters: ["(", ","], retriggerCharacters: [")"] }));
-  context.subscriptions.push(vscode7.tasks.registerTaskProvider("pawnBuildGameMode", {
+  context.subscriptions.push(vscode8.languages.registerColorProvider("pawn", colorProvider));
+  context.subscriptions.push(vscode8.languages.registerDocumentSemanticTokensProvider("pawn", documentSemanticTokensProvider, legend));
+  context.subscriptions.push(vscode8.languages.registerSignatureHelpProvider("pawn", signatureProvider, { triggerCharacters: ["(", ","], retriggerCharacters: [")"] }));
+  context.subscriptions.push(vscode8.tasks.registerTaskProvider("pawnBuildGameMode", {
     provideTasks: () => {
       return [
-        new vscode7.Task(
+        new vscode8.Task(
           {
             type: "pawnBuildGameMode"
           },
-          vscode7.TaskScope.Workspace,
-          vscode7.l10n.t("Build project"),
+          vscode8.TaskScope.Workspace,
+          vscode8.l10n.t("Build project"),
           context.extension.id,
-          new vscode7.ShellExecution("echo Hello world")
+          new vscode8.ShellExecution("echo Hello world")
         )
       ];
     },
@@ -31962,24 +31981,24 @@ async function activate(context) {
       const task = _task.definition.task;
       if (task) {
         const definition = _task.definition;
-        return new vscode7.Task(
+        return new vscode8.Task(
           definition,
-          _task.scope ?? vscode7.TaskScope.Workspace,
+          _task.scope ?? vscode8.TaskScope.Workspace,
           definition.task,
           "rake",
-          new vscode7.ShellExecution(`rake ${definition.task}`)
+          new vscode8.ShellExecution(`rake ${definition.task}`)
         );
       }
       return void 0;
     }
   }));
-  context.subscriptions.push(vscode7.languages.registerHoverProvider("pawn", {
+  context.subscriptions.push(vscode8.languages.registerHoverProvider("pawn", {
     async provideHover(document, position, token) {
       return fileManage.registerHover(document, position);
     }
   }));
   context.subscriptions.push(
-    vscode7.languages.registerCompletionItemProvider("pawn", {
+    vscode8.languages.registerCompletionItemProvider("pawn", {
       provideCompletionItems(document, position, token, context2) {
         let complitions = [];
         const file = fileManage.openedFiles.get(document.uri.path);

@@ -11,6 +11,7 @@ import { PawnColorProvider } from './Providers/ColorProvider';
 import { AbstractOpenFile } from './AbstractOpenFile';
 import { SemanticTokens, SemanticTokensModifires } from './SemanticTokens';
 import { DefinitionProvider } from './Providers/DefinitionProvider';
+import { ReferenceProvider } from './Providers/ReferenceProvider';
 
 
 interface RakeTaskDefinition extends vscode.TaskDefinition {
@@ -33,7 +34,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	diagnosticManager = new DiagnosticManager(vscode.languages.createDiagnosticCollection("pawn"));
 	const definitionProvider = new DefinitionProvider();
-	fileManage = new FileManager(diagnosticManager, definitionProvider);
+	const referenceProvider = new ReferenceProvider();
+	fileManage = new FileManager(diagnosticManager, definitionProvider, referenceProvider);
 
 	await fileManage.findPawnDir();
 	const documentLinkProvider = new DocumentLinkProvider(fileManage);
@@ -90,14 +92,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	const signatureProvider = new SignatureProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider('pawn', documentLinkProvider));
 
+	context.subscriptions.push(vscode.languages.registerReferenceProvider('pawn', referenceProvider));
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider('pawn', definitionProvider));
 
 	const symbolProvider = new SymbolProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider('pawn', symbolProvider));
 	
 	//пока бесполезно
-	const callHierarchyProvider = new CallHierarchyProvider();
-	context.subscriptions.push(vscode.languages.registerCallHierarchyProvider('pawn', callHierarchyProvider));
+	// const callHierarchyProvider = new CallHierarchyProvider();
+	// context.subscriptions.push(vscode.languages.registerCallHierarchyProvider('pawn', callHierarchyProvider));
 	//пока бесполезно
 
 

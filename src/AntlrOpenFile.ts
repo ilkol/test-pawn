@@ -24,6 +24,8 @@ import { Define } from "./Prepocessor/Define";
 import { Token } from "./Managers/SemanticTokensManager";
 import { Definition } from "./Linking/Definition";
 import { Declaration } from "./antlr/AST/Nodes/Declaration";
+import { Reference } from "./Linking/Reference";
+import { IHasID } from "./antlr/AST/Nodes/IHasID";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -162,7 +164,17 @@ export class AntrlOpenFile extends AbstractOpenFile
 				this.fileManager.definitionProvider.definitions.set(key, map);
 			}
 		});
-
+		analyzer.functionsCalls.forEach((value, key) => {	
+			const keyMap = this.fileManager.referenceProvider.references.get(key);
+			if(keyMap) {
+				keyMap.set(this.file.uri, value);
+			}
+			else {
+				const map = new Map<vscode.Uri, Reference<IHasID>[]>();
+				map.set(this.file.uri, value);
+				this.fileManager.referenceProvider.references.set(key, map);
+			}
+		});
 	}
 
 	/**
