@@ -1,68 +1,46 @@
 # Pawn Language
 # Ru
 
-Расширение для поддержки в VSCode языка программирования Pawn (SA:MP)
+Данное расширение позволяет использовать VSCode для удобной работы с программами на скриптовом языке программирования Pawn (SA:MP)
 
 ## Реализованные функции
 
 Расширение включает в себя:
-- Синтаксическую подсветку кода для языка программирования Pawn
-- Несколько быстрых вводов фрагментов кода (snipets) 
-
+- Синтаксическую подсветку Pawn кода
+- Синтаксическую подсветку SQL запросов внутри строк
+- Несколько быстрых вводов фрагментов кода (snipets)
+- Быстрый выбор цвета (Color picker) в коде
+- Анализатор кода на синтаксические, грамматические и семантические ошибки
+- Переход к реализациям функций и их вызовам
 
 ## Планы
-
-### Уже на подходе:
-- Подсветка SQL синтаксиска в строках с запросами
-
-### Перспективы:
-- Семантическая подсветка кода
-- Автодополнение
-- Анализ кода
-- Обработка команд препроцессора
-- Автонастройка компилятора и настроек рабочей папки
-- Поддержка Intellisense
-
-### Скриншоты наработок
-
-![https://i.imgur.com/T3Hmjti.png](https://i.imgur.com/T3Hmjti.png)
-
-![https://i.imgur.com/BiCf1J9.png](https://i.imgur.com/BiCf1J9.png)
-
-![https://i.imgur.com/BcflN78.png](https://i.imgur.com/BcflN78.png)
-
+- Улучшение рабоыт анализа кода
+- Увелечение количества ошибок, которые может найти анализатор
+- Быстрые исправления найденных ошибок (quick fix)
+- Возможность сборки проекта "в один клик" (поставщик задач)
+- Помощь с параметрами функций
 
 
 # En
 
-Extension for VSCode support for the Pawn programming language (SA:MP)
+This extension provides the ability to use VSCode for convenient work with programs in the Pawn scripting programming language (SA:MP)
 
 ## Functionality
 
 The extension includes:
-- Syntax highlighting for the Pawn programming language
-- A few snipets
-
+- Syntax highlighting of Pawn code
+- Syntax highlighting of SQL queries inside strings
+- Several quick inputs of code fragments (snipets)
+- Quick color picker in code
+- Code analyzer for syntax, grammatical and semantic errors
+- Transition to function implementations and their calls
 
 ## Plans
 
-### Already on the way:
-- SQL syntax highlighting in query strings
-
-### Prospects:
-- Semantic code highlighting
-- Autocompletion
-- Code Analysis
-- Processing preprocessor commands
-- Auto-tuning of the compiler and working folder settings
-- Intellisense support
-
-### Screenshots of developments
-
-![https://i.imgur.com/T3Hmjti.png](https://i.imgur.com/T3Hmjti.png)
-
-![https://i.imgur.com/BiCf1J9.png](https://i.imgur.com/BiCf1J9.png)
-
-![https://i.imgur.com/BcflN78.png](https://i.imgur.com/BcflN78.png)
+- Improved code analysis performance
+- Increasing the number of errors that the analyzer can find
+- Quick fixes for found errors (quick fix)
+- Ability to build a project “in one click” (task provider)
+- Help with function parameters
 
 <img alt="https://i.imgur.com/l3dlLsr.png" src="https://i.imgur.com/l3dlLsr.png" width="40%"> 
