@@ -1,7 +1,24 @@
 {
   "name": "pawnlanguage-test",
+  "version": "1.0.1",
+  "publisher": "ilkol",
+  "engines": {
+	"vscode": "^1.83.0"
+  },
   "displayName": "Pawn Language TEST VERSION",
   "description": "%config.description%",
+  "categories": [
+	"Programming Languages",
+	"Snippets"
+  ],
+  "keywords": [
+	"pawn",
+	"pawno"
+  ],
+  "galleryBanner": {
+	"color": "#C80000",
+    "theme": "dark"
+  },
   "author": {
     "name": "il_kol"
   },
@@ -9,18 +26,7 @@
     "type": "git",
     "directory": "https://github.com/DmitryMukhlisov/test-pawn.git"
   },
-  "version": "1.0.1",
-  "publisher": "ilkol",
   "icon": "pawn.png",
-  "engines": {
-    "vscode": "^1.83.0"
-  },
-  "categories": [
-    "Programming Languages"
-  ],
-  "activationEvents": [
-    "onLanguage:pawn"
-  ],
   "main": "./dist/extension.js",
   "l10n": "./l10n",
   "contributes": {

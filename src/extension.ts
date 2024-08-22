@@ -68,12 +68,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 	vscode.workspace.onDidChangeTextDocument(async (e) => {
-		if(e.document.languageId != "pawn") return;
+		if(e.document.languageId !== "pawn") {return;}
 		let connect = e.contentChanges;
 		if(!connect.length) {
 			return;
 		}
-		if(connect[0].text == ";") {
+		if(connect[0].text === ";") {
 			console.error(e.contentChanges);
 			await fileManage.onDidChangeDocument(e.document);
 		}
@@ -82,7 +82,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.workspace.textDocuments.forEach(fileManage.onDidOpenTextDocument, fileManage);
 
 	vscode.workspace.onDidSaveTextDocument((file) => {
-		if(file.languageId != "pawn") return;
+		if(file.languageId !== "pawn") {return;}
 		console.error("SAVE FILE");
 		return fileManage.onDidChangeDocument(file);
 	});
@@ -120,7 +120,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					context.extension.id,
 					new vscode.ShellExecution("echo Hello world")
 				)
-			]
+			];
 		},
 		resolveTask(_task, token) {
 			const task = _task.definition.task;
@@ -153,7 +153,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			let complitions: vscode.CompletionItem[] = [];
 			
 			const file: AbstractOpenFile | undefined = fileManage.openedFiles.get(document.uri.path);
-			if(file) complitions = complitions.concat(file.getComplitions());
+			if(file) {complitions = complitions.concat(file.getComplitions());}
 
 			// a simple completion item which inserts `Hello World!`
 			// const simpleCompletion = new vscode.CompletionItem('Hello World!');
