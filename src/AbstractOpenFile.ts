@@ -35,8 +35,10 @@ export class FunctionInfo
 	}
 
 	private makeText(): string {
-		let label = `${this.tag}:${this.name}(`;
-		label += this.parameters.map(item => `${item.constant ? "const " : ""}${item.reference ? "&" : ""}${item.tag}:${item.name}`).join(", ");
+		let label = `${this.tag === "_" ? "" : (this.tag + ":")}${this.name}(`;
+		label += this.parameters.map(item => 
+			`${item.constant ? "const " : ""}${item.reference ? "&" : ""}${item.tag === "_" ? "" : (item.tag + ":")}${item.name}`
+		).join(", ");
 		label += ")";
 		return label;
 	}

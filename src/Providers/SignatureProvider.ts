@@ -8,19 +8,19 @@ export class SignatureProvider implements vscode.SignatureHelpProvider {
 	}
 	provideSignatureHelp(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.SignatureHelpContext): vscode.ProviderResult<vscode.SignatureHelp> {
 		const file = this.fileManager.getFile(document.uri.path);
-		if(!file) return;
+		if(!file) {return;}
 		const signatures = file.signatures;
 		const functionName = this.getFunctionName(document, position);
 		if(!functionName)
-			return;
+			{return;}
 		const signatur = signatures.get(functionName);
 
 		if(signatur) {
 			const parameters = signatur.signatures[0].parameters;
 			let activeParameter = this.getActiveParameter(document, position);
-			if(parameters[parameters.length - 1].label == "..." && activeParameter >= parameters.length - 1)
-				signatur.activeParameter = parameters.length - 1;
-	        else signatur.activeParameter = activeParameter;
+			if(parameters[parameters.length - 1].label === "..." && activeParameter >= parameters.length - 1)
+				{signatur.activeParameter = parameters.length - 1;}
+	        else {signatur.activeParameter = activeParameter;}
 		}
 
         return signatur;
