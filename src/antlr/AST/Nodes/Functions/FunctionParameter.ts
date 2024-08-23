@@ -1,5 +1,7 @@
+import { Range } from "vscode";
 import { IVisitor } from "../../visitor/IVisitor";
 import { RightValue } from "../RightValue";
+import { Tag } from "../Tag";
 
 export class FunctionParameter extends RightValue
 {
@@ -18,5 +20,14 @@ export class FunctionParameter extends RightValue
 
 	get val(): RightValue {
 		return this._val;
+	}
+
+	get tag(): Tag
+	{
+		return this._val.tag;
+	}
+	get pos(): Range
+	{
+		return this._val.pos;
 	}
 }

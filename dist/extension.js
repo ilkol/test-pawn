@@ -29130,6 +29130,12 @@ var FunctionParameter = class extends RightValue {
   get val() {
     return this._val;
   }
+  get tag() {
+    return this._val.tag;
+  }
+  get pos() {
+    return this._val.pos;
+  }
 };
 
 // src/antlr/AST/Nodes/Variable.ts
@@ -30524,6 +30530,26 @@ var Analyzer = class extends BaseVisitor {
       func.used = true;
       if (!node.isTaged)
         node.tag = func.tag;
+      let param = 0;
+      if (func.parameters.length !== node.vars.length) {
+        this.addDiagnostic(new DiagnosticError(import_vscode13.l10n.t("Expected {0} parameters, but passed {1}", func.parameters.length, node.vars.length), node.idPos));
+        if (func.parameters.length < node.vars.length) {
+          func.parameters.forEach((element) => {
+            this.compareTag(element, node.vars[param], node.vars[param].pos);
+            param++;
+          });
+        } else {
+          node.vars.forEach((element) => {
+            this.compareTag(func.parameters[param], element, node.vars[param].pos);
+            param++;
+          });
+        }
+      } else {
+        func.parameters.forEach((element) => {
+          this.compareTag(element, node.vars[param], node.vars[param].pos);
+          param++;
+        });
+      }
     } else
       this.addDiagnostic(new DiagnosticError(import_vscode13.l10n.t('Function "{0}" not found', node.id), node.idPos));
   }

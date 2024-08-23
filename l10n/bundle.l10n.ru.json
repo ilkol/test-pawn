@@ -43,6 +43,8 @@
     "Unexpected while loop": "Неожиданный цикл while",
     "Unexpected for loop": "Неожиданный цикл for",
 
+	"Expected {0} parameters, but passed {1}": "Ожидается {0} параметров, а передано {1}",
+
     "Expecting an integer constant or enumeration, but found \"{0}\"": "Ожидается целочисленная константа или перечисление, а найдено \"{0}\"",
     "Array dimension mismatch": "Несовпадение размерности массива",
     "Constant expected": "Ожидается константа",
