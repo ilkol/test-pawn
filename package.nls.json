@@ -1,4 +1,5 @@
 {
 	"config.description": "Extension for beta testing of main extension",
-	"command.test": "Test commdn"
+	"command.test": "Test commdn",
+	"configuration.clearOnBuild.description": "Clear terminal before build project"
 }

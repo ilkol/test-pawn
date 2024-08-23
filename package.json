@@ -30,62 +30,74 @@
 	"icon": "pawn.png",
 	"l10n": "./l10n",
 	"contributes": {
-	"keybindings": [
-		{
-		"key": "f5",
-		"command": "workbench.action.tasks.build",
-		"when": "editorFocus && editorLangId == pawn"
-		}
-	],
-	"taskDefinitions": [
-		{
-		"type": "rake",
-		"required": [
-			"task"
-		],
-		"properties": {
-			"task": {
-			"type": "string",
-			"description": "The Rake task to customize"
-			},
-			"file": {
-			"type": "string",
-			"description": "The Rake file that provides the task. Can be omitted."
+		"configuration":[
+			{
+				"title": "Pawn Language",
+				"properties": {
+					"PawnLanguage.clearOnBuild": {
+						"type": "boolean",
+						"default": true,
+						"description": "%configuration.clearOnBuild.description%"
+					}
+				}
 			}
-		}
-		}
-	],
-	"snippets": [
-		{
-			"language": "pawn",
-			"path": "./snippets/snippets.code-snippets"
-		}
-	],
-	"languages": [
-		{
-			"id": "pawn",
-			"aliases": [
-				"pwn",
-				"pawno"
+		],
+		"keybindings": [
+			{
+			"key": "F5",
+			"command": "pawnlanguage.runBuildTask",
+			"when": "editorFocus && editorLangId == pawn"
+			}
+		],
+		"taskDefinitions": [
+			{
+			"type": "rake",
+			"required": [
+				"task"
 			],
-			"extensions": [
-				".pwn",
-				".inc"
-			],
-			"icon": {
-				"light": "./pawn_dark.svg",
-				"dark": "./pawn_dark.svg"
-			},
-			"configuration": "./language-configuration.json"
-		}
-	],
-	"grammars": [
-		{
-			"language": "pawn",
-			"scopeName": "source.pawn",
-			"path": "./syntaxes/pawn.tmLanguage.json"
-		}
-	]
+			"properties": {
+				"task": {
+				"type": "string",
+				"description": "The Rake task to customize"
+				},
+				"file": {
+				"type": "string",
+				"description": "The Rake file that provides the task. Can be omitted."
+				}
+			}
+			}
+		],
+		"snippets": [
+			{
+				"language": "pawn",
+				"path": "./snippets/snippets.code-snippets"
+			}
+		],
+		"languages": [
+			{
+				"id": "pawn",
+				"aliases": [
+					"pwn",
+					"pawno"
+				],
+				"extensions": [
+					".pwn",
+					".inc"
+				],
+				"icon": {
+					"light": "./pawn_dark.svg",
+					"dark": "./pawn_dark.svg"
+				},
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "pawn",
+				"scopeName": "source.pawn",
+				"path": "./syntaxes/pawn.tmLanguage.json"
+			}
+		]
 	},
 	"dependencies": {
 		"@vscode/l10n": "^0.0.18",

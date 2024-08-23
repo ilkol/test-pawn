@@ -31953,6 +31953,7 @@ async function activate(context) {
     console.error("SAVE FILE");
     return fileManage.onDidChangeDocument(file);
   });
+  registerTasks(context);
   const signatureProvider = new SignatureProvider(fileManage);
   context.subscriptions.push(vscode8.languages.registerDocumentLinkProvider("pawn", documentLinkProvider));
   context.subscriptions.push(vscode8.languages.registerReferenceProvider("pawn", referenceProvider));
@@ -31963,35 +31964,6 @@ async function activate(context) {
   context.subscriptions.push(vscode8.languages.registerColorProvider("pawn", colorProvider));
   context.subscriptions.push(vscode8.languages.registerDocumentSemanticTokensProvider("pawn", documentSemanticTokensProvider, legend));
   context.subscriptions.push(vscode8.languages.registerSignatureHelpProvider("pawn", signatureProvider, { triggerCharacters: ["(", ","], retriggerCharacters: [")"] }));
-  context.subscriptions.push(vscode8.tasks.registerTaskProvider("pawnBuildGameMode", {
-    provideTasks: () => {
-      return [
-        new vscode8.Task(
-          {
-            type: "pawnBuildGameMode"
-          },
-          vscode8.TaskScope.Workspace,
-          vscode8.l10n.t("Build project"),
-          context.extension.id,
-          new vscode8.ShellExecution("echo Hello world")
-        )
-      ];
-    },
-    resolveTask(_task, token) {
-      const task = _task.definition.task;
-      if (task) {
-        const definition = _task.definition;
-        return new vscode8.Task(
-          definition,
-          _task.scope ?? vscode8.TaskScope.Workspace,
-          definition.task,
-          "rake",
-          new vscode8.ShellExecution(`rake ${definition.task}`)
-        );
-      }
-      return void 0;
-    }
-  }));
   context.subscriptions.push(vscode8.languages.registerHoverProvider("pawn", {
     async provideHover(document, position, token) {
       return fileManage.registerHover(document, position);
@@ -32007,6 +31979,28 @@ async function activate(context) {
         }
         return complitions;
       }
+    })
+  );
+}
+function registerTasks(context) {
+  context.subscriptions.push(
+    vscode8.commands.registerCommand("pawnlanguage.runBuildTask", () => {
+      const task = new vscode8.Task(
+        { type: "shell" },
+        // Тип задачи
+        vscode8.TaskScope.Workspace,
+        // Область выполнения - весь рабочий проект
+        "build",
+        // Имя задачи
+        "pawnlanguage",
+        // Источник задачи (может быть вашим расширением)
+        new vscode8.ShellExecution('Write-Host "[pawnlanguage] ' + vscode8.l10n.t("Starting building") + '`n" -NoNewline; ${workspaceRoot}\\pawno\\pawncc.exe ${file}')
+      );
+      task.presentationOptions = {
+        echo: false,
+        clear: vscode8.workspace.getConfiguration().get("PawnLanguage.clearOnBuild")
+      };
+      vscode8.tasks.executeTask(task);
     })
   );
 }

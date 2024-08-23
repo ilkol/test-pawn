@@ -5,7 +5,6 @@ import { FileManager } from './Managers/FileManager';
 import { DocumentLinkProvider } from './Providers/DocumentLinkProvider';
 import { SignatureProvider } from './Providers/SignatureProvider';
 import { DocumentSemanticTokensProvider } from './Providers/DocumentSemanticTokensProvider';
-import { CallHierarchyProvider } from './Providers/CallHierarchyProvider';
 import { SymbolProvider } from './Providers/SymbolProvider';
 import { PawnColorProvider } from './Providers/ColorProvider';
 import { AbstractOpenFile } from './AbstractOpenFile';
@@ -89,6 +88,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		return fileManage.onDidChangeDocument(file);
 	});
 
+	
+	//регистрируем таск
+	registerTasks(context);
+
 	const signatureProvider = new SignatureProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider('pawn', documentLinkProvider));
 
@@ -103,46 +106,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	// context.subscriptions.push(vscode.languages.registerCallHierarchyProvider('pawn', callHierarchyProvider));
 	//пока бесполезно
 
-
 	const colorProvider = new PawnColorProvider();
 	context.subscriptions.push(vscode.languages.registerColorProvider('pawn', colorProvider));
 	context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider('pawn', documentSemanticTokensProvider, legend));
 	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('pawn', signatureProvider, {triggerCharacters: ['(', ','], retriggerCharacters: [")"] }));
-	
-
-	context.subscriptions.push(vscode.tasks.registerTaskProvider('pawnBuildGameMode', {
-		provideTasks: () => {
-			
-			return [
-				new vscode.Task({ 
-					type: "pawnBuildGameMode"
-
-				 },
-					vscode.TaskScope.Workspace,
-					vscode.l10n.t("Build project"),
-					context.extension.id,
-					new vscode.ShellExecution("echo Hello world")
-				)
-			];
-		},
-		resolveTask(_task, token) {
-			const task = _task.definition.task;
-			// A Rake task consists of a task and an optional file as specified in RakeTaskDefinition
-			// Make sure that this looks like a Rake task by checking that there is a task.
-			if (task) {
-			// resolveTask requires that the same definition object be used.
-			const definition: RakeTaskDefinition = <any>_task.definition;
-			return new vscode.Task(
-				definition,
-				_task.scope ?? vscode.TaskScope.Workspace,
-				definition.task,
-				'rake',
-				new vscode.ShellExecution(`rake ${definition.task}`)
-			);
-			}
-			return undefined;
-		},
-	}));
 
 	context.subscriptions.push(vscode.languages.registerHoverProvider('pawn', {
 		async provideHover(document, position, token) {
@@ -211,5 +178,28 @@ export async function activate(context: vscode.ExtensionContext) {
 			return complitions;
 		}
 	})
+	);
+}
+
+function registerTasks(context: vscode.ExtensionContext)
+{
+	context.subscriptions.push(
+		vscode.commands.registerCommand("pawnlanguage.runBuildTask", () => {
+			
+			const task = new vscode.Task(
+				{ type: 'shell' }, // Тип задачи
+				vscode.TaskScope.Workspace, // Область выполнения - весь рабочий проект
+				'build', // Имя задачи
+				'pawnlanguage', // Источник задачи (может быть вашим расширением)
+				new vscode.ShellExecution('Write-Host "[pawnlanguage] '+ vscode.l10n.t("Starting building")+'`n" -NoNewline; ${workspaceRoot}\\pawno\\pawncc.exe ${file}')
+			);
+			
+			task.presentationOptions = {
+				echo: false,
+				clear: vscode.workspace.getConfiguration().get("PawnLanguage.clearOnBuild")
+			};
+			// Выполнение задачи
+			vscode.tasks.executeTask(task);
+		})
 	);
 }
