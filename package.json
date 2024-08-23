@@ -1,6 +1,6 @@
 {
 	"name": "pawnlanguage-test",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"publisher": "ilkol",
 	"engines": {
 		"vscode": "^1.83.0"
@@ -21,16 +21,16 @@
 		"theme": "dark"
 	},
 	"author": {
-	"name": "il_kol"
+		"name": "il_kol"
 	},
 	"repository": {
-	"type": "git",
-	"directory": "https://github.com/DmitryMukhlisov/test-pawn.git"
+		"type": "git",
+		"directory": "https://github.com/DmitryMukhlisov/test-pawn.git"
 	},
 	"icon": "pawn.png",
 	"l10n": "./l10n",
 	"contributes": {
-		"configuration":[
+		"configuration": [
 			{
 				"title": "Pawn Language",
 				"properties": {
@@ -44,27 +44,27 @@
 		],
 		"keybindings": [
 			{
-			"key": "F5",
-			"command": "pawnlanguage.runBuildTask",
-			"when": "editorFocus && editorLangId == pawn"
+				"key": "F5",
+				"command": "pawnlanguage.runBuildTask",
+				"when": "editorFocus && editorLangId == pawn"
 			}
 		],
 		"taskDefinitions": [
 			{
-			"type": "rake",
-			"required": [
-				"task"
-			],
-			"properties": {
-				"task": {
-				"type": "string",
-				"description": "The Rake task to customize"
-				},
-				"file": {
-				"type": "string",
-				"description": "The Rake file that provides the task. Can be omitted."
+				"type": "rake",
+				"required": [
+					"task"
+				],
+				"properties": {
+					"task": {
+						"type": "string",
+						"description": "The Rake task to customize"
+					},
+					"file": {
+						"type": "string",
+						"description": "The Rake file that provides the task. Can be omitted."
+					}
 				}
-			}
 			}
 		],
 		"snippets": [
