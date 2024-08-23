@@ -278,7 +278,12 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const functions = this.scope.functions();
 		functions.forEach(element => {
 			const compl = new vscode.CompletionItem(element.id, vscode.CompletionItemKind.Function);
-			compl.insertText = new vscode.SnippetString(`${element.id}($0)`);
+			if(element.parameters.length === 0) {
+				compl.insertText = new vscode.SnippetString(`${element.id}()$0`);
+			}
+			else {
+				compl.insertText = new vscode.SnippetString(`${element.id}`);
+			}
 			this.complitions.push(compl);
 		});
 

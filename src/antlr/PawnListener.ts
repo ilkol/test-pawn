@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable curly */
 import { DiagnosticSeverity, l10n, Range } from "vscode";
 import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
