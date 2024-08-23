@@ -17,7 +17,5 @@ export class Ellipse extends ASTNode implements IHasTag
 	set tag(v: Tag) {
 		this._tag = v;
 	}
-	get tagName(): string {
-		return this._tag.name;
-	}
+
 }

@@ -9,9 +9,29 @@ export class Tag extends HasID
 	public accept(visitor: IVisitor): void {
 		throw new Error("Method not implemented.");
 	}
-	constructor(tagName?: string) {
+	constructor(tags: string[] = []) {
 		super();
-		if(tagName)
-			this.id = tagName;
+		this._tags = tags;
+	}
+
+	protected _tags: string[] = [];
+
+	public addTag(tagName: string) {
+		this._tags.push(tagName);
+	}
+	public get tags(): string[]
+	{
+		return this._tags;
+	}
+	public set tags(tags: string[])
+	{
+		this._tags = tags;
+	}
+	public get tagString(): string
+	{
+		if(this._tags.length === 1) {
+			return this._tags[0];
+		}
+		return "{" + this._tags.map(el => el).join(", ") + "}";
 	}
 }

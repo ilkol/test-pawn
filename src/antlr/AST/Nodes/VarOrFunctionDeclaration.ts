@@ -16,11 +16,6 @@ export abstract class VarOrFunctionDeclaration extends Declaration implements IH
 	public get tag() : Tag {
 		return this._tag;
 	}
-	
-	public get tagName() : string {
-		return this._tag ? this._tag.id : "";
-	}
-	
 
 	public set tag(v : Tag) {
 		this._tag = v;

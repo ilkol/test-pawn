@@ -280,7 +280,7 @@ export class Analyzer extends BaseVisitor
 			case ">=":
 			case "<=":
 			case "==":
-				(<BinarOperator>node).tag = new Tag("bool");
+				(<BinarOperator>node).tag = new Tag(["bool"]);
 		}
 	}
 	beforeVisitReturn(node: ReturnStatement): void {
@@ -288,14 +288,14 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitReturn(node: ReturnStatement): void {
 		if(node.value) {
-			if(node.value.tag.id !== this.curScope.returnTag?.id) {
+			if(node.value.tag.tagString !== this.curScope.returnTag?.tagString) {
 				if(node.value.expresion instanceof Variable) {
 					const variable = this.curScope.findVar(node.value.expresion.id);
 					if(variable && this.curScope.returnTag && this.isEqualTag(variable?.tag, this.curScope.returnTag)) {
-						this.addDiagnostic(new DiagnosticError(l10n.t("The return value must be with the tag \"{0}\", but the tag \"{1}\" was found", this.curScope.returnTag?.id, variable?.tag.id), node.value.pos));
+						this.addDiagnostic(new DiagnosticError(l10n.t("The return value must be with the tag \"{0}\", but the tag \"{1}\" was found", this.curScope.returnTag?.id, variable?.tag.tagString), node.value.pos));
 					}
 				}
-				else this.addDiagnostic(new DiagnosticError(l10n.t("The return value must be with the tag \"{0}\", but the tag \"{1}\" was found", this.curScope.returnTag?.id ? this.curScope.returnTag?.id : "unknown", node.value.tag.id), node.value.pos));
+				else this.addDiagnostic(new DiagnosticError(l10n.t("The return value must be with the tag \"{0}\", but the tag \"{1}\" was found", this.curScope.returnTag?.id ? this.curScope.returnTag?.id : "unknown", node.value.tag.tagString), node.value.pos));
 			}
 		}
 	}
@@ -512,7 +512,7 @@ export class Analyzer extends BaseVisitor
 	}
 	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
 		if(!this.isEqualTag(a.tag, b.tag)) {
-			this.addDiagnostic(new DiagnosticWarning(l10n.t("Tag mismatch") + ` (${a.tag.id}, ${b.tag.id}))`, errorRange));
+			this.addDiagnostic(new DiagnosticWarning(l10n.t("Tag mismatch") + ` (${a.tag.tagString}, ${b.tag.tagString}))`, errorRange));
 			return false;
 		}
 		return true;
@@ -522,16 +522,16 @@ export class Analyzer extends BaseVisitor
 
 	private addFunctionSignature(func: FunctionDeclaration) {
 
-		const functionInfo: FunctionInfo = new FunctionInfo(func.id, func.tag.id);
+		const functionInfo: FunctionInfo = new FunctionInfo(func.id, func.tag.tagString);
 		func.parameters.forEach(el => {
-			const param: FunctionParameterInfo = new FunctionParameterInfo(el.id, el.tag.id);
+			const param: FunctionParameterInfo = new FunctionParameterInfo(el.id, el.tag.tagString);
 			param.constant = el.const;
 			param.reference = el.reference;
 
 			functionInfo.pushParameter(param)
 		});
 		if(func.ellipse) {
-			const param: FunctionParameterInfo = new FunctionParameterInfo("...", func.ellipse.tag.id);
+			const param: FunctionParameterInfo = new FunctionParameterInfo("...", func.ellipse.tag.tagString);
 			functionInfo.pushParameter(param)
 		}
 	

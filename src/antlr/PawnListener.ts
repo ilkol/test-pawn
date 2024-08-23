@@ -86,7 +86,7 @@ export class PawnListener implements pawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			node.operator = ctx.canBeOverloaded().text;
-			node.id = node.tag.id + `:operator` + node.operator;
+			node.id = node.tag.tagString + `:operator` + node.operator;
 
 			node.setIDPos(
 				ctx.OPERATOR().symbol.line, ctx.OPERATOR().symbol.charPositionInLine, 
@@ -289,7 +289,10 @@ export class PawnListener implements pawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			let ids = ctx.IDENTIFIER();
-			if(ids.length == 1) {
+			ids.forEach(id => {
+				node.addTag(id.text);
+			});
+			if(ids.length === 1) {
 				let id = ids[0];
 				node.id = id.text;
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
@@ -321,6 +324,11 @@ export class PawnListener implements pawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			let last = this.nodes.peek();
+
+			// ctx.tag()?.IDENTIFIER().forEach((tag) => {
+			// 	node.addTag(tag.text);
+			// });
+
 			if(last instanceof FunctionDeclaration) {
 				last.ellipse = node;
 			}

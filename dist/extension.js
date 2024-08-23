@@ -28670,14 +28670,29 @@ var Declaration = class extends HasID {
 
 // src/antlr/AST/Nodes/Tag.ts
 var Tag = class extends HasID {
-  constructor(tagName) {
+  constructor(tags = []) {
     super();
     this.name = "\u0442\u044D\u0433";
-    if (tagName)
-      this.id = tagName;
+    this._tags = [];
+    this._tags = tags;
   }
   accept(visitor) {
     throw new Error("Method not implemented.");
+  }
+  addTag(tagName) {
+    this._tags.push(tagName);
+  }
+  get tags() {
+    return this._tags;
+  }
+  set tags(tags) {
+    this._tags = tags;
+  }
+  get tagString() {
+    if (this._tags.length === 1) {
+      return this._tags[0];
+    }
+    return "{" + this._tags.map((el) => el).join(", ") + "}";
   }
 };
 
@@ -28687,6 +28702,7 @@ var DefaultTag = class extends Tag {
     super();
     this.name = "\u0442\u044D\u0433 \u0446\u0435\u043B\u043E\u0433\u043E \u0447\u0438\u0441\u043B\u0430";
     this.id = "_";
+    this._tags = ["_"];
   }
 };
 
@@ -28701,9 +28717,6 @@ var VarOrFunctionDeclaration = class extends Declaration {
   }
   get tag() {
     return this._tag;
-  }
-  get tagName() {
-    return this._tag ? this._tag.id : "";
   }
   set tag(v) {
     this._tag = v;
@@ -28836,9 +28849,6 @@ var RightValue = class extends ASTNode {
   get tag() {
     return this._tag;
   }
-  get tagName() {
-    return this._tag ? this._tag.id : "";
-  }
   set tag(v) {
     this._tag = v;
   }
@@ -28933,7 +28943,7 @@ var AbstractOperator = class extends Expresion {
     this.name = "\u043E\u043F\u0435\u0440\u0430\u0442\u043E\u0440";
     switch (_operator) {
       case "!": {
-        this.tag.id = "bool";
+        this.tag.tags = ["bool"];
       }
     }
   }
@@ -29197,7 +29207,7 @@ var FunctionDeclarationParameter = class extends VarDeclaration {
 // src/antlr/AST/Nodes/Literals/FloatLiteral.ts
 var FloatLiteral = class extends NumberLiteral {
   constructor() {
-    const tag = new Tag();
+    const tag = new Tag(["Float"]);
     tag.id = "Float";
     super(tag);
     this.name = "\u0432\u0435\u0449\u0435\u0441\u0442\u0432\u0435\u043D\u043D\u043E\u0435 \u0447\u0438\u0441\u043B\u043E";
@@ -29397,9 +29407,6 @@ var Ellipse = class extends ASTNode {
   set tag(v) {
     this._tag = v;
   }
-  get tagName() {
-    return this._tag.name;
-  }
 };
 
 // src/antlr/AST/Nodes/Operators/OperatorOverload.ts
@@ -29481,7 +29488,7 @@ var PawnListener = class {
     if (ctx.stop) {
       node.setPos(ctx.start, ctx.stop);
       node.operator = ctx.canBeOverloaded().text;
-      node.id = node.tag.id + `:operator` + node.operator;
+      node.id = node.tag.tagString + `:operator` + node.operator;
       node.setIDPos(
         ctx.OPERATOR().symbol.line,
         ctx.OPERATOR().symbol.charPositionInLine,
@@ -29633,7 +29640,10 @@ var PawnListener = class {
     if (ctx.stop) {
       node.setPos(ctx.start, ctx.stop);
       let ids = ctx.IDENTIFIER();
-      if (ids.length == 1) {
+      ids.forEach((id) => {
+        node.addTag(id.text);
+      });
+      if (ids.length === 1) {
         let id = ids[0];
         node.id = id.text;
         node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
@@ -30546,20 +30556,20 @@ var Analyzer = class extends BaseVisitor {
       case ">=":
       case "<=":
       case "==":
-        node.tag = new Tag("bool");
+        node.tag = new Tag(["bool"]);
     }
   }
   beforeVisitReturn(node) {
   }
   afterVisitReturn(node) {
     if (node.value) {
-      if (node.value.tag.id !== this.curScope.returnTag?.id) {
+      if (node.value.tag.tagString !== this.curScope.returnTag?.tagString) {
         if (node.value.expresion instanceof Variable) {
           const variable = this.curScope.findVar(node.value.expresion.id);
           if (variable && this.curScope.returnTag && this.isEqualTag(variable?.tag, this.curScope.returnTag)) {
-            this.addDiagnostic(new DiagnosticError(import_vscode13.l10n.t('The return value must be with the tag "{0}", but the tag "{1}" was found', this.curScope.returnTag?.id, variable?.tag.id), node.value.pos));
+            this.addDiagnostic(new DiagnosticError(import_vscode13.l10n.t('The return value must be with the tag "{0}", but the tag "{1}" was found', this.curScope.returnTag?.id, variable?.tag.tagString), node.value.pos));
           }
-        } else this.addDiagnostic(new DiagnosticError(import_vscode13.l10n.t('The return value must be with the tag "{0}", but the tag "{1}" was found', this.curScope.returnTag?.id ? this.curScope.returnTag?.id : "unknown", node.value.tag.id), node.value.pos));
+        } else this.addDiagnostic(new DiagnosticError(import_vscode13.l10n.t('The return value must be with the tag "{0}", but the tag "{1}" was found', this.curScope.returnTag?.id ? this.curScope.returnTag?.id : "unknown", node.value.tag.tagString), node.value.pos));
       }
     }
   }
@@ -30717,21 +30727,21 @@ var Analyzer = class extends BaseVisitor {
   }
   compareTag(a, b, errorRange) {
     if (!this.isEqualTag(a.tag, b.tag)) {
-      this.addDiagnostic(new DiagnosticWarning(import_vscode13.l10n.t("Tag mismatch") + ` (${a.tag.id}, ${b.tag.id}))`, errorRange));
+      this.addDiagnostic(new DiagnosticWarning(import_vscode13.l10n.t("Tag mismatch") + ` (${a.tag.tagString}, ${b.tag.tagString}))`, errorRange));
       return false;
     }
     return true;
   }
   addFunctionSignature(func) {
-    const functionInfo = new FunctionInfo(func.id, func.tag.id);
+    const functionInfo = new FunctionInfo(func.id, func.tag.tagString);
     func.parameters.forEach((el) => {
-      const param = new FunctionParameterInfo(el.id, el.tag.id);
+      const param = new FunctionParameterInfo(el.id, el.tag.tagString);
       param.constant = el.const;
       param.reference = el.reference;
       functionInfo.pushParameter(param);
     });
     if (func.ellipse) {
-      const param = new FunctionParameterInfo("...", func.ellipse.tag.id);
+      const param = new FunctionParameterInfo("...", func.ellipse.tag.tagString);
       functionInfo.pushParameter(param);
     }
     this.functions.set(func.id, functionInfo);

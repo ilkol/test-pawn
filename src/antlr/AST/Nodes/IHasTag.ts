@@ -10,8 +10,4 @@ export interface IHasTag
 	 * Тэг
 	 */
 	set tag(v : Tag);
-	/**
-	 * Название тэга
-	 */
-	get tagName(): string;
 }

@@ -13,10 +13,7 @@ export abstract class RightValue extends ASTNode implements IHasTag
 	public get tag() : Tag {
 		return this._tag;
 	}
-	
-	public get tagName() : string {
-		return this._tag ? this._tag.id : "";
-	}
+
 	
 
 	public set tag(v : Tag) {
