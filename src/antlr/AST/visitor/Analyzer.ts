@@ -134,7 +134,7 @@ export class Analyzer extends BaseVisitor
 
 				}
 				else {
-					if(variable.indexes.length != node.indexes.length) {
+					if(variable.indexes.length !== node.indexes.length) {
 						this.addDiagnostic(new DiagnosticError(l10n.t("Array dimension mismatch"), node.pos));
 					}
 					else {
@@ -220,7 +220,7 @@ export class Analyzer extends BaseVisitor
 		this.tokens.addToken(node.idPos, SemanticTokens.function);
 
 		const array = this.functionsCalls.get(node.id);
-		const el = new funcCall.FunctionCall(node, this.file.uri)
+		const el = new funcCall.FunctionCall(node, this.file.uri);
 		if(array)
 		{
 			array.push(el);
@@ -338,7 +338,7 @@ export class Analyzer extends BaseVisitor
 			let id = this.curScope.find(node.id);
 			if (id) {
 				if(id instanceof FunctionDeclaration) {
-					if(id.modifire != FunctionModifire.forward && node.modifire == FunctionModifire.public) {
+					if(id.modifire !== FunctionModifire.forward && node.modifire === FunctionModifire.public) {
 						this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{1}\" is already taken", node.id), node.idPos));
 					}
 				}
@@ -347,7 +347,7 @@ export class Analyzer extends BaseVisitor
 				this.curScope.addFunction(node);
 
 				const array = this.functionsDeclarations.get(node.id);
-				const el = new funcDef.FunctionDeclaration(node, this.file.uri)
+				const el = new funcDef.FunctionDeclaration(node, this.file.uri);
 				if(array)
 				{
 					array.push(el);
@@ -390,7 +390,7 @@ export class Analyzer extends BaseVisitor
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope();
 		const modif = [SemanticTokensModifires.declaration];
-		if(node.code != undefined)
+		if(node.code !== undefined)
 			modif.push(SemanticTokensModifires.declaration);
 
 		this.tokens.addToken(node.idPos, SemanticTokens.function, modif);		
@@ -434,8 +434,8 @@ export class Analyzer extends BaseVisitor
 
 	private checkIds(ids: Map<string, Declaration>) {
 		ids.forEach((element, key) => {
-			if(element.file != this.file) return;
-			if(key == "cellmin" || key == "cellmax") return;
+			if(element.file !== this.file) return;
+			if(key === "cellmin" || key === "cellmax") return;
 			if(!element.used && !element.native) {
 				let diagnostic: DiagnosticMessage, diagnosticMsg: string;
 				let stock = element.stock;
@@ -507,7 +507,7 @@ export class Analyzer extends BaseVisitor
 
 
 	private isEqualTag(a: Tag, b: Tag): boolean {
-		return a.id == b.id || (a.id == "_" && b.id == "bool") || (b.id == "_" && a.id == "bool");
+		return a.id === b.id || (a.id === "_" && b.id === "bool") || (b.id === "_" && a.id === "bool");
 
 	}
 	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
@@ -528,11 +528,11 @@ export class Analyzer extends BaseVisitor
 			param.constant = el.const;
 			param.reference = el.reference;
 
-			functionInfo.pushParameter(param)
+			functionInfo.pushParameter(param);
 		});
 		if(func.ellipse) {
 			const param: FunctionParameterInfo = new FunctionParameterInfo("...", func.ellipse.tag.tagString);
-			functionInfo.pushParameter(param)
+			functionInfo.pushParameter(param);
 		}
 	
 		this.functions.set(func.id, functionInfo);

@@ -30,7 +30,7 @@ export class FunctionInfo
 
 	get label(): string {
 		if(!this._text) 
-			this._text = this.makeText();
+			{this._text = this.makeText();}
 		return this._text;
 	}
 
@@ -102,11 +102,11 @@ export abstract class AbstractOpenFile
 	abstract get exportDirectives(): Define[];
 	private loadDefaultOperator()
 	{
-		interface compl {
+		interface Сompl {
 			label: string;
 			doc?: string;
 		}
-		const keywords: compl[] = [
+		const keywords: Сompl[] = [
 			{label: "sizeof", doc: l10n.t("Returns the size of the array (number of cells)")},
 			{label: "tagof", doc: l10n.t("Returns the tag ID")},
 			{label: "char", doc: l10n.t("Results in the number of cells needed to store a packed array of characters")},
@@ -121,11 +121,11 @@ export abstract class AbstractOpenFile
 	}
 	private loadDefaultConstatns()
 	{
-		interface compl {
+		interface Сompl {
 			label: string;
 			doc?: string;
 		}
-		const keywords: compl[] = [
+		const keywords: Сompl[] = [
 			{label: "cellbits", doc: l10n.t("The size of a cell in bits; usually `32`.")},
 			{label: "cellmax", doc: l10n.t("The largest valid positive value that a cell can hold; usually `214748364`.")},
 			{label: "cellmin", doc: l10n.t("The largest valid negative value that a cell can hold; usually `-214748364`.")},
@@ -142,14 +142,14 @@ export abstract class AbstractOpenFile
 	}
 	private loadDefaultKeywords()
 	{
-		interface compl {
+		interface Сompl {
 			label: string;
 			insertText?: string;
 			kind?: CompletionItemKind;
 			detail?: string;
 		}
 		
-		const keywords: compl[] = [
+		const keywords: Сompl[] = [
 			{label: "new", insertText: "new ${0};"},
 			{label: "if", insertText: "if ($1)$0"},
 			{label: "else", insertText: "else $0"},
@@ -180,7 +180,7 @@ export abstract class AbstractOpenFile
 		keywords.forEach(key => {
 			const conplition = new CompletionItem(key.label, key.kind ? key.kind : CompletionItemKind.Keyword);
 			if(key.insertText)
-				conplition.insertText = new SnippetString(key.insertText);
+				{conplition.insertText = new SnippetString(key.insertText);}
 			conplition.detail = key.detail;
 			this.complitions.push(conplition);
 

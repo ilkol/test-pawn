@@ -52,7 +52,7 @@ export class PawnListener implements pawnListener
 	public get Root() : Declarations | null {
 		return this.root;
 	}
-	addDiagnostic(msg: string, type: DiagnosticSeverity, pos: Range): void
+	addDiagnostic(msg: string, type: DiagnosticSeverity, pos: Range): void;
 	addDiagnostic(msg: string, type: DiagnosticSeverity, startLine: number | Range, startChar?: number, endLine?: number, endChar?: number): void {
 		console.error(msg);
 		if(startLine instanceof Range) {	
@@ -63,7 +63,7 @@ export class PawnListener implements pawnListener
 
 	enterFile(ctx: FileContext): void {
 		let node = new Declarations();	
-		if(this.root == null) {
+		if(this.root === null) {
 			this.root = node;
 		}	
 		this.nodes.push(node);

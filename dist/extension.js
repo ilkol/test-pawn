@@ -20627,8 +20627,9 @@ var FunctionInfo = class {
     return this._parameters;
   }
   get label() {
-    if (!this._text)
+    if (!this._text) {
       this._text = this.makeText();
+    }
     return this._text;
   }
   makeText() {
@@ -20734,8 +20735,9 @@ var AbstractOpenFile = class {
     ];
     keywords.forEach((key) => {
       const conplition = new import_vscode2.CompletionItem(key.label, key.kind ? key.kind : import_vscode2.CompletionItemKind.Keyword);
-      if (key.insertText)
+      if (key.insertText) {
         conplition.insertText = new import_vscode2.SnippetString(key.insertText);
+      }
       conplition.detail = key.detail;
       this.complitions.push(conplition);
     });
@@ -29468,7 +29470,7 @@ var PawnListener = class {
   }
   enterFile(ctx) {
     let node = new Declarations();
-    if (this.root == null) {
+    if (this.root === null) {
       this.root = node;
     }
     this.nodes.push(node);
@@ -30440,7 +30442,7 @@ var Analyzer = class extends BaseVisitor {
       if (variable instanceof ArrayDeclaration) {
         if (!(node instanceof Array2)) {
         } else {
-          if (variable.indexes.length != node.indexes.length) {
+          if (variable.indexes.length !== node.indexes.length) {
             this.addDiagnostic(new DiagnosticError(import_vscode13.l10n.t("Array dimension mismatch"), node.pos));
           } else {
             let iter = -1;
@@ -30605,7 +30607,7 @@ var Analyzer = class extends BaseVisitor {
       let id = this.curScope.find(node.id);
       if (id) {
         if (id instanceof FunctionDeclaration) {
-          if (id.modifire != 2 /* forward */ && node.modifire == 3 /* public */) {
+          if (id.modifire !== 2 /* forward */ && node.modifire === 3 /* public */) {
             this.addDiagnostic(new DiagnosticError(import_vscode13.l10n.t('Identifire "{1}" is already taken', node.id), node.idPos));
           }
         } else this.addDiagnostic(new DiagnosticError(import_vscode13.l10n.t('Identifire "{1}" is already taken', node.id), node.idPos));
@@ -30644,7 +30646,7 @@ var Analyzer = class extends BaseVisitor {
   afterVisitFunctionDeclaration(node) {
     this.restrictScope();
     const modif = ["declaration" /* declaration */];
-    if (node.code != void 0)
+    if (node.code !== void 0)
       modif.push("declaration" /* declaration */);
     this.tokens.addToken(node.idPos, "function" /* function */, modif);
     this.addFunctionSignature(node);
@@ -30663,8 +30665,8 @@ var Analyzer = class extends BaseVisitor {
   }
   checkIds(ids) {
     ids.forEach((element, key) => {
-      if (element.file != this.file) return;
-      if (key == "cellmin" || key == "cellmax") return;
+      if (element.file !== this.file) return;
+      if (key === "cellmin" || key === "cellmax") return;
       if (!element.used && !element.native) {
         let diagnostic, diagnosticMsg;
         let stock = element.stock;
@@ -30723,7 +30725,7 @@ var Analyzer = class extends BaseVisitor {
       this.curScope = this.curScope.parent;
   }
   isEqualTag(a, b) {
-    return a.id == b.id || a.id == "_" && b.id == "bool" || b.id == "_" && a.id == "bool";
+    return a.id === b.id || a.id === "_" && b.id === "bool" || b.id === "_" && a.id === "bool";
   }
   compareTag(a, b, errorRange) {
     if (!this.isEqualTag(a.tag, b.tag)) {
