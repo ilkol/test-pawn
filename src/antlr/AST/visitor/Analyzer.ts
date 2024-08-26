@@ -568,7 +568,7 @@ export class Analyzer extends BaseVisitor
 				if(b.tags.indexOf(element) !== -1) return true;
 			});
 		}
-		return false
+		return false;
 
 	}
 	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
