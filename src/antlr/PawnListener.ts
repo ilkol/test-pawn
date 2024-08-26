@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable curly */
-import { DiagnosticSeverity, l10n, Range } from "vscode";
+import { DiagnosticSeverity, l10n, Position, Range } from "vscode";
 import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
@@ -700,8 +700,8 @@ export class PawnListener implements pawnListener
 	exitString(ctx: StringContext): void {
 		let node = <StringLiteral>this.nodes.pop();
 		if(ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
 			node.value = ctx.text;
+			node.setRange(new Position(ctx.start.line - 1, ctx.start.charPositionInLine), new Position(ctx.start.line - 1, ctx.start.charPositionInLine + ctx.text.length));
 
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
