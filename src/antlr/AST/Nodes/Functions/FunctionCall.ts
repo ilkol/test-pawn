@@ -50,12 +50,14 @@ export class FunctionCall extends Expresion implements IContainsVars<FunctionPar
 		return this._idPos;
 	}
 	
-	public setIDPos(pos: Range): void
-	public setIDPos(line: number, start: number, end: number): void
+	public setIDPos(pos: Range): void;
+	public setIDPos(line: number, start: number, end: number): void;
 	public setIDPos(line: Range | number, start?: number, end?: number): void {
-		if(typeof line == "number")
+		if(typeof line === "number") {
 			this._idPos = new Range(line - 1, <number>start, line - 1, <number>end);
-		else 
+		}
+		else {
 			this._idPos = line;
+		}
 	}
 }
