@@ -235,7 +235,8 @@ export class Analyzer extends BaseVisitor
 				node.tag = func.tag;
 
 			let param = 0;
-			if(func.parameters.length !== node.vars.length) {
+			if(func.parameters.length !== node.vars.length && func.ellipse === undefined) {
+				console.log("a");
 				this.addDiagnostic(new DiagnosticError(l10n.t("Expected {0} parameters, but passed {1}", func.parameters.length, node.vars.length), node.idPos));
 				if(func.parameters.length < node.vars.length)
 				{
@@ -253,10 +254,25 @@ export class Analyzer extends BaseVisitor
 				}
 			}
 			else {
-				func.parameters.forEach(element => {
-					this.compareTag(element, node.vars[param], node.vars[param].pos);
-					param++;
-				});
+				if(func.parameters.length <= node.vars.length && func.ellipse) {
+					func.parameters.forEach(element => {
+						this.compareTag(element, node.vars[param], node.vars[param].pos);
+						param++;
+					});
+					for(let i = param; i < node.vars.length; i++)
+					{
+						this.compareTag(func.ellipse, node.vars[i], node.vars[param].pos);
+					}
+				}
+				else {
+					if(func.parameters.length === node.vars.length) {
+						func.parameters.forEach(element => {
+							this.compareTag(element, node.vars[param], node.vars[param].pos);
+							param++;
+						});
+					}
+					else this.addDiagnostic(new DiagnosticError(l10n.t("Expected {0} parameters, but passed {1}", func.parameters.length, node.vars.length), node.idPos));
+				}
 			}
 		}
 		else 
@@ -532,7 +548,27 @@ export class Analyzer extends BaseVisitor
 
 
 	private isEqualTag(a: Tag, b: Tag): boolean {
-		return a.id === b.id || (a.id === "_" && b.id === "bool") || (b.id === "_" && a.id === "bool");
+		if(a.tags.length === 1 && b.tags.length) {
+			return a.id === b.id || (a.id === "_" && b.id === "bool") || (b.id === "_" && a.id === "bool");
+		}
+		else if(a.tags.length === 1) {
+			const tag = a.tags[0];
+			b.tags.forEach(element => {
+				if(tag === element) return true;
+			});
+		}
+		else if(b.tags.length === 1) {
+			const tag = b.tags[0];
+			a.tags.forEach(element => {
+				if(tag === element) return true;
+			});
+		}
+		else {
+			a.tags.forEach(element => {
+				if(b.tags.indexOf(element) !== -1) return true;
+			});
+		}
+		return false
 
 	}
 	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
