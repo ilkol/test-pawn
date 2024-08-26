@@ -553,20 +553,24 @@ export class Analyzer extends BaseVisitor
 		}
 		else if(a.tags.length === 1) {
 			const tag = a.tags[0];
-			b.tags.forEach(element => {
+			for(var element of b.tags)
+			{
 				if(tag === element) return true;
-			});
+			}
 		}
 		else if(b.tags.length === 1) {
 			const tag = b.tags[0];
-			a.tags.forEach(element => {
+			for(var element of a.tags)
+			{
 				if(tag === element) return true;
-			});
+			}
+		
 		}
 		else {
-			a.tags.forEach(element => {
+			for(var element of a.tags)
+			{
 				if(b.tags.indexOf(element) !== -1) return true;
-			});
+			}
 		}
 		return false;
 
