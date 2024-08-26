@@ -47,6 +47,7 @@ import * as funcCall from "../../../Linking/FunctionCall";
 export class Analyzer extends BaseVisitor
 {
 
+
 	public readonly functionsDeclarations: Map<string, funcDef.FunctionDeclaration[]> = new Map<string, funcDef.FunctionDeclaration[]>();
 	public readonly functionsCalls: Map<string, funcCall.FunctionCall[]> = new Map<string, funcCall.FunctionCall[]>();
 
@@ -500,11 +501,11 @@ export class Analyzer extends BaseVisitor
 				}
 				
 				if(!stock) {
-					diagnostic = new DiagnosticWarning(l10n.t("{0} \"{1}\" is never used", diagnosticMsg, key), element.idPos);
+					diagnostic = new DiagnosticWarning("warning 203: " + l10n.t("{0} \"{1}\" is never used", diagnosticMsg, key), element.idPos);
 					diagnostic.tags = [DiagnosticTag.Unnecessary];
 				}
 				else
-					diagnostic = new DiagnosticUnused(l10n.t("{0} \"{1}\" is never used", diagnosticMsg, key), element.idPos);
+					diagnostic = new DiagnosticUnused("warning 203: " + l10n.t("{0} \"{1}\" is never used", diagnosticMsg, key), element.idPos);
 				this.addDiagnostic(diagnostic);
 			}
 		});
@@ -577,7 +578,7 @@ export class Analyzer extends BaseVisitor
 	}
 	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
 		if(!this.isEqualTag(a.tag, b.tag)) {
-			this.addDiagnostic(new DiagnosticWarning(l10n.t("Tag mismatch") + ` (${a.tag.tagString}, ${b.tag.tagString}))`, errorRange));
+			this.addDiagnostic(new DiagnosticWarning("warning 213: " + l10n.t("Tag mismatch") + ` (${a.tag.tagString}, ${b.tag.tagString}))`, errorRange));
 			return false;
 		}
 		return true;
