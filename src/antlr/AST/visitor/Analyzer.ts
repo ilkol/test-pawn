@@ -248,12 +248,13 @@ export class Analyzer extends BaseVisitor
 				}
 				else
 				{
-					if(func) {
+					
 						node.vars.forEach(element => {
-							this.compareTag(func.parameters[param], element, node.vars[param].pos);
+							if(func) {
+								this.compareTag(func.parameters[param], element, node.vars[param].pos);
+							}
 							param++;
 						});
-					}
 				}
 			}
 			else {
