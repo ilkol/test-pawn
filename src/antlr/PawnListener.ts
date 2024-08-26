@@ -312,6 +312,7 @@ export class PawnListener implements pawnListener
 				if('isTaged' in last)
 					last.isTaged = true;
 			}
+		
 		}
 	}
 
@@ -430,6 +431,9 @@ export class PawnListener implements pawnListener
 
 			
 			if(node.expresion instanceof Literal && !(node instanceof AbstractOperator)) {
+				if(node.isTaged) {
+					node.expresion.tag = node.tag;
+				}
 				node = node.expresion;
 			}
 
