@@ -110,11 +110,10 @@ literal:			tag? (string | number | bool_const);
 bool_const:			TRUE | FALSE;
 
 string:				(STRING | SHARPSTRING) (string)*;
-angledString:		ANGLEDSTRING;
 
 // path:				PATH;
 
-functionCall:		IDENTIFIER OPEN_PARENTHESIS (expresion (COMA expresion)*)? CLOSE_PARENTHESIS;
+functionCall:		tag? IDENTIFIER OPEN_PARENTHESIS (expresion (COMA expresion)*)? CLOSE_PARENTHESIS;
 
 OPEN_PARENTHESIS: '(';
 CLOSE_PARENTHESIS: ')';
@@ -243,7 +242,6 @@ FALSE:		'false';
 
 SHARPSTRING:		HASHTAG CHARS* HASHTAG?;
 STRING:				'"' CHARS* '"';
-// ANGLEDSTRING:		'<' SCHARS* '>';
 
 fragment CHARS:				~ ["\\\r\n] | ESCAPESEQUENCE ;
 fragment SCHARS:				~ [>\\\r\n];

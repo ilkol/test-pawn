@@ -67,7 +67,6 @@ import { CycleKeywordsContext } from "./pawnParser";
 import { LiteralContext } from "./pawnParser";
 import { Bool_constContext } from "./pawnParser";
 import { StringContext } from "./pawnParser";
-import { AngledStringContext } from "./pawnParser";
 import { FunctionCallContext } from "./pawnParser";
 
 
@@ -526,13 +525,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitString?: (ctx: StringContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.angledString`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitAngledString?: (ctx: AngledStringContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.functionCall`.

@@ -67,7 +67,6 @@ import { CycleKeywordsContext } from "./pawnParser";
 import { LiteralContext } from "./pawnParser";
 import { Bool_constContext } from "./pawnParser";
 import { StringContext } from "./pawnParser";
-import { AngledStringContext } from "./pawnParser";
 import { FunctionCallContext } from "./pawnParser";
 
 
@@ -779,17 +778,6 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitString?: (ctx: StringContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.angledString`.
-	 * @param ctx the parse tree
-	 */
-	enterAngledString?: (ctx: AngledStringContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.angledString`.
-	 * @param ctx the parse tree
-	 */
-	exitAngledString?: (ctx: AngledStringContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.functionCall`.

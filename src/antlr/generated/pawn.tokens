@@ -101,7 +101,6 @@ Whitespace=100
 Newline=101
 BlockComment=102
 LineComment=103
-ANGLEDSTRING=104
 '('=1
 ')'=2
 '{'=3
