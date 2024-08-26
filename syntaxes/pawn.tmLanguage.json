@@ -1101,7 +1101,7 @@
 					"include": "#language_constants"
 				},
 				{
-					"match": "((?:(?:(?:(?:static)|(?:const))))+(?:\\s+))?(?:&\\w*)?((?<!\\w)(?:[a-zA-Z_]\\w*)(?:\\s|\n)*:)?\\s*([a-zA-Z_]\\w*)(?:\\s*)(?=,|\\[|=|\\))",
+					"match": "((?:(?:(?:(?:static)|(?:const))))+(?:\\s+))?(?:&\\w*)?((?<!\\w)(?:[a-zA-Z_]\\w*)(?:\\s|\n)*:)?\\s*([a-zA-Z_]\\w*)(?:\\s*)(?:\\s*\\[\\s*\\])?(?:\\s*=\\s*(.+?))?\\s*(?=,|\\))",
 					"captures": {
 						"1": {
 							"patterns": [
@@ -1119,6 +1119,16 @@
 						},
 						"3": {
 							"name": "variable.parameter.pawn"
+						},
+						"4": {
+							"patterns": [
+								{
+									"include": "#evaluation_context"
+								},
+								{
+									"include": "#variable"
+								}
+							]
 						}
 					}
 				},
@@ -1209,6 +1219,10 @@
 							"include": "#evaluation_context"
 						}
 					]
+				},
+				{
+					"match": "sizeof",
+					"name": "keyword.operator.functionlike.pawn keyword.operator.sizeof.pawn"
 				},
 				{
 					"match": "--",
