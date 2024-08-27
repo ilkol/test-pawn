@@ -18,10 +18,12 @@ export class EnumDeclaration extends Declaration implements IContainsVars<EnumMe
 	}
 	
 	push(el: EnumMember): void {
-		if(el.value == 0) {
+		if(el.value === 0) {
 			el.value = this.lastIndex;
 		}
-		else this.lastIndex = el.value;
+		else {
+			this.lastIndex = el.value;
+		}
 		this._variables.push(el);
 		this.lastIndex++;
 	}

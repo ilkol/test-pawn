@@ -381,7 +381,6 @@ export class Analyzer extends BaseVisitor
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
 			let id = this.curScope.find(node.id);
-			console.error(id);
 			if (id) {
 				if(id instanceof FunctionDeclaration) {
 					if(id.modifire !== FunctionModifire.forward && node.modifire !== FunctionModifire.public) {
@@ -403,8 +402,6 @@ export class Analyzer extends BaseVisitor
 				}
 				
 			}
-			// this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
-
 		}
 
 		if(node.assigmentFunctionID) {

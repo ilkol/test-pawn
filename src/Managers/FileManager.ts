@@ -45,8 +45,9 @@ export class FileManager {
 		// input.show();
 	}
 	public async findPawnDir() {
-		if(!this.root || !this.root[0])
+		if(!this.root || !this.root[0]) {
 			return window.showErrorMessage(l10n.t("For the extension to work correctly, open the folder with the compiler directory"));
+		}
 		let pawno = Uri.joinPath(this.root[0].uri, "/pawno");
 		try {
 			await workspace.fs.stat(pawno);
@@ -58,13 +59,15 @@ export class FileManager {
 				if(e instanceof FileSystemError) {
 					return window.showErrorMessage(l10n.t("The include folder was not found"));
 				}
-				else console.error(e);
+				else {
+					console.error(e);
+				}
 			}
 		} catch(e) {
 			if(e instanceof FileSystemError) {
 				return window.showErrorMessage(l10n.t("The pawno folder was not found"));
 			}
-			else console.error(e);
+			else {console.error(e);}
 		}
 		
 		
@@ -95,8 +98,8 @@ export class FileManager {
 	public async openFile(path: string | Uri): Promise<boolean> {
 		let uri: Uri;
 		if(path instanceof Uri)
-			uri = path;
-		else uri = Uri.parse("file:" + path);
+			{uri = path;}
+		else {uri = Uri.parse("file:" + path);}
 		let result = true;
 		try {
 			const doc = await workspace.openTextDocument(uri);
@@ -115,7 +118,7 @@ export class FileManager {
 
 		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
 
-		if(!file) return;
+		if(!file) {return;}
 		else {
 			return new Hover(file.getHover(word), range);
 		}
@@ -124,7 +127,7 @@ export class FileManager {
 
 		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
 	
-		if(!file) return new Map;
+		if(!file) {return new Map;}
 		
 		return file.documentsLinks;
 		// return file.Env.includes;
@@ -139,7 +142,7 @@ export class FileManager {
 	// 	// return file.Env.functions;
 	// }
 	public async onDidOpenTextDocument(file: TextDocument): Promise<void> {
-		if(file.languageId != "pawn") return;
+		if(file.languageId !== "pawn") {return;}
 	
 		let path = file.uri.path;
 		if(this.openedFiles.has(path)) {
@@ -154,7 +157,7 @@ export class FileManager {
 		if(!this.activeFile)
 		{	
 			this.activeFile = doc;
-			await doc.findAndOpenAllDirectives()
+			await doc.findAndOpenAllDirectives();
 			await this.parseAll();
 			
 		}
@@ -163,12 +166,12 @@ export class FileManager {
 	}
 
 	public async onDidChangeDocument(file: TextDocument) {
-		if(file.languageId != "pawn") return;
+		if(file.languageId !== "pawn") {return;}
 
 		let path = file.uri.path;
 		const newFile = !this.openedFiles.has(path);
 		if(newFile)
-			this.onDidOpenTextDocument(file);
+			{this.onDidOpenTextDocument(file);}
 			
 		const doc: AbstractOpenFile | undefined = this.openedFiles.get(path);
 
@@ -177,7 +180,7 @@ export class FileManager {
 				this.diagnosticManager.clear();
 				doc.scope = new Scope(doc);
 				this.activeFile = doc;
-				await doc.findAndOpenAllDirectives()
+				await doc.findAndOpenAllDirectives();
 				await this.parseAll();
 
 				await this.parseFile(doc);
@@ -194,7 +197,7 @@ export class FileManager {
 	getFileComplitions(path: string): CompletionItem[] {
 		const file = this.getFile(path);
 		if(file)
-			return file.getComplitions();
+			{return file.getComplitions();}
 		return [];	
 	}
 
@@ -209,7 +212,7 @@ export class FileManager {
 	private async parseFile(doc: AbstractOpenFile)
 	{
 		await doc.processIncludes();
-		await doc.processDirectives()
+		await doc.processDirectives();
 		await doc.parseCode();
 	}
 }

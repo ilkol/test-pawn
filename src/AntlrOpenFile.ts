@@ -3,7 +3,7 @@ import { FileManager } from "./Managers/FileManager";
 import * as vscode from 'vscode';
 
 import { CharStreams, CommonTokenStream } from "antlr4ts";
-import { ParseTreeWalker } from 'antlr4ts/tree/ParseTreeWalker'
+import { ParseTreeWalker } from 'antlr4ts/tree/ParseTreeWalker';
 import { pawnLexer } from "./antlr/generated/pawnLexer";
 import { pawnParser } from "./antlr/generated/pawnParser";
 import { pawnListener } from "./antlr/generated/pawnListener";
@@ -75,6 +75,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const tokens = this.tokensManager.tokens;
 		return tokens;
 	}
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	private AST: ASTNode | null = null;
 	private ppParser: PPParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 	private curCode: string = "";
