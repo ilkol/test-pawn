@@ -1,9 +1,9 @@
 grammar pawn;
 
 /* Содержание файла */
-file:				(declaration)* EOF;
+file:				(docs)*(declaration)* EOF;
 
-declaration:		(functionDecl|operatorOverload|var_definition SEMI) | enum;
+declaration:		(docs)*(functionDecl|operatorOverload|var_definition SEMI) | enum;
 
 enum:				ENUM (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA enumMember)*  COMA?)? CURLY_CLOSE_BRACKET SEMI?;
 enumMember:			variable (ASSIGMENT expresion)?;
@@ -114,6 +114,11 @@ string:				(STRING | SHARPSTRING) (string)*;
 // path:				PATH;
 
 functionCall:		tag? IDENTIFIER OPEN_PARENTHESIS (expresion (COMA expresion)*)? CLOSE_PARENTHESIS;
+
+docs: docBlock|docLine;
+
+docBlock: DocBlock;
+docLine: DocLine;
 
 OPEN_PARENTHESIS: '(';
 CLOSE_PARENTHESIS: ')';
@@ -270,6 +275,9 @@ FLOAT:			[0-9]+'.'[0-9]+;
 Whitespace: [ \t]+ -> skip;
 
 Newline: ('\r' '\n'? | '\n') -> skip;
+
+DocBlock: '/**' .*? '*/';
+DocLine: '///' ~ [\r\n]*;
 
 BlockComment: '/*' .*? '*/' -> skip;
 

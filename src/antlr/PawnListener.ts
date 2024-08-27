@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, AssigmentContext, CaseContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, DefaultContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, If_statementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, SwitchContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, AssigmentContext, CaseContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, If_statementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, SwitchContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -43,10 +43,12 @@ import { IfStatement } from "./AST/Nodes/Conditions/IfStatement";
 import { SwitchStatement } from "./AST/Nodes/Conditions/switch/SwitchStatement";
 import { CaseStatement } from "./AST/Nodes/Conditions/switch/CaseStatement";
 import { DefaultStatement } from "./AST/Nodes/Conditions/switch/DefaultStatement";
+import { Docs } from "./AST/Nodes/Docs/Dosc";
 
 export class PawnListener implements pawnListener
 {
 	private nodes: Stack<ASTNode> = new Stack<ASTNode>();
+	private docs: Stack<Docs> = new Stack<Docs>();
 	private root: Declarations | null = null;
 	public readonly diagnostics: DiagnosticMessage[] = [];
 	
@@ -95,6 +97,7 @@ export class PawnListener implements pawnListener
 
 		}
 	}
+	
 	exitNativeAssigment(ctx: NativeAssigmentContext): void
 	{
 		let last = <FunctionDeclaration>this.nodes.peek();
@@ -103,6 +106,7 @@ export class PawnListener implements pawnListener
 	}
 	enterFunctionDecl(ctx: FunctionDeclContext): void {
 		let node = new FunctionDeclaration();	
+		node.docs = this.docs.pop();
 		(<Declarations>this.nodes.peek()).declarations.push(node);
 		this.nodes.push(node);
 	}
@@ -881,5 +885,10 @@ export class PawnListener implements pawnListener
 				this.addDiagnostic(l10n.t("Unexpected default statement"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
+	}
+
+	exitDocBlock(ctx: DocBlockContext)
+	{
+		this.docs.push(new Docs(ctx.text));
 	}
 }

@@ -67,5 +67,7 @@
     "Identifire \"{0}\" is already taken": "Идентификатор \"{0}\" уже занят",
     "Tag mismatch": "Несовпадение типов",
 
-    "Starting building": "Начало сборки проекта"
+    "Starting building": "Начало сборки проекта",
+
+	"Outdated documentation": "Устаревшая документация"
 }

@@ -383,11 +383,11 @@ export class Analyzer extends BaseVisitor
 			let id = this.curScope.find(node.id);
 			if (id) {
 				if(id instanceof FunctionDeclaration) {
-					if(id.modifire !== FunctionModifire.forward && node.modifire === FunctionModifire.public) {
-						this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{1}\" is already taken", node.id), node.idPos));
+					if(id.modifire !== FunctionModifire.forward && node.modifire !== FunctionModifire.public) {
+						this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{0}\" is already taken", node.id), node.idPos));
 					}
 				}
-				else this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{1}\" is already taken", node.id), node.idPos));
+				else this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{0}\" is already taken", node.id), node.idPos));
 			} else {
 				this.curScope.addFunction(node);
 
@@ -402,8 +402,6 @@ export class Analyzer extends BaseVisitor
 				}
 				
 			}
-			// this.checkUsed(node, (variable: FunctionDeclaration) => this.curScope.addFunction(variable));
-
 		}
 
 		if(node.assigmentFunctionID) {
@@ -592,6 +590,7 @@ export class Analyzer extends BaseVisitor
 	private addFunctionSignature(func: FunctionDeclaration) {
 
 		const functionInfo: FunctionInfo = new FunctionInfo(func.id, func.tag.tagString);
+		functionInfo.docs = func.docs;
 		func.parameters.forEach(el => {
 			const param: FunctionParameterInfo = new FunctionParameterInfo(el.id, el.tag.tagString);
 			param.constant = el.const;
