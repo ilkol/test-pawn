@@ -33,6 +33,16 @@ export class Docs extends ASTNode
 			// Проверяем, если линия начинается с @
 			if (line.startsWith('@')) {
 				// Если до этого были собраны строки текста, объединяем их в одну строку
+				const match = line.match(/@(\w+)(?:\s+(\w+))?(?:\s+(\w+))?(.+?)/);
+				if(match) {
+					line = "@" + match[1];
+					if(match[1] === "return") {
+						line += " `" + match[2] + "`" + ` — ${match[3]}`;
+					}
+					if(match[1] === "param") {
+						line += " `" + match[2] + "`" + " __" + match[3] + "__" + ` — ${match[4]}`;
+					}
+				}
 				result.push(line);
 			} else {
 				// Собираем обычный текст
@@ -48,7 +58,7 @@ export class Docs extends ASTNode
 
 
 		// Объединяем все строки обратно
-		return result.join('\n');
+		return result.join('\r\n');
 	}
 
 

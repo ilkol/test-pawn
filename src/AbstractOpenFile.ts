@@ -94,7 +94,7 @@ export abstract class AbstractOpenFile
 			const result = new MarkdownString("").appendCodeblock(someThing.label, "pawn");
 			if(someThing.docs) {
 
-				result.appendText(someThing.docs.text);
+				result.appendMarkdown(someThing.docs.text);
 			}
 			return result;
 		}
