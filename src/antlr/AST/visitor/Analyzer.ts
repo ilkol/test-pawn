@@ -381,13 +381,14 @@ export class Analyzer extends BaseVisitor
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
 			let id = this.curScope.find(node.id);
+			console.error(id);
 			if (id) {
 				if(id instanceof FunctionDeclaration) {
-					if(id.modifire !== FunctionModifire.forward && node.modifire === FunctionModifire.public) {
-						this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{1}\" is already taken", node.id), node.idPos));
+					if(id.modifire !== FunctionModifire.forward && node.modifire !== FunctionModifire.public) {
+						this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{0}\" is already taken", node.id), node.idPos));
 					}
 				}
-				else this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{1}\" is already taken", node.id), node.idPos));
+				else this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{0}\" is already taken", node.id), node.idPos));
 			} else {
 				this.curScope.addFunction(node);
 
