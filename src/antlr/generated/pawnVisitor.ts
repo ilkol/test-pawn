@@ -68,6 +68,9 @@ import { LiteralContext } from "./pawnParser";
 import { Bool_constContext } from "./pawnParser";
 import { StringContext } from "./pawnParser";
 import { FunctionCallContext } from "./pawnParser";
+import { DocsContext } from "./pawnParser";
+import { DocBlockContext } from "./pawnParser";
+import { DocLineContext } from "./pawnParser";
 
 
 /**
@@ -532,5 +535,26 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitFunctionCall?: (ctx: FunctionCallContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.docs`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitDocs?: (ctx: DocsContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.docBlock`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitDocBlock?: (ctx: DocBlockContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.docLine`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitDocLine?: (ctx: DocLineContext) => Result;
 }
 

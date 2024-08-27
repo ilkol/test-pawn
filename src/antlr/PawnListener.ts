@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, AssigmentContext, CaseContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, DefaultContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, If_statementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, SwitchContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, AssigmentContext, CaseContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, If_statementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, SwitchContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -881,5 +881,10 @@ export class PawnListener implements pawnListener
 				this.addDiagnostic(l10n.t("Unexpected default statement"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
+	}
+
+	exitDocBlock(ctx: DocBlockContext)
+	{
+		console.log(ctx.text);
 	}
 }
