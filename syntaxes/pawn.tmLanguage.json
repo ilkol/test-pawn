@@ -885,7 +885,7 @@
 		},
 		"function":{
 			"name": "meta.function.definition.pawn",
-			"begin": "^\\s*(?:(publics:|public|forward|native|stock)\\s)?\\s*((?<!\\w)(?:(?:\\w+)(?:\\s|\\n)*:\\s*))?(\\w+)(?:\\()",
+			"begin": "^\\s*(?:(publics:|public|forward|native|stock)\\s)?\\s*((?<!\\w)(?:(?:\\w+)(?:\\s|\\n)*:\\s*))?([@\\w]+)(?:\\()",
 			"beginCaptures": {
 				"0": {
 					"name": "meta.head.function.definition.pawn"
