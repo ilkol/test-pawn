@@ -1098,7 +1098,7 @@
 			"name": "meta.parameter.pawn",
 			"patterns": [
 				{
-					"match": "((?:static|const)+\\s+)?(?:([a-zA-Z_]\\w*|{[a-zA-Z_]\\w*(?:\\s*,\\s*[a-zA-Z_]\\w*)})\\s*:\\s*)?([a-zA-Z_]\\w*|\\.\\.\\.)(?:\\[.*?\\])?(?:\\s*)(?=,|=|;|\\))",
+					"match": "((?:static|const)+\\s+)?(?:([a-zA-Z_]\\w*|{[a-zA-Z_]\\w*(?:\\s*,\\s*[a-zA-Z_]\\w*)*})\\s*:\\s*)?([a-zA-Z_]\\w*|\\.\\.\\.)(?:\\[.*?\\])?(?:\\s*)(?=,|=|;|\\))",
 					"captures": {
 						"1": {
 							"patterns": [
@@ -1556,24 +1556,21 @@
 			}
 		},
 		"types":{
-			"match": "\\b([\\w\\d_-]+)(?:\\s*,\\s*([\\w\\d_-]+))*\\b",
-			"captures": {
-				"1":{
+			"patterns": [
+				{
+					"begin": "{",
+					"end": "}",
 					"patterns": [
 						{
-							"include": "#type_name"
+							"include": "#type_name"	
 						}
 					]
-					
 				},
-				"2": {
-					"patterns": [
-						{
-							"include": "#type_name"
-						}
-					]
+				{
+					"include": "#type_name"	
 				}
-			}
+			]
+			
 		},
 		"type":{
 			"match": "[\\w\\d_-]*",
