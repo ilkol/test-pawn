@@ -1614,31 +1614,28 @@
 		},
 		"new_var":{
 			"name": "meta.initialization.pawn",
-			"begin": "(\\bnew)[\\s\\n]+((?:const[\\s\\n]+)?(?:static[\\s\\n]+)?(?:stock[\\s\\n]+))*",
+			"begin": "\\b(new\\s+)?(?=const|static|stock\\s*)",
 			"beginCaptures": {
 				"1":{
 					"name": "keyword.control.$1.pawn"
-				},
-				"2":{
-					"patterns": [
-						{
-							"include": "#storage_modifier"
-						},
-						{
-							"include": "#declaration_functions"
-						}		
-					]
 				}
 			},
 			"end": "(?=;|\\))",
 			"patterns": [
 				{
+					"include": "#storage_modifier"
+				},
+				{
+					"include": "#declaration_functions"
+				},		
+				{
 					"begin": "(?=\\w)",
 					"end": "(?:(?=;|\\))|(,))",
 					"patterns": [
 						{
-							"match": "((?:(?:(?:(?:static)|(?:const))))+(?:\\s+))?((?<!\\w)(?:(?:(?:(?:_)|(?:void)|(?:Float)|(?:bool)))|(?:[a-zA-Z_]\\w*)(?:\\s|\\n)*:))?\\s*([a-zA-Z_]\\w*)(?:\\s*)(?=,|\\[|=|;|\\))",
-							"captures": {
+							"begin": "((?:(?:(?:(?:static)|(?:const))))+(?:\\s+))?((?<!\\w)(?:(?:[a-zA-Z_]\\w*)(?:\\s|\\n)*:))?\\s*([a-zA-Z_]\\w*)(?:\\s*)(?=,|\\[|=|;|\\))",
+							"end": "(?:(?=;|\\))|(,))",
+							"beginCaptures": {
 								"1": {
 									"patterns": [
 										{
@@ -1656,7 +1653,19 @@
 								"3": {
 									"name": "variable.other.pawn"
 								}
-							}
+							},
+							"patterns":
+							[
+								{
+									"include": "#number_literal"
+								},
+								{
+									"include": "#square_brackets"	
+								},
+								{
+									"include": "#evaluation_context"
+								}	
+							]						
 						},
 						{
 							"include": "#number_literal"
