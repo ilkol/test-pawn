@@ -495,6 +495,60 @@
 						}
 					},
 					"end": "\\r?\\n"
+				},
+				{
+					"include": "#docs_old"
+				}
+			]
+		},
+		"docs_old":
+		{
+			"patterns": [
+				{
+					"begin": "<(summary)>",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.other.pawn"
+						}
+					},
+					"end": "</(summary)>",
+					"endCaptures": {
+						"1": {
+							"name": "keyword.other.pawn"
+						}
+					}
+				},
+				{
+					"begin": "<(returns)>",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.other.pawn"
+						}
+					},
+					"end": "</(returns)>",
+					"endCaptures": {
+						"1": {
+							"name": "keyword.other.pawn"
+						}
+					}
+				}
+				,
+				{
+					"begin": "<(param)\\s+name\\s*=\\s*\"(.+?)\"\\s*>",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.other.pawn"
+						},
+						"2": {
+							"name": "variable.other.pawn"
+						}
+					},
+					"end": "</(param)>",
+					"endCaptures": {
+						"1": {
+							"name": "keyword.other.pawn"
+						}
+					}
 				}
 			]
 		},
