@@ -217,7 +217,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 				}
 			
 				if(el.uri) {
-					// if(el.uri.path.indexOf("YSI") != -1 || el.uri.path.indexOf("y_") != -1) return;
+					if(el.uri.path.indexOf("YSI") != -1 || el.uri.path.indexOf("y_") != -1) return;
 		
 					if(!this.fileManager.openedFiles.has(el.uri.path)) {
 						await this.fileManager.openFile(el.uri);
