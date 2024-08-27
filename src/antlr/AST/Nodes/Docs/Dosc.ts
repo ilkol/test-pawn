@@ -38,7 +38,7 @@ export class Docs extends ASTNode
 			result += match[1];
 		}
 
-		const paramReg = /<param name="(.*?)">(.+?)<\/param>/sig
+		const paramReg = /<param name="(.*?)">(.+?)<\/param>/sig;
 
 		while((match = paramReg.exec(text)) !== null)
 		{
@@ -69,11 +69,14 @@ export class Docs extends ASTNode
 			// Проверяем, если линия начинается с @
 			if (line.startsWith('@')) {
 				// Если до этого были собраны строки текста, объединяем их в одну строку
-				const match = line.match(/@(\w+)(?:\s+(\w+))?(?:\s+(\w+))?(.+?)/);
+				const match = line.match(/@(\w+)(?:\s+(\w+))?(?:\s+(\w+))?(.+)*(?=\n|\r|$)/);
 				if(match) {
 					line = "@" + match[1];
 					if(match[1] === "return") {
 						line += " `" + match[2] + "`" + ` — ${match[3]}`;
+						if(match[4]) {
+							line += match[4];
+						}
 					}
 					else if(match[1] === "param") {
 						line += " `" + match[2] + "`" + " __" + match[3] + "__" + ` — ${match[4]}`;
@@ -81,9 +84,10 @@ export class Docs extends ASTNode
 				}
 				result.push(line);
 			} else {
-				
+				console.log(line);
 				// Собираем обычный текст
 				if(result.length !== 0) {
+					console.log(result[result.length - 1]);
 					result[result.length - 1] += " " + line;
 				}
 				else {
