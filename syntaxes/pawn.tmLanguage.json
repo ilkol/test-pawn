@@ -458,7 +458,7 @@
 		},
 		"block_docs":{
 			"name": "comment.block.documentation.pawn",
-			"begin": "/\\**",
+			"begin": "/\\*\\*",
 			"end": "\\*/",
 			"patterns": [
 				{
