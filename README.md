@@ -68,6 +68,7 @@ This extension provides the ability to use VSCode for convenient work with progr
 - [Functionality](#functionality)
 - [Plans](#plans)
 - [Build project / compile gamemode](#build-project)
+- [Code documentation](#code-documentation)
 
 ## Functionality
 
@@ -80,7 +81,8 @@ The extension includes:
 - Code analyzer for syntax, grammatical and semantic errors
 - Transition to function implementations and their calls
 - [Ability to build a project “in one click”](#build-project)
-
+- Help with function parameters
+- [Documenting code in two formats](#code-documentation)
 ## Plans
 
 - Improved code analysis performance
@@ -102,3 +104,15 @@ If you want to avoid clearing the console every time you recompile, disable the 
 1. Open options (press CTRL + ,).
 2. In the Extensions section, select Pawn Language.
 3. In the settings, find the item “Clear the console before starting the project build” (Clear on Build) and disable it.
+
+## Code documentation
+
+The extension allows developers to create comments-documentation for functions.
+
+Two comment formats are available:
+
+| Like JSDoc | ![JSDoc code](https://i.imgur.com/PydULJg.png)    | ![Pawn doc result](https://i.imgur.com/Bp5IDd1.png) |
+| ------------- | ------------------------------------------------- | --------------------------------------------------- |
+| **Pawn-doc**  | ![Pawn doc code](https://i.imgur.com/6q87zbb.png) | ![Pawn doc result](https://i.imgur.com/SPMfxSy.png) |
+
+We suggest using the more convenient first option, while maintaining support for the old one.
