@@ -885,7 +885,7 @@
 		},
 		"function":{
 			"name": "meta.function.definition.pawn",
-			"begin": "^\\s*(?:(publics:|public|forward|native|stock)\\s)?\\s*((?<!\\w)(?:(?:(?:(?:_)|(?:void)|(?:Float)|(?:bool)))|(?:[a-zA-Z_]\\w*)(?:\\s|\\n)*:))?(\\w+)(?:\\()",
+			"begin": "^\\s*(?:(publics:|public|forward|native|stock)\\s)?\\s*((?<!\\w)(?:(?:\\w+)(?:\\s|\\n)*:\\s*))?(\\w+)(?:\\()",
 			"beginCaptures": {
 				"0": {
 					"name": "meta.head.function.definition.pawn"
@@ -984,7 +984,7 @@
 		},
 		"operator_overload":{
 			"name": "meta.function.definition.pawn",
-			"begin": "^\\s*(?:(public|forward|native|stock)\\s)?\\s*((?<!\\w)(?:(?:\\w+)(?:\\s|\\n)*:))?(operator(?:\\*|\\/|\\+|-|=|\\+\\+|--|==|!=|>|<|>=|<=|!|%|&|\\^))(?:\\()",
+			"begin": "^\\s*(?:(public|forward|native|stock)\\s)?\\s*((?<!\\w)(?:(?:\\w+)(?:\\s|\\n)*:\\s*))?(operator(?:\\*|\\/|\\+|-|=|\\+\\+|--|==|!=|>|<|>=|<=|!|%|&|\\^))(?:\\()",
 			"beginCaptures": {
 				"0": {
 					"name": "meta.head.function.definition.pawn"
