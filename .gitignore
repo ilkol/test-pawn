@@ -3,3 +3,4 @@ out
 dist
 /src/antlr/generated/.antlr
 /dist
+package-lock.json
