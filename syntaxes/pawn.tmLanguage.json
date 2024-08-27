@@ -18,6 +18,9 @@
 			"include": "#function"
 		},
 		{
+			"include": "#operator_overload"
+		},
+		{
 			"include": "#evaluation_context"
 		},
 		{
@@ -851,6 +854,106 @@
 						{
 							"begin": "=",
 							"end": "$",
+							"patterns": [
+								{
+									"match": "\\w+",
+									"name": "entity.name.function.pawn"
+								}	
+
+							]
+						}
+					]
+				},
+				{
+					"begin": "(?<=\\{)",
+					"end": "\\}",
+					"beginCaptures": {},
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.block.end.bracket.curly.function.definition.pawn"
+						}
+					},
+					"name": "meta.body.function.definition.pawn",
+					"patterns": [
+						{
+							"include": "#function_body_context"
+						}
+					]
+				}
+				
+			]
+		},
+		"operator_overload":{
+			"name": "meta.function.definition.pawn",
+			"begin": "^\\s*(?:(public|forward|native|stock)\\s)?\\s*((?<!\\w)(?:(?:\\w+)(?:\\s|\\n)*:))?(operator(?:\\*|\\/|\\+|-|=|\\+\\+|--|==|!=|>|<|>=|<=|!|%|&|\\^))(?:\\()",
+			"beginCaptures": {
+				"0": {
+					"name": "meta.head.function.definition.pawn"
+				},
+				"1": {
+					"patterns": [
+						{
+							"include": "#declaration_functions"
+						}
+					]	
+				},
+				"2":{
+					"patterns": [
+						{
+							"include": "#types"
+						}
+					]
+				},
+				"3":{
+					"name": "entity.name.function.definition.pawn"
+				}
+			},
+			"end": "(?:(?<=\\})|(?=[;>\\[\\]]))",
+			"endCaptures": {},
+			"patterns": [
+				{
+					"name": "test",
+					"begin": "\\G",
+					"end": "(?:\\{|(?=;))",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.block.begin.bracket.curly.function.definition.pawn"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#ever_present_context"
+						},
+						{
+							"begin": "\\G",
+							"end": "\\)",
+							"name": "meta.head.function.definition.pawn",
+							"patterns": [
+								{
+									"include": "#ever_present_context"
+								},
+								{
+									"include": "#parameter_or_maybe_value"
+								},
+								{
+									"include": "#evaluation_context"
+								}
+							]
+						},
+						{
+							"begin": "(?=\\w)",
+							"end": "(?=;)",
+							"name": "meta.body.function.definition.pawn",
+							"patterns": [
+								{
+									"include": "#function_body_context"
+								}
+							]
+							
+						},
+						{
+							"begin": "=",
+							"end": "(?=;)",
 							"patterns": [
 								{
 									"match": "\\w+",
