@@ -27,10 +27,11 @@ export class Docs extends ASTNode
 
 		lines.forEach(line => {
 			// Убираем ведущие * и пробелы
-			const last = result.length - 1;
 			line = line.replace(/^\s*\*\s?/, '');
+			line = line.replace(/\r/, '');
 
 			// Проверяем, если линия начинается с @
+			console.log(JSON.stringify(line));
 			if (line.startsWith('@')) {
 				// Если до этого были собраны строки текста, объединяем их в одну строку
 				const match = line.match(/@(\w+)(?:\s+(\w+))?(?:\s+(\w+))?(.+?)/);
@@ -39,15 +40,16 @@ export class Docs extends ASTNode
 					if(match[1] === "return") {
 						line += " `" + match[2] + "`" + ` — ${match[3]}`;
 					}
-					if(match[1] === "param") {
+					else if(match[1] === "param") {
 						line += " `" + match[2] + "`" + " __" + match[3] + "__" + ` — ${match[4]}`;
 					}
 				}
 				result.push(line);
 			} else {
+				
 				// Собираем обычный текст
-				if(last !== -1) {
-					result[last] += " " + line;
+				if(result.length !== 0) {
+					result[result.length - 1] += " " + line;
 				}
 				else {
 					result.push(line);
@@ -56,9 +58,9 @@ export class Docs extends ASTNode
 			}
 		});
 
-
+		console.error(JSON.stringify(result.join('\r\n')));
 		// Объединяем все строки обратно
-		return result.join('\r\n');
+		return result.join('\n\r');
 	}
 
 
