@@ -446,6 +446,9 @@
 		"comments":{
 			"patterns": [
 				{
+					"include": "#block_docs"
+				},
+				{
 					"include": "#line_comment"
 				},
 				{
@@ -453,8 +456,50 @@
 				}
 			]
 		},
+		"block_docs":{
+			"name": "comment.block.documentation.pawn",
+			"begin": "/\\**",
+			"end": "\\*/",
+			"patterns": [
+				{
+					"begin": "(@param)(?:\\s+(\\w+))?(?:\\s+(\\w+))?",
+					"beginCaptures": {
+						"1":{
+							"name": "keyword.other.pawn"
+						},
+						"2":{
+							"patterns": [
+								{
+									"include": "#type_name"
+								}
+							]
+						},
+						"3":{
+							"name": "variable.other.pawn"
+						}
+					},
+					"end": "\\r?\\n"
+				},
+				{
+					"begin": "(@return)(?:\\s+(\\w+))?",
+					"beginCaptures": {
+						"1":{
+							"name": "keyword.other.pawn"
+						},
+						"2":{
+							"patterns": [
+								{
+									"include": "#type_name"
+								}
+							]
+						}
+					},
+					"end": "\\r?\\n"
+				}
+			]
+		},
 		"block_comment":{
-			"name": "comment.block",
+			"name": "comment.block.pawn",
 			"begin": "/\\*",
 			"end": "\\*/"
 		},
@@ -1594,7 +1639,7 @@
 		},
 		"type":{
 			"match": "[\\w\\d_-]*",
-			"name": "entity.name.type"
+			"name": "entity.name.type.pawn"
 		},
 		"type_int":{
 			"match": "\\b_\\b",
