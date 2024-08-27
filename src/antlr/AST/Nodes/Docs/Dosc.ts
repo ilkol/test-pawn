@@ -1,3 +1,4 @@
+import { l10n } from "vscode";
 import { IVisitor } from "../../visitor/IVisitor";
 import { ASTNode } from "../ASTNode";
 
@@ -12,12 +13,47 @@ export class Docs extends ASTNode
 	constructor(text: string)
 	{
 		super();
-		text = this.trimFirstAndLastLine(text);
+		text = this.prepareText(text);
 		this._text = text;
 	}
 	
 
-	private trimFirstAndLastLine(comment: string): string {
+	private prepareText(text: string): string
+	{
+		if(text.match(/<\w+>/)) {
+			return this.prepareTextOld(text);
+		}
+		else {
+			return this.prepareTextNew(text);
+		}
+	}
+
+	private prepareTextOld(text: string): string
+	{
+		var result = "### " + l10n.t("Outdated documentation") +"!\r\n";
+
+		var match = text.match(/(?<=<summary>)(.*)(?=<\/summary>)/si);
+		if(match)
+		{
+			result += match[1];
+		}
+
+		const paramReg = /<param name="(.*?)">(.+?)<\/param>/sig
+
+		while((match = paramReg.exec(text)) !== null)
+		{
+			result += "\n\r@param __" + match[1] +"__" + ` — ${match[2]}`;
+		}
+		match = text.match(/(?<=<returns>)(.*)(?=<\/returns>)/si);
+		if(match)
+		{
+			result += "\n\r@return — " +  match[1];
+		}
+
+		return result;
+	}
+
+	private prepareTextNew(comment: string): string {
 		comment = comment.replace(/^\/\*\*[\r\n]*/, '').replace(/\*\/$/, '');
 
 		// Разбиваем на строки
@@ -31,7 +67,6 @@ export class Docs extends ASTNode
 			line = line.replace(/\r/, '');
 
 			// Проверяем, если линия начинается с @
-			console.log(JSON.stringify(line));
 			if (line.startsWith('@')) {
 				// Если до этого были собраны строки текста, объединяем их в одну строку
 				const match = line.match(/@(\w+)(?:\s+(\w+))?(?:\s+(\w+))?(.+?)/);
@@ -58,7 +93,6 @@ export class Docs extends ASTNode
 			}
 		});
 
-		console.error(JSON.stringify(result.join('\r\n')));
 		// Объединяем все строки обратно
 		return result.join('\n\r');
 	}
