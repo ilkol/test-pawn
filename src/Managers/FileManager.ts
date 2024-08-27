@@ -6,6 +6,7 @@ import { AbstractOpenFile } from "../AbstractOpenFile";
 import { Stack } from "../antlr/Stack/Stack";
 import { DefinitionProvider } from "../Providers/DefinitionProvider";
 import { ReferenceProvider } from "../Providers/ReferenceProvider";
+import { Scope } from "../antlr/Scopes/Scope";
 
 export class FileManager {
 
@@ -174,6 +175,7 @@ export class FileManager {
 
 		if(doc instanceof AntrlOpenFile) {
 				this.diagnosticManager.clear();
+				doc.scope = new Scope(doc);
 				this.activeFile = doc;
 				await doc.findAndOpenAllDirectives()
 				await this.parseAll();
