@@ -1,5 +1,6 @@
 import { IVisitor } from "../../visitor/IVisitor";
 import { CodeBlock } from "../CodeBlock";
+import { Docs } from "../Docs/Dosc";
 import { IContainsVars } from "../IContainsVars";
 import { Ellipse } from "../Operators/Ellipse";
 import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
@@ -21,6 +22,8 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	private _code: CodeBlock | undefined;
 	private _modifire: FunctionModifire = FunctionModifire.none;
 	private _ellipse: Ellipse | undefined;
+
+	public docs?: Docs;
 
 	private _assigmentNative?: string;
 

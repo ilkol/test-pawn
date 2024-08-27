@@ -43,10 +43,12 @@ import { IfStatement } from "./AST/Nodes/Conditions/IfStatement";
 import { SwitchStatement } from "./AST/Nodes/Conditions/switch/SwitchStatement";
 import { CaseStatement } from "./AST/Nodes/Conditions/switch/CaseStatement";
 import { DefaultStatement } from "./AST/Nodes/Conditions/switch/DefaultStatement";
+import { Docs } from "./AST/Nodes/Docs/Dosc";
 
 export class PawnListener implements pawnListener
 {
 	private nodes: Stack<ASTNode> = new Stack<ASTNode>();
+	private docs: Stack<Docs> = new Stack<Docs>();
 	private root: Declarations | null = null;
 	public readonly diagnostics: DiagnosticMessage[] = [];
 	
@@ -95,6 +97,7 @@ export class PawnListener implements pawnListener
 
 		}
 	}
+	
 	exitNativeAssigment(ctx: NativeAssigmentContext): void
 	{
 		let last = <FunctionDeclaration>this.nodes.peek();
@@ -103,6 +106,7 @@ export class PawnListener implements pawnListener
 	}
 	enterFunctionDecl(ctx: FunctionDeclContext): void {
 		let node = new FunctionDeclaration();	
+		node.docs = this.docs.pop();
 		(<Declarations>this.nodes.peek()).declarations.push(node);
 		this.nodes.push(node);
 	}
@@ -885,6 +889,6 @@ export class PawnListener implements pawnListener
 
 	exitDocBlock(ctx: DocBlockContext)
 	{
-		console.log(ctx.text);
+		this.docs.push(new Docs(ctx.text));
 	}
 }

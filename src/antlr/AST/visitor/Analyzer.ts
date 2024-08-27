@@ -592,6 +592,7 @@ export class Analyzer extends BaseVisitor
 	private addFunctionSignature(func: FunctionDeclaration) {
 
 		const functionInfo: FunctionInfo = new FunctionInfo(func.id, func.tag.tagString);
+		functionInfo.docs = func.docs;
 		func.parameters.forEach(el => {
 			const param: FunctionParameterInfo = new FunctionParameterInfo(el.id, el.tag.tagString);
 			param.constant = el.const;

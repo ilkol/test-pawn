@@ -7,11 +7,13 @@ import { IScope } from "./antlr/Scopes/IScope";
 import { Scope } from "./antlr/Scopes/Scope";
 import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 import { Define } from "./Prepocessor/Define";
+import { Docs } from "./antlr/AST/Nodes/Docs/Dosc";
 
 export class FunctionInfo
 {
 	private _parameters: FunctionParameterInfo[] = [];
 	private _text?: string;
+	public docs?: Docs;
 
 	constructor(
 		public readonly name: string,
@@ -77,12 +79,24 @@ export abstract class AbstractOpenFile
 		this.loadDefaultComplitions();
 	}
 
+	/**
+	 * asdasd
+	 * asdasd
+	 * asdasd
+	 * @param word 
+	 * @returns 
+	 */
 	public getHover(word: string): MarkdownString {
 		
 		let someThing;
 		if(someThing = this.functions.get(word)) {
 			// const label = someThing.label.replace(/([\\`*_\[\]{}()#+\-.!])/g, '\\$1');
-			return new MarkdownString("").appendCodeblock(someThing.label, "pawn");
+			const result = new MarkdownString("").appendCodeblock(someThing.label, "pawn");
+			if(someThing.docs) {
+
+				result.appendText(someThing.docs.text);
+			}
+			return result;
 		}
 		else if(someThing = this.defines.get(word)){
 			return someThing.doc;
