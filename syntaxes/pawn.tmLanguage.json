@@ -1101,7 +1101,7 @@
 					"include": "#language_constants"
 				},
 				{
-					"match": "((?:static|const)+\\s+)?(?:([a-zA-Z_]\\w*|{[a-zA-Z_]\\w*(?:\\s*,\\s*[a-zA-Z_]\\w*)})\\s*:\\s*)?([a-zA-Z_]\\w*|...)(?:\\s*)(?=,|\\[|=|;|\\))",
+					"match": "((?:static|const)+\\s+)?(?:([a-zA-Z_]\\w*|{[a-zA-Z_]\\w*(?:\\s*,\\s*[a-zA-Z_]\\w*)})\\s*:\\s*)?([a-zA-Z_]\\w*|...)(?:\\[\\])?(?:\\s*)(?=,|=|;|\\))",
 					"captures": {
 						"1": {
 							"patterns": [
