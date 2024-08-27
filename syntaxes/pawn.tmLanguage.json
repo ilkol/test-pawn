@@ -1101,7 +1101,7 @@
 					"include": "#language_constants"
 				},
 				{
-					"match": "((?:(?:(?:(?:static)|(?:const))))+(?:\\s+))?(?:&\\w*)?((?<!\\w)(?:[a-zA-Z_]\\w*)(?:\\s|\n)*:)?\\s*([a-zA-Z_]\\w*)(?:\\s*)(?:\\s*\\[\\s*\\])?(?:\\s*=\\s*(.+?))?\\s*(?=,|\\))",
+					"match": "((?:static|const)+\\s+)?(?:([a-zA-Z_]\\w*|{[a-zA-Z_]\\w*(?:\\s*,\\s*[a-zA-Z_]\\w*)})\\s*:\\s*)?([a-zA-Z_]\\w*|...)(?:\\s*)(?=,|\\[|=|;|\\))",
 					"captures": {
 						"1": {
 							"patterns": [
@@ -1533,8 +1533,8 @@
 				}
 			}
 		},
-		"types":{
-			"match": "(?:\\b(void|_|bool|Float)\\b)*([\\w\\d_-]+)*",
+		"type_name": {
+			"match": "\\b(void|_|bool|Float)|([\\w\\d_-]+)\\b",
 			"captures": {
 				"1":{
 					"patterns": [
@@ -1557,8 +1557,26 @@
 					"name": "storage.pawn"
 				}
 			}
-			
-			
+		},
+		"types":{
+			"match": "\\b([\\w\\d_-]+)(?:\\s*,\\s*([\\w\\d_-]+))*\\b",
+			"captures": {
+				"1":{
+					"patterns": [
+						{
+							"include": "#type_name"
+						}
+					]
+					
+				},
+				"2": {
+					"patterns": [
+						{
+							"include": "#type_name"
+						}
+					]
+				}
+			}
 		},
 		"type":{
 			"match": "[\\w\\d_-]*",
