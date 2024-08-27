@@ -1144,6 +1144,9 @@
 					"patterns": [
 						{
 							"include": "#evaluation_context"
+						},
+						{
+							"include": "#variable"
 						}
 					]
 				},
