@@ -806,7 +806,7 @@
 					"name": "entity.name.function.definition.pawn"
 				}
 			},
-			"end": "(?:(?<=\\})|(?=[;>\\[\\]=]))",
+			"end": "(?:(?<=\\})|(?=[;>\\[\\]]))",
 			"endCaptures": {},
 			"patterns": [
 				{
@@ -847,6 +847,17 @@
 								}
 							]
 							
+						},
+						{
+							"begin": "=",
+							"end": "$",
+							"patterns": [
+								{
+									"match": "\\w+",
+									"name": "entity.name.function.pawn"
+								}	
+
+							]
 						}
 					]
 				},
