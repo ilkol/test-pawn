@@ -237,7 +237,6 @@ export class Analyzer extends BaseVisitor
 
 			let param = 0;
 			if(func.parameters.length !== node.vars.length && func.ellipse === undefined) {
-				console.log("a");
 				this.addDiagnostic(new DiagnosticError(l10n.t("Expected {0} parameters, but passed {1}", func.parameters.length, node.vars.length), node.idPos));
 				if(func.parameters.length < node.vars.length)
 				{

@@ -84,10 +84,8 @@ export class Docs extends ASTNode
 				}
 				result.push(line);
 			} else {
-				console.log(line);
 				// Собираем обычный текст
 				if(result.length !== 0) {
-					console.log(result[result.length - 1]);
 					result[result.length - 1] += " " + line;
 				}
 				else {
