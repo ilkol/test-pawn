@@ -20,6 +20,7 @@ import { FuncModifContext } from "./pawnParser";
 import { StatementContext } from "./pawnParser";
 import { ControlStatmentsContext } from "./pawnParser";
 import { AssigmentContext } from "./pawnParser";
+import { VarModificationContext } from "./pawnParser";
 import { ArrayInitContext } from "./pawnParser";
 import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
@@ -199,6 +200,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitAssigment?: (ctx: AssigmentContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.varModification`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitVarModification?: (ctx: VarModificationContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.arrayInit`.

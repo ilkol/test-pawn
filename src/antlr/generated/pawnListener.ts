@@ -20,6 +20,7 @@ import { FuncModifContext } from "./pawnParser";
 import { StatementContext } from "./pawnParser";
 import { ControlStatmentsContext } from "./pawnParser";
 import { AssigmentContext } from "./pawnParser";
+import { VarModificationContext } from "./pawnParser";
 import { ArrayInitContext } from "./pawnParser";
 import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
@@ -264,6 +265,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitAssigment?: (ctx: AssigmentContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.varModification`.
+	 * @param ctx the parse tree
+	 */
+	enterVarModification?: (ctx: VarModificationContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.varModification`.
+	 * @param ctx the parse tree
+	 */
+	exitVarModification?: (ctx: VarModificationContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.arrayInit`.
