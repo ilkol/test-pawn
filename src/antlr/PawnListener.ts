@@ -235,6 +235,10 @@ export class PawnListener implements pawnListener
 				last.variable = node;
 				// last.push(new FunctionDeclarationParameter(declarationVar));
 			}
+			else if(last instanceof CodeBlock)
+			{
+				this.addDiagnostic("warning 215: " + l10n.t("expression has no effect"), DiagnosticSeverity.Warning, node.idPos);
+			}
 			else {
 				console.log(last);
 				this.addDiagnostic(l10n.t("Unexpected variable"), DiagnosticSeverity.Error, node.idPos);
