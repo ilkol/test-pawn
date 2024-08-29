@@ -5,6 +5,9 @@
 	"engines": {
 		"vscode": "^1.83.0"
 	},
+	"activationEvents": [
+		"onLanguage:pawn"
+	],
 	"displayName": "Pawn Language TEST VERSION",
 	"description": "%config.description%",
 	"categories": [

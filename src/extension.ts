@@ -29,7 +29,8 @@ let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
 
 export async function activate(context: vscode.ExtensionContext) {
-	console.debug('Активация расширения!');
+	console.debug('Активация TEST расширения!');
+
 
 	diagnosticManager = new DiagnosticManager(vscode.languages.createDiagnosticCollection("pawn"));
 	const definitionProvider = new DefinitionProvider();
@@ -80,7 +81,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	});
 	vscode.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument, fileManage);
-	vscode.workspace.textDocuments.forEach(fileManage.onDidOpenTextDocument, fileManage);
+	console.log(vscode.workspace.textDocuments);
+	vscode.workspace.textDocuments.forEach(document => {
+		fileManage.onDidOpenTextDocument(document);
+	});
 
 	vscode.workspace.onDidSaveTextDocument((file) => {
 		if(file.languageId !== "pawn") {return;}
