@@ -521,6 +521,7 @@ export class Analyzer extends BaseVisitor
 	}
 
 	private checkVarModifires(modifires: VariableModifire[]): SemanticTokensModifires[] {
+		if(modifires === undefined) return [];
 		const tokens: SemanticTokensModifires[] = [];
 		modifires.forEach(value => {
 			switch(value) {

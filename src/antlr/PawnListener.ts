@@ -762,15 +762,15 @@ export class PawnListener implements pawnListener
 		}
 	}
 	enterCycleBody(ctx: CycleBodyContext): void {
-		const node = new Statements();
+		const node = new CodeBlock(new Statements());	
 		this.nodes.push(node);
 	}
 	exitCycleBody(ctx: CycleBodyContext): void {
-		const node = <Statements>this.nodes.pop();
+		const node = <CodeBlock>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			const last = <Cycle>this.nodes.peek();
-			last.code = node;
+			last.code = node.statements;
 		}
 	}
 	enterFor(ctx: ForContext): void {
