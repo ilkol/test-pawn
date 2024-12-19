@@ -5,6 +5,9 @@
 	"engines": {
 		"vscode": "^1.83.0"
 	},
+	"activationEvents": [
+		"onLanguage:pawn"
+	],
 	"displayName": "Pawn Language TEST VERSION",
 	"description": "%config.description%",
 	"categories": [
@@ -47,24 +50,6 @@
 				"key": "F5",
 				"command": "pawnlanguage.runBuildTask",
 				"when": "editorFocus && editorLangId == pawn"
-			}
-		],
-		"taskDefinitions": [
-			{
-				"type": "rake",
-				"required": [
-					"task"
-				],
-				"properties": {
-					"task": {
-						"type": "string",
-						"description": "The Rake task to customize"
-					},
-					"file": {
-						"type": "string",
-						"description": "The Rake file that provides the task. Can be omitted."
-					}
-				}
 			}
 		],
 		"snippets": [

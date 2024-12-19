@@ -23,11 +23,12 @@ funcDeclModif:		funcModif | FORWARD | NATIVE;
 funcModif:			STOCK | PUBLIC;
 
 /* Какое-то утверждение */
-statement:			((var_definition|assigment|functionCall|return) SEMI) | controlStatments;
+statement:			((var_definition|assigment|functionCall|return|varModification) SEMI) | controlStatments;
 controlStatments:	if_statement | cycles | switch;
 /* Объявление переменной */
 
 assigment:			variable assigments (expresion | arrayInit) (assigments (expresion | arrayInit))*;
+varModification:	((INCREMENTS|DECREMENTS)variable)|(variable(INCREMENTS|DECREMENTS))|variable;
 
 arrayInit:		CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* CURLY_CLOSE_BRACKET;
 arrayInitMember:	tag? (IDENTIFIER | number | string) | (arrayInit);
@@ -109,7 +110,7 @@ cycleKeywords:		(BREAK|CONTINUE) SEMI;
 literal:			tag? (string | number | bool_const);
 bool_const:			TRUE | FALSE;
 
-string:				(STRING | SHARPSTRING) (string)*;
+string:				(STRING | CHAR_STRING | SHARPSTRING) (string)*;
 
 // path:				PATH;
 
@@ -247,6 +248,7 @@ FALSE:		'false';
 
 SHARPSTRING:		HASHTAG CHARS* HASHTAG?;
 STRING:				'"' CHARS* '"';
+CHAR_STRING:				'\'' CHARS* '\'';
 
 fragment CHARS:				~ ["\\\r\n] | ESCAPESEQUENCE ;
 fragment SCHARS:				~ [>\\\r\n];

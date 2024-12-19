@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, AssigmentContext, CaseContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, If_statementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, SwitchContext, TagContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, AssigmentContext, CaseContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, If_statementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, SwitchContext, TagContext, VarModificationContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -234,6 +234,10 @@ export class PawnListener implements pawnListener
 			{
 				last.variable = node;
 				// last.push(new FunctionDeclarationParameter(declarationVar));
+			}
+			else if(last instanceof CodeBlock)
+			{
+				this.addDiagnostic("warning 215: " + l10n.t("expression has no effect"), DiagnosticSeverity.Warning, node.idPos);
 			}
 			else {
 				console.log(last);
@@ -762,15 +766,15 @@ export class PawnListener implements pawnListener
 		}
 	}
 	enterCycleBody(ctx: CycleBodyContext): void {
-		const node = new Statements();
+		const node = new CodeBlock(new Statements());	
 		this.nodes.push(node);
 	}
 	exitCycleBody(ctx: CycleBodyContext): void {
-		const node = <Statements>this.nodes.pop();
+		const node = <CodeBlock>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			const last = <Cycle>this.nodes.peek();
-			last.code = node;
+			last.code = node.statements;
 		}
 	}
 	enterFor(ctx: ForContext): void {
@@ -890,5 +894,28 @@ export class PawnListener implements pawnListener
 	exitDocBlock(ctx: DocBlockContext)
 	{
 		this.docs.push(new Docs(ctx.text));
+	}
+
+	enterVarModification(ctx: VarModificationContext): void {
+		const node = new UnarOperator(new AbstractOperator());
+		this.nodes.push(node);
+	}
+	exitVarModification(ctx: VarModificationContext): void {
+		const node = <UnarOperator>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			if(ctx.DECREMENTS())
+				node.operator = "--";
+			else if(ctx.INCREMENTS())
+				node.operator = "++";
+
+			const last = this.nodes.peek();
+			if(last instanceof CodeBlock) {
+				last.statements.push(node);
+			}
+			else {
+				this.addDiagnostic(l10n.t("Unexpected statment"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
 	}
 }

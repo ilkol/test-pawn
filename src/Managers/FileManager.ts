@@ -1,4 +1,4 @@
-import { CompletionItem, FileSystemError, Hover, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
+import { commands, CompletionItem, FileSystemError, Hover, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
 import { OpenedFile } from "../OpenedFile";
 import { DiagnosticManager } from "./diagnostic";
 import { AntrlOpenFile } from "../AntlrOpenFile";
@@ -7,6 +7,7 @@ import { Stack } from "../antlr/Stack/Stack";
 import { DefinitionProvider } from "../Providers/DefinitionProvider";
 import { ReferenceProvider } from "../Providers/ReferenceProvider";
 import { Scope } from "../antlr/Scopes/Scope";
+// import * as fs from 'fs';
 
 export class FileManager {
 
@@ -143,6 +144,8 @@ export class FileManager {
 	// }
 	public async onDidOpenTextDocument(file: TextDocument): Promise<void> {
 		if(file.languageId !== "pawn") {return;}
+
+		// await this.checkAndReopenFileIfNeeded(file);
 	
 		let path = file.uri.path;
 		if(this.openedFiles.has(path)) {
@@ -215,4 +218,26 @@ export class FileManager {
 		await doc.processDirectives();
 		await doc.parseCode();
 	}
+
+	// public async checkAndReopenFileIfNeeded(document: TextDocument) {
+	// 	// Читаем содержимое файла
+	// 	const filePath = document.fileName;
+	// 	const buffer = fs.readFileSync(filePath);
+	
+	// 	// Определяем кодировку
+	// 	const detectedEncoding = chardet.detect(buffer);
+	
+	// 	// Если кодировка не совпадает с ожидаемой, переоткрываем файл
+	// 	if (detectedEncoding !== "windows1251") {
+	// 		window.showErrorMessage(`Важно! Файл открыт в кодировк UTF-8, что можно плохо сказаться на тексте в ваших сообщениях в моде. Советуем переоткрыть файл с кодировкой windows1251`);
+	
+	// 		// Закрываем текущий документ
+	// 		// await commands.executeCommand('workbench.action.closeActiveEditor');
+	
+	// 		// // Переоткрываем файл с нужной кодировкой
+	// 		// await commands.executeCommand('vscode.openWith', Uri.file(filePath), {
+	// 		// 	"encoding": "windows1251"
+	// 		// });
+	// 	}
+	// }
 }
