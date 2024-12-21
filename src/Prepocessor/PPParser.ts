@@ -70,31 +70,50 @@ export class PPParser
 	 */
 	public collectDirectives(code: string): string {
 
-		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)(?=\s*\/\/|(?=\r?\n|$))/gim;
-				    
+		// const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)(?=\s*\/\/|(?=\r?\n|$))/gim;
+		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)(?=\s*\/\/|\r?\n|$)/gim;
+
+		const changes: { start: number; end: number; replacement: string }[] = [];
+
 		let match;
+		let last = "";
+		let counter = 0;
+		console.error(this.file.fileName);
 		while ((match = reg.exec(code)) !== null) {
-			const [fullMatch, leadingWhitespace, directive, restA] = match;
+			const [fullMatch, leadingWhitespace, directive, rest] = match;
+			console.log(directive, rest);
 			
 			// Координата начала директивы (#)
   			const directiveIndex = match.index + leadingWhitespace.length;
 			// Окончания директивы
-			let rest = restA ? restA : "";
 			// Координата начала оставшейся части
-			const restIndex = restA ? match.index + fullMatch.indexOf(rest) : -1;
 			const endIndex = match.index + fullMatch.length;
+			const restIndex = rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
 
-			const preStr = code.substring(0, directiveIndex);
-			const replaceCommand = ' '.repeat(endIndex - directiveIndex);
-			const postStr = code.substring(endIndex);
+			// const preStr = code.substring(0, directiveIndex);
+			// const replaceCommand = ' '.repeat(endIndex - directiveIndex);
+			// const postStr = code.substring(endIndex);
+			
 			
 			this.addNewDirective(directive, rest, directiveIndex, restIndex, endIndex);
 
+			changes.push({
+				start: directiveIndex,
+				end: endIndex,
+				replacement: ' '.repeat(endIndex - directiveIndex),
+			});
+
 			// Итоговый код, после удаления директивы
-			code = preStr + replaceCommand + postStr;
+			// code = preStr + replaceCommand + postStr;
 		}		
-		return code;
+
+		let codeWithoutDirectives = code;
+		changes.sort((a, b) => b.start - a.start);
+		for (const change of changes) {
+			codeWithoutDirectives = codeWithoutDirectives.substring(0, change.start) + change.replacement + codeWithoutDirectives.substring(change.end);
+		}
+		return codeWithoutDirectives;
 	}
 
 	//Добавляет новую директиву во все списки

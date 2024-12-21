@@ -82,9 +82,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	vscode.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument, fileManage);
 	console.log(vscode.workspace.textDocuments);
-	vscode.workspace.textDocuments.forEach(document => {
-		fileManage.onDidOpenTextDocument(document);
-	});
+	parseAllOpenedFiles();
+	
 
 	vscode.workspace.onDidSaveTextDocument((file) => {
 		if(file.languageId !== "pawn") {return;}
@@ -126,7 +125,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			
 			let complitions: vscode.CompletionItem[] = [];
 			
-			const file: AbstractOpenFile | undefined = fileManage.openedFiles.get(document.uri.path);
+			const file: AbstractOpenFile | undefined = fileManage.openedFiles.get(document.uri);
 			if(file) {complitions = complitions.concat(file.getComplitions());}
 
 			// a simple completion item which inserts `Hello World!`
@@ -206,4 +205,11 @@ function registerTasks(context: vscode.ExtensionContext)
 			vscode.tasks.executeTask(task);
 		})
 	);
+}
+
+function parseAllOpenedFiles()
+{
+	vscode.workspace.textDocuments.forEach(document => {
+		fileManage.onDidOpenTextDocument(document);
+	});
 }

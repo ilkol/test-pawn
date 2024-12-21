@@ -181,9 +181,13 @@ export class AntrlOpenFile extends AbstractOpenFile
 	/**
 	 * Ищет все команды препрцоессора в файле
 	 */
-	private async findAllDirectives()
+	protected async findAllDirectives()
 	{
 		this.curCode = this.ppParser.collectDirectives(this.curCode);
+	}
+	public get includes()
+	{
+		return this.ppParser.includes;
 	}
 	/**
 	 * Открывает все инклуды в файле
@@ -220,12 +224,12 @@ export class AntrlOpenFile extends AbstractOpenFile
 				if(el.uri) {
 					if(el.uri.path.indexOf("YSI") != -1 || el.uri.path.indexOf("y_") != -1) return;
 		
-					if(!this.fileManager.openedFiles.has(el.uri.path)) {
+					if(!this.fileManager.openedFiles.has(el.uri)) {
 						await this.fileManager.openFile(el.uri);
 						const doc = this.fileManager.parsingStack.peek();
-						if(doc)
+						if(doc && this.file.uri !== doc.uri)
 						{
-							await doc.findAndOpenAllDirectives();
+							await this.fileManager.parse(doc);
 						}
 					}
 					
@@ -259,12 +263,12 @@ export class AntrlOpenFile extends AbstractOpenFile
 	/**
 	 * Находит и открывает все инклуды
 	 */
-	public async findAndOpenAllDirectives(): Promise<void> {
+	public async findDirectives(): Promise<void> {
 		this.ppParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 		this.curCode = this.file.getText();
 
 		await this.findAllDirectives();
-		await this.openAllIncludes();
+		// await this.openAllIncludes();
 	}
 	public getComplitions(): vscode.CompletionItem[] {
 

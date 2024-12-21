@@ -1,4 +1,4 @@
-import { commands, CompletionItem, FileSystemError, Hover, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
+import vscode, { commands, CompletionItem, FileSystemError, Hover, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
 import { OpenedFile } from "../OpenedFile";
 import { DiagnosticManager } from "./diagnostic";
 import { AntrlOpenFile } from "../AntlrOpenFile";
@@ -10,15 +10,28 @@ import { Scope } from "../antlr/Scopes/Scope";
 // import * as fs from 'fs';
 
 export class FileManager {
+	/**
+	 * Массив всех открытых файлов
+	 */
+	public readonly openedFiles: Map<Uri, AbstractOpenFile> = new Map<Uri, AbstractOpenFile>;
+	/**
+	 * Граф зависимостей
+	 * Содержит список инклудов для каждого файла
+	 */
+	private dependencyGraph: Map<Uri, Set<Uri>> = new Map();
+	/**
+	 * Очередь для парсинга файлов
+	 */
+    private parsingQueue: Set<Uri> = new Set();
 
 	private activeFile?: AntrlOpenFile = undefined; 
 
 
-	public readonly openedFiles: Map<string, AbstractOpenFile> = new Map<string, OpenedFile>;
 	public root = workspace.workspaceFolders;
 	public _includePath?: Uri = undefined;
 
 	public readonly parsingStack: Stack<AbstractOpenFile> = new Stack<AbstractOpenFile>();
+	public readonly parsedFiles: string[] = [];
 
 	constructor(private diagnosticManager: DiagnosticManager,
 		public readonly definitionProvider: DefinitionProvider,
@@ -117,7 +130,7 @@ export class FileManager {
 		const range = document.getWordRangeAtPosition(position);
 		const word = document.getText(range);
 
-		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
+		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri);
 
 		if(!file) {return;}
 		else {
@@ -126,7 +139,7 @@ export class FileManager {
 	}
 	public getFileFunctionsIncludes(document: TextDocument): Map<Range, Uri> {
 
-		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
+		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri);
 	
 		if(!file) {return new Map;}
 		
@@ -147,24 +160,32 @@ export class FileManager {
 
 		// await this.checkAndReopenFileIfNeeded(file);
 	
-		let path = file.uri.path;
-		if(this.openedFiles.has(path)) {
+		const uri = file.uri;
+		const path = uri.path;
+		if(this.openedFiles.has(uri)) {
 			console.log(`File already opened: ${path}`);
 			return;
 		}
 	
-		this.diagnosticManager.clear();
-		let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
-		this.openedFiles.set(path, doc);
-		this.parsingStack.push(doc);
-		if(!this.activeFile)
-		{	
-			this.activeFile = doc;
-			await doc.findAndOpenAllDirectives();
-			await this.parseAll();
+		this.parsingQueue.add(file.uri);
+        await this.parseFiles();
+
+		// this.diagnosticManager.clear();
+		// try {
+		// 	let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
+		// 	this.openedFiles.set(uri, doc);
+		// 	this.parsingStack.push(doc);
+		// } catch(e) {
+		// 	console.error(`Failed to open file ${file.uri}: ${e}`);
+		// }
+		// if(!this.activeFile)
+		// {	
+		// 	this.activeFile = doc;
+		// 	await doc.findAndOpenAllDirectives();
+		// 	await this.parseAll();
 			
-		}
-		this.diagnosticManager.updateDiagnostic();
+		// }
+		// this.diagnosticManager.updateDiagnostic();
 		return;
 	}
 
@@ -172,18 +193,18 @@ export class FileManager {
 		if(file.languageId !== "pawn") {return;}
 
 		let path = file.uri.path;
-		const newFile = !this.openedFiles.has(path);
+		const newFile = !this.openedFiles.has(file.uri);
 		if(newFile)
 			{this.onDidOpenTextDocument(file);}
 			
-		const doc: AbstractOpenFile | undefined = this.openedFiles.get(path);
+		const doc: AbstractOpenFile | undefined = this.openedFiles.get(file.uri);
 
 
 		if(doc instanceof AntrlOpenFile) {
 				this.diagnosticManager.clear();
 				doc.scope = new Scope(doc);
 				this.activeFile = doc;
-				await doc.findAndOpenAllDirectives();
+				// await doc.findAndOpenAllDirectives();
 				await this.parseAll();
 
 				await this.parseFile(doc);
@@ -195,7 +216,8 @@ export class FileManager {
 	}
 	
 	getFile(path: string): AbstractOpenFile | undefined {
-		return this.openedFiles.get(path);
+		const uri = Uri.file(path);
+		return this.openedFiles.get(uri);
 	}
 	getFileComplitions(path: string): CompletionItem[] {
 		const file = this.getFile(path);
@@ -204,6 +226,13 @@ export class FileManager {
 		return [];	
 	}
 
+	public async parse(doc: AbstractOpenFile) {
+		if(this.parsedFiles.indexOf(doc.uri.path) !== -1) {
+			return;
+		}
+		this.parsedFiles.push(doc.uri.path);
+		// await doc.findAndOpenAllDirectives();
+	}
 
 	public async parseAll() {
 		let doc;
@@ -240,4 +269,105 @@ export class FileManager {
 	// 		// });
 	// 	}
 	// }
+
+
+	private async buildDependencyGraph(): Promise<void> {
+		this.dependencyGraph.clear(); // Очищаем граф перед перестроением
+
+        for (const [fileUri, openedFile] of this.openedFiles) {
+            this.dependencyGraph.set(fileUri, new Set());
+			openedFile.findDirectives();
+            const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
+			console.log(includes);
+            // for (const includePath of includes) {
+            //     const includeUri = this.resolveIncludePath(vscode.Uri.parse(fileUri), includePath);
+            //     if (includeUri)
+            //     {
+            //         this.dependencyGraph.get(fileUri)?.add(includeUri.toString());
+            //     }
+            // }
+        }
+
+        // this.dependencyGraph.set(file.uri.toString(), new Set());
+        // const includes = await this.findIncludes(file); 
+        // for (const includePath of includes) {
+        //     const includeUri = this.resolveIncludePath(file.uri, includePath);
+        //     if (includeUri)
+        //     {
+        //         this.dependencyGraph.get(file.uri.toString())?.add(includeUri.toString());
+        //     }
+        // }
+    }
+	private async topologicalSort(): Promise<Uri[]> {
+        const visited = new Set<Uri>();
+        const stack: Uri[] = [];
+        const self = this;
+
+        async function visit(node: Uri) {
+            visited.add(node);
+            if (self.dependencyGraph.has(node))
+            {
+                for (const neighbor of self.dependencyGraph.get(node)!) {
+                    if (visited.has(neighbor)) {
+                        throw new Error(`Циклическая зависимость обнаружена: ${node} -> ${neighbor}`);
+                    }
+                    if (!stack.includes(neighbor))
+                    {
+                        await visit(neighbor);
+                    }
+                }
+            }
+            stack.push(node);
+        }
+
+        for (const node of this.dependencyGraph.keys()) {
+            if (!visited.has(node)) {
+                await visit(node);
+            }
+        }
+
+        return stack.reverse(); // Разворачиваем стек для получения топологического порядка
+    }
+
+	public async parseFiles(): Promise<void>
+    {
+        if (this.parsingQueue.size === 0)
+        {
+            return;
+        }
+
+        const filesForParsing = Array.from(this.parsingQueue);
+        this.parsingQueue.clear();
+
+        try
+        {
+            for(const fileUri of filesForParsing)
+            {
+                const textDocument = vscode.workspace.textDocuments.find(doc => doc.uri === fileUri);
+                if(textDocument && !this.openedFiles.has(textDocument.uri))
+                {
+                    try {
+                        let doc = await new AntrlOpenFile(textDocument, this);
+                        this.openedFiles.set(textDocument.uri, doc);
+                    } catch (error) {
+                        console.error(`Failed to open file ${textDocument.uri}: ${error}`);
+                    }
+                }
+            }
+        }
+        catch(e)
+        {
+            console.error(e);
+        }
+        
+		await this.buildDependencyGraph();
+
+		try {
+            const sortedFiles = await this.topologicalSort();
+			console.log(sortedFiles);
+        } catch (e) {
+            console.error(e);
+        }
+
+    }
 }
