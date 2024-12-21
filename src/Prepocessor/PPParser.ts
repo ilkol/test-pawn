@@ -88,7 +88,6 @@ export class PPParser
 		console.error(this.file.fileName);
 		while ((match = reg.exec(code)) !== null) {
 			const [fullMatch, leadingWhitespace, directive, rest] = match;
-			console.log(directive, rest);
 			
 			// Координата начала директивы (#)
   			const directiveIndex = match.index + leadingWhitespace.length;
@@ -201,7 +200,11 @@ export class PPParser
 		let skipTo = 0;
 		for(let element of array) {
 
-			const skipCurrent = ifStack.some(item => item.skip);
+			let cur;
+			if(ifStack.length !== 0) {
+				cur = ifStack[ifStack.length - 1];
+			}
+
 
 			if(skipFrom < element.startIndex) {
 				if(skipTo > element.startIndex) {
@@ -212,7 +215,7 @@ export class PPParser
 				skipTo = 0;
 			}
 			if(element instanceof Define) {
-				if(skipCurrent) {
+				if(cur && cur.skip) {
 					continue;
 				}
 				this.defines.set(element.pattern, element);
@@ -243,7 +246,7 @@ export class PPParser
 				this.complitions.push(complition);
 			}
 			else if(element instanceof Endinput) {
-				if(skipCurrent) {
+				if(cur && cur.skip) {
 					continue;
 				}
 				code = code.substring(0, element.curEndIndex);
@@ -254,6 +257,10 @@ export class PPParser
 				this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
 			}
 			else if(element instanceof ElseIf) {
+				if(cur && cur.directive.conditionResult) {
+					cur.skip = true;
+					continue;
+				}
 				this.handleElseIf(element, ifStack);
 			}
 			else if(element instanceof Condition) {
@@ -263,6 +270,11 @@ export class PPParser
 				this.handleEndIf(element, ifStack);	
 			}
 			else if(element instanceof Else) {
+				console.log(cur?.directive);
+				if(cur && cur.directive.conditionResult) {
+					cur.skip = true;
+					continue;
+				}
 				this.handleElse(element, ifStack);
 			}
 			
@@ -282,8 +294,17 @@ export class PPParser
 		if (ifStack.length === 0) {
 			throw new Error("Unexpected #endif");
 		}
-		const currentIf = ifStack.pop()!;
-		currentIf.directive.endIf = directive;
+		let ifBlock = ifStack[ifStack.length - 1];
+		while(ifBlock.directive instanceof ElseIf) {
+			ifStack.pop();
+			if(ifStack.length !== 0) {
+				ifBlock = ifStack[ifStack.length - 1];
+			}
+		}
+		if(ifStack.length !== 0) {
+			const currentIf = ifStack.pop()!;
+			currentIf.directive.endIf = directive;
+		}
 	}
 	private handleElse(directive: Else, ifStack: ConditionStack)
 	{
@@ -292,7 +313,9 @@ export class PPParser
 		}
 		const currentIf = ifStack[ifStack.length - 1];
 	
+		console.error(currentIf);
 		currentIf.directive.elseBlock = directive;
+
 		currentIf.skip = currentIf.directive.conditionResult;
 	}
 	private handleElseIf(directive: ElseIf, ifStack: ConditionStack)
@@ -305,14 +328,11 @@ export class PPParser
 	
 		currentIf.directive.elseBlock = directive;
 
-		if (!currentIf.directive.conditionResult) { // проверяем, нужно ли проверять условие
-			const conditionResult = directive.checkCondition(this.defines);
-			directive.conditionResult = conditionResult;
-			currentIf.skip = !conditionResult; // Если условие истинно, то пропускаем остаток блока if
-		} else {
-			directive.conditionResult = false;
-			currentIf.skip = true;
-		}
+		const conditionResult = directive.checkCondition(this.defines);
+		directive.conditionResult = conditionResult;
+		currentIf.skip = !conditionResult; // Если условие истинно, то пропускаем остаток блока if
+		
+		ifStack.push({directive: directive, skip: !directive.conditionResult});
 	}
 	private handleCondition(directive: Condition, ifStack: ConditionStack)
 	{
