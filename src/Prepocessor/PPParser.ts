@@ -14,6 +14,13 @@ import { DiagnosticManager } from "../Managers/diagnostic";
 import { SemanticTokens } from "../SemanticTokens";
 import { Pragma } from "./Pragma";
 import { Undef } from "./Undef";
+import { ElseIf } from "./ElseIf";
+
+type ConditionStack = ConditionStackElement[];
+interface ConditionStackElement {
+	directive: Condition;
+	skip: boolean;
+}
 
 export class PPParser
 {
@@ -124,13 +131,13 @@ export class PPParser
 		{
 			this.directives.push(directive);
 
-			if(directive instanceof Define) {
-				this.defines.set(directive.pattern, directive);
-			}
-			else if(directive instanceof Condition) {
-				directive.checkCondition(this.file, this.defines);
-				this.ppConditions.push(directive);
-			}
+			// if(directive instanceof Define) {
+			// 	this.defines.set(directive.pattern, directive);
+			// }
+			// else if(directive instanceof Condition) {
+			// 	directive.checkCondition(this.file, this.defines);
+			// 	this.ppConditions.push(directive);
+			// }
 			
 		}
 	}
@@ -154,12 +161,12 @@ export class PPParser
 			case "pragma":
 				return new Pragma(this.file, rest, startIndex, restIndex, endIndex);
 			case "endif": {
-				const direct = new Endif(this.file, startIndex,endIndex)
-				const cond = this.ppConditions.pop();
-				if(cond) {
-					cond.endIf = direct;
-				}
-				return direct;	
+				return new Endif(this.file, startIndex,endIndex)
+				// const cond = this.ppConditions.pop();
+				// if(cond) {
+				// 	cond.endIf = direct;
+				// }
+				// return direct;	
 			}
 			case "undef": { 
 				const direct = new Undef(this.file, rest, startIndex, restIndex, endIndex);
@@ -170,20 +177,10 @@ export class PPParser
 				return direct;	
 			}
 			case "elseif": {
-				const direct = new Condition(this.file, rest, startIndex, restIndex, endIndex);
-				const cond = this.ppConditions.peek();
-				if(cond && cond.elseBlock) {
-					cond.elseBlock.elseif = direct;
-				}
+				return new ElseIf(this.file, rest, startIndex, restIndex, endIndex);
 			}
 			case "else": {
-				const direct = new Else(this.file, startIndex,endIndex)
-				const cond = this.ppConditions.peek();
-				if(cond) {
-					cond.elseBlock = direct;
-				}
-					
-				return direct;
+				return new Else(this.file, startIndex,endIndex)
 			}
 				
 			case "enscript":
@@ -199,9 +196,12 @@ export class PPParser
 	//Обрабатывает все директивы, удаляя лишний код и выполняя замены
 	public	processDirectives(code: string, array: PreprocessorDirective[]): string
 	{
+		const ifStack: ConditionStack = [];
 		let skipFrom = code.length;
 		let skipTo = 0;
 		for(let element of array) {
+
+			const skipCurrent = ifStack.some(item => item.skip);
 
 			if(skipFrom < element.startIndex) {
 				if(skipTo > element.startIndex) {
@@ -212,6 +212,10 @@ export class PPParser
 				skipTo = 0;
 			}
 			if(element instanceof Define) {
+				if(skipCurrent) {
+					continue;
+				}
+				this.defines.set(element.pattern, element);
 				const preDirective = code.substring(0, element.curEndIndex);
 				let lastindex = undefined;
 				if(element.undef) {
@@ -239,6 +243,9 @@ export class PPParser
 				this.complitions.push(complition);
 			}
 			else if(element instanceof Endinput) {
+				if(skipCurrent) {
+					continue;
+				}
 				code = code.substring(0, element.curEndIndex);
 				const range = new Range(
 					element.range.end,
@@ -246,69 +253,131 @@ export class PPParser
 				);
 				this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
 			}
-			else if(element instanceof Condition) {
-				if(element.endIf) {
-					
-					const preDirective = code.substring(0, element.curEndIndex);
-					const postDirective = code.substring(element.endIf.curStartIndex);
-					
-					let mainBlock = "";
-					let elseBlock = "";
-					if(element.elseBlock) {
-						mainBlock = code.substring(element.curEndIndex, element.elseBlock.curEndIndex);
-						elseBlock = code.substring(element.elseBlock.curEndIndex, element.endIf.curStartIndex);
-						
-					}
-					else {
-						mainBlock = code.substring(element.curEndIndex, element.endIf.curStartIndex);
-					}
-					
-
-					if(element.conditionResult) {
-						if(element.elseBlock) {
-							skipFrom = element.elseBlock.curStartIndex;
-							skipTo = element.endIf.curStartIndex;
-						}
-						elseBlock = elseBlock.replace(/[^\r\n]/g, ' ');
-					}
-					else {
-						mainBlock = mainBlock.replace(/[^\r\n]/g, ' ');
-						skipFrom = element.curStartIndex;
-						if(element.elseBlock) {
-							skipTo = element.elseBlock.curStartIndex;
-						}
-						else skipTo = element.endIf.curStartIndex;
-					}
-
-					code = preDirective + mainBlock + elseBlock + postDirective;
-
-					if(element.conditionResult) {
-						if(element.elseBlock) {
-							const range = new Range(
-								element.elseBlock.range.end,
-								element.endIf.range.start
-							);
-							this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
-						}
-					}
-					else {
-						let range: Range;
-						if(element.elseBlock) {
-							range = new Range(
-								element.range.end,
-								element.elseBlock.range.start
-							);
-						}
-						else range = new Range(
-							element.range.end,
-							element.endIf.range.start
-						);
-						this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
-					}
-				}					
+			else if(element instanceof ElseIf) {
+				this.handleElseIf(element, ifStack);
 			}
+			else if(element instanceof Condition) {
+				this.handleCondition(element, ifStack);					
+			}
+			else if(element instanceof Endif) {
+				this.handleEndIf(element, ifStack);	
+			}
+			else if(element instanceof Else) {
+				this.handleElse(element, ifStack);
+			}
+			
 		}
+
+		console.log(this.defines);
 		return code;
+	}
+
+	private handleDefine(define: Define)
+	{
+		
+	}
+
+	private handleEndIf(directive: Else, ifStack: ConditionStack)
+	{
+		if (ifStack.length === 0) {
+			throw new Error("Unexpected #endif");
+		}
+		const currentIf = ifStack.pop()!;
+		currentIf.directive.endIf = directive;
+	}
+	private handleElse(directive: Else, ifStack: ConditionStack)
+	{
+		if (ifStack.length === 0) {
+			throw new Error("Unexpected #else");
+		}
+		const currentIf = ifStack[ifStack.length - 1];
+	
+		currentIf.directive.elseBlock = directive;
+		currentIf.skip = currentIf.directive.conditionResult;
+	}
+	private handleElseIf(directive: ElseIf, ifStack: ConditionStack)
+	{
+		if (ifStack.length === 0) {
+			throw new Error("Unexpected #elseif");
+		}
+	
+		const currentIf = ifStack[ifStack.length - 1];
+	
+		currentIf.directive.elseBlock = directive;
+
+		if (!currentIf.directive.conditionResult) { // проверяем, нужно ли проверять условие
+			const conditionResult = directive.checkCondition(this.defines);
+			directive.conditionResult = conditionResult;
+			currentIf.skip = !conditionResult; // Если условие истинно, то пропускаем остаток блока if
+		} else {
+			directive.conditionResult = false;
+			currentIf.skip = true;
+		}
+	}
+	private handleCondition(directive: Condition, ifStack: ConditionStack)
+	{
+		const conditionResult = directive.checkCondition(this.defines);
+		ifStack.push({ directive: directive, skip: !conditionResult }); // Важно: сохраняем состояние пропуска
+		directive.conditionResult = conditionResult;
+		/*if(element.endIf) {
+					
+			const preDirective = code.substring(0, element.curEndIndex);
+			const postDirective = code.substring(element.endIf.curStartIndex);
+			
+			let mainBlock = "";
+			let elseBlock = "";
+			if(element.elseBlock) {
+				mainBlock = code.substring(element.curEndIndex, element.elseBlock.curEndIndex);
+				elseBlock = code.substring(element.elseBlock.curEndIndex, element.endIf.curStartIndex);
+				
+			}
+			else {
+				mainBlock = code.substring(element.curEndIndex, element.endIf.curStartIndex);
+			}
+			
+
+			if(element.conditionResult) {
+				if(element.elseBlock) {
+					skipFrom = element.elseBlock.curStartIndex;
+					skipTo = element.endIf.curStartIndex;
+				}
+				elseBlock = elseBlock.replace(/[^\r\n]/g, ' ');
+			}
+			else {
+				mainBlock = mainBlock.replace(/[^\r\n]/g, ' ');
+				skipFrom = element.curStartIndex;
+				if(element.elseBlock) {
+					skipTo = element.elseBlock.curStartIndex;
+				}
+				else skipTo = element.endIf.curStartIndex;
+			}
+
+			code = preDirective + mainBlock + elseBlock + postDirective;
+
+			if(element.conditionResult) {
+				if(element.elseBlock) {
+					const range = new Range(
+						element.elseBlock.range.end,
+						element.endIf.range.start
+					);
+					this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+				}
+			}
+			else {
+				let range: Range;
+				if(element.elseBlock) {
+					range = new Range(
+						element.range.end,
+						element.elseBlock.range.start
+					);
+				}
+				else range = new Range(
+					element.range.end,
+					element.endIf.range.start
+				);
+				this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+			}
+		}*/
 	}
 
 	private definesReplacing(def: Define) {

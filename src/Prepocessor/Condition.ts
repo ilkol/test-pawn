@@ -23,17 +23,46 @@ export class Condition extends PreprocessorDirective
 		super(file, startIndex, endIndex);
 
 	}
-	public checkCondition(file: TextDocument, defines: Map<string, Define>)
+	public checkCondition(defines: Map<string, Define>)
 	{
-		let match;
-		if(match = /(?=\s*)(!)?(?:\s*)defined\s+(\w+)?/.exec(this.rest)) {
-			const macro = match[2];
-			if(defines.has(macro)) {
-				this.conditionResult = true;
-			}			
-			if(match[1]) {
-				this.conditionResult = !this.conditionResult;
-			}
+		let condition = this.rest;
+		if (!condition) {
+			return false;
 		}
+	
+		condition = condition.trim();
+	
+		// Проверка на defined/!defined
+		if (condition.startsWith("defined")) {
+			const macroName = condition.substring("defined".length).trim();
+			if(macroName.startsWith("("))
+			{
+				const name = macroName.substring(1, macroName.length - 1).trim();
+				return defines.has(name);
+			}
+			return defines.has(macroName);
+		} else if (condition.startsWith("!defined")) {
+			const macroName = condition.substring("!defined".length).trim();
+			if(macroName.startsWith("("))
+			{
+				const name = macroName.substring(1, macroName.length - 1).trim();
+				return !defines.has(name);
+			}
+			return !defines.has(macroName);
+		}
+	
+		try {
+			// Попытка вычислить как числовое выражение
+			const result = eval(condition); // Использование eval для простых константных выражений
+			if (typeof result === 'number') {
+				return result !== 0;
+			} else if (typeof result === 'boolean') {
+				return result;
+			}
+		} catch (error) {
+			// Обработка ошибок вычисления выражения
+			console.error(`Error evaluating condition: ${condition}`, error);
+		}
+		return false;
 	}
 }

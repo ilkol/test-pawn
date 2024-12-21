@@ -289,6 +289,7 @@ export class FileManager {
         for (const [fileUri, openedFile] of this.openedFiles) {
             this.dependencyGraph.set(fileUri, new Set());
 			openedFile.findDirectives();
+			openedFile.processDirectives();
             const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
 			console.log(includes);
             // for (const includePath of includes) {
