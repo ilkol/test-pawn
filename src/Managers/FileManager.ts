@@ -271,6 +271,18 @@ export class FileManager {
 	// }
 
 
+	private resolveIncludePath(currentFileUri: vscode.Uri, includePath: string): undefined {
+
+		// const currentFileDir = path.dirname(currentFileUri.fsPath);
+		// const resolvedPath = path.resolve(currentFileDir, includePath);
+		// try
+		// {
+		// 	return vscode.Uri.file(resolvedPath);
+		// } catch {
+		// 	return undefined;
+		// }
+	}
+
 	private async buildDependencyGraph(): Promise<void> {
 		this.dependencyGraph.clear(); // Очищаем граф перед перестроением
 
@@ -280,7 +292,7 @@ export class FileManager {
             const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
 			console.log(includes);
             // for (const includePath of includes) {
-            //     const includeUri = this.resolveIncludePath(vscode.Uri.parse(fileUri), includePath);
+            //     const includeUri = this.resolveIncludePath(fileUri, includePath);
             //     if (includeUri)
             //     {
             //         this.dependencyGraph.get(fileUri)?.add(includeUri.toString());
