@@ -25,7 +25,7 @@ interface ConditionStackElement {
 export class PPParser
 {
 	private readonly directives: PreprocessorDirective[] = [];
-	public readonly defines: Map<string, Define> = new Map();
+	public readonly defines: Map<string, Define[]> = new Map();
 	private readonly replacedCode: ReplacedCode[] = [];
 	readonly includes: Include[] = [];
 
@@ -57,11 +57,11 @@ export class PPParser
 
 	get exportDirectives(): Define[] {
 		const dirs: Define[] = [];
-		this.defines.forEach(dir => {
-			if(!dir.skiped) {
-				dirs.push(dir);
-			}
-		});
+		// this.defines.forEach(dir => {
+		// 	if(!dir.skiped) {
+		// 		dirs.push(dir);
+		// 	}
+		// });
 		return dirs;
 	}
 
@@ -168,12 +168,7 @@ export class PPParser
 				// return direct;	
 			}
 			case "undef": { 
-				const direct = new Undef(this.file, rest, startIndex, restIndex, endIndex);
-				const define = this.defines.get(direct.define);
-				if(define) {
-					define.undef = direct;
-				}
-				return direct;	
+				return new Undef(this.file, rest, startIndex, restIndex, endIndex);
 			}
 			case "elseif": {
 				return new ElseIf(this.file, rest, startIndex, restIndex, endIndex);
@@ -196,8 +191,6 @@ export class PPParser
 	public	processDirectives(code: string, array: PreprocessorDirective[]): string
 	{
 		const ifStack: ConditionStack = [];
-		let skipFrom = code.length;
-		let skipTo = 0;
 		for(let element of array) {
 
 			let cur;
@@ -205,45 +198,40 @@ export class PPParser
 				cur = ifStack[ifStack.length - 1];
 			}
 
-
-			if(skipFrom < element.startIndex) {
-				if(skipTo > element.startIndex) {
-					element.skiped = true;
-					continue;
-				}
-				skipFrom = code.length;
-				skipTo = 0;
-			}
 			if(element instanceof Define) {
 				if(cur && cur.skip) {
 					continue;
 				}
-				this.defines.set(element.pattern, element);
-				const preDirective = code.substring(0, element.curEndIndex);
-				let lastindex = undefined;
-				if(element.undef) {
-					lastindex = element.undef.curStartIndex;
-				}
-				const postDirective = code.substring(element.curEndIndex, lastindex);
+				this.handleDefine(element);
+				// const preDirective = code.substring(0, element.curEndIndex);
+				// let lastindex = undefined;
+				// if(element.undef) {
+				// 	lastindex = element.undef.curStartIndex;
+				// }
+				// const postDirective = code.substring(element.curEndIndex, lastindex);
 
-				const lastCount = this.replacedCode.length;
-				const result = this.substringrReplacing(postDirective, element, element.curEndIndex);
+				// const lastCount = this.replacedCode.length;
+				// const result = this.substringrReplacing(postDirective, element, element.curEndIndex);
 
-				this.definesReplacing(element);
+				// this.definesReplacing(element);
 
-				code = preDirective + result;
-				if(lastCount < this.replacedCode.length) {
-					element.used = true;
-				}
-				else {
-					this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, element.file.uri.path, element.patternRange, [DiagnosticTag.Unnecessary]);
-				}
+				// code = preDirective + result;
+				// if(lastCount < this.replacedCode.length) {
+				// 	element.used = true;
+				// }
+				// else {
+				// 	this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, element.file.uri.path, element.patternRange, [DiagnosticTag.Unnecessary]);
+				// }
 				
-				this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
+				// this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
 				
-				const complition = new CompletionItem(element.pattern, CompletionItemKind.Constant); 
-				complition.documentation = element.doc;
-				this.complitions.push(complition);
+				// const complition = new CompletionItem(element.pattern, CompletionItemKind.Constant); 
+				// complition.documentation = element.doc;
+				// this.complitions.push(complition);
+			}
+			else if(element instanceof Undef)
+			{
+				this.handleUndef(element);
 			}
 			else if(element instanceof Endinput) {
 				if(cur && cur.skip) {
@@ -270,7 +258,6 @@ export class PPParser
 				this.handleEndIf(element, ifStack);	
 			}
 			else if(element instanceof Else) {
-				console.log(cur?.directive);
 				if(cur && cur.directive.conditionResult) {
 					cur.skip = true;
 					continue;
@@ -284,9 +271,42 @@ export class PPParser
 		return code;
 	}
 
-	private handleDefine(define: Define)
+	private handleUndef(directive: Undef)
 	{
-		
+		const define = this.defines.get(directive.define);
+		console.error(define);
+		if(define) {
+			const lastDef = define[define.length - 1];
+			lastDef.undef = directive;
+		}
+	}
+	private handleDefine(directive: Define)
+	{
+		if (!this.defines.has(directive.pattern)) {
+            this.defines.set(directive.pattern, []);
+        }
+        this.defines.get(directive.pattern)!.push(directive);	
+	}
+	private isDefined(pattern: string, pos: number)
+	{
+		const defineInfo = this.defines.get(pattern);
+		if (!defineInfo) {
+			return false; // Макрос не определен ни разу
+		}
+
+		for (const define of defineInfo) {
+			if(define.endIndex <= pos) {
+				if(define.undef) {
+					if(define.undef.startIndex >= pos) {
+						return true;
+					}
+				}
+				else {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private handleEndIf(directive: Else, ifStack: ConditionStack)
@@ -313,7 +333,6 @@ export class PPParser
 		}
 		const currentIf = ifStack[ifStack.length - 1];
 	
-		console.error(currentIf);
 		currentIf.directive.elseBlock = directive;
 
 		currentIf.skip = currentIf.directive.conditionResult;
@@ -328,7 +347,7 @@ export class PPParser
 	
 		currentIf.directive.elseBlock = directive;
 
-		const conditionResult = directive.checkCondition(this.defines);
+		const conditionResult = directive.checkCondition(this.isDefined.bind(this));
 		directive.conditionResult = conditionResult;
 		currentIf.skip = !conditionResult; // Если условие истинно, то пропускаем остаток блока if
 		
@@ -336,7 +355,7 @@ export class PPParser
 	}
 	private handleCondition(directive: Condition, ifStack: ConditionStack)
 	{
-		const conditionResult = directive.checkCondition(this.defines);
+		const conditionResult = directive.checkCondition(this.isDefined.bind(this));
 		ifStack.push({ directive: directive, skip: !conditionResult }); // Важно: сохраняем состояние пропуска
 		directive.conditionResult = conditionResult;
 		/*if(element.endIf) {
@@ -400,58 +419,58 @@ export class PPParser
 		}*/
 	}
 
-	private definesReplacing(def: Define) {
-		const toReplace = def.replacement;
+	// private definesReplacing(def: Define) {
+	// 	const toReplace = def.replacement;
 
-		let match: RegExpExecArray | null;
-		for(let defineStruct of this.defines) {
-			let define = defineStruct[1];
-			if(def == define) continue;
-			if(define.curStartIndex < def.curEndIndex) continue;
-			let str = define.replacement;
-			while((match = def.patternReg.exec(str)) !== null) {	
-				const length = match[0].length;
-				const curIndex = match.index;
+	// 	let match: RegExpExecArray | null;
+	// 	for(let defineStruct of this.defines) {
+	// 		let define = defineStruct[1];
+	// 		if(def == define) continue;
+	// 		if(define.curStartIndex < def.curEndIndex) continue;
+	// 		let str = define.replacement;
+	// 		while((match = def.patternReg.exec(str)) !== null) {	
+	// 			const length = match[0].length;
+	// 			const curIndex = match.index;
 			
-				const preStr = str.substring(0, curIndex);
-				const findedStr = str.substring(curIndex, curIndex + length);
-				const postStr = str.substring(curIndex + length);
+	// 			const preStr = str.substring(0, curIndex);
+	// 			const findedStr = str.substring(curIndex, curIndex + length);
+	// 			const postStr = str.substring(curIndex + length);
 
-				let origIndex = curIndex;
+	// 			let origIndex = curIndex;
 
-				let replace = toReplace;
-				let index = 1;
-				if(match !== null) {
-					const matches = match;
-					def.parameters.forEach(element => {
-						replace = replace.replace(`%${element}`, matches[index]);
-						index++;
-					});
-				}
+	// 			let replace = toReplace;
+	// 			let index = 1;
+	// 			if(match !== null) {
+	// 				const matches = match;
+	// 				def.parameters.forEach(element => {
+	// 					replace = replace.replace(`%${element}`, matches[index]);
+	// 					index++;
+	// 				});
+	// 			}
 
-				const curShift = findedStr.length - replace.length;
+	// 			const curShift = findedStr.length - replace.length;
 			
-				this.replacedCode.forEach(element => {
-					if(element.newIndex < curIndex)
-					{
-						origIndex += element.shift;
-					}
-					else {
-						element.move(-curShift);
-					}
-				});
-				for(let element of this.directives) {
-					if(element.startIndex < origIndex) continue;
-					element.move(-curShift);
-				}
+	// 			this.replacedCode.forEach(element => {
+	// 				if(element.newIndex < curIndex)
+	// 				{
+	// 					origIndex += element.shift;
+	// 				}
+	// 				else {
+	// 					element.move(-curShift);
+	// 				}
+	// 			});
+	// 			for(let element of this.directives) {
+	// 				if(element.startIndex < origIndex) continue;
+	// 				element.move(-curShift);
+	// 			}
 
-				str = preStr + replace + postStr;
-				define.replacement = str;
-				this.defines.set(defineStruct[0], define);
+	// 			str = preStr + replace + postStr;
+	// 			define.replacement = str;
+	// 			this.defines.set(defineStruct[0], define);
 				
-			}	
-		}
-	}
+	// 		}	
+	// 	}
+	// }
 
 	private substringrReplacing(str: string, define: Define, preShift: number): string
 	{

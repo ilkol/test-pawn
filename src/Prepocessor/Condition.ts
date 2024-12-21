@@ -23,7 +23,7 @@ export class Condition extends PreprocessorDirective
 		super(file, startIndex, endIndex);
 
 	}
-	public checkCondition(defines: Map<string, Define>)
+	public checkCondition(checkFunc: (pattern: string, pos: number) => boolean)
 	{
 		let condition = this.rest;
 		if (!condition) {
@@ -38,17 +38,17 @@ export class Condition extends PreprocessorDirective
 			if(macroName.startsWith("("))
 			{
 				const name = macroName.substring(1, macroName.length - 1).trim();
-				return defines.has(name);
+				return checkFunc(name, this.startIndex);
 			}
-			return defines.has(macroName);
+			return checkFunc(macroName, this.startIndex);
 		} else if (condition.startsWith("!defined")) {
 			const macroName = condition.substring("!defined".length).trim();
 			if(macroName.startsWith("("))
 			{
 				const name = macroName.substring(1, macroName.length - 1).trim();
-				return !defines.has(name);
+				return !checkFunc(name, this.startIndex);
 			}
-			return !defines.has(macroName);
+			return !checkFunc(macroName, this.startIndex);
 		}
 	
 		try {
