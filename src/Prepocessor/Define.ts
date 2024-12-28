@@ -40,6 +40,7 @@ export class Define extends PreprocessorDirective
 	}
 	private preparePattern(rest: string): RestData
 	{
+		console.log("define", rest);
 		const reg = /(\s*)([^\s]+)(?:\s+(.+))?/;
 		const match = reg.exec(rest);
 
