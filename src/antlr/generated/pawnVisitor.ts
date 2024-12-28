@@ -4,6 +4,7 @@
 import { ParseTreeVisitor } from "antlr4ts/tree/ParseTreeVisitor";
 
 import { FileContext } from "./pawnParser";
+import { ProcessorLabelContext } from "./pawnParser";
 import { DeclarationContext } from "./pawnParser";
 import { EnumContext } from "./pawnParser";
 import { EnumMemberContext } from "./pawnParser";
@@ -88,6 +89,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitFile?: (ctx: FileContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.processorLabel`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitProcessorLabel?: (ctx: ProcessorLabelContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.declaration`.

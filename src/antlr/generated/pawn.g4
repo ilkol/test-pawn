@@ -1,7 +1,9 @@
 grammar pawn;
 
 /* Содержание файла */
-file:				(docs)*(declaration)* EOF;
+file:				processorLabel|((docs)*(declaration)*) EOF;
+
+processorLabel:		IDENTIFIER':';
 
 declaration:		(docs)*(functionDecl|operatorOverload|var_definition SEMI) | enum;
 
@@ -91,7 +93,7 @@ range:				PERIOD (IDENTIFIER | number);
 
 condition:			OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
 
-codeBlock:			CURLY_OPEN_BRACKET (statement)* CURLY_CLOSE_BRACKET | statement;
+codeBlock:			CURLY_OPEN_BRACKET (statement|processorLabel)* CURLY_CLOSE_BRACKET | (statement|processorLabel);
 return:				RETURN expresion?;
 cycles:				while | for | do;
 do:					DO cycleBody (WHILE condition)?;

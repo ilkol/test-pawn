@@ -4,6 +4,7 @@
 import { ParseTreeListener } from "antlr4ts/tree/ParseTreeListener";
 
 import { FileContext } from "./pawnParser";
+import { ProcessorLabelContext } from "./pawnParser";
 import { DeclarationContext } from "./pawnParser";
 import { EnumContext } from "./pawnParser";
 import { EnumMemberContext } from "./pawnParser";
@@ -89,6 +90,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitFile?: (ctx: FileContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.processorLabel`.
+	 * @param ctx the parse tree
+	 */
+	enterProcessorLabel?: (ctx: ProcessorLabelContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.processorLabel`.
+	 * @param ctx the parse tree
+	 */
+	exitProcessorLabel?: (ctx: ProcessorLabelContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.declaration`.
