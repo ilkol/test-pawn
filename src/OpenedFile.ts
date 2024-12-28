@@ -5,8 +5,18 @@ import { FileManager } from "./Managers/FileManager";
 import { AbstractOpenFile } from "./AbstractOpenFile";
 import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 import { Define } from "./Prepocessor/Define";
+import { Include } from "./Prepocessor/Include";
 
 export class OpenedFile extends AbstractOpenFile{
+	public get includes(): Include[] {
+		throw new Error("Method not implemented.");
+	}
+	public findDirectives(): Promise<void> {
+		throw new Error("Method not implemented.");
+	}
+	protected findAllDirectives(): Promise<void> {
+		throw new Error("Method not implemented.");
+	}
 	public getComplitions(): CompletionItem[] {
 		throw new Error("Method not implemented.");
 	}
@@ -31,8 +41,6 @@ export class OpenedFile extends AbstractOpenFile{
 	// private ast: TokenStruct[] = [];
 	// private env: Environment = new Environment();
 	private _changed: boolean = true;
-
-	private includes: string[] = [];
 	
 	
 	get tokens() {
@@ -55,7 +63,7 @@ export class OpenedFile extends AbstractOpenFile{
 	// 	return this.env;
 	// }
 	public addInclude(str: string): void {
-		this.includes.push(str);
+		// this.includes.push(Uri.file(str));
 	}
 	public getURI(): Uri {
 		return this.file.uri;
@@ -167,7 +175,7 @@ export class OpenedFile extends AbstractOpenFile{
 		this.changed = true;
 	}
 	public async tryParse() {
-		if(this.changed == false) {
+		if(this.changed === false) {
 			console.debug("Пропускаем парсинг");
 			return;
 		}

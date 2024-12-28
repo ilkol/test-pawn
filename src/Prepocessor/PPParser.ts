@@ -26,6 +26,7 @@ export class PPParser
 {
 	private readonly directives: PreprocessorDirective[] = [];
 	public readonly defines: Map<string, Define[]> = new Map();
+	public readonly exportDefines: Map<string, Define[]> = new Map();
 	private readonly replacedCode: ReplacedCode[] = [];
 	readonly includes: Include[] = [];
 
@@ -71,12 +72,22 @@ export class PPParser
 
 
 	/**
+	 * Объединяет строки в одну, у котоырх в коцне стоит \
+	 * @param input входная строка
+	 * @returns строка без переносов строки
+	 */
+	private mergeLinesWithBackslash(input: string): string {
+		// Убираем перенос строки, если он заканчивается на `\`
+		return input.replace(/\\\s*\r?\n\s*/g, '');
+	}
+
+	/**
 	 * Собирает все команды препроцессора и удаляет их из текста
 	 * @param code исходный код
 	 * @returns код с удаленными командами препроцессора
 	 */
 	public collectDirectives(code: string): string {
-
+		code = this.mergeLinesWithBackslash(code);
 		// const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)(?=\s*\/\/|(?=\r?\n|$))/gim;
 		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)(?=\s*\/\/|\r?\n|$)/gim;
 
@@ -85,7 +96,6 @@ export class PPParser
 		let match;
 		let last = "";
 		let counter = 0;
-		console.error(this.file.fileName);
 		while ((match = reg.exec(code)) !== null) {
 			const [fullMatch, leadingWhitespace, directive, rest] = match;
 			
@@ -151,7 +161,7 @@ export class PPParser
 				return new Define(this.file, rest, startIndex, restIndex, endIndex);
 			case "tryinclude":
 			case "include": {
-				const directive = new Include(this.file, rest, startIndex, restIndex, endIndex)
+				const directive = new Include(this.file, rest, startIndex, restIndex, endIndex);
 				this.includes.push(directive);
 				return directive;
 			}
@@ -160,7 +170,7 @@ export class PPParser
 			case "pragma":
 				return new Pragma(this.file, rest, startIndex, restIndex, endIndex);
 			case "endif": {
-				return new Endif(this.file, startIndex,endIndex)
+				return new Endif(this.file, startIndex,endIndex);
 				// const cond = this.ppConditions.pop();
 				// if(cond) {
 				// 	cond.endIf = direct;
@@ -174,7 +184,7 @@ export class PPParser
 				return new ElseIf(this.file, rest, startIndex, restIndex, endIndex);
 			}
 			case "else": {
-				return new Else(this.file, startIndex,endIndex)
+				return new Else(this.file, startIndex,endIndex);
 			}
 				
 			case "enscript":
@@ -202,32 +212,7 @@ export class PPParser
 				if(cur && cur.skip) {
 					continue;
 				}
-				this.handleDefine(element);
-				// const preDirective = code.substring(0, element.curEndIndex);
-				// let lastindex = undefined;
-				// if(element.undef) {
-				// 	lastindex = element.undef.curStartIndex;
-				// }
-				// const postDirective = code.substring(element.curEndIndex, lastindex);
-
-				// const lastCount = this.replacedCode.length;
-				// const result = this.substringrReplacing(postDirective, element, element.curEndIndex);
-
-				// this.definesReplacing(element);
-
-				// code = preDirective + result;
-				// if(lastCount < this.replacedCode.length) {
-				// 	element.used = true;
-				// }
-				// else {
-				// 	this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, element.file.uri.path, element.patternRange, [DiagnosticTag.Unnecessary]);
-				// }
-				
-				// this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
-				
-				// const complition = new CompletionItem(element.pattern, CompletionItemKind.Constant); 
-				// complition.documentation = element.doc;
-				// this.complitions.push(complition);
+				this.handleDefine(element, code);
 			}
 			else if(element instanceof Undef)
 			{
@@ -243,6 +228,7 @@ export class PPParser
 					this.file.positionAt(this.file.getText().length)
 				);
 				this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+				return code;
 			}
 			else if(element instanceof ElseIf) {
 				if(cur && cur.directive.conditionResult) {
@@ -266,32 +252,58 @@ export class PPParser
 			}
 			
 		}
-
-		console.log(this.defines);
 		return code;
 	}
 
 	private handleUndef(directive: Undef)
 	{
 		const define = this.defines.get(directive.define);
-		console.error(define);
 		if(define) {
 			const lastDef = define[define.length - 1];
 			lastDef.undef = directive;
 		}
 	}
-	private handleDefine(directive: Define)
+	private handleDefine(directive: Define, code: string)
 	{
 		if (!this.defines.has(directive.pattern)) {
             this.defines.set(directive.pattern, []);
         }
         this.defines.get(directive.pattern)!.push(directive);	
+
+		// Преобразования директивы по прошлым
+		this.definesReplacing(directive);
+
+		// Преобразование кода
+		const preDirective = code.substring(0, directive.curEndIndex);
+		let lastindex = undefined;
+		if(directive.undef) {
+			lastindex = directive.undef.curStartIndex;
+		}
+		const postDirective = code.substring(directive.curEndIndex, lastindex);
+
+		const lastCount = this.replacedCode.length;
+		const result = this.substringrReplacing(postDirective, directive, directive.curEndIndex);
+
+
+		code = preDirective + result;
+		if(lastCount < this.replacedCode.length) {
+			directive.used = true;
+		}
+		else {
+			this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, directive.file.uri.path, directive.patternRange, [DiagnosticTag.Unnecessary]);
+		}
+		
+		this.symbolsManager.addSymbol(new DocumentSymbol(directive.pattern, "define", SymbolKind.Constant, directive.range, directive.range));
+		
+		const complition = new CompletionItem(directive.pattern, CompletionItemKind.Constant); 
+		complition.documentation = directive.doc;
+		this.complitions.push(complition);
 	}
 	private isDefined(pattern: string, pos: number)
 	{
 		const defineInfo = this.defines.get(pattern);
 		if (!defineInfo) {
-			return false; // Макрос не определен ни разу
+			return false;
 		}
 
 		for (const define of defineInfo) {
@@ -419,88 +431,38 @@ export class PPParser
 		}*/
 	}
 
-	// private definesReplacing(def: Define) {
-	// 	const toReplace = def.replacement;
-
-	// 	let match: RegExpExecArray | null;
-	// 	for(let defineStruct of this.defines) {
-	// 		let define = defineStruct[1];
-	// 		if(def == define) continue;
-	// 		if(define.curStartIndex < def.curEndIndex) continue;
-	// 		let str = define.replacement;
-	// 		while((match = def.patternReg.exec(str)) !== null) {	
-	// 			const length = match[0].length;
-	// 			const curIndex = match.index;
-			
-	// 			const preStr = str.substring(0, curIndex);
-	// 			const findedStr = str.substring(curIndex, curIndex + length);
-	// 			const postStr = str.substring(curIndex + length);
-
-	// 			let origIndex = curIndex;
-
-	// 			let replace = toReplace;
-	// 			let index = 1;
-	// 			if(match !== null) {
-	// 				const matches = match;
-	// 				def.parameters.forEach(element => {
-	// 					replace = replace.replace(`%${element}`, matches[index]);
-	// 					index++;
-	// 				});
-	// 			}
-
-	// 			const curShift = findedStr.length - replace.length;
-			
-	// 			this.replacedCode.forEach(element => {
-	// 				if(element.newIndex < curIndex)
-	// 				{
-	// 					origIndex += element.shift;
-	// 				}
-	// 				else {
-	// 					element.move(-curShift);
-	// 				}
-	// 			});
-	// 			for(let element of this.directives) {
-	// 				if(element.startIndex < origIndex) continue;
-	// 				element.move(-curShift);
-	// 			}
-
-	// 			str = preStr + replace + postStr;
-	// 			define.replacement = str;
-	// 			this.defines.set(defineStruct[0], define);
-				
-	// 		}	
-	// 	}
-	// }
-
-	private substringrReplacing(str: string, define: Define, preShift: number): string
+	private defineReplacing(def: Define, define: Define, toReplace: string)
 	{
-		const toReplace = define.replacement;
+		if(define.curStartIndex < def.curEndIndex) {
+			return;
+		}
 
-		let match: RegExpExecArray | null;
-		while((match = define.patternReg.exec(str)) !== null) {
+		let str = define.replacement;
+		let match;
+		while((match = def.patternReg.exec(str)) !== null) {	
 			const length = match[0].length;
 			const curIndex = match.index;
-			
+		
 			const preStr = str.substring(0, curIndex);
 			const findedStr = str.substring(curIndex, curIndex + length);
 			const postStr = str.substring(curIndex + length);
 
-			let origIndex = curIndex + preShift;
+			let origIndex = curIndex;
 
 			let replace = toReplace;
 			let index = 1;
 			if(match !== null) {
 				const matches = match;
-				define.parameters.forEach(element => {
+				def.parameters.forEach(element => {
 					replace = replace.replace(`%${element}`, matches[index]);
 					index++;
 				});
 			}
 
 			const curShift = findedStr.length - replace.length;
-			
+		
 			this.replacedCode.forEach(element => {
-				if(element.newIndex < curIndex + preShift)
+				if(element.newIndex < curIndex)
 				{
 					origIndex += element.shift;
 				}
@@ -509,22 +471,139 @@ export class PPParser
 				}
 			});
 			for(let element of this.directives) {
-				if(element.startIndex < origIndex) continue;
+				if(element.startIndex < origIndex){
+					 continue;
+				}
 				element.move(-curShift);
 			}
 
-			this.replacedCode.push(new ReplacedCode(
-				findedStr,
-				replace,
-				define,
-				origIndex,
-				curIndex + preShift
-			));
-			
 			str = preStr + replace + postStr;
+			define.replacement = str;
+		}	
+	}
+
+	private definesReplacing(def: Define) {
+		
+
+		let match: RegExpExecArray | null;
+		for(let defineStruct of this.defines) {
+			let defineArr = defineStruct[1];
+			if(def.pattern === defineArr[0].pattern) {
+				continue;
+			}
+			for(let define of defineArr) {
+				const toReplace = define.replacement;
+				this.defineReplacing(define, def, toReplace);
+			}
 		}
+	}
+
+	/**
+	 * Replaces all occurrences of a pattern defined by `define` in the string `str`.
+	 * Updates internal structures to account for shifts caused by replacements.
+	 * 
+	 * @param str - The input string where replacements occur.
+	 * @param define - The definition containing the pattern, replacement, and parameters.
+	 * @param preShift - A shift value to adjust indices for previously replaced sections.
+	 * @returns The modified string after all replacements.
+	 */
+	private substringrReplacing(str: string, define: Define, preShift: number): string {
+		const localReg = new RegExp(define.patternReg.source, define.patternReg.flags); // Клон регулярки
+		let match: RegExpExecArray | null;
+		const replacements: { start: number; end: number; replace: string }[] = [];
+	
+		while ((match = localReg.exec(str)) !== null) {
+			// Избегаем бесконечного цикла при пустом совпадении
+			if (match[0] === '') {
+				localReg.lastIndex++;
+				continue;
+			}
+	
+			const length = match[0].length;
+			const curIndex = match.index;
+	
+			if (curIndex > str.length) {
+				break;
+			}
+	
+			const replace = this.getReplacement(define, match);
+			const curShift = match[0].length - replace.length;
+	
+			const origIndex = this.updateShifts(this.replacedCode, curIndex, preShift, curShift);
+			this.applyShift(this.directives, origIndex, curShift);
+	
+			this.replacedCode.push(
+				new ReplacedCode(match[0], replace, define, origIndex, curIndex + preShift)
+			);
+	
+			replacements.push({ start: curIndex, end: curIndex + length, replace });
+		}
+	
+		// Применяем все замены к строке
+		if (replacements.length > 0) {
+			let result = '';
+			let lastEnd = 0;
+	
+			for (const { start, end, replace } of replacements) {
+				result += str.substring(lastEnd, start) + replace;
+				lastEnd = end;
+			}
+			result += str.substring(lastEnd);
+			return result;
+		}
+	
 		return str;
 	}
+
+	/**
+	 * Generates the replacement string by replacing placeholders with actual match values.
+	 * 
+	 * @param define - The definition containing parameters and replacement template.
+	 * @param match - The match array from RegExp execution.
+	 * @returns The resolved replacement string.
+	 */
+	private getReplacement(define: Define, match: RegExpExecArray): string {
+		return define.replacement.replace(/%(\w+)/g, (_, paramName) => {
+			const paramIndex = define.parameters.indexOf(paramName);
+			return paramIndex !== -1 ? match[paramIndex + 1] : `%${paramName}`;
+		});
+	}
+
+	/**
+	 * Updates shifts for replaced elements to keep indices accurate.
+	 * 
+	 * @param elements - The array of replaced code elements.
+	 * @param curIndex - The current index of the replacement in the string.
+	 * @param preShift - The pre-shift value from previous replacements.
+	 * @param curShift - The current shift caused by this replacement.
+	 * @returns The original index adjusted for shifts.
+	 */
+	private updateShifts(elements: ReplacedCode[], curIndex: number, preShift: number, curShift: number): number {
+		let origIndex = curIndex + preShift;
+		elements.forEach(element => {
+			if (element.newIndex < curIndex + preShift) {
+				origIndex += element.shift;
+			} else {
+				element.move(-curShift);
+			}
+		});
+		return origIndex;
+	}
+
+	/**
+	 * Applies a shift to all elements that occur after a specific index.
+	 * 
+	 * @param elements - The array of elements to adjust.
+	 * @param origIndex - The original index for comparison.
+	 * @param curShift - The shift value to apply.
+	 */
+	private applyShift(elements: { startIndex: number, move: (shift: number) => void }[], origIndex: number, curShift: number): void {
+		for (const element of elements) {
+			if (element.startIndex < origIndex) {continue;}
+			element.move(-curShift);
+		}
+	}
+
 
 	preprocessorTokens(): CompletionItem[]
 	{

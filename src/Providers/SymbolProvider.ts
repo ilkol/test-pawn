@@ -12,9 +12,9 @@ export class SymbolProvider implements DocumentSymbolProvider {
 	}
 
 	provideDocumentSymbols(document: TextDocument, token: CancellationToken): ProviderResult<SymbolInformation[] | DocumentSymbol[]> {
-		let items: DocumentSymbol[] = []
+		let items: DocumentSymbol[] = [];
 		
-		const file: AbstractOpenFile | undefined = this.fileManager.openedFiles.get(document.uri.path);
+		const file: AbstractOpenFile | undefined = this.fileManager.openedFiles.get(document.uri);
 		if(file) {
 			items = file.symbolsManager.symbols;
 			// file.tokens.forEach((value) => {

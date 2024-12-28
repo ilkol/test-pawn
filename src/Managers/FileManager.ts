@@ -291,6 +291,7 @@ export class FileManager {
 			openedFile.findDirectives();
 			openedFile.processDirectives();
             const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
+			openedFile.parseCode();
 			console.log(includes);
             // for (const includePath of includes) {
             //     const includeUri = this.resolveIncludePath(fileUri, includePath);

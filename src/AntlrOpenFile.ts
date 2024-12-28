@@ -101,9 +101,9 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const pawnDir = this.fileManager._includePath;
 		if(pawnDir) {
 			for (let el of this.ppParser.includes) {
-				if(el.skiped) continue;
+				if(el.skiped) {continue;}
 				if(el.uri)
-					await this.handleInclude(el);
+					{await this.handleInclude(el);}
 			}
 		}
 	}
@@ -111,7 +111,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	public async parseCode() {
 
 		
-		
+		console.log(this.curCode);
 
 		const lexer = this.tryLex(this.curCode);
 		const lexerErrorListener = new LexerErrorListener();
@@ -197,7 +197,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const pawnDir = this.fileManager._includePath;
 		if (pawnDir) {
 			for (let el of this.ppParser.includes) {
-				if(el.skiped) continue;
+				if(el.skiped) {continue;}
 				let directive;
 				switch(el.type) {
 					case IncludeType.default: {
@@ -222,7 +222,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 				}
 			
 				if(el.uri) {
-					if(el.uri.path.indexOf("YSI") != -1 || el.uri.path.indexOf("y_") != -1) return;
+					if(el.uri.path.indexOf("YSI") !== -1 || el.uri.path.indexOf("y_") !== -1) {return;}
 		
 					if(!this.fileManager.openedFiles.has(el.uri)) {
 						await this.fileManager.openFile(el.uri);
@@ -303,15 +303,15 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 	private async handleInclude(include: Include): Promise<void> {
 		const uri = include.uri;
-		if(!uri) return;
-		if(uri.path.indexOf("YSI") != -1 || uri.path.indexOf("y_") != -1) return;
+		if(!uri) {return;}
+		if(uri.path.indexOf("YSI") !== -1 || uri.path.indexOf("y_") !== -1) {return;}
 		const file = this.fileManager.getFile(uri.path);
 		if (file) {
 			this.documentsLinks.set(include.pathRange, uri);
 			
 			file.getComplitions().forEach(compl => {
 				if (!compl.detail)
-					compl.detail = path.parse(path.basename(uri.fsPath)).name;
+					{compl.detail = path.parse(path.basename(uri.fsPath)).name;}
 				this.complitions.push(compl);
 			});
 			file.signatures.forEach((value, key) => {

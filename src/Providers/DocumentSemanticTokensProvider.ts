@@ -12,7 +12,7 @@ export class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTo
 	provideDocumentSemanticTokens(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.SemanticTokens> {
 		const tokensBuilder = new vscode.SemanticTokensBuilder(this.legend);
 	
-		const file: AbstractOpenFile | undefined = this.fileManager.openedFiles.get(document.uri.path);
+		const file: AbstractOpenFile | undefined = this.fileManager.openedFiles.get(document.uri);
 		if(file) {
 			file.tokens.forEach((value) => {
 				tokensBuilder.push(value.pos, value.type, value.modifers);
