@@ -87,10 +87,11 @@ export class PPParser
 	 * @returns код с удаленными командами препроцессора
 	 */
 	public collectDirectives(code: string): string {
-		code = this.mergeLinesWithBackslash(code);
+		// code = this.mergeLinesWithBackslash(code);
 		// const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)(?=\s*\/\/|(?=\r?\n|$))/gim;
-		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)(?=\s*\/\/|\r?\n|$)/gim;
-
+		// const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*(?:\\\s*\r?\n\s*.*)*)/gim;
+		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)\s+([^\n]*(\\[\s\S]*\r?\n)*[\s\S]*?)(?=\n|$)/gim;
+		
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
