@@ -69,6 +69,30 @@ export class PPParser
 		return this.processDirectives(code, array);
 	}
 
+	private findFullMultyLineDerictive(rest: string, endIndex: number, strartStr: string)
+	{
+		let postDir = strartStr;
+		while(rest[rest.length -1] === "\\") {
+			//Обрезаем все, что спереди и нам не нужно
+			postDir = postDir.substring(2);
+			//Ищем конец текущей строки
+			const findEndreg = /(?<!\\)(?:(?=\n)|(?<=^\n|[^\\]\n)|(?=$))/;
+			const postMatch = findEndreg.exec(postDir);
+			if(postMatch === null) {
+				throw new Error("Не найдено продолжение макроса");
+			}
+			// Обрезаем по конец добавляемой строки, не включая символ '\'
+			const newLine = postDir.substring(0, postMatch.index - 1);
+			
+			
+			postDir = postDir.substring(postMatch.index - 1);
+			rest += "\n\r" + newLine;
+			
+			endIndex += newLine.length + 2;			
+		}
+		rest = rest.replace(/\\([^ntdifr%\\])/g, " $1");
+		return {rest, endIndex};
+	}
 
 	/**
 	 * Собирает все команды препроцессора и удаляет их из текста
@@ -77,14 +101,11 @@ export class PPParser
 	 */
 	public collectDirectives(code: string): string {
 
-		// const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)(?=\s*\/\/|(?=\r?\n|$))/gim;
 		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)(?=\s*\/\/|\r?\n|$)/gim;
 
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
-		let last = "";
-		let counter = 0;
 		console.error(this.file.fileName);
 		while ((match = reg.exec(code)) !== null) {
 			let [fullMatch, leadingWhitespace, directive, rest] = match;
@@ -98,28 +119,13 @@ export class PPParser
 
 
 			// КРАЙНЕ ТУПОЕ РЕШЕНИЕ, но работает. Пока я не вижу как можно написать лучше, к сожалению :(
-			let shift = 2;
-			while(rest[rest.length -1] === "\\") {
-				const postDir = code.substring(match.index + fullMatch.length + shift);
-				const findEndreg = /(?<!\\)(?:(?=\n)|(?<=^\n|[^\\]\n)|(?=$))/;
-				const postMatch = findEndreg.exec(postDir);
-				if(postMatch === null) {
-					throw new Error("Не найдено продолжение макроса");
-				}
-				rest += postDir.substring(0, postMatch.index - 1);
-				endIndex += postMatch.index - 1;
-				shift += postMatch.index + 2;
-				
-			}
-			rest = rest.replace(/\\/g, "\n\r");
-			//
-
-			// const preStr = code.substring(0, directiveIndex);
-			// const replaceCommand = ' '.repeat(endIndex - directiveIndex);
-			// const postStr = code.substring(endIndex);
+			let res = this.findFullMultyLineDerictive(rest, endIndex, code.substring(match.index + fullMatch.length));
+			rest = res.rest;
+			endIndex = res.endIndex;
 			
 			
 			this.addNewDirective(directive, rest, directiveIndex, restIndex, endIndex);
+
 
 			changes.push({
 				start: directiveIndex,
@@ -127,8 +133,6 @@ export class PPParser
 				replacement: ' '.repeat(endIndex - directiveIndex),
 			});
 
-			// Итоговый код, после удаления директивы
-			// code = preStr + replaceCommand + postStr;
 		}		
 
 		let codeWithoutDirectives = code;
