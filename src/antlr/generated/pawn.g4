@@ -99,7 +99,7 @@ cycles:				while | for | do;
 do:					DO cycleBody (WHILE condition)?;
 
 while:				WHILE condition cycleBody;
-for:				FOR OPEN_PARENTHESIS var_definition SEMI expresion SEMI expresion CLOSE_PARENTHESIS
+for:				FOR OPEN_PARENTHESIS var_definition SEMI expresion SEMI (expresion|assigment) CLOSE_PARENTHESIS
 					cycleBody;
 cycleBody:			
 	cycleKeywords | 
