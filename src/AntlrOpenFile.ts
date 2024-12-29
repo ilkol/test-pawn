@@ -111,7 +111,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	public async parseCode() {
 
 		
-		console.log(this.curCode);
+		console.error(this.curCode);
 
 		const lexer = this.tryLex(this.curCode);
 		const lexerErrorListener = new LexerErrorListener();

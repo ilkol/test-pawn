@@ -208,8 +208,7 @@ export class PPParser
 		}
 	}
 
-	//Обрабатывает все директивы, удаляя лишний код и выполняя замены
-	public	processDirectives(code: string, array: PreprocessorDirective[]): string
+	private processCondtionsDirectives(code: string, array: PreprocessorDirective[]): string
 	{
 		const ifStack: ConditionStack = [];
 		for(let element of array) {
@@ -224,31 +223,6 @@ export class PPParser
 					continue;
 				}
 				this.handleDefine(element);
-				// const preDirective = code.substring(0, element.curEndIndex);
-				// let lastindex = undefined;
-				// if(element.undef) {
-				// 	lastindex = element.undef.curStartIndex;
-				// }
-				// const postDirective = code.substring(element.curEndIndex, lastindex);
-
-				// const lastCount = this.replacedCode.length;
-				// const result = this.substringrReplacing(postDirective, element, element.curEndIndex);
-
-				// this.definesReplacing(element);
-
-				// code = preDirective + result;
-				// if(lastCount < this.replacedCode.length) {
-				// 	element.used = true;
-				// }
-				// else {
-				// 	this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, element.file.uri.path, element.patternRange, [DiagnosticTag.Unnecessary]);
-				// }
-				
-				// this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
-				
-				// const complition = new CompletionItem(element.pattern, CompletionItemKind.Constant); 
-				// complition.documentation = element.doc;
-				// this.complitions.push(complition);
 			}
 			else if(element instanceof Undef)
 			{
@@ -287,8 +261,61 @@ export class PPParser
 			}
 			
 		}
+		return code;
+	}
 
+	private processDefines(code: string): string
+	{
 		console.log(this.defines);
+
+		this.defines.forEach(definesArray => {
+			definesArray.forEach(localDefine => {
+				code = this.processDefine(code, localDefine);
+			});
+		});
+
+		return code;
+	}
+
+	private processDefine(code: string, define: Define): string
+	{
+		let lastindex = undefined;
+		if(define.undef) {
+			lastindex = define.undef.curStartIndex;
+		}
+		const replacingArea = code.substring(define.curEndIndex, lastindex);
+
+		const lastCount = this.replacedCode.length;
+		const result = this.substringrReplacing(replacingArea, define, define.curEndIndex);
+
+		const preDirective = code.substring(0, define.curEndIndex);
+		code = preDirective + result;
+		if(lastindex) {
+			code += code.substring(lastindex);
+		}
+		if(lastCount < this.replacedCode.length) {
+			define.used = true;
+		}
+		// else {
+		// 	this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, element.file.uri.path, element.patternRange, [DiagnosticTag.Unnecessary]);
+		// }
+		
+
+
+		// this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
+		
+		// const complition = new CompletionItem(element.pattern, CompletionItemKind.Constant); 
+		// complition.documentation = element.doc;
+		// this.complitions.push(complition);
+		return code;
+	}
+
+	//Обрабатывает все директивы, удаляя лишний код и выполняя замены
+	public processDirectives(code: string, array: PreprocessorDirective[]): string
+	{
+		code = this.processCondtionsDirectives(code, array);	
+		code = this.processDefines(code);
+
 		return code;
 	}
 
