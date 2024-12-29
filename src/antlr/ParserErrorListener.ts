@@ -9,10 +9,11 @@ export class ParserErrorListener implements ANTLRErrorListener<Token>
 {
 	private _diagnostic: DiagnosticMessage[] = [];
 	syntaxError <T extends Token>(recognizer: Recognizer<T, any>, offendingSymbol: T | undefined, line: number, charPositionInLine: number, msg: string, e: RecognitionException | undefined): void {
-		console.error("PARSER ERROR");
-		console.error(offendingSymbol?.type)
-		// if(msg.includes("missing ';")) {
-		// 	recognizer
+		
+		if (offendingSymbol) {
+			const tokenType = pawnParser.VOCABULARY.getDisplayName(offendingSymbol.type); // Получаем имя токена по его числовому значению
+			console.error(`Неожиданный символ: ${offendingSymbol.text} (${tokenType})`);
+		}
 		this.diagnostic.push(new DiagnosticError(msg, this.getPos(line - 1, charPositionInLine, charPositionInLine+1)));
 		// }
 		// if(e) {

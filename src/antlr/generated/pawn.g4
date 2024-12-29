@@ -118,10 +118,10 @@ string:				(STRING | CHAR_STRING | SHARPSTRING) (string)*;
 
 functionCall:		tag? IDENTIFIER OPEN_PARENTHESIS (expresion (COMA expresion)*)? CLOSE_PARENTHESIS;
 
-docs: docBlock|docLine;
+docs: docBlock;
 
 docBlock: DocBlock;
-docLine: DocLine;
+// docLine: DocLine;
 
 OPEN_PARENTHESIS: '(';
 CLOSE_PARENTHESIS: ')';
@@ -281,7 +281,7 @@ Whitespace: [ \t]+ -> skip;
 Newline: ('\r' '\n'? | '\n') -> skip;
 
 DocBlock: '/**' .*? '*/';
-DocLine: '///' ~ [\r\n]*;
+// DocLine: '///' ~ [\r\n]*;
 
 BlockComment: '/*' .*? '*/' -> skip;
 

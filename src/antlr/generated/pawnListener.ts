@@ -72,7 +72,6 @@ import { StringContext } from "./pawnParser";
 import { FunctionCallContext } from "./pawnParser";
 import { DocsContext } from "./pawnParser";
 import { DocBlockContext } from "./pawnParser";
-import { DocLineContext } from "./pawnParser";
 
 
 /**
@@ -838,16 +837,5 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitDocBlock?: (ctx: DocBlockContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.docLine`.
-	 * @param ctx the parse tree
-	 */
-	enterDocLine?: (ctx: DocLineContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.docLine`.
-	 * @param ctx the parse tree
-	 */
-	exitDocLine?: (ctx: DocLineContext) => void;
 }
 
