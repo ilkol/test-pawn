@@ -93,7 +93,7 @@ range:				PERIOD (IDENTIFIER | number);
 
 condition:			OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
 
-codeBlock:			CURLY_OPEN_BRACKET (statement|processorLabel)* CURLY_CLOSE_BRACKET | (statement|processorLabel);
+codeBlock:			CURLY_OPEN_BRACKET (statement|processorLabel|cycleKeywords)* CURLY_CLOSE_BRACKET | (statement|processorLabel);
 return:				RETURN expresion?;
 cycles:				while | for | do;
 do:					DO cycleBody (WHILE condition)?;

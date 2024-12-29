@@ -15,6 +15,7 @@ import { SemanticTokens } from "../SemanticTokens";
 import { Pragma } from "./Pragma";
 import { Undef } from "./Undef";
 import { ElseIf } from "./ElseIf";
+import * as vscode from 'vscode';
 
 type ConditionStack = ConditionStackElement[];
 interface ConditionStackElement {
@@ -71,8 +72,12 @@ export class PPParser
 
 	private findFullMultyLineDerictive(rest: string, endIndex: number, strartStr: string)
 	{
+		let endlCount = 0;
 		let postDir = strartStr;
 		while(rest[rest.length -1] === "\\") {
+			endlCount++;
+			rest = rest.substring(0, rest.length -1);
+			rest += "_" + postDir.substring(0,2);
 			//Обрезаем все, что спереди и нам не нужно
 			postDir = postDir.substring(2);
 			//Ищем конец текущей строки
@@ -86,12 +91,13 @@ export class PPParser
 			
 			
 			postDir = postDir.substring(postMatch.index - 1);
-			rest += "\n\r" + newLine;
+			rest += newLine;
+			console.log(JSON.stringify(rest));
 			
 			endIndex += newLine.length + 2;			
 		}
-		rest = rest.replace(/\\([^ntdifr%\\])/g, " $1");
-		return {rest, endIndex};
+		// rest = rest.replace(/\\([^ntdifr%\\])/g, " $1");
+		return {rest, endIndex, endlCount};
 	}
 
 	/**
@@ -101,14 +107,15 @@ export class PPParser
 	 */
 	public collectDirectives(code: string): string {
 
-		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)\s*(.*?)\s*(?=\/\/|\n\r?|$)/gim;
+
+
+		const reg = /^([\t ]*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
 		console.error(this.file.fileName);
 		while ((match = reg.exec(code)) !== null) {
 			let [fullMatch, leadingWhitespace, directive, rest] = match;
-			
 			// Координата начала директивы (#)
   			const directiveIndex = match.index + leadingWhitespace.length;
 			// Окончания директивы
@@ -129,7 +136,7 @@ export class PPParser
 			changes.push({
 				start: directiveIndex,
 				end: endIndex,
-				replacement: ' '.repeat(endIndex - directiveIndex),
+				replacement: ' '.repeat(endIndex - directiveIndex - res.endlCount * 2) + (res.endlCount > 0 ? '\r\n'.repeat(res.endlCount) : ""),
 			});
 
 		}		
