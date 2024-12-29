@@ -101,8 +101,7 @@ export class PPParser
 	 */
 	public collectDirectives(code: string): string {
 
-		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*)(?=\s*\/\/|\r?\n|$)/gim;
-
+		const reg = /^(\s*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)\s*(.*?)\s*(?=\/\/|\n\r?|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
