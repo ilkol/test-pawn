@@ -92,7 +92,6 @@ export class PPParser
 			
 			postDir = postDir.substring(postMatch.index - 1);
 			rest += newLine;
-			console.log(JSON.stringify(rest));
 			
 			endIndex += newLine.length + 2;			
 		}
@@ -542,12 +541,15 @@ export class PPParser
 			let origIndex = curIndex + preShift;
 
 			let replace = toReplace;
-			let index = 1;
-			if(match !== null) {
+			if(match[1]) {
+				let index = 1;
 				const matches = match;
+				console.error(replace);
 				define.parameters.forEach(element => {
-					replace = replace.replace(`%${element}`, matches[index]);
+					const regex = new RegExp(`%${element}`, 'g');
+					replace = replace.replace(regex, matches[index]);
 					index++;
+					console.log(replace);
 				});
 			}
 
