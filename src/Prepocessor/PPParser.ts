@@ -17,6 +17,10 @@ import { Undef } from "./Undef";
 import { ElseIf } from "./ElseIf";
 import * as vscode from 'vscode';
 
+function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 type ConditionStack = ConditionStackElement[];
 interface ConditionStackElement {
 	directive: Condition;
@@ -51,9 +55,9 @@ export class PPParser
 	// 	return code;
 	// }
 
-	public processAllDirectives(code: string): string
+	public async processAllDirectives(code: string)
 	{
-		return this.processDirectives(code, this.directives);
+		return await this.processDirectives(code, this.directives);
 	}
 
 	get exportDirectives(): Define[] {
@@ -66,8 +70,8 @@ export class PPParser
 		return dirs;
 	}
 
-	processIncludedDirectives(code: string, array: PreprocessorDirective[]) {
-		return this.processDirectives(code, array);
+	async processIncludedDirectives(code: string, array: PreprocessorDirective[]) {
+		return await this.processDirectives(code, array);
 	}
 
 	private findFullMultyLineDerictive(rest: string, endIndex: number, strartStr: string)
@@ -269,20 +273,20 @@ export class PPParser
 		return code;
 	}
 
-	private processDefines(code: string): string
+	private async processDefines(code: string)
 	{
 		console.log(this.defines);
-
-		this.defines.forEach(definesArray => {
-			definesArray.forEach(localDefine => {
-				code = this.processDefine(code, localDefine);
-			});
-		});
+		
+		for(let definesArray of this.defines.values()) {
+			for(let localDefine of definesArray) {
+				code = await this.processDefine(code, localDefine);
+			}
+		}
 
 		return code;
 	}
 
-	private processDefine(code: string, define: Define): string
+	private async processDefine(code: string, define: Define)
 	{
 		let lastindex = undefined;
 		if(define.undef) {
@@ -291,7 +295,7 @@ export class PPParser
 		const replacingArea = code.substring(define.curEndIndex, lastindex);
 
 		const lastCount = this.replacedCode.length;
-		const result = this.substringrReplacing(replacingArea, define, define.curEndIndex);
+		const result = await this.substringrReplacing(replacingArea, define, define.curEndIndex);
 
 		const preDirective = code.substring(0, define.curEndIndex);
 		code = preDirective + result;
@@ -316,10 +320,10 @@ export class PPParser
 	}
 
 	//Обрабатывает все директивы, удаляя лишний код и выполняя замены
-	public processDirectives(code: string, array: PreprocessorDirective[]): string
+	public async processDirectives(code: string, array: PreprocessorDirective[])
 	{
 		code = this.processCondtionsDirectives(code, array);	
-		code = this.processDefines(code);
+		code = await this.processDefines(code);
 
 		return code;
 	}
@@ -525,12 +529,15 @@ export class PPParser
 	// 	}
 	// }
 
-	private substringrReplacing(str: string, define: Define, preShift: number): string
+	private async substringrReplacing(str: string, define: Define, preShift: number)
 	{
+		const maxIterations = 500;
+		let iterations = 0;
 		const toReplace = define.replacement;
 
 		let match: RegExpExecArray | null;
 		while((match = define.patternReg.exec(str)) !== null) {
+			iterations++;
 			const length = match[0].length;
 			const curIndex = match.index;
 			
@@ -544,12 +551,10 @@ export class PPParser
 			if(match[1]) {
 				let index = 1;
 				const matches = match;
-				console.error(replace);
 				define.parameters.forEach(element => {
 					const regex = new RegExp(`%${element}`, 'g');
 					replace = replace.replace(regex, matches[index]);
 					index++;
-					console.log(replace);
 				});
 			}
 
@@ -564,10 +569,10 @@ export class PPParser
 					element.move(-curShift);
 				}
 			});
-			for(let element of this.directives) {
-				if(element.startIndex < origIndex) continue;
-				element.move(-curShift);
-			}
+			// for(let element of this.directives) {
+			// 	if(element.startIndex < origIndex) continue;
+			// 	element.move(-curShift);
+			// }
 
 			this.replacedCode.push(new ReplacedCode(
 				findedStr,
@@ -578,6 +583,10 @@ export class PPParser
 			));
 			
 			str = preStr + replace + postStr;
+			if(iterations >= maxIterations) {
+				iterations = 0;
+				await delay(1);
+			}
 		}
 		return str;
 	}

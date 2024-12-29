@@ -93,8 +93,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 		return this.ppParser.exportDirectives;
 	}
 
-	processIncludededDirectives(array: PreprocessorDirective[]) {
-		this.curCode = this.ppParser.processIncludedDirectives(this.curCode, array);
+	async processIncludededDirectives(array: PreprocessorDirective[]) {
+		this.curCode = await this.ppParser.processIncludedDirectives(this.curCode, array);
 	}
 	
 	public async processIncludes(): Promise<void> {
@@ -295,7 +295,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 	public async processDirectives(): Promise<void>
 	{
-		this.curCode = this.ppParser.processAllDirectives(this.curCode);
+		this.curCode = await this.ppParser.processAllDirectives(this.curCode);
 
 		// this.defines = this.ppParser.defines;
 	}
@@ -336,7 +336,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 				directives.push(directive);
 			});
 
-			this.processIncludededDirectives(directives);
+			await this.processIncludededDirectives(directives);
 			// file.processIncludededDirectives();
 		}
 	}

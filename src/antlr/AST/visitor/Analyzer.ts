@@ -382,8 +382,17 @@ export class Analyzer extends BaseVisitor
 			let id = this.curScope.find(node.id);
 			if (id) {
 				if(id instanceof FunctionDeclaration) {
-					if(id.modifire !== FunctionModifire.forward && node.modifire !== FunctionModifire.public) {
-						this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{0}\" is already taken", node.id), node.idPos));
+					if(!id.code) {
+						if(!node.code) {
+							this.addDiagnostic(new DiagnosticError("Повтороное определение заголовка функции", node.idPos));
+						}
+						else {
+							id.code = node.code;
+						}
+					}else {
+						if(id.modifire !== FunctionModifire.forward && node.modifire !== FunctionModifire.public) {
+							this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{0}\" is already taken", node.id), node.idPos));
+						}
 					}
 				}
 				else this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{0}\" is already taken", node.id), node.idPos));
