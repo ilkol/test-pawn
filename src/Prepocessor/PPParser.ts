@@ -275,8 +275,6 @@ export class PPParser
 
 	private async processDefines(code: string)
 	{
-		console.log(this.defines);
-		
 		for(let definesArray of this.defines.values()) {
 			for(let localDefine of definesArray) {
 				code = await this.processDefine(code, localDefine);
@@ -295,10 +293,11 @@ export class PPParser
 		const replacingArea = code.substring(define.curEndIndex, lastindex);
 
 		const lastCount = this.replacedCode.length;
+		
 		const result = await this.substringrReplacing(replacingArea, define, define.curEndIndex);
 
 		const preDirective = code.substring(0, define.curEndIndex);
-		code = preDirective + result;
+		code = preDirective + (result ?? "");
 		if(lastindex) {
 			code += code.substring(lastindex);
 		}
@@ -531,64 +530,86 @@ export class PPParser
 
 	private async substringrReplacing(str: string, define: Define, preShift: number)
 	{
-		const maxIterations = 500;
-		let iterations = 0;
-		const toReplace = define.replacement;
 
-		let match: RegExpExecArray | null;
-		while((match = define.patternReg.exec(str)) !== null) {
-			iterations++;
-			const length = match[0].length;
-			const curIndex = match.index;
-			
-			const preStr = str.substring(0, curIndex);
-			const findedStr = str.substring(curIndex, curIndex + length);
-			const postStr = str.substring(curIndex + length);
 
-			let origIndex = curIndex + preShift;
-
-			let replace = toReplace;
-			if(match[1]) {
-				let index = 1;
-				const matches = match;
-				define.parameters.forEach(element => {
-					const regex = new RegExp(`%${element}`, 'g');
-					replace = replace.replace(regex, matches[index]);
-					index++;
-				});
-			}
-
-			const curShift = findedStr.length - replace.length;
-			
-			this.replacedCode.forEach(element => {
-				if(element.newIndex < curIndex + preShift)
-				{
-					origIndex += element.shift;
+		return await vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Window,
+				title: "Processing replacements...",
+				cancellable: true,
+			},
+			async (progress, token) => {
+				const maxIterations = 500;
+				let iterations = 0;
+				const toReplace = define.replacement;
+				let totalMatches = 0;
+				let match: RegExpExecArray | null;
+	
+				// Подсчитайте количество совпадений для прогресса
+				const pattern = new RegExp(define.patternReg);
+				while (pattern.exec(str) !== null) totalMatches++;
+	
+				while ((match = define.patternReg.exec(str)) !== null) {
+					if (token.isCancellationRequested) {
+						throw new Error("Process was cancelled by the user");
+					}
+	
+					iterations++;
+					const length = match[0].length;
+					const curIndex = match.index;
+	
+					const preStr = str.substring(0, curIndex);
+					const findedStr = str.substring(curIndex, curIndex + length);
+					const postStr = str.substring(curIndex + length);
+	
+					let origIndex = curIndex + preShift;
+	
+					let replace = toReplace;
+					if (match[1]) {
+						let index = 1;
+						const matches = match;
+						define.parameters.forEach(element => {
+							const regex = new RegExp(`%${element}`, 'g');
+							replace = replace.replace(regex, matches[index]);
+							index++;
+						});
+					}
+	
+					const curShift = findedStr.length - replace.length;
+	
+					this.replacedCode.forEach(element => {
+						if (element.newIndex < curIndex + preShift) {
+							origIndex += element.shift;
+						} else {
+							element.move(-curShift);
+						}
+					});
+	
+					this.replacedCode.push(new ReplacedCode(
+						findedStr,
+						replace,
+						define,
+						origIndex,
+						curIndex + preShift
+					));
+	
+					str = preStr + replace + postStr;
+	
+					// Обновление прогресса
+					progress.report({
+						increment: (1 / totalMatches) * 100,
+						message: `${iterations} replacements processed...`,
+					});
+	
+					if (iterations >= maxIterations) {
+						iterations = 0;
+						await new Promise(resolve => setImmediate(resolve));
+					}
 				}
-				else {
-					element.move(-curShift);
-				}
-			});
-			// for(let element of this.directives) {
-			// 	if(element.startIndex < origIndex) continue;
-			// 	element.move(-curShift);
-			// }
-
-			this.replacedCode.push(new ReplacedCode(
-				findedStr,
-				replace,
-				define,
-				origIndex,
-				curIndex + preShift
-			));
-			
-			str = preStr + replace + postStr;
-			if(iterations >= maxIterations) {
-				iterations = 0;
-				await delay(1);
+	
+				return str;
 			}
-		}
-		return str;
+		);
 	}
 
 	preprocessorTokens(): CompletionItem[]
