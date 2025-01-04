@@ -18,12 +18,12 @@ interface RakeTaskDefinition extends vscode.TaskDefinition {
 	 * The task name
 	 */
 	task: string;
-  
+
 	/**
 	 * The rake file containing the task
 	 */
 	file?: string;
-  }
+}
 
 let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
@@ -41,17 +41,17 @@ export async function activate(context: vscode.ExtensionContext) {
 	const documentLinkProvider = new DocumentLinkProvider(fileManage);
 
 	const tokenTypes = [
-		SemanticTokens.type, 
-		SemanticTokens.enum, 
-		SemanticTokens.parameter, 
-		SemanticTokens.enumMember, 
-		SemanticTokens.macro, 
-		SemanticTokens.comment, 
+		SemanticTokens.type,
+		SemanticTokens.enum,
+		SemanticTokens.parameter,
+		SemanticTokens.enumMember,
+		SemanticTokens.macro,
+		SemanticTokens.comment,
 		SemanticTokens.string,
-		SemanticTokens.keyword, 
-		SemanticTokens.number, 
-		SemanticTokens.operator, 
-		SemanticTokens.function, 
+		SemanticTokens.keyword,
+		SemanticTokens.number,
+		SemanticTokens.operator,
+		SemanticTokens.function,
 		SemanticTokens.variable
 	];
 	const tokenModifiers = [
@@ -70,12 +70,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 	vscode.workspace.onDidChangeTextDocument(async (e) => {
-		if(e.document.languageId !== "pawn") {return;}
+		if (e.document.languageId !== "pawn") { return; }
 		let connect = e.contentChanges;
-		if(!connect.length) {
+		if (!connect.length) {
 			return;
 		}
-		if(connect[0].text === ";") {
+		if (connect[0].text === ";") {
 			console.error(e.contentChanges);
 			await fileManage.onDidChangeDocument(e.document);
 		}
@@ -83,15 +83,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	vscode.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument, fileManage);
 	console.log(vscode.workspace.textDocuments);
 	parseAllOpenedFiles();
-	
+
 
 	vscode.workspace.onDidSaveTextDocument((file) => {
-		if(file.languageId !== "pawn") {return;}
+		if (file.languageId !== "pawn") { return; }
 		console.error("SAVE FILE");
 		return fileManage.onDidChangeDocument(file);
 	});
 
-	
+
 	//регистрируем таск
 	registerTasks(context);
 
@@ -103,7 +103,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const symbolProvider = new SymbolProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider('pawn', symbolProvider));
-	
+
 	//пока бесполезно
 	// const callHierarchyProvider = new CallHierarchyProvider();
 	// context.subscriptions.push(vscode.languages.registerCallHierarchyProvider('pawn', callHierarchyProvider));
@@ -112,21 +112,47 @@ export async function activate(context: vscode.ExtensionContext) {
 	const colorProvider = new PawnColorProvider();
 	context.subscriptions.push(vscode.languages.registerColorProvider('pawn', colorProvider));
 	context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider('pawn', documentSemanticTokensProvider, legend));
-	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('pawn', signatureProvider, {triggerCharacters: ['(', ','], retriggerCharacters: [")"] }));
+	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('pawn', signatureProvider, { triggerCharacters: ['(', ','], retriggerCharacters: [")"] }));
+
+	context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('pawn', {
+		provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
+			const edits: vscode.TextEdit[] = [];
+			const fullText = document.getText();
+
+			// Регулярное выражение для поиска операторов
+			let formatted = fullText.replace(
+				/ *(=|\+|-|\*|\/) */g, ' $1 '
+			);
+			formatted = formatted.replace(
+				/ *(,) */g, '$1 '
+			);
+			formatted = formatted.replace(
+				/ {4}/g, '\t'
+			);
+
+			const fullRange = new vscode.Range(
+				document.positionAt(0),
+				document.positionAt(fullText.length)
+			);
+
+			edits.push(vscode.TextEdit.replace(fullRange, formatted));
+			return edits;
+		}
+	}));
 
 	context.subscriptions.push(vscode.languages.registerHoverProvider('pawn', {
 		async provideHover(document, position, token) {
 			return fileManage.registerHover(document, position);
 		}
-		}));
+	}));
 
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('pawn', {
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
-			
+
 			let complitions: vscode.CompletionItem[] = [];
-			
+
 			const file: AbstractOpenFile | undefined = fileManage.openedFiles.get(document.uri);
-			if(file) {complitions = complitions.concat(file.getComplitions());}
+			if (file) { complitions = complitions.concat(file.getComplitions()); }
 
 			// a simple completion item which inserts `Hello World!`
 			// const simpleCompletion = new vscode.CompletionItem('Hello World!');
@@ -140,19 +166,19 @@ export async function activate(context: vscode.ExtensionContext) {
 			// snippetCompletion.documentation = docs;
 			// docs.baseUri = vscode.Uri.parse('http://example.com/a/b/c/');
 
-			
+
 			// defines.forEach(defineEl => {
 			// 	const complition = new vscode.CompletionItem(defineEl.name);
 			// 	complition.documentation = new vscode.MarkdownString('');
 			// 	complition.documentation.appendCodeblock(`#define ${defineEl.name} ${defineEl.value}`, "pawn");
 			// 	complition.kind = vscode.CompletionItemKind.Constant;
 			// 	complition.detail = `define constant`;
-				
+
 			// 	complitions.push(complition);
 			// });
 
 
-			
+
 			// const maxPlayerDefine = new vscode.CompletionItem('MAX_PLAYERS');
 			// maxPlayerDefine.documentation = new vscode.MarkdownString('Максимальное число игроков на сервере');
 			// maxPlayerDefine.documentation.isTrusted = true;
@@ -184,19 +210,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 }
 
-function registerTasks(context: vscode.ExtensionContext)
-{
+function registerTasks(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand("pawnlanguage.runBuildTask", () => {
-			
+
 			const task = new vscode.Task(
 				{ type: 'shell' }, // Тип задачи
 				vscode.TaskScope.Workspace, // Область выполнения - весь рабочий проект
 				'build', // Имя задачи
 				'pawnlanguage', // Источник задачи (может быть вашим расширением)
-				new vscode.ShellExecution('Write-Host "[pawnlanguage] '+ vscode.l10n.t("Starting building")+'`n" -NoNewline; ${workspaceRoot}\\pawno\\pawncc.exe ${file}')
+				new vscode.ShellExecution('Write-Host "[pawnlanguage] ' + vscode.l10n.t("Starting building") + '`n" -NoNewline; ${workspaceRoot}\\pawno\\pawncc.exe ${file}')
 			);
-			
+
 			task.presentationOptions = {
 				echo: false,
 				clear: vscode.workspace.getConfiguration().get("PawnLanguage.clearOnBuild")
@@ -207,8 +232,7 @@ function registerTasks(context: vscode.ExtensionContext)
 	);
 }
 
-function parseAllOpenedFiles()
-{
+function parseAllOpenedFiles() {
 	vscode.workspace.textDocuments.forEach(document => {
 		fileManage.onDidOpenTextDocument(document);
 	});
