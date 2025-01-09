@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-// import * as l10n from 'vscode-l10n';
 import { DiagnosticManager } from './Managers/diagnostic';
 import { FileManager } from './Managers/FileManager';
 import { DocumentLinkProvider } from './Providers/DocumentLinkProvider';
@@ -11,19 +10,6 @@ import { AbstractOpenFile } from './AbstractOpenFile';
 import { SemanticTokens, SemanticTokensModifires } from './SemanticTokens';
 import { DefinitionProvider } from './Providers/DefinitionProvider';
 import { ReferenceProvider } from './Providers/ReferenceProvider';
-
-
-interface RakeTaskDefinition extends vscode.TaskDefinition {
-	/**
-	 * The task name
-	 */
-	task: string;
-
-	/**
-	 * The rake file containing the task
-	 */
-	file?: string;
-}
 
 let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
