@@ -9,22 +9,26 @@ export class ParserErrorListener implements ANTLRErrorListener<Token>
 {
 	private _diagnostic: DiagnosticMessage[] = [];
 	syntaxError <T extends Token>(recognizer: Recognizer<T, any>, offendingSymbol: T | undefined, line: number, charPositionInLine: number, msg: string, e: RecognitionException | undefined): void {
-		
-		if (offendingSymbol) {
-			const tokenType = pawnParser.VOCABULARY.getDisplayName(offendingSymbol.type); // Получаем имя токена по его числовому значению
-			console.error(`Неожиданный символ: ${offendingSymbol.text} (${tokenType})`);
+		let ruleName: string | undefined;
+
+		if (e && e.context) {
+			const ruleIndex = e.context.ruleIndex; // Индекс правила
+			ruleName = recognizer.ruleNames[ruleIndex]; // Имя правила
 		}
-		this.diagnostic.push(new DiagnosticError(msg, this.getPos(line - 1, charPositionInLine, charPositionInLine+1)));
-		// }
-		// if(e) {
-		// 	console.error(e.expectedTokens);
-		// 	if(e.context instanceof FunctionDeclContext) {
-		// 		if(offendingSymbol?.text == "<EOF>") {
-		// 			this.diagnostic.push(new DiagnosticError(`Ожидается ";"`, this.getPos(line, charPositionInLine, charPositionInLine+1)));
-		// 			// console.log("Ожидается ;");
-		// 		}
-		// 	}
-		// }
+
+		if (offendingSymbol) {
+			const tokenType = pawnParser.VOCABULARY.getDisplayName(offendingSymbol.type); // Получаем имя токена
+			console.error(
+				`Неожиданный символ: ${offendingSymbol.text} (${tokenType}) в правиле: ${ruleName || "Неизвестное правило"}`
+			);
+		}
+
+		this.diagnostic.push(
+			new DiagnosticError(
+				`${msg} (${ruleName || "Неизвестное правило"})`,
+				this.getPos(line - 1, charPositionInLine, charPositionInLine + 1)
+			)
+		);
 		
 	}
 
