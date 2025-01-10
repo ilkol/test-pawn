@@ -41,9 +41,6 @@ import { RValueContext } from "./pawnParser";
 import { ConstRValueContext } from "./pawnParser";
 import { SizeofContext } from "./pawnParser";
 import { NumberContext } from "./pawnParser";
-import { IntegerContext } from "./pawnParser";
-import { FloatContext } from "./pawnParser";
-import { HexContext } from "./pawnParser";
 import { OperatorContext } from "./pawnParser";
 import { CanBeOverloadedContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
@@ -68,6 +65,7 @@ import { CycleBodyContext } from "./pawnParser";
 import { CycleKeywordsContext } from "./pawnParser";
 import { LiteralContext } from "./pawnParser";
 import { Bool_constContext } from "./pawnParser";
+import { PredefinedConstantsContext } from "./pawnParser";
 import { StringContext } from "./pawnParser";
 import { FunctionCallContext } from "./pawnParser";
 import { DocsContext } from "./pawnParser";
@@ -498,39 +496,6 @@ export interface pawnListener extends ParseTreeListener {
 	exitNumber?: (ctx: NumberContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `pawnParser.integer`.
-	 * @param ctx the parse tree
-	 */
-	enterInteger?: (ctx: IntegerContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.integer`.
-	 * @param ctx the parse tree
-	 */
-	exitInteger?: (ctx: IntegerContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.float`.
-	 * @param ctx the parse tree
-	 */
-	enterFloat?: (ctx: FloatContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.float`.
-	 * @param ctx the parse tree
-	 */
-	exitFloat?: (ctx: FloatContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.hex`.
-	 * @param ctx the parse tree
-	 */
-	enterHex?: (ctx: HexContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.hex`.
-	 * @param ctx the parse tree
-	 */
-	exitHex?: (ctx: HexContext) => void;
-
-	/**
 	 * Enter a parse tree produced by `pawnParser.operator`.
 	 * @param ctx the parse tree
 	 */
@@ -793,6 +758,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitBool_const?: (ctx: Bool_constContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.predefinedConstants`.
+	 * @param ctx the parse tree
+	 */
+	enterPredefinedConstants?: (ctx: PredefinedConstantsContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.predefinedConstants`.
+	 * @param ctx the parse tree
+	 */
+	exitPredefinedConstants?: (ctx: PredefinedConstantsContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.string`.

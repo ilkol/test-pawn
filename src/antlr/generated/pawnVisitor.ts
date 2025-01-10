@@ -41,9 +41,6 @@ import { RValueContext } from "./pawnParser";
 import { ConstRValueContext } from "./pawnParser";
 import { SizeofContext } from "./pawnParser";
 import { NumberContext } from "./pawnParser";
-import { IntegerContext } from "./pawnParser";
-import { FloatContext } from "./pawnParser";
-import { HexContext } from "./pawnParser";
 import { OperatorContext } from "./pawnParser";
 import { CanBeOverloadedContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
@@ -68,6 +65,7 @@ import { CycleBodyContext } from "./pawnParser";
 import { CycleKeywordsContext } from "./pawnParser";
 import { LiteralContext } from "./pawnParser";
 import { Bool_constContext } from "./pawnParser";
+import { PredefinedConstantsContext } from "./pawnParser";
 import { StringContext } from "./pawnParser";
 import { FunctionCallContext } from "./pawnParser";
 import { DocsContext } from "./pawnParser";
@@ -349,27 +347,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitNumber?: (ctx: NumberContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.integer`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitInteger?: (ctx: IntegerContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.float`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitFloat?: (ctx: FloatContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.hex`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitHex?: (ctx: HexContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `pawnParser.operator`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -536,6 +513,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitBool_const?: (ctx: Bool_constContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.predefinedConstants`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitPredefinedConstants?: (ctx: PredefinedConstantsContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.string`.

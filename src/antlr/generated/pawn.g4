@@ -1,5 +1,15 @@
 grammar pawn;
 
+/*
+Объявление переменной может быть произведенно:
+ * В любомй позиции, где стейтмент был бы валидным
+ * Везде, где будет валидна имплементация или декларация функций
+ * В первом стейтменте цикла for
+
+Если переменная объявлена с помощь static внутри блока, то переменная будет работать и после окончания выполнения этого блока.
+Если же statis перменная - глобальная, то она станет видна только в текущем файле.
+ */
+
 /* Содержание файла */
 file:				processorLabel|((docs)*(declaration)*) EOF;
 
@@ -64,10 +74,7 @@ rValue:			    (varOrLiteral | functionCall | grouping);
 constRValue:		(varOrLiteral | constGrouping);
 sizeof:				SIZEOF;
 
-number: 			integer | float | hex;
-integer:			MINUS? INTEGER;
-float:				MINUS? FLOAT;
-hex:				HEX;
+number: 			MINUS? (INTEGER | FLOAT | HEX | RATIONAL | BINARY);
 
 operator:			arefmeticOperator | logicOperator | bitwiseOperator;
 
@@ -93,7 +100,7 @@ range:				PERIOD (IDENTIFIER | number);
 
 condition:			OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
 
-codeBlock:			CURLY_OPEN_BRACKET (statement|processorLabel|cycleKeywords)* CURLY_CLOSE_BRACKET | (statement|processorLabel);
+codeBlock:			CURLY_OPEN_BRACKET (statement|processorLabel|cycleKeywords)* CURLY_CLOSE_BRACKET | (statement|processorLabel|cycleKeywords);
 return:				RETURN expresion?;
 cycles:				while | for | do;
 do:					DO cycleBody (WHILE condition)?;
@@ -103,14 +110,15 @@ for:				FOR OPEN_PARENTHESIS var_definition SEMI expresion SEMI (expresion|assig
 					cycleBody;
 cycleBody:			
 	cycleKeywords | 
-	CURLY_OPEN_BRACKET (statement|cycleKeywords)* CURLY_CLOSE_BRACKET | 
+	codeBlock | 
 	statement;
 
 cycleKeywords:		(BREAK|CONTINUE) SEMI;
 
 
-literal:			tag? (string | number | bool_const);
+literal:			tag? (string | number | bool_const | predefinedConstants);
 bool_const:			TRUE | FALSE;
+predefinedConstants: CELLBITS | CELLMAX | CELLMIN | CHARBITS | CHARMAX | CHARMIN | DEBUG | LINE | PAWN | UCHARMAX;
 
 string:				(STRING | CHAR_STRING | SHARPSTRING) (string)*;
 
@@ -232,7 +240,6 @@ ENDSCRIPT:	'endscript';
 // ERROR:		'error';
 FILE: 		'file';
 INCLUDE:	'include';
-LINE:		'line';
 PRAGMA:		'pragma';
 SECTION:	'section';
 TRYINCLUDE:	'tryinclude';
@@ -245,7 +252,16 @@ WARNING:	'warning';
 
 TRUE:		'true';
 FALSE:		'false';
-
+CELLBITS:   'cellbits';
+CELLMAX:    'cellmax';
+CELLMIN:    'cellmin';
+CHARBITS:   'charbits';
+CHARMAX:    'charmax';
+CHARMIN:    'charmin';
+DEBUG:      'debug';
+LINE:       '__line';
+PAWN:       '__Pawn';
+UCHARMAX:   'ucharmax';
 
 
 SHARPSTRING:		HASHTAG CHARS* HASHTAG?;
@@ -272,9 +288,11 @@ fragment SIMPLEESCAPESEQUENCE:
 
 IDENTIFIER:		[@a-zA-Z_][@a-zA-Z0-9_]*;
 
-HEX:			'0x'[a-fA-F0-9]+;
-INTEGER:		[0-9]+;
-FLOAT:			[0-9]+'.'[0-9]+;
+BINARY:			'0b'[01_]+;
+HEX:			'0x'[a-fA-F0-9_]+;
+INTEGER:		[0-9_]+;
+FLOAT:			[0-9_]+'.'[0-9_]+;
+RATIONAL:		[0-9_]+'.'[0-9_]+'e'[0-9]+;
 
 Whitespace: [ \t]+ -> skip;
 
