@@ -181,7 +181,7 @@ export class PPParser
 				return new Define(this.file, rest, startIndex, restIndex, endIndex);
 			case "tryinclude":
 			case "include": {
-				const directive = new Include(this.file, rest, startIndex, restIndex, endIndex)
+				const directive = new Include(this.file, rest, startIndex, restIndex, endIndex);
 				this.includes.push(directive);
 				return directive;
 			}
@@ -190,7 +190,7 @@ export class PPParser
 			case "pragma":
 				return new Pragma(this.file, rest, startIndex, restIndex, endIndex);
 			case "endif": {
-				return new Endif(this.file, startIndex,endIndex)
+				return new Endif(this.file, startIndex,endIndex);
 				// const cond = this.ppConditions.pop();
 				// if(cond) {
 				// 	cond.endIf = direct;
@@ -204,7 +204,7 @@ export class PPParser
 				return new ElseIf(this.file, rest, startIndex, restIndex, endIndex);
 			}
 			case "else": {
-				return new Else(this.file, startIndex,endIndex)
+				return new Else(this.file, startIndex,endIndex);
 			}
 				
 			case "enscript":
