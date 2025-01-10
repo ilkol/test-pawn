@@ -65,7 +65,7 @@ export class Define extends PreprocessorDirective
 
 			const replacement = match[3] ? match[3].trim() : "";
 			return {
-				patternReg: RegExp(patternRegStr, "g"),
+				patternReg: RegExp(patternRegStr, ""),
 				pattern: pattern,
 				replacement: replacement,
 				patternStart: patterStart

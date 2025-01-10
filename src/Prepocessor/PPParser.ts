@@ -273,58 +273,127 @@ export class PPParser
 		return code;
 	}
 
-	private async processDefines(code: string)
+	private async processDefines(codeChunks: string[])
 	{
 		for(let definesArray of this.defines.values()) {
 			for(let localDefine of definesArray) {
-				code = await this.processDefine(code, localDefine);
+				codeChunks = await this.processDefine(codeChunks, localDefine);
 			}
 		}
 
-		return code;
+		return codeChunks;
 	}
 
-	private async processDefine(code: string, define: Define)
+	private async processDefine(codeChunks: string[], define: Define)
 	{
 		let lastindex = undefined;
 		if(define.undef) {
 			lastindex = define.undef.curStartIndex;
 		}
-		const replacingArea = code.substring(define.curEndIndex, lastindex);
-
-		const lastCount = this.replacedCode.length;
-		
-		const result = await this.substringrReplacing(replacingArea, define, define.curEndIndex);
-
-		const preDirective = code.substring(0, define.curEndIndex);
-		code = preDirective + (result ?? "");
+		const startPos = this.findChunkAndPosition(define.curEndIndex, codeChunks);
+		let stoptPos: {
+			chunkIndex: number;
+			positionInChunk: number;
+		};
 		if(lastindex) {
-			code += code.substring(lastindex);
+			stoptPos = this.findChunkAndPosition(lastindex, codeChunks);
 		}
-		if(lastCount < this.replacedCode.length) {
-			define.used = true;
+		else {
+			stoptPos = {
+				chunkIndex: codeChunks.length - 1,
+				positionInChunk: codeChunks[codeChunks.length - 1].length - 1
+			};
 		}
-		// else {
-		// 	this.diagnosticManager.addDiagnostic(l10n.t("Unused #define"), DiagnosticSeverity.Hint, element.file.uri.path, element.patternRange, [DiagnosticTag.Unnecessary]);
-		// }
+		let offset = 0;
+		for(let i = 0; i < startPos.chunkIndex; i++) {
+			offset += codeChunks[i].length;
+		}
+	
+		if(startPos.chunkIndex === stoptPos.chunkIndex) {
+			let code = codeChunks[startPos.chunkIndex];
+			let preCode = code.substring(0, startPos.positionInChunk);
+			let postCode = code.substring(stoptPos.positionInChunk);
+			codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk, stoptPos.positionInChunk), define, offset) + postCode;
+		}
+		else {
+			let code = codeChunks[startPos.chunkIndex];
+			let preCode = code.substring(0, startPos.positionInChunk);
+	
+			codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk), define, offset);
+			
+	
+			offset += codeChunks[startPos.chunkIndex].length;
+	
+			for(let i = startPos.chunkIndex; i < stoptPos.chunkIndex; i++) {
+				codeChunks[i] = await this.substringrReplacingOnChank(codeChunks[i], define, offset);
+			} 
+	
+			code = codeChunks[stoptPos.chunkIndex];
+			let postCode = code.substring(stoptPos.positionInChunk);
+	
+			codeChunks[stoptPos.chunkIndex] = await this.substringrReplacingOnChank(code.substring(0, stoptPos.positionInChunk), define, offset) + postCode;
+		}
 		
+		return codeChunks;
+	}
 
+	private findChunkAndPosition(index: number, chunks: string[])
+	{
+		let remaining = index;
+		let chunkIndex = 0;
+		let positionInChunk = 0;
 
-		// this.symbolsManager.addSymbol(new DocumentSymbol(element.pattern, "define", SymbolKind.Constant, element.range, element.range));
-		
-		// const complition = new CompletionItem(element.pattern, CompletionItemKind.Constant); 
-		// complition.documentation = element.doc;
-		// this.complitions.push(complition);
-		return code;
+		while (chunkIndex < chunks.length) {
+            const chunk = chunks[chunkIndex];
+            if (remaining < chunk.length) {
+                positionInChunk = remaining;
+                break;
+            } 
+			remaining -= chunk.length;
+			chunkIndex++;
+        }
+		return {
+			chunkIndex,
+			positionInChunk
+		};
 	}
 
 	//Обрабатывает все директивы, удаляя лишний код и выполняя замены
 	public async processDirectives(code: string, array: PreprocessorDirective[])
 	{
 		code = this.processCondtionsDirectives(code, array);	
-		code = await this.processDefines(code);
+		let codeChunks = this.sliceCodeForChunks(code);
+		codeChunks = await this.processDefines(codeChunks);
 
-		return code;
+		const document = await vscode.workspace.openTextDocument({
+			content: '', // Изначально пустой документ
+			language: 'plaintext', // Устанавливаем язык (можно заменить на другой, например, 'javascript')
+		});
+
+		// Открываем файл в редакторе
+		const editor = await vscode.window.showTextDocument(document);
+
+		// Добавляем строки постепенно
+		for (const line of codeChunks) {
+			const position = new vscode.Position(document.lineCount, 0); // Позиция в конце документа
+			await editor.edit(editBuilder => {
+				editBuilder.insert(position, line + '\n'); // Вставляем строку с новой строкой
+			});
+			// Ждем немного перед добавлением следующей строки
+			await new Promise(resolve => setTimeout(resolve, 500)); // Задержка 500 мс
+		}
+
+		return codeChunks;
+	}
+
+	private sliceCodeForChunks(code: string): string[]
+	{
+		const chunkSize = 1000000;
+		const chunks: string[] = [];
+		for (let i = 0; i < code.length; i += chunkSize) {
+			chunks.push(code.substring(i, i + chunkSize));
+		}
+		return chunks;
 	}
 
 	private handleUndef(directive: Undef)
@@ -528,10 +597,9 @@ export class PPParser
 	// 	}
 	// }
 
-	private async substringrReplacing(str: string, define: Define, preShift: number)
+
+	private async substringrReplacingOnChank(str: string, define: Define, preShift: number): Promise<string>
 	{
-
-
 		return await vscode.window.withProgress(
 			{
 				location: vscode.ProgressLocation.Window,
@@ -546,10 +614,16 @@ export class PPParser
 				let match: RegExpExecArray | null;
 	
 				// Подсчитайте количество совпадений для прогресса
-				const pattern = new RegExp(define.patternReg);
-				while (pattern.exec(str) !== null) totalMatches++;
+				const pattern = new RegExp(define.patternReg, "g");
+				while (pattern.exec(str) !== null) {
+					totalMatches++;
+				}
+
+				const resultParts: string[] = [];
+				let shift = 0;
+				let curStr = str;
 	
-				while ((match = define.patternReg.exec(str)) !== null) {
+				while ((match = define.patternReg.exec(curStr)) !== null) {
 					if (token.isCancellationRequested) {
 						throw new Error("Process was cancelled by the user");
 					}
@@ -558,23 +632,15 @@ export class PPParser
 					const length = match[0].length;
 					const curIndex = match.index;
 	
-					const preStr = str.substring(0, curIndex);
-					const findedStr = str.substring(curIndex, curIndex + length);
-					const postStr = str.substring(curIndex + length);
+					const preStr = curStr.substring(0, curIndex);
+					resultParts.push(preStr);
+					shift += preStr.length;
+					const findedStr = curStr.substring(curIndex, curIndex + length);
+					const postStr = curStr.substring(curIndex + length);
+					
+					let origIndex = curIndex + preShift + shift;
 	
-					let origIndex = curIndex + preShift;
-	
-					let replace = toReplace;
-					if (match[1]) {
-						let index = 1;
-						const matches = match;
-						define.parameters.forEach(element => {
-							const regex = new RegExp(`%${element}`, 'g');
-							replace = replace.replace(regex, matches[index]);
-							index++;
-						});
-					}
-	
+					let replace = this.replaceMacroParameters(toReplace, match, define);
 					const curShift = findedStr.length - replace.length;
 	
 					this.replacedCode.forEach(element => {
@@ -590,10 +656,13 @@ export class PPParser
 						replace,
 						define,
 						origIndex,
-						curIndex + preShift
+						curIndex + preShift + shift
 					));
 	
-					str = preStr + replace + postStr;
+					resultParts.push(replace);
+					shift += replace.length;
+					curStr = postStr;
+					
 	
 					// Обновление прогресса
 					progress.report({
@@ -607,9 +676,45 @@ export class PPParser
 					}
 				}
 	
-				return str;
+				resultParts.push(curStr);
+		
+				return resultParts.join('');
 			}
 		);
+	}
+
+	/**
+	 * Заменяет дефайн в некоторой подстроке
+	 * @param str строка, на которой заменяется дефайн
+	 * @param define дефайн
+	 * @param preShift изначальный сдвиг, то есть позиция в оригинальном файле, с которой начата замена
+	 * @returns строка с замененными дефайнами
+	 */
+	private async substringrReplacing(str: string, define: Define, preShift: number): Promise<string>
+	{
+		const chunkSize = 1000000;
+		const chunks = [];
+		for(let postition = 0; postition < str.length; postition += chunkSize)
+		{
+			chunks.push(await this.substringrReplacingOnChank(str.slice(postition, postition + chunkSize), define, preShift + postition));
+		}
+
+		return chunks.join("");
+	}
+
+	private replaceMacroParameters(toReplace: string, match: RegExpExecArray, define: Define): string
+	{
+		let replace = toReplace;
+		if (match[1]) {
+			let index = 1;
+			const matches = match;
+			define.parameters.forEach(element => {
+				const regex = new RegExp(`%${element}`, 'g');
+				replace = replace.replace(regex, matches[index]);
+				index++;
+			});
+		}
+		return replace;
 	}
 
 	preprocessorTokens(): CompletionItem[]

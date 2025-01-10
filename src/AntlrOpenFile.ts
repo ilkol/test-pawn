@@ -26,6 +26,7 @@ import { Definition } from "./Linking/Definition";
 import { Declaration } from "./antlr/AST/Nodes/Declaration";
 import { Reference } from "./Linking/Reference";
 import { IHasID } from "./antlr/AST/Nodes/IHasID";
+import { ChunkedCharStream } from "./antlr/ChunkedCharStream";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -79,6 +80,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	private AST: ASTNode | null = null;
 	private ppParser: PPParser = new PPParser(this.file, this.symbolsManager, this.tokensManager, this.diagnositcManager);
 	private curCode: string = "";
+	private chunks: string[] = [];
 
 	public constructor(file: vscode.TextDocument, fileManager: FileManager)
 	{
@@ -94,7 +96,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 
 	async processIncludededDirectives(array: PreprocessorDirective[]) {
-		this.curCode = await this.ppParser.processIncludedDirectives(this.curCode, array);
+		// this.curCode = await this.ppParser.processIncludedDirectives(this.curCode, array);
 	}
 	
 	public async processIncludes(): Promise<void> {
@@ -110,9 +112,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 	public async parseCode() {
 
-		
-	
-		const lexer = this.tryLex(this.curCode);
+		const stream = new ChunkedCharStream(this.chunks);	
+		const lexer = new pawnLexer(stream);
 		const lexerErrorListener = new LexerErrorListener();
 		lexer.addErrorListener(lexerErrorListener);
 		const tokenStream = new CommonTokenStream(lexer);
@@ -295,7 +296,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 	public async processDirectives(): Promise<void>
 	{
-		this.curCode = await this.ppParser.processAllDirectives(this.curCode);
+		this.chunks = await this.ppParser.processAllDirectives(this.curCode);
 
 		// this.defines = this.ppParser.defines;
 	}
