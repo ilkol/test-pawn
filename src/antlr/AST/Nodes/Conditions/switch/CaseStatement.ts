@@ -1,13 +1,12 @@
 import { IVisitor } from "../../../visitor/IVisitor";
 import { CodeBlock } from "../../CodeBlock";
 import { Expresion } from "../../Expresion";
-import { Statement } from "../../Statement";
-import { IfStatement } from "../IfStatement";
+import { AbstractStatement } from "../../AbstractStatement";
 
-export class CaseStatement extends Statement
+export class CaseStatement extends AbstractStatement
 {
 	public condition?: Expresion;
-	public code?: CodeBlock | Statement;
+	public code?: CodeBlock | AbstractStatement;
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitCaseStatement(this);

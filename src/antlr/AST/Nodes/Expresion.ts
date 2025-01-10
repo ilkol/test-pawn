@@ -1,9 +1,32 @@
 import { IVisitor } from "../visitor/IVisitor";
-import { ASTNode } from "./ASTNode";
-import { RightValue } from "./RightValue";
+import { DefaultTag } from "./DefaultTag";
+import { AbstractStatement } from "./AbstractStatement";
+import { Tag } from "./Tag";
 
-export class Expresion extends RightValue {
+export class Expresion extends AbstractStatement {
 	name = "вырожение";
+
+	private translateTag: boolean = false;
+	private _tag: Tag = new DefaultTag();
+
+	public get tag() : Tag {
+		return this._tag;
+	}
+
+	
+
+	public set tag(v : Tag) {
+		this._tag = v;
+	}
+
+	public get isTaged(): boolean
+	{
+		return this.translateTag;
+	}
+	public set isTaged(v: true)
+	{
+		this.translateTag = v;
+	}
 
 	private exp: Expresion|undefined;
 

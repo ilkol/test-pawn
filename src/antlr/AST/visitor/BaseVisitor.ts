@@ -85,9 +85,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	visitCycle(node: Cycle): void {
 		node.condition?.accept(this);
-		node.code?.statements.forEach(value => {
-			value.accept(this);
-		});
+		node.code?.accept(this);
 	}
 
 	visitStringLiteral(node: StringLiteral): void {
@@ -138,6 +136,8 @@ export abstract class BaseVisitor implements IVisitor
 	visitCodeBlock(node: CodeBlock): void {
 		this.beforeVisitCodeBlock(node);
 		node.statements.statements.forEach(element => {
+			console.log(node.pos);
+			console.log(element);
 			element.accept(this);
 		});
 		this.afterVisitCodeBlock(node);

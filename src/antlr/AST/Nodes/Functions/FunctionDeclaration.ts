@@ -1,4 +1,5 @@
 import { IVisitor } from "../../visitor/IVisitor";
+import { AbstractStatement } from "../AbstractStatement";
 import { CodeBlock } from "../CodeBlock";
 import { Docs } from "../Docs/Dosc";
 import { IContainsVars } from "../IContainsVars";
@@ -19,7 +20,7 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	name = "объявление функции";
 	
 	private _parameters: FunctionDeclarationParameter[] = [];
-	private _code: CodeBlock | undefined;
+	private _code: AbstractStatement | undefined;
 	private _modifire: FunctionModifire = FunctionModifire.none;
 	private _ellipse: Ellipse | undefined;
 
@@ -43,10 +44,10 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 		return this.vars;
 	}
 	
-	public set code(v : CodeBlock) {
+	public set code(v : AbstractStatement) {
 		this._code = v;
 	}
-	public get code() : CodeBlock | undefined {
+	public get code() : AbstractStatement | undefined {
 		return this._code;
 	}
 	

@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, AssigmentContext, CaseContext, CodeBlockContext, CycleBodyContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallContext, FunctionDeclContext, If_statementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorContext, OperatorOverloadContext, RValueContext, ReturnContext, StringContext, SwitchContext, TagContext, VarModificationContext, Var_definitionContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, AssigmentContext, CaseContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorOverloadContext, ReturnContext, StatementContext, StringContext, SwitchContext, TagContext, VarDeclarationContext, VarModificationContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -44,6 +44,9 @@ import { SwitchStatement } from "./AST/Nodes/Conditions/switch/SwitchStatement";
 import { CaseStatement } from "./AST/Nodes/Conditions/switch/CaseStatement";
 import { DefaultStatement } from "./AST/Nodes/Conditions/switch/DefaultStatement";
 import { Docs } from "./AST/Nodes/Docs/Dosc";
+import { Statement } from "./AST/Nodes/Statement";
+import { AbstractStatement } from "./AST/Nodes/AbstractStatement";
+import { ElseStatement } from "./AST/Nodes/Conditions/ElseStatement";
 
 export class PawnListener implements pawnListener
 {
@@ -127,21 +130,16 @@ export class PawnListener implements pawnListener
 	}
 	
 
-	enterVar_definition?(ctx: Var_definitionContext): void 
+	enterVarDeclaration(ctx: VarDeclarationContext): void 
 	{
 		let node = new OperatorNew();	
-		// (<Declarations>this.nodes.peek()).declarations.push(node);
 		this.nodes.push(node);
 	}
-	exitVar_definition?(ctx: Var_definitionContext): void 
+	exitVarDeclaration(ctx: VarDeclarationContext): void 
 	{
 		let node = <OperatorNew>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
-
-			// this.checkModif(ctx.varModifires().CONST(), node, VariableModifire.const, "const");
-			// this.checkModif(ctx.varModifires().STATIC(), node, VariableModifire.static, "static");
-			// this.checkModif(ctx.varModifires().STOCK(), node, VariableModifire.stock, "stock");
 				
 			let last = this.nodes.peek();
 			node.vars.forEach(element => {
@@ -153,14 +151,15 @@ export class PawnListener implements pawnListener
 					tmp.declarations.push(element);
 				});
 			}
-			else if(last instanceof CodeBlock) {
-				last.statements.push(node);
+			else if(last instanceof Statement) {
+				last.statemnent = node;
 			}
 			else if(last instanceof ForCycle) {
 				last.initialization = node;
 			}
-			else if(last instanceof Statements) {
-				last.push(node);
+			else {
+				console.log(last);
+				this.addDiagnostic(l10n.t("Unexpected var declaration"), DiagnosticSeverity.Error, node.pos);	
 			}
 		}
 	}
@@ -347,34 +346,28 @@ export class PawnListener implements pawnListener
 			}
 		}
 	}
-	enterCodeBlock(ctx: CodeBlockContext): void {
+	
+	enterCompoundStatment(ctx: CompoundStatmentContext): void {
 		let node = new CodeBlock(new Statements());	
 		this.nodes.push(node);
 	}
 
-	exitCodeBlock(ctx: CodeBlockContext): void {
+	exitCompoundStatment(ctx: CompoundStatmentContext): void {
 		let node = <CodeBlock>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			let last = this.nodes.peek();
-			if(last instanceof FunctionDeclaration) {
-				last.code = node;
-			}
-			else if(last instanceof IfStatement) {
-				last.else = node;
-			}
-			else if(last instanceof CaseStatement) {
-				last.code = node;
-			}
-			else if(last instanceof DefaultStatement) {
-				last.code = node;
+			if(last instanceof Statement) {
+				last.statemnent = node;
 			}
 			else {
+				console.log(node);
+				console.log(last);
 				this.addDiagnostic(l10n.t("Unexpected code"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
-
+	
 	enterInteger(ctx: IntegerContext): void {
 		let node = new IntLiteral();
 		this.nodes.push(node);
@@ -410,8 +403,12 @@ export class PawnListener implements pawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			let last = this.nodes.peek();
-			if(last instanceof CodeBlock) {
-				last.statements.push(node);
+			if(last instanceof Statement) {
+				last.statemnent = node;
+			}
+			else {
+				console.log(last);
+				this.addDiagnostic(l10n.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);	
 			}
 		}
 	}
@@ -424,33 +421,37 @@ export class PawnListener implements pawnListener
 					
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
+			
+			const last = this.nodes.peek();
 
-			const opCtx = ctx.preOperators();
-			if(opCtx) {
-				const oper = new UnarOperator(new AbstractOperator(opCtx.text));
-				if(opCtx.stop)
-					oper.setPos(opCtx.start, opCtx.stop);
-				if(node.expresion) {
-					oper.value = node.expresion;
-					node.expresion = oper;
-				}
+			// const opCtx = ctx.preOperators();
+			// if(opCtx) {
+			// 	const oper = new UnarOperator(new AbstractOperator(opCtx.text));
+			// 	if(opCtx.stop)
+			// 		oper.setPos(opCtx.start, opCtx.stop);
+			// 	if(node.expresion) {
+			// 		oper.value = node.expresion;
+			// 		node.expresion = oper;
+			// 	}
 
-			}
+			// }
 
 			
-			if(node.expresion instanceof Literal && !(node instanceof AbstractOperator)) {
-				if(node.isTaged) {
-					node.expresion.tag = node.tag;
-				}
-				node = node.expresion;
-			}
+			// if(node.expresion instanceof Literal && !(node instanceof AbstractOperator)) {
+			// 	if(node.isTaged) {
+			// 		node.expresion.tag = node.tag;
+			// 	}
+			// 	node = node.expresion;
+			// }
 
-			const last = this.nodes.peek();
 			if(last instanceof AssigmentOperator) {
 				last.right = node;
 			}
 			else if(last instanceof AbstractOperator) {
 				last.expresion = node;
+			}
+			else if(last instanceof Statement) {
+				last.statemnent = node;
 			}
 			else if(last instanceof IfStatement) {
 				last.condition = node;
@@ -486,6 +487,10 @@ export class PawnListener implements pawnListener
 			else if(last instanceof EnumMember) {
 				// last.value = node;
 			}
+			else if(last instanceof CaseStatement || last instanceof DefaultStatement)
+			{
+				last.code = node;
+			}
 			else if(last instanceof Expresion)
 			{
 				last.expresion = node;
@@ -518,38 +523,6 @@ export class PawnListener implements pawnListener
 		// }
 	}
 
-	exitOperator(ctx: OperatorContext): void {
-		let node = this.nodes.pop();
-		if(node instanceof AbstractOperator) {
-			node.operator = ctx.text;
-			switch(ctx.text) {
-				case "++":
-				case "--":
-				case "tagof":
-				case "char":
-				case "defined":
-				case "sizeof": {
-					node = new UnarOperator(node);
-					break;
-				}
-				default: {
-					node = new BinarOperator(node);
-				}
-			}
-			this.nodes.push(node);
-		}
-		else if(node){
-			this.nodes.push(node);
-			this.addDiagnostic(l10n.t("Unexpected Operator"), DiagnosticSeverity.Error, node.pos);
-		}
-	}
-	enterOperation(ctx: OperationContext): void {
-		let node = new AbstractOperator();
-		// const last = this.nodes.pop();
-		// if(last instanceof Expresion)
-			// node.expresion = last;
-		this.nodes.push(node);
-	}
 	exitOperation(ctx: OperationContext): void 
 	{
 		let node = <Expresion>this.nodes.pop();
@@ -587,12 +560,12 @@ export class PawnListener implements pawnListener
 		}
 	}
 
-	enterFunctionCall(ctx: FunctionCallContext): void {
+	enterFunctionCall(ctx: FunctionCallOperatorContext): void {
 		let node = new FunctionCall();	
 		this.nodes.push(node);
 	}
 
-	exitFunctionCall(ctx: FunctionCallContext): void 
+	exitFunctionCall(ctx: FunctionCallOperatorContext): void 
 	{
 		let node = <FunctionCall>this.nodes.pop();
 		if(ctx.stop) {
@@ -608,10 +581,7 @@ export class PawnListener implements pawnListener
 			}
 			
 			let last = this.nodes.peek();
-			if(last instanceof CodeBlock) {
-				last.statements.push(node);
-			}
-			else if(last instanceof Expresion) {
+			if(last instanceof Expresion) {
 				last.expresion = node;
 			}
 			else {
@@ -757,24 +727,12 @@ export class PawnListener implements pawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			const last = this.nodes.peek();
-			if(last instanceof CodeBlock) {
-				last.statements.push(node);
+			if(last instanceof Statement) {
+				last.statemnent = node;
 			}
 			else {
 				this.addDiagnostic(l10n.t("Unexpected while loop"), DiagnosticSeverity.Error, node.pos);
 			}
-		}
-	}
-	enterCycleBody(ctx: CycleBodyContext): void {
-		const node = new CodeBlock(new Statements());	
-		this.nodes.push(node);
-	}
-	exitCycleBody(ctx: CycleBodyContext): void {
-		const node = <CodeBlock>this.nodes.pop();
-		if(ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
-			const last = <Cycle>this.nodes.peek();
-			last.code = node.statements;
 		}
 	}
 	enterFor(ctx: ForContext): void {
@@ -786,8 +744,8 @@ export class PawnListener implements pawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			const last = this.nodes.peek();
-			if(last instanceof CodeBlock) {
-				last.statements.push(node);
+			if(last instanceof Statement) {
+				last.statemnent = node;
 			}
 			else {
 				this.addDiagnostic(l10n.t("Unexpected for loop"), DiagnosticSeverity.Error, node.pos);
@@ -812,23 +770,21 @@ export class PawnListener implements pawnListener
 		}
 	}
 
-	enterIf_statement(ctx: If_statementContext): void {
+	enterIfStatement(ctx: IfStatementContext): void {
 		const node = new IfStatement();
 		this.nodes.push(node);
 	}
-	exitIf_statement(ctx: If_statementContext): void {
+	exitIfStatement(ctx: IfStatementContext): void {
 		const node = <IfStatement>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			
 			const last = this.nodes.peek();
-			if(last instanceof CodeBlock) {
-				last.statements.push(node);
-			}
-			else if(last instanceof IfStatement) {
-				last.else = node;
+			if(last instanceof Statement) {
+				last.statemnent = node;
 			}
 			else {
+				console.log(last);
 				this.addDiagnostic(l10n.t("Unexpected condition statement"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
@@ -844,8 +800,8 @@ export class PawnListener implements pawnListener
 			node.setPos(ctx.start, ctx.stop);
 			
 			const last = this.nodes.peek();
-			if(last instanceof CodeBlock) {
-				last.statements.push(node);
+			if(last instanceof Statement) {
+				last.statemnent = node;
 			}
 			else {
 				this.addDiagnostic(l10n.t("Unexpected switch statement"), DiagnosticSeverity.Error, node.pos);
@@ -917,5 +873,50 @@ export class PawnListener implements pawnListener
 				this.addDiagnostic(l10n.t("Unexpected statment"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
+	}
+	enterStatement(ctx: StatementContext): void {
+		const node = new Statement();
+		this.nodes.push(node);
+	}
+	exitStatement(ctx: StatementContext): void {
+		const node = <AbstractStatement>(<Statement>this.nodes.pop()).statemnent;
+		
+		let last = this.nodes.peek();
+		if(
+			last instanceof FunctionDeclaration || 
+			last instanceof IfStatement || 
+			last instanceof Cycle || 
+			last instanceof ElseStatement || 
+			last instanceof CaseStatement || 
+			last instanceof DefaultStatement
+		) {
+			last.code = node;
+		}
+		else if(last instanceof CodeBlock) {
+			last.statements.push(node);
+		}
+		else {
+			console.log(node);
+			console.log(last);
+			this.addDiagnostic(l10n.t("Unexpected code"), DiagnosticSeverity.Error, node.pos);
+		}	
+	}
+
+	enterElseStatement(ctx: ElseStatementContext): void
+	{
+		const node = new ElseStatement();
+		this.nodes.push(node);
+	}
+	exitElseStatement(ctx: ElseStatementContext): void
+	{
+		const node = <ElseStatement>this.nodes.pop();
+		let last = this.nodes.peek();
+		if(last instanceof IfStatement) {
+			last.else = node.code;
+		}
+		else {
+			this.addDiagnostic(l10n.t("Unexpected else block"), DiagnosticSeverity.Error, node.pos);
+		}
+		
 	}
 }

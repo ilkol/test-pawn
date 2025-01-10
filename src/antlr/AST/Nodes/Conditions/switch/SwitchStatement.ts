@@ -1,11 +1,10 @@
 import { IVisitor } from "../../../visitor/IVisitor";
-import { CodeBlock } from "../../CodeBlock";
 import { Expresion } from "../../Expresion";
-import { Statement } from "../../Statement";
+import { AbstractStatement } from "../../AbstractStatement";
 import { CaseStatement } from "./CaseStatement";
 import { DefaultStatement } from "./DefaultStatement";
 
-export class SwitchStatement extends Statement
+export class SwitchStatement extends AbstractStatement
 {
 	public condition?: Expresion;
 	public readonly cases: CaseStatement[] = [];

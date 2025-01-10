@@ -15,15 +15,15 @@ file:				processorLabel|((docs)*(declaration)*) EOF;
 
 processorLabel:		IDENTIFIER':';
 
-declaration:		(docs)*(functionDecl|operatorOverload|var_definition SEMI) | enum;
+declaration:		(docs)*(functionDecl|operatorOverload|varDeclaration SEMI) | enum;
 
 enum:				ENUM (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA enumMember)*  COMA?)? CURLY_CLOSE_BRACKET SEMI?;
 enumMember:			variable (ASSIGMENT expresion)?;
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
-var_definition: 	((NEW varModifires*) | (varModifires+)) (variable | assigment) (COMA (variable | assigment))*;
-functionDecl:		(funcDeclModif)? tag? IDENTIFIER OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | codeBlock | nativeAssigment);
-operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | codeBlock | nativeAssigment);
+varDeclaration:     (NEW varModifires*| varModifires+) variable assigment? (COMA (variable assigment?))*;
+functionDecl:		(funcDeclModif)? tag? IDENTIFIER OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
+operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
 nativeAssigment:	ASSIGMENT IDENTIFIER SEMI;
 tag:				(IDENTIFIER|(CURLY_OPEN_BRACKET IDENTIFIER (COMA IDENTIFIER)* CURLY_CLOSE_BRACKET)) COLON;
 
@@ -35,11 +35,25 @@ funcDeclModif:		funcModif | FORWARD | NATIVE;
 funcModif:			STOCK | PUBLIC;
 
 /* Какое-то утверждение */
-statement:			((var_definition|assigment|functionCall|return|varModification) SEMI) | controlStatments;
-controlStatments:	if_statement | cycles | switch;
+statement:			(expresion | assert | cycleKeywords | exit | goto | sleep | return | varDeclaration) SEMI | compoundStatment | cycles | ifStatement | switch;
+compoundStatment:   CURLY_OPEN_BRACKET (statement)* CURLY_CLOSE_BRACKET;
+assert: ASSERT expresion;
+exit: EXIT expresion;
+goto: GOTO expresion;
+sleep: SLEEP expresion;
+ifStatement: IF  condition statement (elseStatement)?;
+elseStatement: ELSE statement;
+return:				RETURN expresion?;
+condition: OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
+switch:				SWITCH condition CURLY_OPEN_BRACKET (case)* default? CURLY_CLOSE_BRACKET;
+case:				CASE case_list (COMA case_list)* COLON statement;
+default:            DEFAULT COLON statement;
+case_list:			(IDENTIFIER | number) range?;
+range:				PERIOD (IDENTIFIER | number);
+
 /* Объявление переменной */
 
-assigment:			variable assigments (expresion | arrayInit) (assigments (expresion | arrayInit))*;
+assigment:			ASSIGMENT (expresion | arrayInit);
 varModification:	((INCREMENTS|DECREMENTS)variable)|(variable(INCREMENTS|DECREMENTS))|variable;
 
 arrayInit:		CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* CURLY_CLOSE_BRACKET;
@@ -47,36 +61,47 @@ arrayInitMember:	tag? (IDENTIFIER | number | string) | (arrayInit);
 
 
 assigments:
-	ASSIGMENT | ASSIGMENT_PLUS | ASSIGMENT_MINUS | ASSIGMENT_MULT | ASSIGMENT_DIV | ASSIGMENT_REMAINDE |
-	ASSIGMENT_AND | ASSIGMENT_OR | ASSIGMENT_XOR | ASSIGMENT_RIGHT | ASSIGMENT_RIGHT_LOG | ASSIGMENT_LEFT;
+	ASSIGMENT |             // =
+    ASSIGMENT_PLUS |        // += 
+    ASSIGMENT_MINUS |       // -= 
+    ASSIGMENT_MULT |        // *= 
+    ASSIGMENT_DIV |         // /= 
+    ASSIGMENT_REMAINDE |    // %=
+    ASSIGMENT_RIGHT |       // >>=
+    ASSIGMENT_RIGHT_LOG |   // >>>= 
+    ASSIGMENT_LEFT |        // <<=
+	ASSIGMENT_AND |         // &=
+    ASSIGMENT_OR |          // |=
+    ASSIGMENT_XOR           // ^=
+;
 
 grouping:			tag? OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
 constGrouping:		tag? OPEN_PARENTHESIS constExpresion CLOSE_PARENTHESIS;
 
-expresion:		(preOperators)? (rValue operation? | grouping | ternarOperator);
+// expresion:		(preOperators)? (rValue operation? | grouping | ternarOperator);
 constExpresion:	(preOperators)? (varOrLiteral operation? | constGrouping | arrayInit);
 
-ternarOperator:	(rValue operation? | grouping) QUESTION expresion COLON expresion;
+// ternarOperator:	(rValue operation? | grouping) QUESTION expresion COLON expresion;
 
 preOperators:	NOT | MINUS | INCREMENTS | DECREMENTS | SIZEOF;
 
-operation:			operator expresion?;
+operation:			operator=operators expresion?;
+operators: arefmeticOperator | logicOperator | bitwiseOperator;
 varOrLiteral:		(literal | variable);
 
-declParams:			(CONST)? (reference)? variable (ASSIGMENT (constExpresion | (sizeof (variable | OPEN_PARENTHESIS variable CLOSE_PARENTHESIS))))?;	
+declParams:			(CONST)? (reference)? variable (ASSIGMENT expresion)?;	
 ellipse:			COMA tag? PERIOD_FUNC;
 
 reference:			BIT_AND;
 
 varModifires:		CONST|STATIC|STOCK|PUBLIC;
 
-rValue:			    (varOrLiteral | functionCall | grouping);
 constRValue:		(varOrLiteral | constGrouping);
 sizeof:				SIZEOF;
 
-number: 			MINUS? (INTEGER | FLOAT | HEX | RATIONAL | BINARY);
-
-operator:			arefmeticOperator | logicOperator | bitwiseOperator;
+number: 			MINUS? (integer | float | HEX | RATIONAL | BINARY);
+float: FLOAT;
+integer: INTEGER;
 
 canBeOverloaded:	arefmeticOperator | compareOperator | ASSIGMENT;
 
@@ -86,50 +111,160 @@ compareOperator:	NOT | EQUAL | NOTEQUAL | LESS | LARGER | LESSEQ | LARGEREQ;
 bitwiseOperator:	BIT_AND | BIT_OR | BIT_RIGHT | BIT_LEFT  | BIT_XOR | BIT_COMPLEMEN | BIT_RIGHT_LOG;
 
 
-
-if_statement:		IF condition
-						codeBlock
-					(else_statement)?;
-else_statement: 	ELSE (if_statement | codeBlock);
-
-switch:				SWITCH condition CURLY_OPEN_BRACKET (case)* default? CURLY_CLOSE_BRACKET;
-case:				CASE case_list (COMA case_list)* COLON codeBlock;
-default:            DEFAULT COLON codeBlock;
-case_list:			(IDENTIFIER | number) range?;
-range:				PERIOD (IDENTIFIER | number);
-
-condition:			OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
-
-codeBlock:			CURLY_OPEN_BRACKET (statement|processorLabel|cycleKeywords)* CURLY_CLOSE_BRACKET | (statement|processorLabel|cycleKeywords);
-return:				RETURN expresion?;
 cycles:				while | for | do;
-do:					DO cycleBody (WHILE condition)?;
+do:					DO statement (WHILE condition)?;
 
-while:				WHILE condition cycleBody;
-for:				FOR OPEN_PARENTHESIS var_definition SEMI expresion SEMI (expresion|assigment) CLOSE_PARENTHESIS
-					cycleBody;
-cycleBody:			
-	cycleKeywords | 
-	codeBlock | 
-	statement;
-
-cycleKeywords:		(BREAK|CONTINUE) SEMI;
+while:				WHILE condition statement;
+for:				FOR OPEN_PARENTHESIS first=forFirstExp? SEMI second=expresion? SEMI third=expresion? CLOSE_PARENTHESIS statement;
+forFirstExp:        varDeclaration|expresion;
 
 
-literal:			tag? (string | number | bool_const | predefinedConstants);
+cycleKeywords:		BREAK|CONTINUE;
+
+
+literal:			(string | number | bool_const | predefinedConstants);
 bool_const:			TRUE | FALSE;
 predefinedConstants: CELLBITS | CELLMAX | CELLMIN | CHARBITS | CHARMAX | CHARMIN | DEBUG | LINE | PAWN | UCHARMAX;
 
 string:				(STRING | CHAR_STRING | SHARPSTRING) (string)*;
 
-// path:				PATH;
-
-functionCall:		tag? IDENTIFIER OPEN_PARENTHESIS (expresion (COMA expresion)*)? CLOSE_PARENTHESIS;
-
 docs: docBlock;
 
 docBlock: DocBlock;
 // docLine: DocLine;
+
+expresion: 
+    (literal |
+    symbol |
+    functionCallOperator |
+    OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS |
+    unarOperator |
+    binarOperator)
+    (CHAR? | QUESTION expresion COLON expresion | (chainedRelationalOperators expresion)+ | operator=binarExpressionOperators right=expresion)
+;
+
+unarOperator:
+    postIncrement |         // v++ 
+    preIncrement |          // ++v 
+    postDecrement |         // v--  
+    preDecrement |          // --v 
+
+    complemen |             // ~e
+
+    notOperator |           // !e
+    
+    definedOperator |       // defined s
+    sizeofOperator |        // sizeof s
+    stateOperator |         // state s
+    tagofOperator         // tagof s
+;
+
+binarOperator:
+
+    assigmentOperator |     // v = e
+
+    arrayIndexOperator |    // a[e]    
+    arrayCharOperator |     // a{e}
+    tagOperator             // tagname : e
+
+;
+
+binarExpressionOperators:
+    PLUS |                  // e1 + e2
+    MINUS |                 // e1 - e2
+    MULTY |                 // e1 * e2
+    DIV |                   // e1 / e2
+    REMAINDE |              // e1 % e2
+
+    BIT_RIGHT |             // e1 >> e2
+    BIT_RIGHT_LOG |         // e1 >>> e2
+    BIT_LEFT |              // e1 << e2
+    BIT_AND |               // e1 & e2
+    BIT_OR |                // e1 | e2
+    BIT_XOR |               // e1 ^ e2
+
+    EQUAL |                 // e1 == e2
+    NOTEQUAL |              // e1 != e2
+
+    OR |                    // e1 || e2
+    AND |                   // e1 && e2
+
+    COMA |                  // e1 , e2
+
+    ASSIGMENT |             // e1 = e2
+    ASSIGMENT_PLUS |        // e1 += e2
+    ASSIGMENT_MINUS |       // e1 -= e2
+    ASSIGMENT_MULT |        // e1 *= e2
+    ASSIGMENT_DIV |         // e1 /= e2
+    ASSIGMENT_REMAINDE |    // e1 %= e2
+    ASSIGMENT_RIGHT |       // e1 >>= e2
+    ASSIGMENT_RIGHT_LOG |   // e1 >>>= e2
+    ASSIGMENT_LEFT |        // e1 <<= e2
+	ASSIGMENT_AND |         // e1 &= e2
+    ASSIGMENT_OR |          // e1 |= e2
+    ASSIGMENT_XOR           // e1 ^= e2
+;
+
+
+assigmentOperator:
+    lvalue ASSIGMENT expresion     // v = e
+;
+
+
+arrayIndexOperator: 
+    IDENTIFIER (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)+
+;
+arrayCharOperator: 
+    IDENTIFIER (CURLY_OPEN_BRACKET expresion? CURLY_CLOSE_BRACKET)+
+;
+functionCallOperator:
+    IDENTIFIER OPEN_PARENTHESIS (expresion (COMA expresion)*)? CLOSE_PARENTHESIS
+;
+tagOperator:
+    tag expresion
+;
+definedOperator: 
+    DEFINED symbol
+;
+sizeofOperator:
+    SIZEOF expresion
+;
+stateOperator:
+    STATE symbol
+;
+tagofOperator:
+    TAGOF expresion
+;
+symbol: IDENTIFIER;
+
+
+lvalue: symbol | arrayIndexOperator | arrayCharOperator;
+
+postIncrement: lvalue INCREMENTS;
+preIncrement: INCREMENTS lvalue;
+postDecrement: lvalue DECREMENTS;
+preDecrement: DECREMENTS lvalue;
+
+complemen: BIT_COMPLEMEN expresion;
+
+chainedRelationalOperators: 
+    LESS |      // e1 < e2
+    LESSEQ |    // e1 <= e2
+    LARGER |    // e1 > e2
+    LARGEREQ    // e1 >= e2
+;
+
+notOperator: 
+    NOT expresion   // !e
+;
+
+
+
+
+
+
+
+
 
 OPEN_PARENTHESIS: '(';
 CLOSE_PARENTHESIS: ')';

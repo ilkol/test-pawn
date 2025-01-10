@@ -1,8 +1,7 @@
 import { Expresion } from "../Expresion";
-import { Statement } from "../Statement";
-import { Statements } from "../Statements";
+import { AbstractStatement } from "../AbstractStatement";
 
-export abstract class Cycle extends Statement {
+export abstract class Cycle extends AbstractStatement {
     name = "Цикл";
 
     /**
@@ -12,18 +11,18 @@ export abstract class Cycle extends Statement {
     /**
      * Тело цикла
      */
-    private _code: Statements|undefined;
+    private _code?: AbstractStatement;
 
     /**
      * Тело цикла
      */
-    public get code(): Statements|undefined {
+    public get code(): AbstractStatement|undefined {
         return this._code;
     }
     /**
      * Тело цикла
      */
-    public set code(v: Statements) {
+    public set code(v: AbstractStatement) {
         this._code = v;
     }
 

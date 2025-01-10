@@ -1,6 +1,6 @@
 import { ASTNode } from "./ASTNode";
 import { IVisitor } from "../visitor/IVisitor";
-import { Statement } from "./Statement";
+import { AbstractStatement } from "./AbstractStatement";
 
 export class Statements extends ASTNode {
 	name = "утверждения";
@@ -8,15 +8,15 @@ export class Statements extends ASTNode {
 	public accept(visitor: IVisitor): void {
 		throw new Error("Method not implemented.");
 	}
-	public constructor(private _statements: Statement[] = []) {
+	public constructor(private _statements: AbstractStatement[] = []) {
 		super();
 	}
 
 	
-	public get statements() : Statement[] {
+	public get statements() : AbstractStatement[] {
 		return this._statements;
 	}
-	public push(el: Statement) {
+	public push(el: AbstractStatement) {
 		this._statements.push(el);
 	}
 }

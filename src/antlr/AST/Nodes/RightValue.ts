@@ -4,29 +4,10 @@ import { DefaultTag } from "./DefaultTag";
 import { IHasID } from "./IHasID";
 import { IHasTag } from "./IHasTag";
 import { Tag } from "./Tag";
+import { Expresion } from "./Expresion";
 
-export abstract class RightValue extends ASTNode implements IHasTag 
+export abstract class RightValue extends Expresion implements IHasTag 
 {
-	private translateTag: boolean = false;
-	private _tag: Tag = new DefaultTag();
-
-	public get tag() : Tag {
-		return this._tag;
-	}
-
 	
-
-	public set tag(v : Tag) {
-		this._tag = v;
-	}
-
-	public get isTaged(): boolean
-	{
-		return this.translateTag;
-	}
-	public set isTaged(v: true)
-	{
-		this.translateTag = v;
-	}
 }
 

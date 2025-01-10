@@ -1,10 +1,10 @@
 import { IVisitor } from "../../../visitor/IVisitor";
 import { CodeBlock } from "../../CodeBlock";
-import { Statement } from "../../Statement";
+import { AbstractStatement } from "../../AbstractStatement";
 
-export class DefaultStatement extends Statement
+export class DefaultStatement extends AbstractStatement
 {
-	public code?: CodeBlock | Statement;
+	public code?: CodeBlock | AbstractStatement;
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitDefaultSwitchStatement(this);

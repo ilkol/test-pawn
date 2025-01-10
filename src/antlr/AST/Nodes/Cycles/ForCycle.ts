@@ -1,6 +1,6 @@
 import { IVisitor } from "../../visitor/IVisitor";
 import { Expresion } from "../Expresion";
-import { Statement } from "../Statement";
+import { AbstractStatement } from "../AbstractStatement";
 import { Cycle } from "./Cycle";
 
 export class ForCycle extends Cycle
@@ -11,11 +11,11 @@ export class ForCycle extends Cycle
         visitor.visitWFor(this);
     }    
 
-    private preCode: Statement|undefined;
-    public get initialization(): Statement|undefined {
+    private preCode: AbstractStatement|undefined;
+    public get initialization(): AbstractStatement|undefined {
         return this.preCode;
     }
-    public set initialization(v: Statement) {
+    public set initialization(v: AbstractStatement) {
         this.preCode = v;
     }
 
@@ -28,11 +28,17 @@ export class ForCycle extends Cycle
     }
 
     public addExpresion(condition: Expresion) {
-        if(!this.condition) {
+        if(!this.initialization) {
+            this.initialization = condition;
+        }
+        else if(!this.condition) {
             this.condition = condition;
         }
         else if(!this.increment) {
             this.increment = condition;
+        }
+        else if(!this.code) {
+            this.code = condition;
         }
         else {
             throw new Error();

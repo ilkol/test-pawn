@@ -1,5 +1,5 @@
 import { IContainsVars } from "../IContainsVars";
-import { Statement } from "../Statement";
+import { AbstractStatement } from "../AbstractStatement";
 import { IVisitor } from "../../visitor/IVisitor";
 import { VarDeclaration } from "../Variables/VarDeclaration";
 
@@ -9,7 +9,7 @@ export enum VariableModifire {
 	static
 }
 
-export class OperatorNew extends Statement implements IContainsVars<VarDeclaration>
+export class OperatorNew extends AbstractStatement implements IContainsVars<VarDeclaration>
 {
 	name = "операртор декларации";
 

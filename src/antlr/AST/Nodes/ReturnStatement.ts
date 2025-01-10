@@ -1,8 +1,8 @@
 import { Expresion } from "./Expresion";
-import { Statement } from "./Statement";
+import { AbstractStatement } from "./AbstractStatement";
 import { IVisitor } from "../visitor/IVisitor";
 
-export class ReturnStatement extends Statement
+export class ReturnStatement extends AbstractStatement
 {
 	name = "оператор возвращения";
 	
