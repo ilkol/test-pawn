@@ -35,7 +35,6 @@ arrayIndex:			SQUARE_OPEN_BRACKET (expresion CHAR?)? SQUARE_CLOSE_BRACKET;
 funcDeclModif:		funcModif | FORWARD | NATIVE;
 funcModif:			STOCK | PUBLIC;
 
-/* Какое-то утверждение */
 statement:			((expresion | assert | cycleKeywords | exit | goto | sleep | return | varDeclaration) SEMI | processorLabel | compoundStatment | cycles | ifStatement | switch ) BACKSLAH?;
 compoundStatment:   CURLY_OPEN_BRACKET (statement)* CURLY_CLOSE_BRACKET;
 assert: ASSERT expresion;
@@ -51,8 +50,6 @@ case:				CASE case_list (COMA case_list)* COLON statement;
 default:            DEFAULT COLON statement;
 case_list:			expresion range?;
 range:				PERIOD expresion;
-
-/* Объявление переменной */
 
 arrayInit:		CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* CURLY_CLOSE_BRACKET;
 arrayInitMember:	tag? (MINUS? IDENTIFIER | MINUS? number | string) | (arrayInit);
@@ -73,26 +70,12 @@ assigments:
     ASSIGMENT_XOR           // ^=
 ;
 
-grouping:			tag? OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
-
-// expresion:		(preOperators)? (rValue operation? | grouping | ternarOperator);
-
-// ternarOperator:	(rValue operation? | grouping) QUESTION expresion COLON expresion;
-
-preOperators:	NOT | MINUS | INCREMENTS | DECREMENTS | SIZEOF;
-
-operation:			operator=operators expresion?;
-operators: arefmeticOperator | logicOperator | bitwiseOperator;
-varOrLiteral:		(literal | variable);
-
 declParams:			(CONST)? (reference)? variable (ASSIGMENT expresion)?;	
 ellipse:			COMA tag? PERIOD_FUNC;
 
 reference:			BIT_AND;
 
 varModifires:		CONST|STATIC|STOCK|PUBLIC;
-
-sizeof:				SIZEOF;
 
 number: 			integer | float | HEX | RATIONAL | BINARY;
 float: FLOAT;
@@ -101,9 +84,7 @@ integer: INTEGER;
 canBeOverloaded:	arefmeticOperator | compareOperator | ASSIGMENT;
 
 arefmeticOperator:	PLUS | MINUS | MULTY | DIV | REMAINDE | INCREMENTS | DECREMENTS;
-logicOperator:		OR | AND | compareOperator;
 compareOperator:	NOT | EQUAL | NOTEQUAL | LESS | LARGER | LESSEQ | LARGEREQ;
-bitwiseOperator:	BIT_AND | BIT_OR | BIT_RIGHT | BIT_LEFT  | BIT_XOR | BIT_COMPLEMEN | BIT_RIGHT_LOG;
 
 
 cycles:				while | for | do;
