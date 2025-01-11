@@ -136,8 +136,6 @@ export abstract class BaseVisitor implements IVisitor
 	visitCodeBlock(node: CodeBlock): void {
 		this.beforeVisitCodeBlock(node);
 		node.statements.statements.forEach(element => {
-			console.log(node.pos);
-			console.log(element);
 			element.accept(this);
 		});
 		this.afterVisitCodeBlock(node);
