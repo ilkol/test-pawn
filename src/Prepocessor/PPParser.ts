@@ -81,7 +81,7 @@ export class PPParser
 		while(rest[rest.length -1] === "\\") {
 			endlCount++;
 			rest = rest.substring(0, rest.length -1);
-			rest += "_" + postDir.substring(0,2);
+			rest += "\\" + postDir.substring(0,2);
 			//Обрезаем все, что спереди и нам не нужно
 			postDir = postDir.substring(2);
 			//Ищем конец текущей строки
@@ -277,9 +277,13 @@ export class PPParser
 	{
 		for(let definesArray of this.defines.values()) {
 			for(let localDefine of definesArray) {
+				const count = this.replacedCode.length;
 				codeChunks = await this.processDefine(codeChunks, localDefine);
+				localDefine.used = count  < this.replacedCode.length;
 			}
 		}
+
+		console.error(this.replacedCode);
 
 		return codeChunks;
 	}
@@ -365,23 +369,31 @@ export class PPParser
 		let codeChunks = this.sliceCodeForChunks(code);
 		codeChunks = await this.processDefines(codeChunks);
 
-		const document = await vscode.workspace.openTextDocument({
-			content: '', // Изначально пустой документ
-			language: 'plaintext', // Устанавливаем язык (можно заменить на другой, например, 'javascript')
-		});
-
-		// Открываем файл в редакторе
-		const editor = await vscode.window.showTextDocument(document);
-
-		// Добавляем строки постепенно
-		for (const line of codeChunks) {
-			const position = new vscode.Position(document.lineCount, 0); // Позиция в конце документа
-			await editor.edit(editBuilder => {
-				editBuilder.insert(position, line + '\n'); // Вставляем строку с новой строкой
-			});
-			// Ждем немного перед добавлением следующей строки
-			await new Promise(resolve => setTimeout(resolve, 500)); // Задержка 500 мс
+		for(let definesArray of this.defines.values()) {
+			for(let localDefine of definesArray) {
+				if(localDefine.used) {
+					console.log(localDefine.pattern);
+				}
+			}
 		}
+
+		// const document = await vscode.workspace.openTextDocument({
+		// 	content: '', // Изначально пустой документ
+		// 	language: 'plaintext', // Устанавливаем язык (можно заменить на другой, например, 'javascript')
+		// });
+
+		// // Открываем файл в редакторе
+		// const editor = await vscode.window.showTextDocument(document);
+
+		// // Добавляем строки постепенно
+		// for (const line of codeChunks) {
+		// 	const position = new vscode.Position(document.lineCount, 0); // Позиция в конце документа
+		// 	await editor.edit(editBuilder => {
+		// 		editBuilder.insert(position, line + '\n'); // Вставляем строку с новой строкой
+		// 	});
+		// 	// Ждем немного перед добавлением следующей строки
+		// 	await new Promise(resolve => setTimeout(resolve, 500)); // Задержка 500 мс
+		// }
 
 		return codeChunks;
 	}
@@ -399,7 +411,6 @@ export class PPParser
 	private handleUndef(directive: Undef)
 	{
 		const define = this.defines.get(directive.define);
-		console.error(define);
 		if(define) {
 			const lastDef = define[define.length - 1];
 			lastDef.undef = directive;
@@ -641,6 +652,8 @@ export class PPParser
 					let origIndex = curIndex + preShift + shift;
 	
 					let replace = this.replaceMacroParameters(toReplace, match, define);
+					replace = this.removeBackslashesOutsideStrings(replace);
+					// replace = replace.replace(/\\([\r\n])/g, ' $1');
 					const curShift = findedStr.length - replace.length;
 	
 					this.replacedCode.forEach(element => {
@@ -681,6 +694,34 @@ export class PPParser
 				return resultParts.join('');
 			}
 		);
+	}
+
+	private removeBackslashesOutsideStrings(code: string): string {
+		// Регулярное выражение для нахождения строк в кавычках
+		const stringRegex = /"(([^"\\\r\n]|\\['"?\\abfnrtv]|\\(\r\n?|\n))*?)"/g;
+		const stringMatches: [number, number][] = [];
+	
+		// Находим диапазоны строк
+		let match: RegExpExecArray | null;
+		while ((match = stringRegex.exec(code)) !== null) {
+			stringMatches.push([match.index, match.index + match[0].length]);
+		}
+	
+		// Проверяем, находится ли индекс внутри строки
+		const isInString = (index: number): boolean => {
+			return stringMatches.some(([start, end]) => index >= start && index < end);
+		};
+	
+		// Удаляем обратные слэши вне строк
+		let result = '';
+		for (let i = 0; i < code.length; i++) {
+			if (code[i] === '\\' && !isInString(i)) {
+				continue; // Пропускаем слэш
+			}
+			result += code[i];
+		}
+	
+		return result;
 	}
 
 	/**

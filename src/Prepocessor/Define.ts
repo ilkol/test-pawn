@@ -40,7 +40,7 @@ export class Define extends PreprocessorDirective
 	}
 	private preparePattern(rest: string): RestData
 	{
-		const reg = /(\s*)([^\s]+)(?:\s+(.+))?/;
+		const reg = /(\s*)([^\s]+)(?:\s+([\s\S]+))?/;
 		const match = reg.exec(rest);
 
 		if (match) {
@@ -55,21 +55,21 @@ export class Define extends PreprocessorDirective
 			// const parameters: number[] = [];
 
 			while ((paramMatch = findParams.exec(patternPrepared)) !== null) {
-				patternRegStr += patternPrepared.substring(lastindex, paramMatch.index) + "(.*?)\\s*";
+				patternRegStr += patternPrepared.substring(lastindex, paramMatch.index) + "((?:[^\\\r\n]|\\.)+)"; //((?:\\\n|[^\n])*?)\\s*
 				lastindex = paramMatch.index + paramMatch[0].length;
 				this.parameters.push(+paramMatch[1]);
 			}
 			patternRegStr += patternPrepared.substring(lastindex);
 
-			patternRegStr = "(?<=[^\\w]|)" + patternRegStr + "(?=[^\\w]|)";
+			patternRegStr = "(?<!\\w)" + patternRegStr + "(?=[^\\w])";
 
 			const replacement = match[3] ? match[3].trim() : "";
 			return {
-				patternReg: RegExp(patternRegStr, ""),
+				patternReg: RegExp(patternRegStr),
 				pattern: pattern,
 				replacement: replacement,
 				patternStart: patterStart
-			}
+			};
 		}
 
 		return {
