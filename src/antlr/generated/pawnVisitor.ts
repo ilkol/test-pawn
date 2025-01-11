@@ -37,27 +37,16 @@ import { RangeContext } from "./pawnParser";
 import { ArrayInitContext } from "./pawnParser";
 import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
-import { GroupingContext } from "./pawnParser";
-import { ConstGroupingContext } from "./pawnParser";
-import { ConstExpresionContext } from "./pawnParser";
-import { PreOperatorsContext } from "./pawnParser";
-import { OperationContext } from "./pawnParser";
-import { OperatorsContext } from "./pawnParser";
-import { VarOrLiteralContext } from "./pawnParser";
 import { DeclParamsContext } from "./pawnParser";
 import { EllipseContext } from "./pawnParser";
 import { ReferenceContext } from "./pawnParser";
 import { VarModifiresContext } from "./pawnParser";
-import { ConstRValueContext } from "./pawnParser";
-import { SizeofContext } from "./pawnParser";
 import { NumberContext } from "./pawnParser";
 import { FloatContext } from "./pawnParser";
 import { IntegerContext } from "./pawnParser";
 import { CanBeOverloadedContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
-import { LogicOperatorContext } from "./pawnParser";
 import { CompareOperatorContext } from "./pawnParser";
-import { BitwiseOperatorContext } from "./pawnParser";
 import { CyclesContext } from "./pawnParser";
 import { DoContext } from "./pawnParser";
 import { WhileContext } from "./pawnParser";
@@ -71,6 +60,9 @@ import { StringContext } from "./pawnParser";
 import { DocsContext } from "./pawnParser";
 import { DocBlockContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
+import { TernarOperatorContext } from "./pawnParser";
+import { ChainedRelationalOperatorContext } from "./pawnParser";
+import { BinarExpressionOperatorContext } from "./pawnParser";
 import { UnarOperatorContext } from "./pawnParser";
 import { BinarOperatorContext } from "./pawnParser";
 import { BinarExpressionOperatorsContext } from "./pawnParser";
@@ -342,55 +334,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitAssigments?: (ctx: AssigmentsContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.grouping`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitGrouping?: (ctx: GroupingContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.constGrouping`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitConstGrouping?: (ctx: ConstGroupingContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.constExpresion`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitConstExpresion?: (ctx: ConstExpresionContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.preOperators`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitPreOperators?: (ctx: PreOperatorsContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.operation`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitOperation?: (ctx: OperationContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.operators`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitOperators?: (ctx: OperatorsContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.varOrLiteral`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitVarOrLiteral?: (ctx: VarOrLiteralContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `pawnParser.declParams`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -417,20 +360,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitVarModifires?: (ctx: VarModifiresContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.constRValue`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitConstRValue?: (ctx: ConstRValueContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.sizeof`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitSizeof?: (ctx: SizeofContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.number`.
@@ -468,25 +397,11 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitArefmeticOperator?: (ctx: ArefmeticOperatorContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.logicOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitLogicOperator?: (ctx: LogicOperatorContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `pawnParser.compareOperator`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	visitCompareOperator?: (ctx: CompareOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.bitwiseOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitBitwiseOperator?: (ctx: BitwiseOperatorContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.cycles`.
@@ -578,6 +493,27 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitExpresion?: (ctx: ExpresionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.ternarOperator`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitTernarOperator?: (ctx: TernarOperatorContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.chainedRelationalOperator`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitChainedRelationalOperator?: (ctx: ChainedRelationalOperatorContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.binarExpressionOperator`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitBinarExpressionOperator?: (ctx: BinarExpressionOperatorContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.unarOperator`.
