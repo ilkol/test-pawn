@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, BinarExpressionOperatorContext, CaseContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, ReturnContext, StatementContext, StringContext, SwitchContext, TagContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, BinarExpressionOperatorContext, CaseContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -903,6 +903,120 @@ export class PawnListener implements pawnListener
 			}
 			else {
 				this.addDiagnostic(l10n.t("Unexpected binar operator"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	};
+
+	enterUnarOperator = (ctx: UnarOperatorContext) => {
+		const node = new UnarOperator();
+		this.nodes.push(node);
+	};
+	exitUnarOperator =(ctx: UnarOperatorContext) => {
+		const node = <UnarOperator>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			
+			const last = this.nodes.peek();
+			if(last instanceof Expresion) {
+				last.expresion = node;
+			}
+			else {
+				this.addDiagnostic(l10n.t("Unexpected unar operator"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	};
+
+	exitPostDecrement = (ctx: PostDecrementContext) => {
+		const node = this.nodes.peek();
+		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
+		if(node instanceof UnarOperator) {
+			node.operator = "--";
+		}
+		else {
+			this.addDiagnostic(l10n.t("Unexpected post decrement"), DiagnosticSeverity.Error, pos);
+		}
+	};
+	exitPreDecrement = (ctx: PreDecrementContext) => {
+		const node = this.nodes.peek();
+		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
+		if(node instanceof UnarOperator) {
+			node.operator = "--";
+		}
+		else {
+			this.addDiagnostic(l10n.t("Unexpected pre decrement"), DiagnosticSeverity.Error, pos);
+		}
+	};
+	exitPreIncrement = (ctx: PreIncrementContext) => {
+		const node = this.nodes.peek();
+		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
+		if(node instanceof UnarOperator) {
+			node.operator = "++";
+		}
+		else {
+			this.addDiagnostic(l10n.t("Unexpected pre increment"), DiagnosticSeverity.Error, pos);
+		}
+	};
+	exitPostIncrement = (ctx: PostIncrementContext) => {
+		const node = this.nodes.peek();
+		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
+		if(node instanceof UnarOperator) {
+			node.operator = "++";
+		}
+		else {
+			this.addDiagnostic(l10n.t("Unexpected pre increment"), DiagnosticSeverity.Error, pos);
+		}
+	};
+	exitPreExpresionOperator = (ctx: PreExpresionOperatorContext) => {
+		const node = this.nodes.peek();
+		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
+		if(node instanceof UnarOperator) {
+			node.operator = ctx.text;
+		}
+		else {
+			this.addDiagnostic(l10n.t("Unexpected operator"), DiagnosticSeverity.Error, pos);
+		}
+	};
+	exitPreSymbolOperator = (ctx: PreSymbolOperatorContext) => {
+		const node = this.nodes.peek();
+		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
+		if(node instanceof UnarOperator) {
+			node.operator = ctx.text;
+		}
+		else {
+			this.addDiagnostic(l10n.t("Unexpected operator"), DiagnosticSeverity.Error, pos);
+		}
+	};
+	exitSymbol = (ctx: SymbolContext) => {
+		const node = new Variable();
+		if(ctx.stop)
+		{	
+			node.setPos(ctx.start, ctx.stop);
+			try {
+				let id = ctx.IDENTIFIER();
+				node.id = id.text;
+				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+
+			} catch(e) {
+				this.addDiagnostic(l10n.t("Variable identifire expected"), DiagnosticSeverity.Error, node.pos);
+			}
+
+	
+			const last = this.nodes.peek();
+			
+			if(last instanceof UnarOperator) {
+				last.value = node;
+			}
+			// else if(last instanceof Lvalur)
+			// {
+			// 	last.var = declarationVar;
+			// }
+			else if(last instanceof Expresion)
+			{
+				last.expresion = node;
+			}
+			else {
+				console.log(last);
+				this.addDiagnostic(l10n.t("Unexpected symbol"), DiagnosticSeverity.Error, node.idPos);
 			}
 		}
 	};
