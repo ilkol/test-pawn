@@ -11,6 +11,6 @@ export class AssigmentOperator extends BinarOperator
     }
 	
     constructor() {
-        super("равно");
+        super();
     }
 }
