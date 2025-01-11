@@ -7,11 +7,8 @@ export class BinarOperator extends AbstractOperator
 {
 	name = "бинарный оператор";
 	
-	constructor(oper: AbstractOperator | string) {
-		super(oper instanceof AbstractOperator ? oper.operator : oper);
-		if(oper instanceof AbstractOperator && oper.expresion)
-			this._left = oper.expresion;
-	
+	constructor() {
+		super();	
 	}
 
 	public accept(visitor: IVisitor): void {

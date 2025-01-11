@@ -6,10 +6,8 @@ export class UnarOperator extends AbstractOperator
 {
 	name = "унарный операртор";
 
-	constructor(oper: AbstractOperator) {
-		super(oper.operator);
-		if(oper.expresion)
-			this.expresion = oper.expresion;
+	constructor() {
+		super();
 	}
 
 	public accept(visitor: IVisitor): void {

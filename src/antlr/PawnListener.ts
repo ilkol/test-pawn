@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, CaseContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorOverloadContext, ReturnContext, StatementContext, StringContext, SwitchContext, TagContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, BinarExpressionOperatorContext, CaseContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, ReturnContext, StatementContext, StringContext, SwitchContext, TagContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -534,42 +534,7 @@ export class PawnListener implements pawnListener
 		// }
 	}
 
-	exitOperation(ctx: OperationContext): void 
-	{
-		let node = <Expresion>this.nodes.pop();
-		if(node && ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
-			const last = this.nodes.pop();
-			if(last instanceof Expresion) {
-				if(node instanceof BinarOperator) {
-					node.left = last;
-					this.nodes.push(node);
-				}
-				else if(node instanceof UnarOperator) {
-					if(node.expresion)
-						this.addDiagnostic(l10n.t("The unary operator has already been applied to another expression"), DiagnosticSeverity.Error, node.expresion.pos);
-					node.expresion = last;
-					this.nodes.push(node);
-				} else {
-					this.nodes.push(last);
-					this.addDiagnostic(l10n.t("Unexpected operation"), DiagnosticSeverity.Error, node.pos);
-				}
-			}
-			else {
-				if(last) {
-					if(last instanceof FunctionDeclarationParameter) {
-						last.defaultValue = node;
-					}
-					else
-						this.addDiagnostic(l10n.t("Unexpected operation"), DiagnosticSeverity.Error, node.pos);
-					this.nodes.push(last);
-
-				}
-				else
-					this.addDiagnostic(l10n.t("Unexpected operation"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
-	}
+	
 
 	enterFunctionCall(ctx: FunctionCallOperatorContext): void {
 		let node = new FunctionCall();	
@@ -922,4 +887,23 @@ export class PawnListener implements pawnListener
 		}
 		
 	}
+	enterBinarExpressionOperator =(ctx: BinarExpressionOperatorContext) => {
+		const node = new BinarOperator();
+		this.nodes.push(node);
+	};
+	exitBinarExpressionOperator =(ctx: BinarExpressionOperatorContext) => {
+		const node = <BinarOperator>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			
+			const last = this.nodes.peek();
+			if(last instanceof Expresion) {
+				node.left = last.expresion!;
+				last.expresion = node;
+			}
+			else {
+				this.addDiagnostic(l10n.t("Unexpected binar operator"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	};
 }
