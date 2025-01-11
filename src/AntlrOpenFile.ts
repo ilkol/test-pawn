@@ -27,6 +27,7 @@ import { Declaration } from "./antlr/AST/Nodes/Declaration";
 import { Reference } from "./Linking/Reference";
 import { IHasID } from "./antlr/AST/Nodes/IHasID";
 import { ChunkedCharStream } from "./antlr/ChunkedCharStream";
+import { SemanticTokens } from "./SemanticTokens";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -269,6 +270,15 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 		await this.findAllDirectives();
 		// await this.openAllIncludes();
+	}
+	public updateSemanticTokens()
+	{
+		let ranges = this.ppParser.getDefinedRanges();
+		console.log(ranges);
+		ranges.forEach(range => {
+			this.tokensManager.addToken(range, SemanticTokens.macro);
+			
+		});
 	}
 	public getComplitions(): vscode.CompletionItem[] {
 

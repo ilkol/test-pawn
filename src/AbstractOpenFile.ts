@@ -61,7 +61,7 @@ export class FunctionParameterInfo
 
 export abstract class AbstractOpenFile
 {
-
+	public abstract updateSemanticTokens(): void;
 	protected diagnositcManager: DiagnosticManager;
 	public readonly tokensManager: SemanticTokensManager = new SemanticTokensManager();
 	public readonly symbolsManager: SymbolsManager = new SymbolsManager();

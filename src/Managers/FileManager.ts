@@ -227,6 +227,13 @@ export class FileManager {
 			{return file.getComplitions();}
 		return [];	
 	}
+	updateFileSemanticTokens(path: string)
+	{
+		const file = this.getFile(path);
+		if(file) {
+			return file.updateSemanticTokens();
+		}
+	}
 
 	public async parse(doc: AbstractOpenFile) {
 		if(this.parsedFiles.indexOf(doc.uri.path) !== -1) {
@@ -293,6 +300,7 @@ export class FileManager {
 			openedFile.findDirectives();
 			await openedFile.processDirectives();
             const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
+			openedFile.updateSemanticTokens();
 			await vscode.window.withProgress(
 			{
 				location: vscode.ProgressLocation.Window,
