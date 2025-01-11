@@ -317,7 +317,7 @@ export class PPParser
 			let code = codeChunks[startPos.chunkIndex];
 			let preCode = code.substring(0, startPos.positionInChunk);
 			let postCode = code.substring(stoptPos.positionInChunk);
-			codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk, stoptPos.positionInChunk), define, offset) + postCode;
+			codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk, stoptPos.positionInChunk), define, offset + startPos.positionInChunk) + postCode;
 		}
 		else {
 			let code = codeChunks[startPos.chunkIndex];
@@ -645,11 +645,12 @@ export class PPParser
 	
 					const preStr = curStr.substring(0, curIndex);
 					resultParts.push(preStr);
-					shift += preStr.length;
 					const findedStr = curStr.substring(curIndex, curIndex + length);
 					const postStr = curStr.substring(curIndex + length);
 					
 					let origIndex = curIndex + preShift + shift;
+					console.error(findedStr);
+					console.error(origIndex);
 	
 					let replace = this.replaceMacroParameters(toReplace, match, define);
 					replace = this.removeBackslashesOutsideStrings(replace);
@@ -674,6 +675,7 @@ export class PPParser
 	
 					resultParts.push(replace);
 					shift += replace.length;
+					shift += preStr.length;
 					curStr = postStr;
 					
 	
@@ -724,25 +726,6 @@ export class PPParser
 		return result;
 	}
 
-	/**
-	 * Заменяет дефайн в некоторой подстроке
-	 * @param str строка, на которой заменяется дефайн
-	 * @param define дефайн
-	 * @param preShift изначальный сдвиг, то есть позиция в оригинальном файле, с которой начата замена
-	 * @returns строка с замененными дефайнами
-	 */
-	private async substringrReplacing(str: string, define: Define, preShift: number): Promise<string>
-	{
-		const chunkSize = 1000000;
-		const chunks = [];
-		for(let postition = 0; postition < str.length; postition += chunkSize)
-		{
-			chunks.push(await this.substringrReplacingOnChank(str.slice(postition, postition + chunkSize), define, preShift + postition));
-		}
-
-		return chunks.join("");
-	}
-
 	private replaceMacroParameters(toReplace: string, match: RegExpExecArray, define: Define): string
 	{
 		let replace = toReplace;
@@ -758,11 +741,20 @@ export class PPParser
 		return replace;
 	}
 
+	getDefinedRanges(): Range[]
+	{
+		const ranges: Range[] = [];
+		this.replacedCode.forEach(el => {
+			ranges.push(el.getRange(this.file));
+		});
+		return ranges;
+	}
+
 	preprocessorTokens(): CompletionItem[]
 	{
 		this.replacedCode.forEach(el => {
 			const range = el.getRange(this.file);
-			this.tokensManager.addToken(range, SemanticTokens.macro);
+			// this.tokensManager.addToken(range, SemanticTokens.macro);
 			this.symbolsManager.addSymbol(new DocumentSymbol(el.text, "define", SymbolKind.Constant, range, range));
 		});
 
