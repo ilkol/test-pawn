@@ -128,16 +128,22 @@ unarOperator:
     postDecrement |         // v--  
     preDecrement |          // --v 
 
-    complemen |             // ~e
-	twoComplemen |			// -e
-
-    notOperator |           // !e
-    
-    definedOperator |       // defined s
-    sizeofOperator |        // sizeof s
-    stateOperator |         // state s
-    tagofOperator         // tagof s
+    (preExpresionOperator expresion) |
+    (preSymbolOperator symbol)
 ;
+
+preExpresionOperator:
+	BIT_COMPLEMEN|		// ~e
+	MINUS|				// -e
+	NOT	|				// !e
+	SIZEOF				// sizeof e
+;
+preSymbolOperator:
+	DEFINED|			// defined e
+	STATE|				// state e
+	TAGOF				// tagof e
+;
+
 
 binarOperator:
 
@@ -203,18 +209,7 @@ functionCallOperator:
 tagOperator:
     tag expresion
 ;
-definedOperator: 
-    DEFINED symbol
-;
-sizeofOperator:
-    SIZEOF expresion
-;
-stateOperator:
-    STATE symbol
-;
-tagofOperator:
-    TAGOF expresion
-;
+
 symbol: IDENTIFIER;
 
 
@@ -225,20 +220,12 @@ preIncrement: INCREMENTS lvalue;
 postDecrement: lvalue DECREMENTS;
 preDecrement: DECREMENTS lvalue;
 
-complemen: BIT_COMPLEMEN expresion;
-twoComplemen: MINUS expresion;
-
 chainedRelationalOperators: 
     LESS |      // e1 < e2
     LESSEQ |    // e1 <= e2
     LARGER |    // e1 > e2
     LARGEREQ    // e1 >= e2
 ;
-
-notOperator: 
-    NOT expresion   // !e
-;
-
 
 
 

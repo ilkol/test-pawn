@@ -64,6 +64,8 @@ import { TernarOperatorContext } from "./pawnParser";
 import { ChainedRelationalOperatorContext } from "./pawnParser";
 import { BinarExpressionOperatorContext } from "./pawnParser";
 import { UnarOperatorContext } from "./pawnParser";
+import { PreExpresionOperatorContext } from "./pawnParser";
+import { PreSymbolOperatorContext } from "./pawnParser";
 import { BinarOperatorContext } from "./pawnParser";
 import { BinarExpressionOperatorsContext } from "./pawnParser";
 import { AssigmentOperatorContext } from "./pawnParser";
@@ -71,20 +73,13 @@ import { ArrayIndexOperatorContext } from "./pawnParser";
 import { ArrayCharOperatorContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
 import { TagOperatorContext } from "./pawnParser";
-import { DefinedOperatorContext } from "./pawnParser";
-import { SizeofOperatorContext } from "./pawnParser";
-import { StateOperatorContext } from "./pawnParser";
-import { TagofOperatorContext } from "./pawnParser";
 import { SymbolContext } from "./pawnParser";
 import { LvalueContext } from "./pawnParser";
 import { PostIncrementContext } from "./pawnParser";
 import { PreIncrementContext } from "./pawnParser";
 import { PostDecrementContext } from "./pawnParser";
 import { PreDecrementContext } from "./pawnParser";
-import { ComplemenContext } from "./pawnParser";
-import { TwoComplemenContext } from "./pawnParser";
 import { ChainedRelationalOperatorsContext } from "./pawnParser";
-import { NotOperatorContext } from "./pawnParser";
 
 
 /**
@@ -764,6 +759,28 @@ export interface pawnListener extends ParseTreeListener {
 	exitUnarOperator?: (ctx: UnarOperatorContext) => void;
 
 	/**
+	 * Enter a parse tree produced by `pawnParser.preExpresionOperator`.
+	 * @param ctx the parse tree
+	 */
+	enterPreExpresionOperator?: (ctx: PreExpresionOperatorContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.preExpresionOperator`.
+	 * @param ctx the parse tree
+	 */
+	exitPreExpresionOperator?: (ctx: PreExpresionOperatorContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.preSymbolOperator`.
+	 * @param ctx the parse tree
+	 */
+	enterPreSymbolOperator?: (ctx: PreSymbolOperatorContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.preSymbolOperator`.
+	 * @param ctx the parse tree
+	 */
+	exitPreSymbolOperator?: (ctx: PreSymbolOperatorContext) => void;
+
+	/**
 	 * Enter a parse tree produced by `pawnParser.binarOperator`.
 	 * @param ctx the parse tree
 	 */
@@ -841,50 +858,6 @@ export interface pawnListener extends ParseTreeListener {
 	exitTagOperator?: (ctx: TagOperatorContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `pawnParser.definedOperator`.
-	 * @param ctx the parse tree
-	 */
-	enterDefinedOperator?: (ctx: DefinedOperatorContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.definedOperator`.
-	 * @param ctx the parse tree
-	 */
-	exitDefinedOperator?: (ctx: DefinedOperatorContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.sizeofOperator`.
-	 * @param ctx the parse tree
-	 */
-	enterSizeofOperator?: (ctx: SizeofOperatorContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.sizeofOperator`.
-	 * @param ctx the parse tree
-	 */
-	exitSizeofOperator?: (ctx: SizeofOperatorContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.stateOperator`.
-	 * @param ctx the parse tree
-	 */
-	enterStateOperator?: (ctx: StateOperatorContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.stateOperator`.
-	 * @param ctx the parse tree
-	 */
-	exitStateOperator?: (ctx: StateOperatorContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.tagofOperator`.
-	 * @param ctx the parse tree
-	 */
-	enterTagofOperator?: (ctx: TagofOperatorContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.tagofOperator`.
-	 * @param ctx the parse tree
-	 */
-	exitTagofOperator?: (ctx: TagofOperatorContext) => void;
-
-	/**
 	 * Enter a parse tree produced by `pawnParser.symbol`.
 	 * @param ctx the parse tree
 	 */
@@ -951,28 +924,6 @@ export interface pawnListener extends ParseTreeListener {
 	exitPreDecrement?: (ctx: PreDecrementContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `pawnParser.complemen`.
-	 * @param ctx the parse tree
-	 */
-	enterComplemen?: (ctx: ComplemenContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.complemen`.
-	 * @param ctx the parse tree
-	 */
-	exitComplemen?: (ctx: ComplemenContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.twoComplemen`.
-	 * @param ctx the parse tree
-	 */
-	enterTwoComplemen?: (ctx: TwoComplemenContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.twoComplemen`.
-	 * @param ctx the parse tree
-	 */
-	exitTwoComplemen?: (ctx: TwoComplemenContext) => void;
-
-	/**
 	 * Enter a parse tree produced by `pawnParser.chainedRelationalOperators`.
 	 * @param ctx the parse tree
 	 */
@@ -982,16 +933,5 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitChainedRelationalOperators?: (ctx: ChainedRelationalOperatorsContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.notOperator`.
-	 * @param ctx the parse tree
-	 */
-	enterNotOperator?: (ctx: NotOperatorContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.notOperator`.
-	 * @param ctx the parse tree
-	 */
-	exitNotOperator?: (ctx: NotOperatorContext) => void;
 }
 

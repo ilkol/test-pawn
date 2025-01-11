@@ -64,6 +64,8 @@ import { TernarOperatorContext } from "./pawnParser";
 import { ChainedRelationalOperatorContext } from "./pawnParser";
 import { BinarExpressionOperatorContext } from "./pawnParser";
 import { UnarOperatorContext } from "./pawnParser";
+import { PreExpresionOperatorContext } from "./pawnParser";
+import { PreSymbolOperatorContext } from "./pawnParser";
 import { BinarOperatorContext } from "./pawnParser";
 import { BinarExpressionOperatorsContext } from "./pawnParser";
 import { AssigmentOperatorContext } from "./pawnParser";
@@ -71,20 +73,13 @@ import { ArrayIndexOperatorContext } from "./pawnParser";
 import { ArrayCharOperatorContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
 import { TagOperatorContext } from "./pawnParser";
-import { DefinedOperatorContext } from "./pawnParser";
-import { SizeofOperatorContext } from "./pawnParser";
-import { StateOperatorContext } from "./pawnParser";
-import { TagofOperatorContext } from "./pawnParser";
 import { SymbolContext } from "./pawnParser";
 import { LvalueContext } from "./pawnParser";
 import { PostIncrementContext } from "./pawnParser";
 import { PreIncrementContext } from "./pawnParser";
 import { PostDecrementContext } from "./pawnParser";
 import { PreDecrementContext } from "./pawnParser";
-import { ComplemenContext } from "./pawnParser";
-import { TwoComplemenContext } from "./pawnParser";
 import { ChainedRelationalOperatorsContext } from "./pawnParser";
-import { NotOperatorContext } from "./pawnParser";
 
 
 /**
@@ -523,6 +518,20 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitUnarOperator?: (ctx: UnarOperatorContext) => Result;
 
 	/**
+	 * Visit a parse tree produced by `pawnParser.preExpresionOperator`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitPreExpresionOperator?: (ctx: PreExpresionOperatorContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.preSymbolOperator`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitPreSymbolOperator?: (ctx: PreSymbolOperatorContext) => Result;
+
+	/**
 	 * Visit a parse tree produced by `pawnParser.binarOperator`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -572,34 +581,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitTagOperator?: (ctx: TagOperatorContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.definedOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitDefinedOperator?: (ctx: DefinedOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.sizeofOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitSizeofOperator?: (ctx: SizeofOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.stateOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitStateOperator?: (ctx: StateOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.tagofOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitTagofOperator?: (ctx: TagofOperatorContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `pawnParser.symbol`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -642,31 +623,10 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitPreDecrement?: (ctx: PreDecrementContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.complemen`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitComplemen?: (ctx: ComplemenContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.twoComplemen`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitTwoComplemen?: (ctx: TwoComplemenContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `pawnParser.chainedRelationalOperators`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	visitChainedRelationalOperators?: (ctx: ChainedRelationalOperatorsContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.notOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitNotOperator?: (ctx: NotOperatorContext) => Result;
 }
 
