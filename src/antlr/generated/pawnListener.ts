@@ -91,6 +91,7 @@ import { PreIncrementContext } from "./pawnParser";
 import { PostDecrementContext } from "./pawnParser";
 import { PreDecrementContext } from "./pawnParser";
 import { ComplemenContext } from "./pawnParser";
+import { TwoComplemenContext } from "./pawnParser";
 import { ChainedRelationalOperatorsContext } from "./pawnParser";
 import { NotOperatorContext } from "./pawnParser";
 
@@ -1067,6 +1068,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitComplemen?: (ctx: ComplemenContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.twoComplemen`.
+	 * @param ctx the parse tree
+	 */
+	enterTwoComplemen?: (ctx: TwoComplemenContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.twoComplemen`.
+	 * @param ctx the parse tree
+	 */
+	exitTwoComplemen?: (ctx: TwoComplemenContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.chainedRelationalOperators`.

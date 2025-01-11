@@ -35,21 +35,21 @@ funcDeclModif:		funcModif | FORWARD | NATIVE;
 funcModif:			STOCK | PUBLIC;
 
 /* Какое-то утверждение */
-statement:			(expresion | assert | cycleKeywords | exit | goto | sleep | return | varDeclaration) SEMI | compoundStatment | cycles | ifStatement | switch;
+statement:			((expresion | assert | cycleKeywords | exit | goto | sleep | return | varDeclaration) SEMI | processorLabel | compoundStatment | cycles | ifStatement | switch ) BACKSLAH?;
 compoundStatment:   CURLY_OPEN_BRACKET (statement)* CURLY_CLOSE_BRACKET;
 assert: ASSERT expresion;
 exit: EXIT expresion;
 goto: GOTO expresion;
 sleep: SLEEP expresion;
-ifStatement: IF  condition statement (elseStatement)?;
+ifStatement: IF (condition | expresion THEN) statement (elseStatement)?;
 elseStatement: ELSE statement;
 return:				RETURN expresion?;
 condition: OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
 switch:				SWITCH condition CURLY_OPEN_BRACKET (case)* default? CURLY_CLOSE_BRACKET;
 case:				CASE case_list (COMA case_list)* COLON statement;
 default:            DEFAULT COLON statement;
-case_list:			(IDENTIFIER | number) range?;
-range:				PERIOD (IDENTIFIER | number);
+case_list:			expresion range?;
+range:				PERIOD expresion;
 
 /* Объявление переменной */
 
@@ -57,7 +57,7 @@ assigment:			ASSIGMENT (expresion | arrayInit);
 varModification:	((INCREMENTS|DECREMENTS)variable)|(variable(INCREMENTS|DECREMENTS))|variable;
 
 arrayInit:		CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* CURLY_CLOSE_BRACKET;
-arrayInitMember:	tag? (IDENTIFIER | number | string) | (arrayInit);
+arrayInitMember:	tag? (MINUS? IDENTIFIER | MINUS? number | string) | (arrayInit);
 
 
 assigments:
@@ -99,7 +99,7 @@ varModifires:		CONST|STATIC|STOCK|PUBLIC;
 constRValue:		(varOrLiteral | constGrouping);
 sizeof:				SIZEOF;
 
-number: 			MINUS? (integer | float | HEX | RATIONAL | BINARY);
+number: 			integer | float | HEX | RATIONAL | BINARY;
 float: FLOAT;
 integer: INTEGER;
 
@@ -150,6 +150,7 @@ unarOperator:
     preDecrement |          // --v 
 
     complemen |             // ~e
+	twoComplemen |			// -e
 
     notOperator |           // !e
     
@@ -246,6 +247,7 @@ postDecrement: lvalue DECREMENTS;
 preDecrement: DECREMENTS lvalue;
 
 complemen: BIT_COMPLEMEN expresion;
+twoComplemen: MINUS expresion;
 
 chainedRelationalOperators: 
     LESS |      // e1 < e2
@@ -348,6 +350,7 @@ PUBLIC:		'public';
 OPERATOR:	'operator';
 
 IF:			'if';
+THEN:		'*then';
 ELSE:		'else';
 
 SWITCH:		'switch';
@@ -428,6 +431,8 @@ HEX:			'0x'[a-fA-F0-9_]+;
 INTEGER:		[0-9_]+;
 FLOAT:			[0-9_]+'.'[0-9_]+;
 RATIONAL:		[0-9_]+'.'[0-9_]+'e'[0-9]+;
+
+BACKSLAH: '\\';
 
 Whitespace: [ \t]+ -> skip;
 

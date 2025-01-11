@@ -91,6 +91,7 @@ import { PreIncrementContext } from "./pawnParser";
 import { PostDecrementContext } from "./pawnParser";
 import { PreDecrementContext } from "./pawnParser";
 import { ComplemenContext } from "./pawnParser";
+import { TwoComplemenContext } from "./pawnParser";
 import { ChainedRelationalOperatorsContext } from "./pawnParser";
 import { NotOperatorContext } from "./pawnParser";
 
@@ -718,6 +719,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitComplemen?: (ctx: ComplemenContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.twoComplemen`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitTwoComplemen?: (ctx: TwoComplemenContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.chainedRelationalOperators`.
