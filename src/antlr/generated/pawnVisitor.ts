@@ -10,6 +10,7 @@ import { EnumContext } from "./pawnParser";
 import { EnumMemberContext } from "./pawnParser";
 import { EnumIteratorContext } from "./pawnParser";
 import { VarDeclarationContext } from "./pawnParser";
+import { VarInitContext } from "./pawnParser";
 import { FunctionDeclContext } from "./pawnParser";
 import { OperatorOverloadContext } from "./pawnParser";
 import { NativeAssigmentContext } from "./pawnParser";
@@ -33,8 +34,6 @@ import { CaseContext } from "./pawnParser";
 import { DefaultContext } from "./pawnParser";
 import { Case_listContext } from "./pawnParser";
 import { RangeContext } from "./pawnParser";
-import { AssigmentContext } from "./pawnParser";
-import { VarModificationContext } from "./pawnParser";
 import { ArrayInitContext } from "./pawnParser";
 import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
@@ -152,6 +151,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitVarDeclaration?: (ctx: VarDeclarationContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.varInit`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitVarInit?: (ctx: VarInitContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.functionDecl`.
@@ -313,20 +319,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitRange?: (ctx: RangeContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.assigment`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitAssigment?: (ctx: AssigmentContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.varModification`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitVarModification?: (ctx: VarModificationContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.arrayInit`.

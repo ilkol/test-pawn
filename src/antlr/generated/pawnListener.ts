@@ -10,6 +10,7 @@ import { EnumContext } from "./pawnParser";
 import { EnumMemberContext } from "./pawnParser";
 import { EnumIteratorContext } from "./pawnParser";
 import { VarDeclarationContext } from "./pawnParser";
+import { VarInitContext } from "./pawnParser";
 import { FunctionDeclContext } from "./pawnParser";
 import { OperatorOverloadContext } from "./pawnParser";
 import { NativeAssigmentContext } from "./pawnParser";
@@ -33,8 +34,6 @@ import { CaseContext } from "./pawnParser";
 import { DefaultContext } from "./pawnParser";
 import { Case_listContext } from "./pawnParser";
 import { RangeContext } from "./pawnParser";
-import { AssigmentContext } from "./pawnParser";
-import { VarModificationContext } from "./pawnParser";
 import { ArrayInitContext } from "./pawnParser";
 import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
@@ -177,6 +176,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitVarDeclaration?: (ctx: VarDeclarationContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.varInit`.
+	 * @param ctx the parse tree
+	 */
+	enterVarInit?: (ctx: VarInitContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.varInit`.
+	 * @param ctx the parse tree
+	 */
+	exitVarInit?: (ctx: VarInitContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.functionDecl`.
@@ -430,28 +440,6 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitRange?: (ctx: RangeContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.assigment`.
-	 * @param ctx the parse tree
-	 */
-	enterAssigment?: (ctx: AssigmentContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.assigment`.
-	 * @param ctx the parse tree
-	 */
-	exitAssigment?: (ctx: AssigmentContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.varModification`.
-	 * @param ctx the parse tree
-	 */
-	enterVarModification?: (ctx: VarModificationContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.varModification`.
-	 * @param ctx the parse tree
-	 */
-	exitVarModification?: (ctx: VarModificationContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.arrayInit`.

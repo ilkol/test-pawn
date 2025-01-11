@@ -21,7 +21,8 @@ enum:				ENUM (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA e
 enumMember:			variable (ASSIGMENT expresion)?;
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
-varDeclaration:     (NEW varModifires*| varModifires+) variable assigment? (COMA (variable assigment?))*;
+varDeclaration:     (NEW varModifires*| varModifires+) (variable | varInit) (COMA (variable | varInit))*;
+varInit:			variable ASSIGMENT (expresion | arrayInit);
 functionDecl:		(funcDeclModif)? tag? IDENTIFIER OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
 operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
 nativeAssigment:	ASSIGMENT IDENTIFIER SEMI;
@@ -52,9 +53,6 @@ case_list:			expresion range?;
 range:				PERIOD expresion;
 
 /* Объявление переменной */
-
-assigment:			ASSIGMENT (expresion | arrayInit);
-varModification:	((INCREMENTS|DECREMENTS)variable)|(variable(INCREMENTS|DECREMENTS))|variable;
 
 arrayInit:		CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* CURLY_CLOSE_BRACKET;
 arrayInitMember:	tag? (MINUS? IDENTIFIER | MINUS? number | string) | (arrayInit);
