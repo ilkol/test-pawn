@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, AssigmentContext, CaseContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorOverloadContext, ReturnContext, StatementContext, StringContext, SwitchContext, TagContext, VarDeclarationContext, VarModificationContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, CaseContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, NumberContext, OperationContext, OperatorOverloadContext, ReturnContext, StatementContext, StringContext, SwitchContext, TagContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -142,20 +142,17 @@ export class PawnListener implements pawnListener
 			node.setPos(ctx.start, ctx.stop);
 				
 			let last = this.nodes.peek();
-			node.vars.forEach(element => {
-				element.modifires = node.modifires;
-			});
 			if(last instanceof Declarations) {
 				let tmp: Declarations = last;
 				node.vars.forEach(element => {
 					tmp.declarations.push(element);
 				});
 			}
-			else if(last instanceof Statement) {
-				last.statemnent = node;
-			}
 			else if(last instanceof ForCycle) {
 				last.initialization = node;
+			}
+			else if(last instanceof Statement) {
+				last.statemnent = node;
 			}
 			else {
 				console.log(last);
@@ -164,21 +161,37 @@ export class PawnListener implements pawnListener
 		}
 	}
 
-	private checkModif(arr: TerminalNode[], node: OperatorNew, mod: VariableModifire, text: string) {
-		if(arr.length) {
-			node.addModifire(mod);
-			if(arr.length > 1) {
-				let start = arr[1].symbol;
-				let end = arr[arr.length - 1];
-				this.addDiagnostic("Ожидается один модификатор \""+text+"\"", DiagnosticSeverity.Error, new Range(start.line - 1, start.charPositionInLine, end.symbol.line - 1, end.symbol.charPositionInLine + end.text.length));
+	exitVarModifires = (ctx: VarModifiresContext) => {
+		const last = this.nodes.peek();
+		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
+		if(last instanceof OperatorNew) {
+			const modif = ctx.text;
+			switch(modif) {
+				case "const": {
+					last.modifires.push(VariableModifire.const);
+					break;
+				}
+				case "stock": {
+					last.modifires.push(VariableModifire.stock);
+					break;
+				}
+				case "static": {
+					last.modifires.push(VariableModifire.static);
+					break;
+				}
+				default: {
+					this.addDiagnostic(l10n.t("Undefinded var modifire \"{0}\"", modif), DiagnosticSeverity.Error, pos);	
+				}
 			}
 		}
-	}
+		else {
+			console.log(last);
+			this.addDiagnostic(l10n.t("Unexpected var modifire"), DiagnosticSeverity.Error, pos);	
+		}
+	};
 
 	enterVariable(ctx: VariableContext): void {
-		let node = new Variable();
-		
-		
+		let node = new Variable();			
 		this.nodes.push(node);
 	}
 	exitVariable(ctx: VariableContext): void {
@@ -215,11 +228,9 @@ export class PawnListener implements pawnListener
 			if(last instanceof OperatorNew) {
 				last.push(declarationVar);
 			}
-			else if(last instanceof AssigmentOperator)
+			else if(last instanceof VariableInit)
 			{
-				if(!last.left)
-					last.left = node;
-				else last.right = node;
+				last.var = declarationVar;
 			}
 			else if(last instanceof Expresion)
 			{
@@ -444,8 +455,8 @@ export class PawnListener implements pawnListener
 			// 	node = node.expresion;
 			// }
 
-			if(last instanceof AssigmentOperator) {
-				last.right = node;
+			if(last instanceof VariableInit) {
+				last.rightValue = node;
 			}
 			else if(last instanceof AbstractOperator) {
 				last.expresion = node;
@@ -591,35 +602,17 @@ export class PawnListener implements pawnListener
 		}
 	}
 
-	enterAssigment(ctx: AssigmentContext):void {
-		let node = new AssigmentOperator();	
-
+	enterVarInit(ctx: VarInitContext):void {
+		let node = new VariableInit();
 		this.nodes.push(node);
 	}
-
-	exitAssigment(ctx: AssigmentContext):void {
-		const node = <AssigmentOperator>this.nodes.pop();
+	exitVarInit(ctx: VarInitContext):void {
+		const node = <VariableInit>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			const last = this.nodes.peek();
 			if(last instanceof OperatorNew) {
-				const newVar = new VariableInit();
-				if(node.right)
-					newVar.rightValue = node.right;
-				if(node.left) {
-					var declarationVar:VarDeclaration = new VarDeclaration();
-					if(node.left instanceof Variable) {
-						declarationVar.id = node.left.id;
-						declarationVar.idPos = node.left.idPos;
-					}
-					declarationVar.tag = node.left.tag;
-					newVar.var = declarationVar;			
-				}
-
-				last.push(newVar);
-			}
-			else if(last instanceof CodeBlock){
-				last.statements.push(node);
+				last.push(node);
 			}
 			else {
 				console.log(last);
@@ -627,6 +620,38 @@ export class PawnListener implements pawnListener
 			}
 		}
 	}
+
+	
+	// exitAssigment(ctx: AssigmentContext):void {
+	// 	const node = <AssigmentOperator>this.nodes.pop();
+	// 	if(ctx.stop) {
+	// 		node.setPos(ctx.start, ctx.stop);
+	// 		const last = this.nodes.peek();
+	// 		if(last instanceof OperatorNew) {
+	// 			const newVar = new VariableInit();
+	// 			if(node.right)
+	// 				newVar.rightValue = node.right;
+	// 			if(node.left) {
+	// 				var declarationVar:VarDeclaration = new VarDeclaration();
+	// 				if(node.left instanceof Variable) {
+	// 					declarationVar.id = node.left.id;
+	// 					declarationVar.idPos = node.left.idPos;
+	// 				}
+	// 				declarationVar.tag = node.left.tag;
+	// 				newVar.var = declarationVar;			
+	// 			}
+
+	// 			last.push(newVar);
+	// 		}
+	// 		else if(last instanceof CodeBlock){
+	// 			last.statements.push(node);
+	// 		}
+	// 		else {
+	// 			console.log(last);
+	// 			this.addDiagnostic(l10n.t("parserErrorUnexpectedInitialization"), DiagnosticSeverity.Error, node.pos);
+	// 		}
+	// 	}
+	// }
 
 	enterDeclParams(ctx: DeclParamsContext): void {
 		let node = new FunctionDeclarationParameter();	
@@ -852,28 +877,6 @@ export class PawnListener implements pawnListener
 		this.docs.push(new Docs(ctx.text));
 	}
 
-	enterVarModification(ctx: VarModificationContext): void {
-		const node = new UnarOperator(new AbstractOperator());
-		this.nodes.push(node);
-	}
-	exitVarModification(ctx: VarModificationContext): void {
-		const node = <UnarOperator>this.nodes.pop();
-		if(ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
-			if(ctx.DECREMENTS())
-				node.operator = "--";
-			else if(ctx.INCREMENTS())
-				node.operator = "++";
-
-			const last = this.nodes.peek();
-			if(last instanceof CodeBlock) {
-				last.statements.push(node);
-			}
-			else {
-				this.addDiagnostic(l10n.t("Unexpected statment"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
-	}
 	enterStatement(ctx: StatementContext): void {
 		const node = new Statement();
 		this.nodes.push(node);
