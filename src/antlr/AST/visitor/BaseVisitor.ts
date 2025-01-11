@@ -110,9 +110,7 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitUnarOperator(node: UnarOperator): void {
 		this.beforeVisitUnarOperator(node);
-		if(node.value) {
-			node.value.accept(this);
-		}
+		node.value?.accept(this);
 		this.afterVisitUnarOperator(node);
 	}
 	visitIntLiteral(node: IntLiteral): void {
