@@ -170,6 +170,8 @@ export class FileManager {
 		this.parsingQueue.add(file.uri);
         await this.parseFiles();
 
+		this.diagnosticManager.updateDiagnostic();
+
 		// this.diagnosticManager.clear();
 		// try {
 		// 	let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
@@ -291,7 +293,17 @@ export class FileManager {
 			openedFile.findDirectives();
 			await openedFile.processDirectives();
             const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
-			openedFile.parseCode();
+			await vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Window,
+				title: "Выполняетя обход AST",
+				cancellable: false,
+			},
+			async () => {
+				openedFile.parseCode();
+			}
+		);
+
 			console.log(includes);
             // for (const includePath of includes) {
             //     const includeUri = this.resolveIncludePath(fileUri, includePath);
