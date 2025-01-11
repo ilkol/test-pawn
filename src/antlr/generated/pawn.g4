@@ -74,10 +74,8 @@ assigments:
 ;
 
 grouping:			tag? OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
-constGrouping:		tag? OPEN_PARENTHESIS constExpresion CLOSE_PARENTHESIS;
 
 // expresion:		(preOperators)? (rValue operation? | grouping | ternarOperator);
-constExpresion:	(preOperators)? (varOrLiteral operation? | constGrouping | arrayInit);
 
 // ternarOperator:	(rValue operation? | grouping) QUESTION expresion COLON expresion;
 
@@ -94,7 +92,6 @@ reference:			BIT_AND;
 
 varModifires:		CONST|STATIC|STOCK|PUBLIC;
 
-constRValue:		(varOrLiteral | constGrouping);
 sizeof:				SIZEOF;
 
 number: 			integer | float | HEX | RATIONAL | BINARY;
