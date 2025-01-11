@@ -138,8 +138,11 @@ expresion:
     OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS |
     unarOperator |
     binarOperator)
-    (CHAR? | QUESTION expresion COLON expresion | (chainedRelationalOperators expresion)+ | operator=binarExpressionOperators right=expresion)
+    (CHAR? | ternarOperator | chainedRelationalOperator | binarExpressionOperator)
 ;
+ternarOperator: QUESTION expresion COLON expresion;
+chainedRelationalOperator: (chainedRelationalOperators expresion)+;
+binarExpressionOperator: operator=binarExpressionOperators right=expresion;
 
 unarOperator:
     postIncrement |         // v++ 
