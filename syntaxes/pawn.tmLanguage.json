@@ -705,7 +705,7 @@
 			"name": "keyword.control.directive.$2.pawn"
 		},
 		"preprocessor_conditional_range": {
-			"begin": "^\\s*(#)(?:\\s+)?((if))",
+			"begin": "^\\s*(#)(?:\\s+)?((if|elseif))",
 			"end": "(?<!\\\\)(?:(?=\\n)|(?<=^\\n|[^\\\\]\\n)(?=$))",
 			"beginCaptures": {
 				"0": {
