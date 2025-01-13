@@ -47,4 +47,20 @@ export class ReplacedCode
             this.range = new Range(file.positionAt(this.origPos), file.positionAt(this.origPos + this.length));
         return this.range;
     }
+
+	private _end?: number;
+
+
+	get start(): number {
+		return this.origPos;
+	}
+	get end(): number {
+		if(!this._end) {
+			this._end = this.origPos + this.length;
+		}
+		return this._end;
+	}
+	set end(v: number) {
+		this._end = this.origPos + this.length;
+	}
 }

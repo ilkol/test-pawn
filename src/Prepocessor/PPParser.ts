@@ -743,12 +743,27 @@ export class PPParser
 
 	getDefinedRanges(): Range[]
 	{
+
+		// const mergedRanges = this.replacedCode
+		// .sort((a, b) => a.start - b.start)
+		// .reduce<Array<ReplacedCode>>((acc, range) => {
+		// 	if (acc.length === 0 || acc[acc.length - 1].end < range.start) {
+		// 		// Если диапазоны не пересекаются, добавляем новый
+		// 		acc.push(range);
+		// 	} else {
+		// 		// Если пересекаются, объединяем их
+		// 		acc[acc.length - 1].end = Math.max(acc[acc.length - 1].end, range.end);
+		// 	}
+		// 	return acc;
+		// }, []); 
+
 		const ranges: Range[] = [];
-		this.replacedCode.forEach(el => {
-			ranges.push(el.getRange(this.file));
-		});
+		// mergedRanges.forEach(el => {
+		// 	ranges.push(el.getRange(this.file));
+		// });
 		return ranges;
 	}
+	
 
 	preprocessorTokens(): CompletionItem[]
 	{
