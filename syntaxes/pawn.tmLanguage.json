@@ -1423,6 +1423,9 @@
 					"include": "#square_brackets"
 				},
 				{
+					"include": "#curly_brackets_array"
+				},
+				{
 					"include": "#punctuation_semicolon"
 				},
 				{
@@ -1543,6 +1546,9 @@
 				},
 				{
 					"include": "#square_brackets"
+				},
+				{
+					"include": "#curly_brackets_array"
 				},
 				{
 					"include": "#semicolon"
@@ -1688,6 +1694,9 @@
 									"include": "#square_brackets"	
 								},
 								{
+									"include": "#curly_brackets_array"
+								},
+								{
 									"include": "#evaluation_context"
 								}	
 							]						
@@ -1755,6 +1764,38 @@
 				}
 			},
 			"name": "meta.bracket.square.array.pawn",
+			"patterns": [
+				{
+					"include": "#operators"
+				},
+				{
+					"include": "#number_literal"
+				},
+				{
+					"include": "#type_char"
+				},
+				{
+					"include": "#tags"
+				}
+			]
+		},
+		"curly_brackets_array":{
+			"begin": "([\\w]*)(\\{)",
+			"end": "\\}",
+			"beginCaptures": {
+				"1": {
+					"name": "variable.other.pawn"
+				},
+				"2": {
+					"name": "punctuation.definition.begin.bracket.curly.array.type.pawn"
+				}
+			},
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.end.bracket.curly.array.type.pawn"
+				}
+			},
+			"name": "meta.bracket.curly.array.pawn",
 			"patterns": [
 				{
 					"include": "#operators"
