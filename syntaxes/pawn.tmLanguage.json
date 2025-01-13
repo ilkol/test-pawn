@@ -1645,7 +1645,7 @@
 		},
 		"new_var":{
 			"name": "meta.initialization.pawn",
-			"begin": "\\b(new)|(static|const|stock)",
+			"begin": "\\b(new)|(static|const|stock|public)",
 			"beginCaptures": {
 				"1":{
 					"name": "keyword.control.$1.pawn"
