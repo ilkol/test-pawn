@@ -30,7 +30,7 @@ tag:				(IDENTIFIER|(CURLY_OPEN_BRACKET IDENTIFIER (COMA IDENTIFIER)* CURLY_CLOS
 
 variable:			tag? IDENTIFIER (arrayIndex)*;
 
-arrayIndex:			SQUARE_OPEN_BRACKET (expresion CHAR?)? SQUARE_CLOSE_BRACKET;
+arrayIndex:			(SQUARE_OPEN_BRACKET (expresion CHAR?)? SQUARE_CLOSE_BRACKET) | (CURLY_OPEN_BRACKET (expresion CHAR?)? CURLY_CLOSE_BRACKET);
 
 funcDeclModif:		funcModif | FORWARD | NATIVE;
 funcModif:			STOCK | PUBLIC;
