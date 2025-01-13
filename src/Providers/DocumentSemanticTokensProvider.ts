@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { FileManager } from '../Managers/FileManager';
-import { OpenedFile } from '../OpenedFile';
 import { AbstractOpenFile } from '../AbstractOpenFile';
 
 export class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {

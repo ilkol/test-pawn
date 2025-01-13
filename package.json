@@ -1,27 +1,10 @@
 {
 	"name": "pawnlanguage-test",
 	"version": "1.1.7",
+	"displayName": "Pawn Language TEST VERSION",
 	"publisher": "ilkol",
 	"engines": {
 		"vscode": "^1.83.0"
-	},
-	"activationEvents": [
-		"onLanguage:pawn"
-	],
-	"displayName": "Pawn Language TEST VERSION",
-	"description": "%config.description%",
-	"categories": [
-		"Programming Languages",
-		"Snippets"
-	],
-	"keywords": [
-		"pawn",
-		"pawno"
-	],
-	"main": "./dist/extension.js",
-	"galleryBanner": {
-		"color": "#005089",
-		"theme": "dark"
 	},
 	"author": {
 		"name": "il_kol"
@@ -30,7 +13,20 @@
 		"type": "git",
 		"directory": "https://github.com/DmitryMukhlisov/test-pawn.git"
 	},
+	"categories": [
+		"Programming Languages",
+		"Snippets"
+	],
 	"icon": "pawn.png",
+	"main": "./dist/extension.js",
+	"galleryBanner": {
+		"color": "#005089",
+		"theme": "dark"
+	},
+	"keywords": [
+		"pawn",
+		"pawno"
+	],
 	"l10n": "./l10n",
 	"contributes": {
 		"configuration": [
@@ -79,8 +75,22 @@
 		"grammars": [
 			{
 				"language": "pawn",
+				"scopeName": "source.pawn.sql",
+				"path": "./syntaxes/sql.tmLanguage.json"
+			},
+			{
+				"language": "pawn",
+				"scopeName": "source.amxasm",
+				"path": "./syntaxes/asm.tmLanguage.json"
+			},
+			{
+				"language": "pawn",
 				"scopeName": "source.pawn",
-				"path": "./syntaxes/pawn.tmLanguage.json"
+				"path": "./syntaxes/pawn.tmLanguage.json",
+				"embeddedLanguages": {
+					"source.pawnSQL": "pawnSQL",
+					"source.amxasm": "AMX ASM"
+				}
 			}
 		]
 	},

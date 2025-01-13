@@ -1,0 +1,376 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "AMX ASM",
+	"patterns": [
+		{
+			"match": "(?i)\\b([a-z1-5]{1,6})(?:\\.(?:(?:(?:(C|S)\\.)?(pri|alt))|(s|r|c|ADR|B|I)))?([\\t ]+(.+)?)?",
+			"captures": {
+				"1": {
+					"patterns": [
+						{
+							"match": "(?i)(LOAD|LREF|CONST|STOR|SREF|STRB|LIDX|IDXADDR|ALIGN|[SL]CTRL|MOVE|XCHG|PUSH(?:[1-5])?|POP|STACK|HEAP|PROC|RETN?|CALL|JUMP|J(?:REL|ZER|NZ|[NLG]?EQ|S?LESS|SGEQ|SGTRT|SLEQ)|SSHR|SHL|SHR|[US]MUL|[US]DIV|SUB|AND|X?OR|NOT|NEG|INVERT|NEQ|S?LESS|S?[GL]EQ|S?GRTR|ZERO|SIGN|EQ|INC|DEC|MOVS|SYSREQ|SWAP|fill|switch|ADDR?)",
+							"name": "entity.name.function.$1.amxasm"
+						},
+						{
+							"match": ".+",
+							"name": "invalid"
+						}
+					]
+				},
+				"2": {
+					"name": "entity.name.function.amxasm"
+				},
+				"3": {
+					"name": "entity.name.type.amxasm"
+				},
+				"4": {
+					"name": "entity.name.function.amxasm"
+				},
+				"5": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		}
+	],
+	"repository": {		
+		"operand": {
+			"patterns": [
+				{
+					"include": "#number_literal"
+				},
+				{
+					"include": "#variable"
+				}
+			]
+		},
+		"variable": {
+			"match": "\\w+",
+			"name": "variable.other.amxasm"
+		},
+		"number_literal": {
+			"patterns": [
+				{
+					"include": "#hex_lit"
+				},
+				{
+					"include": "#int_lit"
+				}
+			]
+		},
+		"int_lit": {
+			"match": "\\d+",
+			"name": "constant.numeric.decimal"
+		},
+		"hex_lit": {
+			"match": "0(?:x)[a-fA-f0-9]+",
+			"name": "constant.numeric.decimal"
+		},
+		"push": {
+			"match": "(?i)\\b(push)(?:\\.(?:(pri|alt|s|c|adr)))?(?:\\s+(\\w+))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"pop": {
+			"match": "(?i)\\b(pop)(?:\\.(?:(pri|alt)))?(?:\\s+(\\w+))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"strb": {
+			"match": "(?i)\\b(strb)\\.(i)\\s+(.+)",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				
+				"3": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"load": {
+			"match": "(?i)(?:\\b(load)\\.(?:(pri|alt|i)|(?:(S)\\.(alt|pri))))(?:\\s+(\\w+))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"name": "entity.name.type.amxasm"
+				},
+				"4": {
+					"name": "entity.name.type.amxasm"
+				},
+				"5": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"lref": {
+			"match": "(?i)\\b([ls]ref)\\.(?:(pri|alt)|(?:(S)\\.(alt|pri)))(?:\\s+(\\w+))",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"name": "entity.name.type.amxasm"
+				},
+				"4": {
+					"name": "entity.name.type.amxasm"
+				},
+				"5": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"const": {
+			"match": "(?i)\\b(const)\\.(pri|alt|s)?(?:\\s+(\\w+))",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"stor": {
+			"match": "(?i)\\b(stor)\\.(?:(?:(?:(S)\\.)?(pri|alt)\\s+(.+))|(i))",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.function.amxasm"
+				},
+				"3": {
+					"name": "entity.name.type.amxasm"
+				},
+				"4": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				},
+				"5": {
+					"name": "entity.name.function.amxasm"
+				}
+			}
+		},
+		"addr": {
+			"match": "(?i)\\b(addr)\\.(pri|alt)\\s+(.+)",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"LIDX_IDXADDR": {
+			"match": "(?i)\\b(LIDX|IDXADDR)(?:\\.(b)\\s+(.+))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"no_operand": {
+			"match": "(?i)\\b(LIDX|IDXADDR|retn?|sshr|shr|smul|sdiv|add|x?or|not|neg|invert|proc)\\b",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				}
+			}
+		},
+		"stack": {
+			"match": "(?i)\\b(stack)\\b(?:(.+))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"SHL": {
+			"match": "(?i)\\b(shl)\\b(?:\\.((c)\\.(alt|pri)))?(?:(.+))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"add_smul": {
+			"match": "(?i)\\b(ADD|SMUL)\\b\\.(c) (?:(.+))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"inc": {
+			"match": "(?i)\\b(inc)\\b(?:\\.(pri|alt|s))? (?:(.+))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"dec": {
+			"match": "(?i)\\b(dec)\\b(?:\\.(pri|alt|i))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				}
+			}
+		},
+		"one_operand": {
+			"match": "(?i)\\b(fill|[sl]ctrl|zero|jump|switch)\\b(?:(.+))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		},
+		"sysreq": {
+			"match": "(?i)\\b(sysreq)\\.(c)(?:(.+))?",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.amxasm"
+				},
+				"2": {
+					"name": "entity.name.type.amxasm"
+				},
+				"3": {
+					"patterns": [
+						{
+							"include": "#operand"
+						}
+					]
+				}
+			}
+		}
+	},
+	"scopeName": "source.amxasm"
+}

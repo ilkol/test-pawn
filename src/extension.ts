@@ -10,6 +10,7 @@ import { AbstractOpenFile } from './AbstractOpenFile';
 import { SemanticTokens, SemanticTokensModifires } from './SemanticTokens';
 import { DefinitionProvider } from './Providers/DefinitionProvider';
 import { ReferenceProvider } from './Providers/ReferenceProvider';
+import { getDefaultComplitions } from './DefaultComplitions/DefaultComplitions';
 
 let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
@@ -135,7 +136,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('pawn', {
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
 
-			let complitions: vscode.CompletionItem[] = [];
+			let complitions: vscode.CompletionItem[] = getDefaultComplitions();
 
 			const file: AbstractOpenFile | undefined = fileManage.openedFiles.get(document.uri);
 			if (file) { complitions = complitions.concat(file.getComplitions()); }

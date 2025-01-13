@@ -1,6 +1,5 @@
 import { CancellationToken, DocumentSymbol, DocumentSymbolProvider, Position, ProviderResult, Range, SymbolInformation, SymbolKind, TextDocument } from "vscode";
 import { FileManager } from "../Managers/FileManager";
-import { OpenedFile } from "../OpenedFile";
 import { AbstractOpenFile } from "../AbstractOpenFile";
 
 
