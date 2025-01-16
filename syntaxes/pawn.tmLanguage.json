@@ -128,6 +128,19 @@
 			"end": "(?=;|\\))",
 			"patterns": [
 				{
+					"match": "([a-zA-Z_]\\w*|{[a-zA-Z_]\\w*(?:\\s*,\\s*[a-zA-Z_]\\w*)*})\\s*:\\s*",
+					"captures": {
+						"1": {
+							"patterns": [
+								{
+									"include": "#types"
+								}
+							]
+
+						}
+					}
+				},
+				{
 					"include": "#evaluation_context"
 				},
 				{
@@ -1719,6 +1732,9 @@
 									"include": "#number_literal"
 								},
 								{
+									"include": "#types"
+								},
+								{
 									"include": "#square_brackets"	
 								},
 								{
@@ -1726,7 +1742,7 @@
 								},
 								{
 									"include": "#evaluation_context"
-								}	
+								}
 							]						
 						},
 						{
