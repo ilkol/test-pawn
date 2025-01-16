@@ -41,7 +41,7 @@
 	],
 	"repository": {
 		"enum":{
-			"begin": "^\\s*(enum)(\\s+([\\w\\d_]+)+)?",
+			"begin": "^\\s*(enum)(\\s+([\\w\\d_]+)+)?(?:\\s*\\(\\s*((?:<<|\\+|\\*)=)\\s*(\\d+)\\s*\\))?",
 			"beginCaptures": {
 				"1":{
 					"name": "storage.type.enum.pawn"
@@ -53,7 +53,10 @@
 					"name": "entity.name.type.pawn"
 				},
 				"4": {
-					"name": "punctuation.section.block.begin.bracket.curly.pawn"
+					"name": "entity.name.function.call.pawn"
+				},
+				"5": {
+					"name": "constant.numeric.decimal.pawn"
 				}
 			},
 			"end": "}",
