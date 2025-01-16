@@ -69,7 +69,7 @@
 					"end": "(?=\\})",
 					"patterns": [
 						{
-							"match": "(?<=\\s)(?:([\\w]+)\\s*:\\s*)?([\\w]+)\\s*(\\\\[.+?\\\\]\\s*)?(?:(=)\\s*(.+)\\s*)?(,)?(?=\\s+)",
+							"match": "\\s*(?:([\\w]+)\\s*:\\s*)?([\\w]+)\\s*(\\\\[.+?\\\\]\\s*)?(?:(=)\\s*(.+)\\s*)?(,)?\\s*",
 							"captures":{
 								"1": {
 									"patterns": [
@@ -128,7 +128,7 @@
 					"name": "variable.other.pawn"
 				}
 			},
-			"end": "(?=;|\\))",
+			"end": ",|;|)",
 			"patterns": [
 				{
 					"include": "#evaluation_context"
@@ -693,12 +693,35 @@
 					"include": "#string_context"
 				},
 				{
+					"match": "\\s+(library)\\s+(\\w+)",
+					"captures": {
+						"1": {
+							"name": "entity.other.attribute-name.pragma.preprocessor.pawn"
+						},
+						"2": {
+							"name": "string.library.name.pawn"
+						}
+					}
+				},
+				{
+					"match": "\\s+(tabsize)\\s+(\\d+)",
+					"captures": {
+						"1": {
+							"name": "entity.other.attribute-name.pragma.preprocessor.pawn"
+						},
+						"2": {
+							"name": "constant.numeric.decimal.pawn"
+						}
+					}
+				},
+				{
 					"match": "[a-zA-Z_$][\\w\\-$]*",
 					"name": "entity.other.attribute-name.pragma.preprocessor.pawn"
 				},
 				{
 					"include": "#line_continuation_character"
 				}
+				
 			]
 		},
 		"preprocessor_conditional_standalone": {
