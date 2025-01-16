@@ -15,6 +15,9 @@
 			"include": "#keywords_operators"
 		},
 		{
+			"include": "#enum"
+		},
+		{
 			"include": "#function"
 		},
 		{
@@ -31,9 +34,6 @@
 		},
 		{
 			"include": "#comments"
-		},
-		{
-			"include": "#enum"
 		},
 		{
 			"include": "#var_assigment"
@@ -111,9 +111,6 @@
 								}
 							}
 							
-						},
-						{
-							"include": "#evaluation_context"
 						}
 						
 					]
@@ -128,7 +125,7 @@
 					"name": "variable.other.pawn"
 				}
 			},
-			"end": ",|;|)",
+			"end": "(?=;|\\))",
 			"patterns": [
 				{
 					"include": "#evaluation_context"
@@ -721,7 +718,6 @@
 				{
 					"include": "#line_continuation_character"
 				}
-				
 			]
 		},
 		"preprocessor_conditional_standalone": {
@@ -1812,7 +1808,7 @@
 			]
 		},
 		"curly_brackets_array":{
-			"begin": "([\\w]*)(\\{)",
+			"begin": "([\\w]+)(\\{)",
 			"end": "\\}",
 			"beginCaptures": {
 				"1": {
