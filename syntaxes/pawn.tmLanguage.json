@@ -121,7 +121,7 @@
 			]
 		},
 		"var_assigment":{
-			"name": "meta.initialization.pawn",
+			"name": "meta.assigment.pawn",
 			"begin": "\\b[\\s\\n]*([\\w]+)[\\s\\n]*=",
 			"beginCaptures": {
 				"1":{
@@ -1733,9 +1733,6 @@
 							[
 								{
 									"include": "#number_literal"
-								},
-								{
-									"include": "#types"
 								},
 								{
 									"include": "#square_brackets"	
