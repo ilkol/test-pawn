@@ -1167,8 +1167,72 @@
 				},
 				{
 					"include": "#evaluation_context"
+				},
+				{
+					"include": "#label"
 				}
 			]
+		},
+		"label": {
+			"match": "((?:((?:\\s*+\\/\\*(?:[^\\*]++|\\*+(?!\\/))*+\\*\\/\\s*+)+)|(?:\\s++)|(?<=\\W)|(?=\\W)|^|(?:\\n?$)|\\A|\\Z))((?<!\\w)(?:[a-zA-Z_]|(?:\\\\u[0-9a-fA-F]{4}|\\\\U[0-9a-fA-F]{8}))(?:[a-zA-Z0-9_]|(?:\\\\u[0-9a-fA-F]{4}|\\\\U[0-9a-fA-F]{8}))*(?!\\w))\\b(?<!case|default)((?:((?:\\s*+\\/\\*(?:[^\\*]++|\\*+(?!\\/))*+\\*\\/\\s*+)+)|(?:\\s++)|(?<=\\W)|(?=\\W)|^|(?:\\n?$)|\\A|\\Z))(:)",
+			"captures": {
+				"1": {
+					"patterns": [
+						{
+							"include": "#inline_comment"
+						}
+					]
+				},
+				"2": {
+					"patterns": [
+						{
+							"match": "\\s*+(\\/\\*)((?:[^\\*]++|\\*+(?!\\/))*+(\\*\\/))\\s*+",
+							"captures": {
+								"1": {
+									"name": "comment.block.cpp punctuation.definition.comment.begin.cpp"
+								},
+								"2": {
+									"name": "comment.block.cpp"
+								},
+								"3": {
+									"name": "comment.block.cpp punctuation.definition.comment.end.cpp"
+								}
+							}
+						}
+					]
+				},
+				"3": {
+					"name": "entity.name.label.cpp"
+				},
+				"4": {
+					"patterns": [
+						{
+							"include": "#inline_comment"
+						}
+					]
+				},
+				"5": {
+					"patterns": [
+						{
+							"match": "\\s*+(\\/\\*)((?:[^\\*]++|\\*+(?!\\/))*+(\\*\\/))\\s*+",
+							"captures": {
+								"1": {
+									"name": "comment.block.cpp punctuation.definition.comment.begin.cpp"
+								},
+								"2": {
+									"name": "comment.block.cpp"
+								},
+								"3": {
+									"name": "comment.block.cpp punctuation.definition.comment.end.cpp"
+								}
+							}
+						}
+					]
+				},
+				"6": {
+					"name": "punctuation.separator.label.cpp"
+				}
+			}
 		},
 		"switch_statement":{
 			"begin": "((?<!\\w)switch(?!\\w))",
@@ -1480,8 +1544,36 @@
 				},
 				{
 					"include": "variable"
+				},
+				{
+					"include": "#goto"
+				},
+				{
+					"include": "#state"
 				}
 			]
+		},
+		"goto": {
+			"match": "\\b(goto)\\s+([a-zA-Z_]\\w*)\\s*;",
+			"captures": {
+				"1": {
+					"name": "keyword.control.goto.pawn"
+				},
+				"2": {
+					"name": "entity.name.label.call"
+				}
+			}
+		},
+		"state": {
+			"match": "\\b(state)\\s+([a-zA-Z_]\\w*)\\s*;",
+			"captures": {
+				"1": {
+					"name": "keyword.control.goto.pawn"
+				},
+				"2": {
+					"name": "variable.other.pawn"
+				}
+			}
 		},
 		"operators": {
 			"patterns": [
