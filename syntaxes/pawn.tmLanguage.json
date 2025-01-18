@@ -18,7 +18,7 @@
 			"include": "#enum"
 		},
 		{
-			"include": "#function"
+			"include": "#function_declaration"
 		},
 		{
 			"include": "#operator_overload"
@@ -72,7 +72,7 @@
 					"end": "(?=\\})",
 					"patterns": [
 						{
-							"include": "#block_comment"
+							"include": "#comments"
 						},
 						{
 							"match": "\\s*(?:([\\w]+)\\s*:\\s*)?([\\w]+)\\s*(\\\\[.+?\\\\]\\s*)?(?:(=)\\s*(.+)\\s*)?(,)?\\s*",
@@ -885,7 +885,7 @@
 			]
 		},
 		"include": {
-			"begin": "^\\s*((#)\\s*(include))\\b\\s*",
+			"begin": "^\\s*((#)\\s*(include|tryinclude))\\b\\s*",
 			"beginCaptures": {
 				"1": {
 					"name": "keyword.control.directive.include.pawn"
@@ -947,11 +947,105 @@
 		},
 		"declaration_functions": {
 			"name": "storage.modifier.$1.pawn",
-			"match": "(publics:|public|forward|native|stock)"
+			"match": "(public|forward|native|stock)"
+		},
+		"function_declaration": {
+			"begin": "public|forward|native|stock",
+			"beginCaptures": {
+				"0": {
+					"patterns": [
+						{
+							"include": "#declaration_functions"
+						}
+					]
+				}
+			},
+			"end": "(?<=\\})|(?=[;=])",
+			"name": "meta.function.definition.pawn",
+			"patterns": [
+				{
+					"begin": "\\G ?",
+					"end": "(?:\\{|(?=;))",
+					"name": "meta.head.function.definition.pawn",
+					"patterns": [
+						{
+							"begin": "\\(",
+							"end": "\\)",
+							"beginCaptures": {
+								"0": {
+									"name": "punctuation.section.parameters.begin.bracket.round.cpp"
+								}
+							},
+							"endCaptures": {
+								"0": {
+									"name": "punctuation.section.parameters.end.bracket.round.cpp"
+								}
+							},
+							"contentName": "meta.function.definition.parameters.pawn",
+							"patterns": [
+								{
+									"include": "#ever_present_context"
+								},
+								{
+									"include": "#parameter_or_maybe_value"
+								},
+								{
+									"include": "#comma"
+								},
+								{
+									"include": "#evaluation_context"
+								}
+							]
+						},
+						{
+							"match": "[a-zA-Z_]\\w*:",
+							"captures": {
+								"0": {
+									"patterns": [
+										{
+											"include": "#types"
+										}
+									]
+
+								}
+							}
+						},
+						{
+							"match": "[a-zA-Z_]\\w*\\s+:",
+							"name": "invalid.tag.pawn"
+						},
+						{
+							"match": "([a-zA-Z_@]\\w*)",
+							"captures": {
+								"0": {
+									"name": "entity.name.function.definition.pawn"
+								}
+							}
+						}
+					]
+				},
+				{
+					"begin": "(?<=\\{|<%|\\?\\?<)",
+					"end": "\\}|%>|\\?\\?>",
+					"beginCaptures": {},
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.block.end.bracket.curly.function.definition.cpp"
+						}
+					},
+					"name": "meta.body.function.definition.cpp",
+					"patterns": [
+						{
+							"include": "#function_body_context"
+						}
+					]
+				}
+
+			]
 		},
 		"function":{
 			"name": "meta.function.definition.pawn",
-			"begin": "^\\s*(?:(publics:|public|forward|native|stock)\\s)?\\s*((?<!\\w)(?:(?:\\w+)(?:\\s|\\n)*:\\s*))?([@\\w]+)(?:\\()",
+			"begin": "^\\s*(?:(public|forward|native|stock)\\s)?\\s*((?<!\\w)(?:(?:\\w+)(?:\\s|\\n)*:\\s*))?([@\\w]+)(?:\\()",
 			"beginCaptures": {
 				"0": {
 					"name": "meta.head.function.definition.pawn"
@@ -1444,7 +1538,7 @@
 					"include": "#language_constants"
 				},
 				{
-					"match": "((?:static|const)+\\s+)?(\\s*&\\s*)?(?:([a-zA-Z_]\\w*|{[a-zA-Z_]\\w*(?:\\s*,\\s*[a-zA-Z_]\\w*)*})\\s*:\\s*)?([a-zA-Z_]\\w*|\\.\\.\\.)(?:\\[.*?\\])?(?:\\s*)(?=,|=|;|\\))",
+					"match": "((?:static|const)+\\s+)?(\\s*&\\s*)?(?:([a-zA-Z_]\\w*|{[a-zA-Z_]\\w*(?:\\s*,\\s*[a-zA-Z_]\\w*)*})\\s*:\\s*)?([a-zA-Z_]\\w*|\\.\\.\\.)(?:\\[.*?\\])?",
 					"captures": {
 						"1": {
 							"patterns": [
