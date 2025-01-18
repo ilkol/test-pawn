@@ -960,12 +960,12 @@
 					]
 				}
 			},
-			"end": "(?<=\\})|(?=[;=])",
+			"end": "(?<=\\}|=)|(?=[;])",
 			"name": "meta.function.definition.pawn",
 			"patterns": [
 				{
 					"begin": "\\G ?",
-					"end": "(?:\\{|(?=;))",
+					"end": "(?:\\)|(?=\\s)|(?=[\\{;=]))",
 					"name": "meta.head.function.definition.pawn",
 					"patterns": [
 						{
@@ -1025,8 +1025,8 @@
 					]
 				},
 				{
-					"begin": "(?<=\\{|<%|\\?\\?<)",
-					"end": "\\}|%>|\\?\\?>",
+					"begin": "\\{",
+					"end": "\\}",
 					"beginCaptures": {},
 					"endCaptures": {
 						"0": {
@@ -1034,6 +1034,25 @@
 						}
 					},
 					"name": "meta.body.function.definition.cpp",
+					"patterns": [
+						{
+							"include": "#function_body_context"
+						}
+					]
+				},
+				{
+					"begin": "(?<=\\))\\s*(?==)",
+					"end": "(?=;)",
+					"name": "meta.native.assigment.pawn",
+					"patterns": [
+						{
+							"match": "[a-zA-Z_@]\\w*",
+							"name": "entity.name.function.pawn"
+						}
+					]
+				},
+				{
+					"name": "meta.expression.body.function.definition.pawn",
 					"patterns": [
 						{
 							"include": "#function_body_context"
