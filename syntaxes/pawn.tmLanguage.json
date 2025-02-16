@@ -965,7 +965,7 @@
 			"patterns": [
 				{
 					"begin": "\\G ?",
-					"end": "(?:\\)|(?=\\s)|(?=[\\{;=]))",
+					"end": "(?<=\\))",
 					"name": "meta.head.function.definition.pawn",
 					"patterns": [
 						{
