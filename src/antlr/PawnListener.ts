@@ -391,7 +391,7 @@ export class PawnListener implements pawnListener
 
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
-				last.expresion = node;
+				this.nodes.replace(node);
 			}
 			else if(last instanceof FunctionDeclarationParameter) {
 				last.defaultValue = node;
@@ -536,12 +536,12 @@ export class PawnListener implements pawnListener
 
 	
 
-	enterFunctionCall(ctx: FunctionCallOperatorContext): void {
+	enterFunctionCallOperator(ctx: FunctionCallOperatorContext): void {
 		let node = new FunctionCall();	
 		this.nodes.push(node);
 	}
 
-	exitFunctionCall(ctx: FunctionCallOperatorContext): void 
+	exitFunctionCallOperator(ctx: FunctionCallOperatorContext): void 
 	{
 		let node = <FunctionCall>this.nodes.pop();
 		if(ctx.stop) {
@@ -558,7 +558,7 @@ export class PawnListener implements pawnListener
 			
 			let last = this.nodes.peek();
 			if(last instanceof Expresion) {
-				last.expresion = node;
+				this.nodes.replace(node);
 			}
 			else {
 				console.debug(last);
@@ -621,8 +621,7 @@ export class PawnListener implements pawnListener
 
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
-				this.nodes.pop();
-				this.nodes.push(node);
+				this.nodes.replace(node);
 			}
 			else if(last instanceof FunctionDeclarationParameter) {
 				last.defaultValue = node;
@@ -646,7 +645,7 @@ export class PawnListener implements pawnListener
 
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
-				last.expresion = node;
+				this.nodes.replace(node);
 			}
 			else if(last instanceof FunctionDeclarationParameter) {
 				last.defaultValue = node;
@@ -869,7 +868,7 @@ export class PawnListener implements pawnListener
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
 				node.left = last.expresion!;
-				last.expresion = node;
+				this.nodes.replace(node);
 			}
 			else {
 				this.addDiagnostic(l10n.t("Unexpected binar operator"), DiagnosticSeverity.Error, node.pos);
@@ -888,7 +887,7 @@ export class PawnListener implements pawnListener
 			
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
-				last.expresion = node;
+				this.nodes.replace(node);
 			}
 			else {
 				this.addDiagnostic(l10n.t("Unexpected unar operator"), DiagnosticSeverity.Error, node.pos);
@@ -982,7 +981,7 @@ export class PawnListener implements pawnListener
 			// }
 			else if(last instanceof Expresion)
 			{
-				last.expresion = node;
+				this.nodes.replace(node);
 			}
 			else {
 				console.log(last);
@@ -1002,7 +1001,7 @@ export class PawnListener implements pawnListener
 			
 			if(last instanceof Expresion)
 			{
-				last.expresion = node;
+				this.nodes.replace(node);
 			}
 			else {
 				console.log(last);

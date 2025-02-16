@@ -331,16 +331,17 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	afterVisitReturn(node: ReturnStatement): void {
-		if(node.value) {
-			if(node.value.tag.tagString !== this.curScope.returnTag?.tagString) {
-				if(node.value.expresion instanceof Variable) {
-					const variable = this.curScope.findVar(node.value.expresion.id);
-					if(variable && this.curScope.returnTag && this.isEqualTag(variable?.tag, this.curScope.returnTag)) {
-						this.addDiagnostic(new DiagnosticError(l10n.t("The return value must be with the tag \"{0}\", but the tag \"{1}\" was found", this.curScope.returnTag?.id, variable?.tag.tagString), node.value.pos));
-					}
+		if(!node.value) {
+			return;
+		}
+		if(node.value.tag.tagString !== this.curScope.returnTag?.tagString) {
+			if(node.value.expresion instanceof Variable) {
+				const variable = this.curScope.findVar(node.value.expresion.id);
+				if(variable && this.curScope.returnTag && this.isEqualTag(variable?.tag, this.curScope.returnTag)) {
+					this.addDiagnostic(new DiagnosticError(l10n.t("The return value must be with the tag \"{0}\", but the tag \"{1}\" was found", this.curScope.returnTag?.id, variable?.tag.tagString), node.value.pos));
 				}
-				else this.addDiagnostic(new DiagnosticError(l10n.t("The return value must be with the tag \"{0}\", but the tag \"{1}\" was found", this.curScope.returnTag?.id ? this.curScope.returnTag?.id : "unknown", node.value.tag.tagString), node.value.pos));
 			}
+			else this.addDiagnostic(new DiagnosticError(l10n.t("The return value must be with the tag \"{0}\", but the tag \"{1}\" was found", this.curScope.returnTag?.id ? this.curScope.returnTag?.id : "unknown", node.value.tag.tagString), node.value.pos));
 		}
 	}
 	beforeVisitCodeBlock(node: CodeBlock): void {
