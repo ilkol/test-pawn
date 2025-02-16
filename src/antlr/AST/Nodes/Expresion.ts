@@ -16,7 +16,6 @@ export class Expresion extends AbstractStatement {
 	
 
 	public set tag(v : Tag) {
-		console.error(v);
 		this._tag = v;
 	}
 

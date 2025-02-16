@@ -327,8 +327,6 @@ export class PawnListener implements pawnListener
 			let last = this.nodes.peek();
 			if(last && 'tag' in last) {
 				last.tag = node;
-				console.log(last);
-				console.log(last.tag);
 				if('isTaged' in last)
 					last.isTaged = true;
 			}
@@ -623,7 +621,8 @@ export class PawnListener implements pawnListener
 
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
-				last.expresion = node;
+				this.nodes.pop();
+				this.nodes.push(node);
 			}
 			else if(last instanceof FunctionDeclarationParameter) {
 				last.defaultValue = node;
