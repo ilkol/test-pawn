@@ -371,13 +371,13 @@ export class PPParser
 		let codeChunks = this.sliceCodeForChunks(code);
 		codeChunks = await this.processDefines(codeChunks);
 
-		for(let definesArray of this.defines.values()) {
-			for(let localDefine of definesArray) {
-				if(localDefine.used) {
-					console.log(localDefine.pattern);
-				}
-			}
-		}
+		// for(let definesArray of this.defines.values()) {
+		// 	for(let localDefine of definesArray) {
+		// 		if(localDefine.used) {
+		// 			console.log(localDefine.pattern);
+		// 		}
+		// 	}
+		// }
 
 		// const document = await vscode.workspace.openTextDocument({
 		// 	content: '', // Изначально пустой документ

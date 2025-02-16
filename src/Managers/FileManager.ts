@@ -202,7 +202,7 @@ export class FileManager {
 
 
 		if(doc instanceof AntrlOpenFile) {
-				this.diagnosticManager.clearFile(path);
+				this.diagnosticManager.clearFile(file.uri);
 				doc.scope = new Scope(doc);
 				this.activeFile = doc;
 				// await doc.findAndOpenAllDirectives();
@@ -283,18 +283,32 @@ export class FileManager {
 		this.dependencyGraph.clear();
 
         for (const [fileUri, openedFile] of this.openedFiles) {
+
             this.dependencyGraph.set(fileUri, new Set());
 			openedFile.findDirectives();
 			await openedFile.processDirectives();
             const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
-			
-			console.log("includes:");
-			console.log(includes);
-            for (const includePath of includes) {
-				if(includePath.uri) {
+		
+
+			if(this.includePath) {
+				for (const includePath of includes) {
+					let uri = Uri.joinPath(this.includePath, includePath.path);
+					let startUri = uri;
+					if(!await this.isFileExist(uri)) {
+						uri = Uri.file(startUri.path + ".inc");
+						if(!await this.isFileExist(uri)) {
+							uri = Uri.file(startUri.path + ".pwn");
+							if(!await this.isFileExist(uri)) {
+								uri = Uri.file(startUri.path + ".pawn");
+								throw new Error(`Файл не найден (${startUri})`);
+							}
+						}
+					}
+					includePath.uri = uri;
 					this.dependencyGraph.get(fileUri)?.add(includePath.uri);
 				}
-            }
+			}
+
 
 			// openedFile.updateSemanticTokens();
 			// await vscode.window.withProgress(
@@ -338,6 +352,7 @@ export class FileManager {
         }
 
         return stack.reverse(); // Разворачиваем стек для получения топологического порядка
+		// return stack;
     }
 
 	public async parseFiles(): Promise<void>
@@ -358,7 +373,7 @@ export class FileManager {
                 if(textDocument && !this.openedFiles.has(textDocument.uri))
                 {
                     try {
-                        let doc = await new AntrlOpenFile(textDocument, this);
+                        let doc = new AntrlOpenFile(textDocument, this);
                         this.openedFiles.set(textDocument.uri, doc);
                     } catch (error) {
                         console.error(`Failed to open file ${textDocument.uri}: ${error}`);
@@ -375,10 +390,28 @@ export class FileManager {
 
 		try {
             const sortedFiles = await this.topologicalSort();
-			console.log(sortedFiles);
+			sortedFiles.forEach(element => {
+				this.openFile(element);
+			});
         } catch (e) {
             console.error(e);
         }
+
+		for (const [fileUri, openedFile] of this.openedFiles) {
+			openedFile.updateSemanticTokens();
+			this.diagnosticManager.clearFile(fileUri);
+			await vscode.window.withProgress(
+				{
+					location: vscode.ProgressLocation.Window,
+					title: "Выполняетя обход AST",
+					cancellable: false,
+				},
+				async () => {
+					openedFile.parseCode();
+				}
+			);
+			this.diagnosticManager.updateFileDiagnostic(fileUri.path);
+		}
 
     }
 }

@@ -26,10 +26,10 @@ export class DiagnosticManager {
 		const diags = this.diagnosticMap.get(filePath);
 		this.diagnosticCollection.set(vscode.Uri.parse(filePath), diags);
 	}
-	public clearFile(filePath: string) {
+	public clearFile(filePath: vscode.Uri) {
 		console.log(`Clear diagnostic for ${filePath}!`);
-		this.diagnosticCollection.delete(vscode.Uri.parse(filePath));
-		this.diagnosticMap.set(filePath, []);
+		this.diagnosticCollection.delete(filePath);
+		this.diagnosticMap.set(filePath.path, []);
 	}
 	public clear() {
 		console.log("Clear full diagnostic!");

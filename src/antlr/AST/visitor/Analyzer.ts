@@ -380,6 +380,7 @@ export class Analyzer extends BaseVisitor
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
 			let id = this.curScope.find(node.id);
+			console.log(id);
 			if (id) {
 				if(id instanceof FunctionDeclaration) {
 					if(!id.code) {
