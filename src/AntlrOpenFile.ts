@@ -83,6 +83,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	private curCode: string = "";
 	private chunks: string[] = [];
 
+
 	public constructor(file: vscode.TextDocument, fileManager: FileManager)
 	{
 		super(file, fileManager);
@@ -177,6 +178,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 				this.fileManager.referenceProvider.references.set(key, map);
 			}
 		});
+		this._isParsed = true;
 	}
 
 	/**

@@ -16,6 +16,7 @@ export class Expresion extends AbstractStatement {
 	
 
 	public set tag(v : Tag) {
+		console.error(v);
 		this._tag = v;
 	}
 
@@ -32,11 +33,8 @@ export class Expresion extends AbstractStatement {
 
 	public accept(visitor: IVisitor): void {
 		if(this.exp) {
+			console.log(this.exp);
 			this.exp?.accept(visitor);
-			if(this.exp?.tag) {
-				this.tag = this.exp.tag;
-				
-			}
 			this.range = this.exp.pos;
 		}
 	}

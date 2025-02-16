@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, BinarExpressionOperatorContext, CaseContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, BinarExpressionOperatorContext, CaseContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -327,6 +327,8 @@ export class PawnListener implements pawnListener
 			let last = this.nodes.peek();
 			if(last && 'tag' in last) {
 				last.tag = node;
+				console.log(last);
+				console.log(last.tag);
 				if('isTaged' in last)
 					last.isTaged = true;
 			}
@@ -863,6 +865,7 @@ export class PawnListener implements pawnListener
 		const node = <BinarOperator>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
+			node.operator = ctx._operator.text;
 			
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
@@ -988,4 +991,24 @@ export class PawnListener implements pawnListener
 			}
 		}
 	};
+
+	exitPredefinedConstants(ctx: PredefinedConstantsContext) {
+		const node = new Variable();
+		if(ctx.stop)
+		{	
+			node.setPos(ctx.start, ctx.stop);
+			node.id = ctx.text;
+			node.setIDPos(ctx._start.line, ctx._start.charPositionInLine, ctx.stop.charPositionInLine + ctx.text.length);
+			const last = this.nodes.peek();
+			
+			if(last instanceof Expresion)
+			{
+				last.expresion = node;
+			}
+			else {
+				console.log(last);
+				this.addDiagnostic(l10n.t("Unexpected constant"), DiagnosticSeverity.Error, node.idPos);
+			}
+		}
+	}
 }

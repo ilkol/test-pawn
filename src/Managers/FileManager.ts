@@ -398,6 +398,9 @@ export class FileManager {
         }
 
 		for (const [fileUri, openedFile] of this.openedFiles) {
+			if(openedFile.isParsed()) {
+				continue;
+			}
 			openedFile.updateSemanticTokens();
 			this.diagnosticManager.clearFile(fileUri);
 			await vscode.window.withProgress(

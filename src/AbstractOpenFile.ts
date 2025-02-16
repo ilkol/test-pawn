@@ -71,6 +71,11 @@ export abstract class AbstractOpenFile
 
 	public scope: IScope = new Scope(this);
 
+	protected _isParsed = false;
+
+	public isParsed(): boolean {
+		return this._isParsed;
+	}
 	
 	constructor(protected file: TextDocument, public readonly fileManager: FileManager) {
 		this.diagnositcManager = fileManager.getDiagnostic();
