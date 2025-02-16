@@ -96,6 +96,7 @@
 	},
 	"dependencies": {
 		"@vscode/l10n": "^0.0.18",
+		"@vscode/vsce": "^3.2.2",
 		"antlr4ts": "^0.5.0-alpha.4",
 		"findup-sync": "^5.0.0",
 		"vsce": "^2.15.0"
