@@ -8,7 +8,9 @@ export class DiagnosticManager {
 	}
 	public addDiagnostic(msg: string, type: vscode.DiagnosticSeverity, filePath: string, range: vscode.Range, tags?: vscode.DiagnosticTag[]) {
 		let diagnostics = this.diagnosticMap.get(filePath);
-		if (!diagnostics) { diagnostics = []; }
+		if (!diagnostics) { 
+			diagnostics = []; 
+		}
 		let diagnostic = new vscode.Diagnostic(range, msg, type);
 		diagnostic.tags = tags;
 		
@@ -24,9 +26,14 @@ export class DiagnosticManager {
 		const diags = this.diagnosticMap.get(filePath);
 		this.diagnosticCollection.set(vscode.Uri.parse(filePath), diags);
 	}
+	public clearFile(filePath: string) {
+		console.log(`Clear diagnostic for ${filePath}!`);
+		this.diagnosticCollection.delete(vscode.Uri.parse(filePath));
+		this.diagnosticMap.set(filePath, []);
+	}
 	public clear() {
-		console.log("Clear diagnostic!");
-		// this.diagnosticCollection.clear();
+		console.log("Clear full diagnostic!");
+		this.diagnosticCollection.clear();
 		this.diagnosticMap.clear();
 	}
 }

@@ -116,7 +116,6 @@ export class PPParser
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
-		console.error(this.file.fileName);
 		while ((match = reg.exec(code)) !== null) {
 			let [fullMatch, leadingWhitespace, directive, rest] = match;
 			// Координата начала директивы (#)
@@ -182,7 +181,6 @@ export class PPParser
 			case "tryinclude":
 			case "include": {
 				const directive = new Include(this.file, rest, startIndex, restIndex, endIndex);
-				this.includes.push(directive);
 				return directive;
 			}
 			case "if":
@@ -233,6 +231,12 @@ export class PPParser
 				}
 				this.handleDefine(element);
 			}
+			else if(element instanceof Include) {
+				if(cur && cur.skip) {
+					continue;
+				}
+				this.handleInclude(element);
+			}
 			else if(element instanceof Undef)
 			{
 				this.handleUndef(element);
@@ -282,8 +286,6 @@ export class PPParser
 				localDefine.used = count  < this.replacedCode.length;
 			}
 		}
-
-		console.error(this.replacedCode);
 
 		return codeChunks;
 	}
@@ -422,6 +424,15 @@ export class PPParser
             this.defines.set(directive.pattern, []);
         }
         this.defines.get(directive.pattern)!.push(directive);	
+	}
+	private handleInclude(directive: Include)
+	{
+		this.includes.push(directive);
+
+		// if (!this.includes.has(directive.pattern)) {
+        //     this.includes.set(directive.pattern, []);
+        // }
+        // this.includes.get(directive.pattern)!.push(directive);	
 	}
 	private isDefined(pattern: string, pos: number)
 	{
@@ -649,8 +660,6 @@ export class PPParser
 					const postStr = curStr.substring(curIndex + length);
 					
 					let origIndex = curIndex + preShift + shift;
-					console.error(findedStr);
-					console.error(origIndex);
 	
 					let replace = this.replaceMacroParameters(toReplace, match, define);
 					replace = this.removeBackslashesOutsideStrings(replace);

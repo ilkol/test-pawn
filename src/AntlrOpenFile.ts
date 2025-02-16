@@ -307,8 +307,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 	public async processDirectives(): Promise<void>
 	{
 		this.chunks = await this.ppParser.processAllDirectives(this.curCode);
-
-		// this.defines = this.ppParser.defines;
 	}
 
 	private async handleInclude(include: Include): Promise<void> {

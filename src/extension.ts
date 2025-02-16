@@ -68,7 +68,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	});
 	vscode.workspace.onDidOpenTextDocument(fileManage.onDidOpenTextDocument, fileManage);
-	console.log(vscode.workspace.textDocuments);
 	parseAllOpenedFiles();
 
 

@@ -169,7 +169,7 @@ export class FileManager {
 		this.parsingQueue.add(file.uri);
         await this.parseFiles();
 
-		this.diagnosticManager.updateDiagnostic();
+		// this.diagnosticManager.updateDiagnostic();
 
 		// this.diagnosticManager.clear();
 		// try {
@@ -202,7 +202,7 @@ export class FileManager {
 
 
 		if(doc instanceof AntrlOpenFile) {
-				this.diagnosticManager.clear();
+				this.diagnosticManager.clearFile(path);
 				doc.scope = new Scope(doc);
 				this.activeFile = doc;
 				// await doc.findAndOpenAllDirectives();
@@ -279,57 +279,35 @@ export class FileManager {
 	// }
 
 
-	private resolveIncludePath(currentFileUri: vscode.Uri, includePath: string): undefined {
-
-		// const currentFileDir = path.dirname(currentFileUri.fsPath);
-		// const resolvedPath = path.resolve(currentFileDir, includePath);
-		// try
-		// {
-		// 	return vscode.Uri.file(resolvedPath);
-		// } catch {
-		// 	return undefined;
-		// }
-	}
-
 	private async buildDependencyGraph(): Promise<void> {
-		this.dependencyGraph.clear(); // Очищаем граф перед перестроением
+		this.dependencyGraph.clear();
 
         for (const [fileUri, openedFile] of this.openedFiles) {
             this.dependencyGraph.set(fileUri, new Set());
 			openedFile.findDirectives();
 			await openedFile.processDirectives();
             const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
-			openedFile.updateSemanticTokens();
-			await vscode.window.withProgress(
-			{
-				location: vscode.ProgressLocation.Window,
-				title: "Выполняетя обход AST",
-				cancellable: false,
-			},
-			async () => {
-				openedFile.parseCode();
-			}
-		);
-
+			
+			console.log("includes:");
 			console.log(includes);
-            // for (const includePath of includes) {
-            //     const includeUri = this.resolveIncludePath(fileUri, includePath);
-            //     if (includeUri)
-            //     {
-            //         this.dependencyGraph.get(fileUri)?.add(includeUri.toString());
-            //     }
-            // }
-        }
+            for (const includePath of includes) {
+				if(includePath.uri) {
+					this.dependencyGraph.get(fileUri)?.add(includePath.uri);
+				}
+            }
 
-        // this.dependencyGraph.set(file.uri.toString(), new Set());
-        // const includes = await this.findIncludes(file); 
-        // for (const includePath of includes) {
-        //     const includeUri = this.resolveIncludePath(file.uri, includePath);
-        //     if (includeUri)
-        //     {
-        //         this.dependencyGraph.get(file.uri.toString())?.add(includeUri.toString());
-        //     }
-        // }
+			// openedFile.updateSemanticTokens();
+			// await vscode.window.withProgress(
+			// 	{
+			// 		location: vscode.ProgressLocation.Window,
+			// 		title: "Выполняетя обход AST",
+			// 		cancellable: false,
+			// 	},
+			// 	async () => {
+			// 		openedFile.parseCode();
+			// 	}
+			// );
+        }
     }
 	private async topologicalSort(): Promise<Uri[]> {
         const visited = new Set<Uri>();
