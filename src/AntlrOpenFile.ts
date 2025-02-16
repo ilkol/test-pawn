@@ -281,8 +281,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 		});
 	}
 	public getComplitions(): vscode.CompletionItem[] {
-
 		this.complitions = [];
+		this.loadDefaultComplitions();
 
 		// Регистрируем дефайны
 		const complitions = this.ppParser.preprocessorTokens();

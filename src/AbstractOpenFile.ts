@@ -106,7 +106,7 @@ export abstract class AbstractOpenFile
 	}
 
 
-	private loadDefaultComplitions()
+	protected loadDefaultComplitions()
 	{
 		this.loadDefaultConstatns();	
 		this.loadDefaultKeywords();	
@@ -128,9 +128,9 @@ export abstract class AbstractOpenFile
 		];
 
 		keywords.forEach(key => {
-			const conplition = new CompletionItem(key.label, CompletionItemKind.Operator);
-			conplition.documentation = new MarkdownString(key.doc);
-			this.complitions.push(conplition);
+			const complition = new CompletionItem(key.label, CompletionItemKind.Operator);
+			complition.documentation = new MarkdownString(key.doc);
+			this.complitions.push(complition);
 
 		});
 	}
@@ -149,9 +149,9 @@ export abstract class AbstractOpenFile
 		];
 
 		keywords.forEach(key => {
-			const conplition = new CompletionItem(key.label, CompletionItemKind.Constant);
-			conplition.documentation = new MarkdownString(key.doc);
-			this.complitions.push(conplition);
+			const complition = new CompletionItem(key.label, CompletionItemKind.Constant);
+			complition.documentation = new MarkdownString(key.doc);
+			this.complitions.push(complition);
 
 		});
 	}
@@ -162,19 +162,23 @@ export abstract class AbstractOpenFile
 			insertText?: string;
 			kind?: CompletionItemKind;
 			detail?: string;
+			documentation?: string | MarkdownString;
 		}
 		
 		const keywords: Сompl[] = [
-			{label: "new", insertText: "new ${0};"},
-			{label: "if", insertText: "if ($1)$0"},
-			{label: "else", insertText: "else $0"},
-			{label: "return", insertText: "return $0;"},
-			{label: "true"},
-			{label: "false"},
-			{label: "switch", insertText: "switch ($0)"},
-			{label: "switch", insertText: "switch ($1)\r\n{\r\n\tcase $2:\r\n\t{\r\n\t\t$3\r\n\t}\r\n\tdefault:\r\n\t{\r\n\t\t$0\r\n\t}\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("Switch Statement")},
-			{label: "for"},
-			{label: "while"},
+			{label: "new", insertText: "new", detail: l10n.t("new `identifire`;"), documentation: new MarkdownString(l10n.t("The keyword `new` declares a new variable."))},
+			{label: "new", kind: CompletionItemKind.Struct, insertText: "new ${0};", detail: l10n.t("new `identifire`;"), documentation: new MarkdownString(l10n.t("The keyword `new` declares a new variable."))},
+			{label: "if", insertText: "if", detail: l10n.t("if (`conditional expression`) `statement`"), documentation: new MarkdownString(l10n.t("The `if` keyword divides the command execution flow into two cases. If the condition is met, the following code is executed. Otherwise, the code is skipped."))},
+			{label: "if", kind: CompletionItemKind.Struct, insertText: "if ($1)$0", detail: l10n.t("if (`conditional expression`) `statement`"), documentation: new MarkdownString(l10n.t("The `if` keyword divides the command execution flow into two cases. If the condition is met, the following code is executed. Otherwise, the code is skipped."))},
+			{label: "else", insertText: "else $0", detail: l10n.t("else `statement`"), documentation: new MarkdownString(l10n.t("The `else` keyword must follow the `if` statement. The code after `else` is executed if the condition in `if` is equal logically \"true\". When `if` statements are nested and `else` clauses are present, a given `else` is associated with the closest preceding if statement in the same block."))},
+			{label: "return", insertText: "return", detail: l10n.t("return `expression`;"), documentation: new MarkdownString(l10n.t("Terminates the current function and moves program control to the statement following the calling statement. The value of the expression is returned as the function result."))},
+			{label: "return", kind: CompletionItemKind.Struct, insertText: "return $0;", detail: l10n.t("return `expression`;"), documentation: new MarkdownString(l10n.t("Terminates the current function and moves program control to the statement following the calling statement. The value of the expression is returned as the function result."))},
+			{label: "true", detail: "true", documentation: l10n.t("Constant equal 1, but tagged as bool:")},
+			{label: "false", detail: "false", documentation: l10n.t("Constant equal 0, but tagged as bool:")},
+			{label: "switch", insertText: "switch", detail: l10n.t("switch (`expression`) { `case list` }"), documentation: l10n.t("Transfers control to different statements within the switch body de pending on the value of the switch expression. The body of the switch statement is a compound statement, which contains a series of “case clauses”.")},
+			{label: "switch", insertText: "switch ($1)\r\n{\r\n\tcase $2:\r\n\t{\r\n\t\t$3\r\n\t}\r\n\tdefault:\r\n\t{\r\n\t\t$0\r\n\t}\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("switch (`expression`) { `case list` }"), documentation: l10n.t("Transfers control to different statements within the switch body de pending on the value of the switch expression. The body of the switch statement is a compound statement, which contains a series of “case clauses”.")},
+			{label: "for", detail: l10n.t("for (`expression 1`; `expression 2`; `expression 3`) statement")},
+			{label: "while", detail: l10n.t("while (`expression`) statement")},
 			{label: "case", insertText: "case $0"},
 			{label: "case", insertText: "case $1:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("Case Statement")},
 			{label: "default", insertText: "default"},
@@ -183,7 +187,7 @@ export abstract class AbstractOpenFile
 			{label: "continue", insertText: "continue;\r\n$0"},
 			{label: "enum", insertText: "enum $1 {\r\n\t$0\r\n}"},
 			{label: "stock", insertText: "stock $0"},
-			{label: "forward", insertText: "forward $0"},
+			{label: "forward", insertText: "forward $0", detail: l10n.t("forward ")},
 			{label: "public", insertText: "public $0"},
 			{label: "const", insertText: "const $0"},
 			{label: "static", insertText: "static $0"},
@@ -193,11 +197,12 @@ export abstract class AbstractOpenFile
 		];
 
 		keywords.forEach(key => {
-			const conplition = new CompletionItem(key.label, key.kind ? key.kind : CompletionItemKind.Keyword);
+			const complition = new CompletionItem(key.label, key.kind ? key.kind : CompletionItemKind.Keyword);
 			if(key.insertText)
-				{conplition.insertText = new SnippetString(key.insertText);}
-			conplition.detail = key.detail;
-			this.complitions.push(conplition);
+				{complition.insertText = new SnippetString(key.insertText);}
+			complition.detail = key.detail;
+			complition.documentation = key.documentation;
+			this.complitions.push(complition);
 
 		});
 	}

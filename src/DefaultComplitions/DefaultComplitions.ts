@@ -46,17 +46,14 @@ export function getDefaultComplitions(): vscode.CompletionItem[] {
 	complitions.push(new vscode.CompletionItem("switch", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("case", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("default", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("forward", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("public", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("break", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("continue", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("if", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("else", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("return", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("const", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("enum", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("native", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("new", vscode.CompletionItemKind.Keyword));
 	complitions.push(new vscode.CompletionItem("operator", vscode.CompletionItemKind.Keyword));
 
 	complitions.push(new vscode.CompletionItem("char", vscode.CompletionItemKind.Operator));
