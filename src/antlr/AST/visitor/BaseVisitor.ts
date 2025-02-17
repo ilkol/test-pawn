@@ -29,6 +29,7 @@ import { IfStatement } from "../Nodes/Conditions/IfStatement";
 import { CaseStatement } from "../Nodes/Conditions/switch/CaseStatement";
 import { DefaultStatement } from "../Nodes/Conditions/switch/DefaultStatement";
 import { SwitchStatement } from "../Nodes/Conditions/switch/SwitchStatement";
+import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 
 export abstract class BaseVisitor implements IVisitor
 {
@@ -116,6 +117,10 @@ export abstract class BaseVisitor implements IVisitor
 	visitIntLiteral(node: IntLiteral): void {
 		this.beforeVisitIntLiteral(node);
 		this.afterVisitIntLiteral(node);
+	}
+	visitBoolLiteral(node: BoolLiteral): void {
+		this.beforeVisitBoolLiteral(node);
+		this.afterVisitBoolLiteral(node);
 	}
 	visitBinarOperator(node: BinarOperator): void {
 		this.beforeVisitBinarOperator(node);
@@ -224,6 +229,9 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitIntLiteral(node: IntLiteral): void;
 	abstract afterVisitIntLiteral(node: IntLiteral): void;
+
+	abstract beforeVisitBoolLiteral(node: BoolLiteral): void;
+	abstract afterVisitBoolLiteral(node: BoolLiteral): void;
 	
 	abstract beforeVisitUnarOperator(node: UnarOperator): void;
 	abstract afterVisitUnarOperator(node: UnarOperator): void;

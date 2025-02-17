@@ -24,12 +24,14 @@ import { IfStatement } from "../Nodes/Conditions/IfStatement";
 import { SwitchStatement } from "../Nodes/Conditions/switch/SwitchStatement";
 import { DefaultStatement } from "../Nodes/Conditions/switch/DefaultStatement";
 import { CaseStatement } from "../Nodes/Conditions/switch/CaseStatement";
+import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 
 export interface IVisitor
 {
 	visitOperatorNew(node: OperatorNew): void;
 	visitUnarOperator(node: UnarOperator): void;
 	visitIntLiteral(node: IntLiteral): void;
+	visitBoolLiteral(node: BoolLiteral): void;
 	visitBinarOperator(node: BinarOperator): void;
 	visitReturn(node: ReturnStatement): void;
 	visitCodeBlock(node: CodeBlock): void;

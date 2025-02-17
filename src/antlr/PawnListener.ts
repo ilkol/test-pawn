@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, BinarExpressionOperatorContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, BinarExpressionOperatorContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -49,6 +49,7 @@ import { AbstractStatement } from "./AST/Nodes/AbstractStatement";
 import { ElseStatement } from "./AST/Nodes/Conditions/ElseStatement";
 import { ChainedOperator } from "./AST/Nodes/Operators/ChainedOperators";
 import { VarOrFunctionDeclaration } from "./AST/Nodes/VarOrFunctionDeclaration";
+import { BoolLiteral } from "./AST/Nodes/Literals/BoolLiteral";
 
 export class PawnListener implements pawnListener
 {
@@ -402,6 +403,32 @@ export class PawnListener implements pawnListener
 		}
 	}
 	
+	enterBool_const = (ctx: Bool_constContext) => {
+		let node = new BoolLiteral();
+		this.nodes.push(node);
+	};
+	exitBool_const = (ctx: Bool_constContext) => {
+		let node = <BoolLiteral>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			node.value = ctx.TRUE() !== undefined;
+
+			const last = this.nodes.peek();
+			if(last instanceof Expresion) {
+				last.expresion = node;
+			}
+			else if(last instanceof FunctionDeclarationParameter) {
+				last.defaultValue = node;
+			}
+			else if(last instanceof CaseStatement) {
+				last.condition = node;
+			}
+			else {
+				console.debug(last);
+				this.addDiagnostic(l10n.t("Unexpected bool literal"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	};
 	enterInteger(ctx: IntegerContext): void {
 		let node = new IntLiteral();
 		this.nodes.push(node);
@@ -466,7 +493,10 @@ export class PawnListener implements pawnListener
 		let node = <Expresion>this.nodes.pop();
 
 		if(!node.expresion) {
-			this.addDiagnostic(l10n.t("Empty expresion"), DiagnosticSeverity.Error, node.pos);
+			if(ctx.stop) {
+				const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop.line - 1, ctx.stop.charPositionInLine);
+				this.addDiagnostic(l10n.t("Empty expresion"), DiagnosticSeverity.Error, pos);
+			}
 			return;
 		}
 		if(node.isTaged) {

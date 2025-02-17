@@ -43,9 +43,14 @@ import { IfStatement } from "../Nodes/Conditions/IfStatement";
 
 import * as funcDef from "../../../Linking/FunctionDefinition";
 import * as funcCall from "../../../Linking/FunctionCall";
+import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitBoolLiteral(node: BoolLiteral): void {
+	}
+	afterVisitBoolLiteral(node: BoolLiteral): void {
+	}
 
 
 	public readonly functionsDeclarations: Map<string, funcDef.FunctionDeclaration[]> = new Map<string, funcDef.FunctionDeclaration[]>();
