@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, BinarExpressionOperatorContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, BinarExpressionOperatorContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -48,6 +48,7 @@ import { Statement } from "./AST/Nodes/Statement";
 import { AbstractStatement } from "./AST/Nodes/AbstractStatement";
 import { ElseStatement } from "./AST/Nodes/Conditions/ElseStatement";
 import { ChainedOperator } from "./AST/Nodes/Operators/ChainedOperators";
+import { VarOrFunctionDeclaration } from "./AST/Nodes/VarOrFunctionDeclaration";
 
 export class PawnListener implements pawnListener
 {
@@ -326,13 +327,35 @@ export class PawnListener implements pawnListener
 			// 	this.addDiagnostic("Ожидается идентификатор тэга", DiagnosticSeverity.Error, node.pos);
 			// }
 			let last = this.nodes.peek();
-			if(last instanceof Expresion) {
+			if(last instanceof VarOrFunctionDeclaration) {
+				last.tag = node;
+			}
+			else if(last instanceof Expresion) {
 				last.tag = node;
 				last.isTaged = true;
 			}
 		
 		}
 	}
+
+	// enterTagOperator = (ctx: TagOperatorContext) => {
+	// 	const node = new Expresion();
+	// 	this.nodes.push(node);
+	// };
+	// exitTagOperator = (ctx: TagOperatorContext) => {
+	// 	let node = <Expresion>this.nodes.pop();
+	// 	console.log(node);
+	// 	if(ctx.stop) {
+	// 		node.setPos(ctx.start, ctx.stop);
+	// 		let last = this.nodes.peek();
+
+	// 		if(last instanceof Expresion && node.expresion) {
+	// 			last.expresion = node.expresion;
+	// 			last.tag = node.tag;
+	// 			last.isTaged = true;
+	// 		}
+	// 	}
+	// };
 
 	enterEllipse(ctx: EllipseContext): void
 	{
