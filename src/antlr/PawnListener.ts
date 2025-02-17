@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, BinarExpressionOperatorContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -50,6 +50,9 @@ import { ElseStatement } from "./AST/Nodes/Conditions/ElseStatement";
 import { ChainedOperator } from "./AST/Nodes/Operators/ChainedOperators";
 import { VarOrFunctionDeclaration } from "./AST/Nodes/VarOrFunctionDeclaration";
 import { BoolLiteral } from "./AST/Nodes/Literals/BoolLiteral";
+import { HexLiteral } from "./AST/Nodes/Literals/HexLiteral";
+import { FixedLiteral } from "./AST/Nodes/Literals/FixedLiteral";
+import { BinarLiteral } from "./AST/Nodes/Literals/BinarLiteral";
 
 export class PawnListener implements pawnListener
 {
@@ -403,6 +406,46 @@ export class PawnListener implements pawnListener
 		}
 	}
 	
+	enterHex = (ctx: HexContext) => {
+		let node = new HexLiteral();
+		this.nodes.push(node);
+	};
+	exitHex = (ctx: HexContext) => {
+		let node = <HexLiteral>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			node.value = ctx.HEX().text;
+
+			this.evalLiteral(node);
+		}
+	};
+	enterBinary = (ctx: BinaryContext) => {
+		let node = new BinarLiteral();
+		this.nodes.push(node);
+	};
+	exitBinary = (ctx: BinaryContext) => {
+		let node = <BinarLiteral>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			node.value = ctx.BINARY().text;
+
+			this.evalLiteral(node);
+		}
+	};
+	enterRational = (ctx: RationalContext) => {
+		let node = new FixedLiteral();
+		this.nodes.push(node);
+	};
+	exitRational = (ctx: RationalContext) => {
+		let node = <FixedLiteral>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			node.value = ctx.RATIONAL().text;
+
+			this.evalLiteral(node);
+		}
+	};
+	
 	enterBool_const = (ctx: Bool_constContext) => {
 		let node = new BoolLiteral();
 		this.nodes.push(node);
@@ -413,22 +456,25 @@ export class PawnListener implements pawnListener
 			node.setPos(ctx.start, ctx.stop);
 			node.value = ctx.TRUE() !== undefined;
 
-			const last = this.nodes.peek();
-			if(last instanceof Expresion) {
-				last.expresion = node;
-			}
-			else if(last instanceof FunctionDeclarationParameter) {
-				last.defaultValue = node;
-			}
-			else if(last instanceof CaseStatement) {
-				last.condition = node;
-			}
-			else {
-				console.debug(last);
-				this.addDiagnostic(l10n.t("Unexpected bool literal"), DiagnosticSeverity.Error, node.pos);
-			}
+			this.evalLiteral(node);
 		}
 	};
+	private evalLiteral(node: Literal<any>) {
+		const last = this.nodes.peek();
+		if(last instanceof Expresion) {
+			last.expresion = node;
+		}
+		else if(last instanceof FunctionDeclarationParameter) {
+			last.defaultValue = node;
+		}
+		else if(last instanceof CaseStatement) {
+			last.condition = node;
+		}
+		else {
+			console.debug(last);
+			this.addDiagnostic(l10n.t("Unexpected literal"), DiagnosticSeverity.Error, node.pos);
+		}
+	}
 	enterInteger(ctx: IntegerContext): void {
 		let node = new IntLiteral();
 		this.nodes.push(node);
@@ -439,20 +485,7 @@ export class PawnListener implements pawnListener
 			node.setPos(ctx.start, ctx.stop);
 			node.value = +ctx.INTEGER().text;
 
-			const last = this.nodes.peek();
-			if(last instanceof Expresion) {
-				last.expresion = node;
-			}
-			else if(last instanceof FunctionDeclarationParameter) {
-				last.defaultValue = node;
-			}
-			else if(last instanceof CaseStatement) {
-				last.condition = node;
-			}
-			else {
-				console.debug(last);
-				this.addDiagnostic(l10n.t("Unexpected integer literal"), DiagnosticSeverity.Error, node.pos);
-			}
+			this.evalLiteral(node);
 		}
 	}
 	enterReturn(ctx: ReturnContext): void {

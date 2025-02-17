@@ -44,6 +44,9 @@ import { VarModifiresContext } from "./pawnParser";
 import { NumberContext } from "./pawnParser";
 import { FloatContext } from "./pawnParser";
 import { IntegerContext } from "./pawnParser";
+import { HexContext } from "./pawnParser";
+import { RationalContext } from "./pawnParser";
+import { BinaryContext } from "./pawnParser";
 import { CanBeOverloadedContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
 import { CompareOperatorContext } from "./pawnParser";
@@ -538,6 +541,39 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitInteger?: (ctx: IntegerContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.hex`.
+	 * @param ctx the parse tree
+	 */
+	enterHex?: (ctx: HexContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.hex`.
+	 * @param ctx the parse tree
+	 */
+	exitHex?: (ctx: HexContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.rational`.
+	 * @param ctx the parse tree
+	 */
+	enterRational?: (ctx: RationalContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.rational`.
+	 * @param ctx the parse tree
+	 */
+	exitRational?: (ctx: RationalContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.binary`.
+	 * @param ctx the parse tree
+	 */
+	enterBinary?: (ctx: BinaryContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.binary`.
+	 * @param ctx the parse tree
+	 */
+	exitBinary?: (ctx: BinaryContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.canBeOverloaded`.

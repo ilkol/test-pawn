@@ -77,9 +77,12 @@ reference:			BIT_AND;
 
 varModifires:		CONST|STATIC|STOCK|PUBLIC;
 
-number: 			integer | float | HEX | RATIONAL | BINARY;
+number: 			integer | float | hex | rational | binary;
 float: FLOAT;
 integer: INTEGER;
+hex: HEX;
+rational: RATIONAL;
+binary: BINARY;
 
 canBeOverloaded:	arefmeticOperator | compareOperator | ASSIGMENT;
 

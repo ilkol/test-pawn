@@ -44,6 +44,9 @@ import { VarModifiresContext } from "./pawnParser";
 import { NumberContext } from "./pawnParser";
 import { FloatContext } from "./pawnParser";
 import { IntegerContext } from "./pawnParser";
+import { HexContext } from "./pawnParser";
+import { RationalContext } from "./pawnParser";
+import { BinaryContext } from "./pawnParser";
 import { CanBeOverloadedContext } from "./pawnParser";
 import { ArefmeticOperatorContext } from "./pawnParser";
 import { CompareOperatorContext } from "./pawnParser";
@@ -377,6 +380,27 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitInteger?: (ctx: IntegerContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.hex`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitHex?: (ctx: HexContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.rational`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitRational?: (ctx: RationalContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.binary`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitBinary?: (ctx: BinaryContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.canBeOverloaded`.
