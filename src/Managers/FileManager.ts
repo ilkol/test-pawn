@@ -1,4 +1,4 @@
-import vscode, { commands, CompletionItem, FileSystemError, Hover, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
+import vscode, { commands, CompletionItem, DocumentLink, FileSystemError, Hover, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
 import { DiagnosticManager } from "./diagnostic";
 import { AntrlOpenFile } from "../AntlrOpenFile";
 import { AbstractOpenFile } from "../AbstractOpenFile";
@@ -136,11 +136,11 @@ export class FileManager {
 			return new Hover(file.getHover(word), range);
 		}
 	}
-	public getFileFunctionsIncludes(document: TextDocument): Map<Range, Uri> {
+	public getFileFunctionsIncludes(document: TextDocument): DocumentLink[] {
 
 		const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri);
 	
-		if(!file) {return new Map;}
+		if(!file) {return [];}
 		
 		return file.documentsLinks;
 		// return file.Env.includes;
@@ -261,6 +261,9 @@ export class FileManager {
 
         for (const [fileUri, openedFile] of this.openedFiles) {
 
+			// Очистка списка ссылок на инклуды
+			openedFile.documentsLinksClear();
+			
             this.dependencyGraph.set(fileUri, new Set());
 			openedFile.findDirectives();
 			await openedFile.processDirectives();
@@ -283,7 +286,10 @@ export class FileManager {
 					}
 					includePath.uri = uri;
 					// Добавление ссылки в документе для перехода к инклуду
-					openedFile.documentsLinks.set(includePath.pathRange, uri); 
+					const link = new vscode.DocumentLink(includePath.pathRange, uri);
+					link.tooltip = includePath.path;
+					openedFile.documentsLinks.push(link);
+
 					this.dependencyGraph.get(fileUri)?.add(includePath.uri);
 				}
 			}

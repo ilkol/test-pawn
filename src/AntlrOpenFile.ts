@@ -317,7 +317,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 		if(uri.path.indexOf("YSI") !== -1 || uri.path.indexOf("y_") !== -1) {return;}
 		const file = this.fileManager.getFile(uri.path);
 		if (file) {
-			this.documentsLinks.set(include.pathRange, uri);
 			
 			file.getComplitions().forEach(compl => {
 				if (!compl.detail)
