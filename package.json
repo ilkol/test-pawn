@@ -92,6 +92,12 @@
 					"source.amxasm": "AMX ASM"
 				}
 			}
+		],
+		"commands": [
+			{
+				"command": "pawnlanguage.openParsed",
+				"title": "Открыть распаршенный файл"
+			}
 		]
 	},
 	"dependencies": {

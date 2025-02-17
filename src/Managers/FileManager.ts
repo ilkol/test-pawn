@@ -220,6 +220,9 @@ export class FileManager {
 		const uri = Uri.file(path);
 		return this.openedFiles.get(uri);
 	}
+	getFileByURI(uri: Uri): AbstractOpenFile | undefined {
+		return this.openedFiles.get(uri);
+	}
 	getFileComplitions(path: string): CompletionItem[] {
 		const file = this.getFile(path);
 		if(file)

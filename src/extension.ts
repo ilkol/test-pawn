@@ -81,6 +81,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	//регистрируем таск
 	registerTasks(context);
 
+	vscode.commands.registerCommand("pawnlanguage.openParsed",() => {
+		if(!vscode.window.activeTextEditor) {
+			return;
+		}
+		console.log(vscode.window.activeTextEditor.document.uri.path);
+		const file = fileManage.getFileByURI(vscode.window.activeTextEditor.document.uri);
+		file?.openFileWithOutPreprocessor();
+	});
+
 	const signatureProvider = new SignatureProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider('pawn', documentLinkProvider));
 

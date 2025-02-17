@@ -364,4 +364,26 @@ export class AntrlOpenFile extends AbstractOpenFile
 		});
 	}
 
+	public async openFileWithOutPreprocessor() {
+		console.log("Открываю распаршенный файл");
+		const document = await vscode.workspace.openTextDocument({
+			content: '', // Изначально пустой документ
+			language: 'plaintext', // Устанавливаем язык (можно заменить на другой, например, 'javascript')
+		});
+
+		// Открываем файл в редакторе
+		const editor = await vscode.window.showTextDocument(document);
+
+		// Добавляем строки постепенно
+		for (const line of this.chunks) {
+			const position = new vscode.Position(document.lineCount, 0); // Позиция в конце документа
+			await editor.edit(editBuilder => {
+				editBuilder.insert(position, line + '\n'); // Вставляем строку с новой строкой
+			});
+			// Ждем немного перед добавлением следующей строки
+			await new Promise(resolve => setTimeout(resolve, 500)); // Задержка 500 мс
+		}
+		
+	}
+
 }

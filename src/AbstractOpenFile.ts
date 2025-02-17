@@ -267,4 +267,5 @@ export abstract class AbstractOpenFile
 	public abstract parseCode(): Promise<void>;
 	public abstract processDirectives(): Promise<void>;
 	public abstract processIncludes(): Promise<void>;
+	public abstract openFileWithOutPreprocessor(): Promise<void>;
 }
