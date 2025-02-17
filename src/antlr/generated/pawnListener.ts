@@ -60,6 +60,7 @@ import { StringContext } from "./pawnParser";
 import { DocsContext } from "./pawnParser";
 import { DocBlockContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
+import { TagableExpressionContext } from "./pawnParser";
 import { TernarOperatorContext } from "./pawnParser";
 import { ChainedRelationalOperatorContext } from "./pawnParser";
 import { BinarExpressionOperatorContext } from "./pawnParser";
@@ -713,6 +714,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitExpresion?: (ctx: ExpresionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.tagableExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterTagableExpression?: (ctx: TagableExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.tagableExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitTagableExpression?: (ctx: TagableExpressionContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.ternarOperator`.

@@ -60,6 +60,7 @@ import { StringContext } from "./pawnParser";
 import { DocsContext } from "./pawnParser";
 import { DocBlockContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
+import { TagableExpressionContext } from "./pawnParser";
 import { TernarOperatorContext } from "./pawnParser";
 import { ChainedRelationalOperatorContext } from "./pawnParser";
 import { BinarExpressionOperatorContext } from "./pawnParser";
@@ -488,6 +489,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitExpresion?: (ctx: ExpresionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.tagableExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitTagableExpression?: (ctx: TagableExpressionContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.ternarOperator`.

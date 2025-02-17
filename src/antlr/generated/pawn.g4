@@ -110,13 +110,16 @@ docBlock: DocBlock;
 // docLine: DocLine;
 
 expresion: 
-    (literal |
+    tagableExpression
+    (CHAR? | ternarOperator | chainedRelationalOperator | binarExpressionOperator)
+;
+tagableExpression: 
+	(literal |
     symbol |
     functionCallOperator |
     OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS |
     unarOperator |
     binarOperator)
-    (CHAR? | ternarOperator | chainedRelationalOperator | binarExpressionOperator)
 ;
 ternarOperator: QUESTION expresion COLON expresion;
 chainedRelationalOperator: (chainedRelationalOperators expresion)+;
@@ -207,7 +210,7 @@ functionCallOperator:
     IDENTIFIER OPEN_PARENTHESIS (expresion (COMA expresion)*)? CLOSE_PARENTHESIS
 ;
 tagOperator:
-    tag expresion
+    tag tagableExpression
 ;
 
 symbol: IDENTIFIER;
