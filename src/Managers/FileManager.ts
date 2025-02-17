@@ -282,6 +282,8 @@ export class FileManager {
 						}
 					}
 					includePath.uri = uri;
+					// Добавление ссылки в документе для перехода к инклуду
+					openedFile.documentsLinks.set(includePath.pathRange, uri); 
 					this.dependencyGraph.get(fileUri)?.add(includePath.uri);
 				}
 			}
