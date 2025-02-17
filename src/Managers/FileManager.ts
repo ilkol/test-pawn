@@ -256,29 +256,6 @@ export class FileManager {
 		await doc.parseCode();
 	}
 
-	// public async checkAndReopenFileIfNeeded(document: TextDocument) {
-	// 	// Читаем содержимое файла
-	// 	const filePath = document.fileName;
-	// 	const buffer = fs.readFileSync(filePath);
-	
-	// 	// Определяем кодировку
-	// 	const detectedEncoding = chardet.detect(buffer);
-	
-	// 	// Если кодировка не совпадает с ожидаемой, переоткрываем файл
-	// 	if (detectedEncoding !== "windows1251") {
-	// 		window.showErrorMessage(`Важно! Файл открыт в кодировк UTF-8, что можно плохо сказаться на тексте в ваших сообщениях в моде. Советуем переоткрыть файл с кодировкой windows1251`);
-	
-	// 		// Закрываем текущий документ
-	// 		// await commands.executeCommand('workbench.action.closeActiveEditor');
-	
-	// 		// // Переоткрываем файл с нужной кодировкой
-	// 		// await commands.executeCommand('vscode.openWith', Uri.file(filePath), {
-	// 		// 	"encoding": "windows1251"
-	// 		// });
-	// 	}
-	// }
-
-
 	private async buildDependencyGraph(): Promise<void> {
 		this.dependencyGraph.clear();
 
