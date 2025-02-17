@@ -51,17 +51,23 @@ export class Define extends PreprocessorDirective
 			let lastindex = 0;
 			let paramMatch: RegExpExecArray | null;
 			const patternPrepared = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			const paramMatches = [...patternPrepared.matchAll(/%\d+/g)];
+			const paramCount = paramMatches.length;
 
-			// const parameters: number[] = [];
-
+			let index = 1;
 			while ((paramMatch = findParams.exec(patternPrepared)) !== null) {
-				patternRegStr += patternPrepared.substring(lastindex, paramMatch.index) + "((?:[^\\\r\n]|\\.)+)"; //((?:\\\n|[^\n])*?)\\s*
+				patternRegStr += patternPrepared.substring(lastindex, paramMatch.index); //((?:\\\n|[^\n])*?)\\s*
+				
+				patternRegStr += (index++ === paramCount) ? "((?:[^\\\r\n]|\\.)+)" : "(\#(?:[^\#]|\\\#)*\#|\"(?:[^\"]|\\\")*\"|[^,()]+?)";
+				
 				lastindex = paramMatch.index + paramMatch[0].length;
 				this.parameters.push(+paramMatch[1]);
 			}
 			patternRegStr += patternPrepared.substring(lastindex);
 
 			patternRegStr = "(?<!\\w)" + patternRegStr + "(?=[^\\w])";
+
+			console.log(patternRegStr);
 
 			const replacement = match[3] ? match[3].trim() : "";
 			return {
