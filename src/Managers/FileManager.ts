@@ -81,17 +81,7 @@ export class FileManager {
 				return window.showErrorMessage(l10n.t("The pawno folder was not found"));
 			}
 			else {console.error(e);}
-		}
-		
-		
-		// let files = await workspace.fs.readDirectory(this.root[0].uri);
-		// files.forEach(element => {
-		// 	if(element[1] == FileType.Directory) {
-		// 		if(element[0] == "pawno")
-
-		// 	}
-		// 		// console.log(element[0]);
-		// });
+		}		
 	}
 	public async isFileExist(uri: Uri): Promise<boolean> {
 		try {
@@ -116,9 +106,6 @@ export class FileManager {
 		let result = true;
 		try {
 			const doc = await workspace.openTextDocument(uri);
-			// return doc;
-			// await this.onDidOpenTextDocument(doc);
-			// Process document here if needed
 		} catch (err) {
 			console.log("НЕ УДАЛОСЬ ОТКРЫТЬ ФАЙЛ: " + err);
 			result = false;
@@ -143,29 +130,16 @@ export class FileManager {
 		if(!file) {return [];}
 		
 		return file.documentsLinks;
-		// return file.Env.includes;
 	}
-	// public getFileFunctionsDefinitions(document: TextDocument): Map<string, FunctionData> {
-
-	// 	const file: AbstractOpenFile | undefined = this.openedFiles.get(document.uri.path);
-	
-	// 	if(!file) return new Map;
-
-	// 	return new Map<string, FunctionData>();
-	// 	// return file.Env.functions;
-	// }
 	public async onDidOpenTextDocument(file: TextDocument): Promise<void> {
 		if(file.languageId !== "pawn") {return;}
 
-		// await this.checkAndReopenFileIfNeeded(file);
-	
-		const uri = file.uri;
-		const path = uri.path;
-		if(this.openedFiles.has(uri)) {
-			console.log(`File already opened: ${path}`);
-			return;
+		try {
+			this.analyzeFile(file.uri);
 		}
-		this.analyzeFile(uri).catch(err => console.error(`Error analyzing ${path}:`, err));
+		catch(err) {
+			console.error(`Error analyzing ${file.uri}:`, err);
+		}
 		return;
 	}
 
