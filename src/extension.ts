@@ -80,15 +80,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	//регистрируем таск
 	registerTasks(context);
+	registerCommands();
 
-	vscode.commands.registerCommand("pawnlanguage.openParsed",() => {
-		if(!vscode.window.activeTextEditor) {
-			return;
-		}
-		console.log(vscode.window.activeTextEditor.document.uri.path);
-		const file = fileManage.getFileByURI(vscode.window.activeTextEditor.document.uri);
-		file?.openFileWithOutPreprocessor();
-	});
+	
 
 	const signatureProvider = new SignatureProvider(fileManage);
 	context.subscriptions.push(vscode.languages.registerDocumentLinkProvider('pawn', documentLinkProvider));
@@ -230,5 +224,22 @@ function registerTasks(context: vscode.ExtensionContext) {
 function parseAllOpenedFiles() {
 	vscode.workspace.textDocuments.forEach(document => {
 		fileManage.onDidOpenTextDocument(document);
+	});
+}
+function registerCommands() {
+	vscode.commands.registerCommand("pawnlanguage.openParsed",() => {
+		if(!vscode.window.activeTextEditor) {
+			return;
+		}
+		console.log(vscode.window.activeTextEditor.document.uri.path);
+		const file = fileManage.getFileByURI(vscode.window.activeTextEditor.document.uri);
+		file?.openFileWithOutPreprocessor();
+	});
+	vscode.commands.registerCommand("pawnlanguage.parseCurrnetFile",() => {
+		if(!vscode.window.activeTextEditor) {
+			return;
+		}
+		fileManage.onDidOpenTextDocument(vscode.window.activeTextEditor.document);
+		
 	});
 }

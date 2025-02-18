@@ -97,6 +97,10 @@
 			{
 				"command": "pawnlanguage.openParsed",
 				"title": "Открыть распаршенный файл"
+			},
+			{
+				"command": "pawnlanguage.parseCurrnetFile",
+				"title": "Проаналиировать текущий файл"
 			}
 		]
 	},
