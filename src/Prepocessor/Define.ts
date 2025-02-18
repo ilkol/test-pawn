@@ -67,8 +67,6 @@ export class Define extends PreprocessorDirective
 
 			patternRegStr = "(?<!\\w)" + patternRegStr + "(?=[^\\w])";
 
-			console.log(patternRegStr);
-
 			const replacement = match[3] ? match[3].trim() : "";
 			return {
 				patternReg: RegExp(patternRegStr),

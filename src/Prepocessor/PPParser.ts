@@ -279,31 +279,30 @@ export class PPParser
 
 	private async processDefines(codeChunks: string[])
 	{
-		// for(let definesArray of this.defines.values()) {
-		// 	for(let findinglocalDefine of definesArray) {
-		// 		const start = findinglocalDefine.endIndex;
-		// 		const stop = findinglocalDefine.undef ?  findinglocalDefine.undef.startIndex : -1;
-		// 		for(let definesArray of this.defines.values()) {
-		// 			for(let localDefine of definesArray) {
-		// 				let inRange = false;
-		// 				if(localDefine.startIndex > start) {
-		// 					if(stop !== -1) {
-		// 						if(localDefine.startIndex < stop) {
-		// 							inRange = true;
-		// 						}
-		// 					}
-		// 					else {
-		// 						inRange = true;
-		// 					}
-		// 				}
-		// 				if(inRange) {
-		// 					this.substringrReplacingOnChank(localDefine.pattern, findinglocalDefine, localDefine.startIndex);
-		// 					localDefine.pattern;
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
+		for(let definesArray of this.defines.values()) {
+			for(let findinglocalDefine of definesArray) {
+				const start = findinglocalDefine.endIndex;
+				const stop = findinglocalDefine.undef ?  findinglocalDefine.undef.startIndex : -1;
+				for(let definesArray of this.defines.values()) {
+					for(let localDefine of definesArray) {
+						let inRange = false;
+						if(localDefine.startIndex > start) {
+							if(stop !== -1) {
+								if(localDefine.startIndex < stop) {
+									inRange = true;
+								}
+							}
+							else {
+								inRange = true;
+							}
+						}
+						if(inRange) {
+							localDefine.replacement = await this.substringrReplacingOnChank(localDefine.replacement, findinglocalDefine, localDefine.startIndex);
+						}
+					}
+				}
+			}
+		}
 
 		for(let definesArray of this.defines.values()) {
 			for(let localDefine of definesArray) {
