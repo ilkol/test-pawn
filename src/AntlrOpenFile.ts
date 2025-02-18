@@ -276,7 +276,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 	public updateSemanticTokens()
 	{
 		let ranges = this.ppParser.getDefinedRanges();
-		console.log(ranges);
 		ranges.forEach(range => {
 			this.tokensManager.addToken(range, SemanticTokens.macro);
 			

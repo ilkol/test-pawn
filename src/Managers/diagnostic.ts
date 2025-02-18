@@ -27,7 +27,6 @@ export class DiagnosticManager {
 		this.diagnosticCollection.set(vscode.Uri.parse(filePath), diags);
 	}
 	public clearFile(filePath: vscode.Uri) {
-		console.log(`Clear diagnostic for ${filePath}!`);
 		this.diagnosticCollection.delete(filePath);
 		this.diagnosticMap.set(filePath.path, []);
 	}

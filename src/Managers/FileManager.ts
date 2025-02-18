@@ -165,9 +165,10 @@ export class FileManager {
 			console.log(`File already opened: ${path}`);
 			return;
 		}
+		this.analyzeFile(uri).catch(err => console.error(`Error analyzing ${path}:`, err));
 	
-		this.parsingQueue.add(file.uri);
-        await this.parseFiles();
+		// this.parsingQueue.add(file.uri);
+        // await this.parseFiles();
 
 		// this.diagnosticManager.updateDiagnostic();
 
@@ -188,6 +189,79 @@ export class FileManager {
 		// }
 		// this.diagnosticManager.updateDiagnostic();
 		return;
+	}
+
+	private parsingFiles = new Map<string, Promise<void>>();
+
+	private async analyzeFilePromise(textDocument: vscode.TextDocument) {
+		let doc: AbstractOpenFile|undefined = undefined;
+		try
+        {
+			if(textDocument && !this.openedFiles.has(textDocument.uri))
+			{
+				try {
+					doc = new AntrlOpenFile(textDocument, this);
+					this.openedFiles.set(textDocument.uri, doc);
+				} catch (error) {
+					console.error(`Failed to open file model ${textDocument.uri}: ${error}`);
+				}
+			}
+        }
+        catch(e)
+        {
+            console.error(e);
+        }
+        if(doc) {
+			await this.buildDependencyGraph(doc);
+	
+			try {
+				const sortedFiles = await this.topologicalSort();
+				for(let element of sortedFiles ) {
+					if(element === doc?.uri) {
+						continue;
+					}
+					await this.analyzeFile(element);
+				}
+			} catch (e) {
+				console.error(e);
+			}
+			doc.updateSemanticTokens();
+			this.diagnosticManager.clearFile(doc.uri);
+			await vscode.window.withProgress(
+				{
+					location: vscode.ProgressLocation.Window,
+					title: "Выполняетя обход AST",
+					cancellable: false,
+				},
+				async () => {
+					doc.parseCode();
+				}
+			);
+			this.diagnosticManager.updateFileDiagnostic(doc.uri.path);
+		}
+	}
+
+	public async analyzeFile(uri: vscode.Uri) {
+		const filePath = uri.fsPath;
+
+		// Если файл уже анализируется – ждём его завершения
+		if (this.parsingFiles.has(filePath)) {
+			return this.parsingFiles.get(filePath)!;
+		}
+
+		const parsingPromise = (async () => {
+			try {
+				const document = await vscode.workspace.openTextDocument(uri);
+				await this.analyzeFilePromise(document);
+			} finally {
+				this.parsingFiles.delete(filePath); // Убираем файл из списка обрабатываемых
+			}
+		})();
+
+		this.parsingFiles.set(filePath, parsingPromise); // Запоминаем, что файл анализируется
+
+    	return parsingPromise;
+		
 	}
 
 	public async onDidChangeDocument(file: TextDocument) {
@@ -259,57 +333,42 @@ export class FileManager {
 		await doc.parseCode();
 	}
 
-	private async buildDependencyGraph(): Promise<void> {
+	private async buildDependencyGraph(openedFile: AbstractOpenFile): Promise<void> {
 		this.dependencyGraph.clear();
+		const fileUri = openedFile.uri;
 
-        for (const [fileUri, openedFile] of this.openedFiles) {
-
-			// Очистка списка ссылок на инклуды
-			openedFile.documentsLinksClear();
-			
-            this.dependencyGraph.set(fileUri, new Set());
-			openedFile.findDirectives();
-			await openedFile.processDirectives();
-            const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
+		// Очистка списка ссылок на инклуды
+		openedFile.documentsLinksClear();
 		
+		this.dependencyGraph.set(fileUri, new Set());
+		openedFile.findDirectives();
+		await openedFile.processDirectives();
+		const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
+	
 
-			if(this.includePath) {
-				for (const includePath of includes) {
-					let uri = Uri.joinPath(this.includePath, includePath.path);
-					let startUri = uri;
+		if(this.includePath) {
+			for (const includePath of includes) {
+				let uri = Uri.joinPath(this.includePath, includePath.path);
+				let startUri = uri;
+				if(!await this.isFileExist(uri)) {
+					uri = Uri.file(startUri.path + ".inc");
 					if(!await this.isFileExist(uri)) {
-						uri = Uri.file(startUri.path + ".inc");
+						uri = Uri.file(startUri.path + ".pwn");
 						if(!await this.isFileExist(uri)) {
-							uri = Uri.file(startUri.path + ".pwn");
-							if(!await this.isFileExist(uri)) {
-								uri = Uri.file(startUri.path + ".pawn");
-								throw new Error(`Файл не найден (${startUri})`);
-							}
+							uri = Uri.file(startUri.path + ".pawn");
+							throw new Error(`Файл не найден (${startUri})`);
 						}
 					}
-					includePath.uri = uri;
-					// Добавление ссылки в документе для перехода к инклуду
-					const link = new vscode.DocumentLink(includePath.pathRange, uri);
-					link.tooltip = includePath.path;
-					openedFile.documentsLinks.push(link);
-
-					this.dependencyGraph.get(fileUri)?.add(includePath.uri);
 				}
+				includePath.uri = uri;
+				// Добавление ссылки в документе для перехода к инклуду
+				const link = new vscode.DocumentLink(includePath.pathRange, uri);
+				link.tooltip = includePath.path;
+				openedFile.documentsLinks.push(link);
+
+				this.dependencyGraph.get(fileUri)?.add(includePath.uri);
 			}
-
-
-			// openedFile.updateSemanticTokens();
-			// await vscode.window.withProgress(
-			// 	{
-			// 		location: vscode.ProgressLocation.Window,
-			// 		title: "Выполняетя обход AST",
-			// 		cancellable: false,
-			// 	},
-			// 	async () => {
-			// 		openedFile.parseCode();
-			// 	}
-			// );
-        }
+		}
     }
 	private async topologicalSort(): Promise<Uri[]> {
         const visited = new Set<Uri>();
@@ -341,68 +400,5 @@ export class FileManager {
 
         return stack.reverse(); // Разворачиваем стек для получения топологического порядка
 		// return stack;
-    }
-
-	public async parseFiles(): Promise<void>
-    {
-        if (this.parsingQueue.size === 0)
-        {
-            return;
-        }
-
-        const filesForParsing = Array.from(this.parsingQueue);
-        this.parsingQueue.clear();
-
-        try
-        {
-            for(const fileUri of filesForParsing)
-            {
-                const textDocument = vscode.workspace.textDocuments.find(doc => doc.uri === fileUri);
-                if(textDocument && !this.openedFiles.has(textDocument.uri))
-                {
-                    try {
-                        let doc = new AntrlOpenFile(textDocument, this);
-                        this.openedFiles.set(textDocument.uri, doc);
-                    } catch (error) {
-                        console.error(`Failed to open file ${textDocument.uri}: ${error}`);
-                    }
-                }
-            }
-        }
-        catch(e)
-        {
-            console.error(e);
-        }
-        
-		await this.buildDependencyGraph();
-
-		try {
-            const sortedFiles = await this.topologicalSort();
-			sortedFiles.forEach(element => {
-				this.openFile(element);
-			});
-        } catch (e) {
-            console.error(e);
-        }
-
-		for (const [fileUri, openedFile] of this.openedFiles) {
-			if(openedFile.isParsed()) {
-				continue;
-			}
-			openedFile.updateSemanticTokens();
-			this.diagnosticManager.clearFile(fileUri);
-			await vscode.window.withProgress(
-				{
-					location: vscode.ProgressLocation.Window,
-					title: "Выполняетя обход AST",
-					cancellable: false,
-				},
-				async () => {
-					openedFile.parseCode();
-				}
-			);
-			this.diagnosticManager.updateFileDiagnostic(fileUri.path);
-		}
-
     }
 }

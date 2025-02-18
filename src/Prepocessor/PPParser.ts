@@ -396,14 +396,6 @@ export class PPParser
 		code = this.processCondtionsDirectives(code, array);	
 		let codeChunks = this.sliceCodeForChunks(code);
 		codeChunks = await this.processDefines(codeChunks);
-
-		// for(let definesArray of this.defines.values()) {
-		// 	for(let localDefine of definesArray) {
-		// 		if(localDefine.used) {
-		// 			console.log(localDefine.pattern);
-		// 		}
-		// 	}
-		// }
 		
 		return codeChunks;
 	}
