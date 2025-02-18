@@ -138,7 +138,7 @@ export class FileManager {
 			this.analyzeFile(file.uri);
 		}
 		catch(err) {
-			console.error(`Error analyzing ${file.uri}:`, err);
+			console.error(`Analyzing error  ${file.uri}:`, err);
 		}
 		return;
 	}
