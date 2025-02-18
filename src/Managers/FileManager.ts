@@ -166,32 +166,10 @@ export class FileManager {
 			return;
 		}
 		this.analyzeFile(uri).catch(err => console.error(`Error analyzing ${path}:`, err));
-	
-		// this.parsingQueue.add(file.uri);
-        // await this.parseFiles();
-
-		// this.diagnosticManager.updateDiagnostic();
-
-		// this.diagnosticManager.clear();
-		// try {
-		// 	let doc: AntrlOpenFile = new AntrlOpenFile(file, this);
-		// 	this.openedFiles.set(uri, doc);
-		// 	this.parsingStack.push(doc);
-		// } catch(e) {
-		// 	console.error(`Failed to open file ${file.uri}: ${e}`);
-		// }
-		// if(!this.activeFile)
-		// {	
-		// 	this.activeFile = doc;
-		// 	await doc.findAndOpenAllDirectives();
-		// 	await this.parseAll();
-			
-		// }
-		// this.diagnosticManager.updateDiagnostic();
 		return;
 	}
 
-	private parsingFiles = new Map<string, Promise<void>>();
+	private parsingFiles = new Map<string, Promise<void|AbstractOpenFile>>();
 
 	private async analyzeFilePromise(textDocument: vscode.TextDocument) {
 		let doc: AbstractOpenFile|undefined = undefined;
@@ -214,13 +192,18 @@ export class FileManager {
         if(doc) {
 			await this.buildDependencyGraph(doc);
 	
+			const includeFiles: AbstractOpenFile[] = [];
+
 			try {
 				const sortedFiles = await this.topologicalSort();
 				for(let element of sortedFiles ) {
 					if(element === doc?.uri) {
 						continue;
 					}
-					await this.analyzeFile(element);
+					const include = await this.analyzeFile(element);
+					if(include) {
+						includeFiles.push(include);
+					}
 				}
 			} catch (e) {
 				console.error(e);
@@ -234,11 +217,13 @@ export class FileManager {
 					cancellable: false,
 				},
 				async () => {
+					doc.includeIncludesScopse(includeFiles);
 					doc.parseCode();
 				}
 			);
 			this.diagnosticManager.updateFileDiagnostic(doc.uri.path);
 		}
+		return doc;
 	}
 
 	public async analyzeFile(uri: vscode.Uri) {
@@ -252,7 +237,7 @@ export class FileManager {
 		const parsingPromise = (async () => {
 			try {
 				const document = await vscode.workspace.openTextDocument(uri);
-				await this.analyzeFilePromise(document);
+				return await this.analyzeFilePromise(document);
 			} finally {
 				this.parsingFiles.delete(filePath); // Убираем файл из списка обрабатываемых
 			}

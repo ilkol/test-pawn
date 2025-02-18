@@ -268,4 +268,5 @@ export abstract class AbstractOpenFile
 	public abstract processDirectives(): Promise<void>;
 	public abstract processIncludes(): Promise<void>;
 	public abstract openFileWithOutPreprocessor(): Promise<void>;
+	public abstract includeIncludesScopse(includes: AbstractOpenFile[]): void;
 }

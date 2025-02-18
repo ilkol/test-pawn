@@ -310,6 +310,41 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this.chunks = await this.ppParser.processAllDirectives(this.curCode);
 	}
 
+	public includeIncludesScopse(includes: AbstractOpenFile[]) {
+		console.error(includes);
+
+		includes.forEach(file => {
+			const uri = file.uri;
+			file.getComplitions().forEach(compl => {
+				if (!compl.detail)
+					{compl.detail = path.parse(path.basename(uri.fsPath)).name;}
+				this.complitions.push(compl);
+			});
+			file.signatures.forEach((value, key) => {
+				this.signatures.set(key, value);
+			});
+			file.functionsInfo.forEach((value, key) => {
+				this.functionsInfo.set(key, value);
+			});
+	
+			file.scope.variables().forEach((value) => {
+				this.scope.addVar(value);
+				value.file = file;
+			});
+			file.scope.functions().forEach((value) => {
+				this.scope.addFunction(value);
+				value.file = file;
+			});
+			const directives: Define[] = [];
+			file.exportDirectives.forEach(el => {
+				const directive = el.copy();
+				directive.curStartIndex = 0;
+				directive.curEndIndex = this.file.getText().length;
+				directives.push(directive);
+			});
+		});
+	}
+
 	private async handleInclude(include: Include): Promise<void> {
 		const uri = include.uri;
 		if(!uri) {return;}
