@@ -311,8 +311,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 
 	public includeIncludesScopse(includes: AbstractOpenFile[]) {
-		console.error(includes);
-
 		includes.forEach(file => {
 			const uri = file.uri;
 			file.getComplitions().forEach(compl => {
