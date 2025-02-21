@@ -12,6 +12,19 @@ interface RestData
 
 export class Define extends PreprocessorDirective
 {
+	private _prefix: string;
+	private _postPrefix: string;
+
+	get prefix(): string {
+		return this._prefix;
+	}
+	get postPrefix(): string {
+		return this._postPrefix;
+	}
+	get prefixLen(): number {
+		return this._prefix.length;
+	}
+
 	readonly doc: MarkdownString;
 	readonly patternReg: RegExp;
 	readonly pattern: string;
@@ -37,6 +50,14 @@ export class Define extends PreprocessorDirective
 		);
 
 		this.doc = this.prepareDoc();
+
+		this._prefix = this.getPrefixFromPattern();
+		this._postPrefix = this.pattern.substring(this._prefix.length);
+	}
+	private getPrefixFromPattern(): string {
+		let match = /([a-zA-Z_@])+/.exec(this.pattern);
+		
+		return match === null ? "" : match[0];
 	}
 	private preparePattern(rest: string): RestData
 	{
