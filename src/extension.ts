@@ -246,14 +246,15 @@ function registerCommands() {
 
 const substindex = new Map<string, Define[]>();
 
-export function testPreprocess(code: string, defines: Define[]) {
+export function testPreprocess(code: string, define: Define) {
 	try {
-		substindex.set("N", defines);
+		substindex.set(define.prefix[0], [define]);
 	
-		console.log(substallpatterns(code));
+		return substallpatterns(code);
 	} catch(e) {
 		console.error(e);
 	}
+	return "";
 }
 
 class CCharStream {
@@ -431,8 +432,7 @@ function substpattern(stream: CCharStream, define: Define)
                 }
                 /* store the parameter (overrule any earlier) */
 				let len = e.curIndex - stream.curIndex;
-				args.push(stream.substr(len - sourceShift, sourceShift));
-				console.log(stream.substr(len - sourceShift, sourceShift));
+				args[arg] = (stream.substr(len - sourceShift, sourceShift));
                 /* character behind the pattern was matched too */
                 if (e.char == pattern.char) {
 					sourceShift = len + 1;
@@ -515,6 +515,7 @@ function substpattern(stream: CCharStream, define: Define)
 					sourceShift += arg.length;
 				}
 				else {
+					console.log(args.at(1));
 					throw new Error("236"); /* parameter does not exist, incorrect #define pattern */
 					stream.strIns(e.substr(2), sourceShift);
 					sourceShift += 2;

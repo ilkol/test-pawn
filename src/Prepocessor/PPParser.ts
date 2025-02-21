@@ -16,6 +16,7 @@ import { Pragma } from "./Pragma";
 import { Undef } from "./Undef";
 import { ElseIf } from "./ElseIf";
 import * as vscode from 'vscode';
+import { testPreprocess } from "../extension";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -629,80 +630,81 @@ export class PPParser
 				cancellable: true,
 			},
 			async (progress, token) => {
-				const maxIterations = 500;
-				let iterations = 0;
-				const toReplace = define.replacement;
-				let totalMatches = 0;
-				let match: RegExpExecArray | null;
+				return testPreprocess(str, define);
+				// const maxIterations = 500;
+				// let iterations = 0;
+				// const toReplace = define.replacement;
+				// let totalMatches = 0;
+				// let match: RegExpExecArray | null;
 	
 				// Подсчитайте количество совпадений для прогресса
-				const pattern = new RegExp(define.patternReg, "g");
-				while (pattern.exec(str) !== null) {
-					totalMatches++;
-				}
+				// const pattern = new RegExp(define.patternReg, "g");
+				// while (pattern.exec(str) !== null) {
+				// 	totalMatches++;
+				// }
 
-				const resultParts: string[] = [];
-				let shift = 0;
-				let curStr = str;
+				// const resultParts: string[] = [];
+				// let shift = 0;
+				// let curStr = str;
 	
-				while ((match = define.patternReg.exec(curStr)) !== null) {
-					if (token.isCancellationRequested) {
-						throw new Error("Process was cancelled by the user");
-					}
+				// while ((match = define.patternReg.exec(curStr)) !== null) {
+				// 	if (token.isCancellationRequested) {
+				// 		throw new Error("Process was cancelled by the user");
+				// 	}
 	
-					iterations++;
-					const length = match[0].length;
-					const curIndex = match.index;
+				// 	iterations++;
+				// 	const length = match[0].length;
+				// 	const curIndex = match.index;
 	
-					const preStr = curStr.substring(0, curIndex);
-					resultParts.push(preStr);
-					const findedStr = curStr.substring(curIndex, curIndex + length);
-					const postStr = curStr.substring(curIndex + length);
+				// 	const preStr = curStr.substring(0, curIndex);
+				// 	resultParts.push(preStr);
+				// 	const findedStr = curStr.substring(curIndex, curIndex + length);
+				// 	const postStr = curStr.substring(curIndex + length);
 					
-					let origIndex = curIndex + preShift + shift;
+				// 	let origIndex = curIndex + preShift + shift;
 	
-					let replace = this.replaceMacroParameters(toReplace, match, define);
-					replace = this.removeBackslashesOutsideStrings(replace);
-					// replace = replace.replace(/\\([\r\n])/g, ' $1');
-					const curShift = findedStr.length - replace.length;
+				// 	let replace = this.replaceMacroParameters(toReplace, match, define);
+				// 	replace = this.removeBackslashesOutsideStrings(replace);
+				// 	// replace = replace.replace(/\\([\r\n])/g, ' $1');
+				// 	const curShift = findedStr.length - replace.length;
 	
-					this.replacedCode.forEach(element => {
-						if (element.newIndex < curIndex + preShift) {
-							origIndex += element.shift;
-						} else {
-							element.move(-curShift);
-						}
-					});
+				// 	this.replacedCode.forEach(element => {
+				// 		if (element.newIndex < curIndex + preShift) {
+				// 			origIndex += element.shift;
+				// 		} else {
+				// 			element.move(-curShift);
+				// 		}
+				// 	});
 	
-					this.replacedCode.push(new ReplacedCode(
-						findedStr,
-						replace,
-						define,
-						origIndex,
-						curIndex + preShift + shift
-					));
+				// 	this.replacedCode.push(new ReplacedCode(
+				// 		findedStr,
+				// 		replace,
+				// 		define,
+				// 		origIndex,
+				// 		curIndex + preShift + shift
+				// 	));
 	
-					resultParts.push(replace);
-					shift += replace.length;
-					shift += preStr.length;
-					curStr = postStr;
+				// 	resultParts.push(replace);
+				// 	shift += replace.length;
+				// 	shift += preStr.length;
+				// 	curStr = postStr;
 					
 	
-					// Обновление прогресса
-					progress.report({
-						increment: (1 / totalMatches) * 100,
-						message: `${iterations} replacements processed...`,
-					});
+				// 	// Обновление прогресса
+				// 	progress.report({
+				// 		increment: (1 / totalMatches) * 100,
+				// 		message: `${iterations} replacements processed...`,
+				// 	});
 	
-					if (iterations >= maxIterations) {
-						iterations = 0;
-						await new Promise(resolve => setImmediate(resolve));
-					}
-				}
+				// 	if (iterations >= maxIterations) {
+				// 		iterations = 0;
+				// 		await new Promise(resolve => setImmediate(resolve));
+				// 	}
+				// }
 	
-				resultParts.push(curStr);
+				// resultParts.push(curStr);
 		
-				return resultParts.join('');
+				// return resultParts.join('');
 			}
 		);
 	}
