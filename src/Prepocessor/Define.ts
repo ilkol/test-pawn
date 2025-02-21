@@ -25,7 +25,6 @@ export class Define extends PreprocessorDirective
 	}
 
 	readonly doc: MarkdownString;
-	// readonly patternReg: RegExp;
 	readonly pattern: string;
 	readonly patternRange: Range;
 
@@ -41,7 +40,6 @@ export class Define extends PreprocessorDirective
 		const result = this.preparePattern(rest);
 		this.pattern = result.pattern;
 		this.replacement = result.replacement;
-		// this.patternReg = result.patternReg;
 
 		this.patternRange = new Range(
 			file.positionAt(restIndex + result.patternStart),
@@ -66,34 +64,6 @@ export class Define extends PreprocessorDirective
 		if (match) {
 			const patterStart = match[1] ? match[1].length : 0;
 			const pattern = match[2];
-
-			// const findParams = /%(\d+)/g;
-			// let patternRegStr = "";
-			// let lastindex = 0;
-			// let paramMatch: RegExpExecArray | null;
-
-			// const patternPrepared = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-			// const paramMatches = [...patternPrepared.matchAll(/%\d+/g)];
-			// const paramCount = paramMatches.length;
-
-			// let index = 1;
-			// while ((paramMatch = findParams.exec(patternPrepared)) !== null) {
-			// 	patternRegStr += patternPrepared.substring(lastindex, paramMatch.index);
-
-			// 	// Последний аргумент — захват до конца без запятых
-			// 	if (index++ === paramCount) {
-			// 		patternRegStr += "((?:[^\\r\\n\\\\()]+|\\([^)]*\\))+)"; 
-			// 	} else {
-			// 		// Универсальный вариант для аргументов
-			// 		patternRegStr += "(\"(?:[^\"\\\\]|\\\\.)*\"|\\([^()]*\\)|[^,()]+?)";
-			// 	}
-
-			// 	lastindex = paramMatch.index + paramMatch[0].length;
-			// 	this.parameters.push(+paramMatch[1]);
-			// }
-
-			// patternRegStr += patternPrepared.substring(lastindex);
-			// patternRegStr = "(?<!\\w)" + patternRegStr + "(?=[^\\w])";
 
 			const replacement = match[3] ? match[3].trim() : "";
 			return {
