@@ -16,7 +16,7 @@ import { Pragma } from "./Pragma";
 import { Undef } from "./Undef";
 import { ElseIf } from "./ElseIf";
 import * as vscode from 'vscode';
-import { testPreprocess } from "../extension";
+import { testPreprocess } from "./DefineReplacing";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
