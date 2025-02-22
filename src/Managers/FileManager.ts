@@ -187,7 +187,7 @@ export class FileManager {
 			await vscode.window.withProgress(
 				{
 					location: vscode.ProgressLocation.Window,
-					title: "Выполняетя обход AST",
+					title: `Выполняется обход AST (${doc.uri.fsPath})`,
 					cancellable: false,
 				},
 				async () => {
