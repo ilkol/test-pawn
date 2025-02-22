@@ -298,7 +298,7 @@ export class PPParser
 							}
 						}
 						if(inRange) {
-							localDefine.replacement = await this.substringrReplacingOnChank(localDefine.replacement, findinglocalDefine, localDefine.startIndex);
+							localDefine.replacement = await this.substringrReplacingOnChank(localDefine.replacement, findinglocalDefine, localDefine.startIndex, `${findinglocalDefine.prefix} in ${localDefine.prefix}`);
 						}
 					}
 				}
@@ -346,25 +346,25 @@ export class PPParser
 			let code = codeChunks[startPos.chunkIndex];
 			let preCode = code.substring(0, startPos.positionInChunk);
 			let postCode = code.substring(stoptPos.positionInChunk);
-			codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk, stoptPos.positionInChunk), define, offset + startPos.positionInChunk) + postCode;
+			codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk, stoptPos.positionInChunk), define, offset + startPos.positionInChunk, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
 		}
 		else {
 			let code = codeChunks[startPos.chunkIndex];
 			let preCode = code.substring(0, startPos.positionInChunk);
 	
-			codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk), define, offset);
+			codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk), define, offset, `Process ${define.prefix} in ${this.file.uri.fsPath}`);
 			
 	
 			offset += codeChunks[startPos.chunkIndex].length;
 	
 			for(let i = startPos.chunkIndex; i < stoptPos.chunkIndex; i++) {
-				codeChunks[i] = await this.substringrReplacingOnChank(codeChunks[i], define, offset);
+				codeChunks[i] = await this.substringrReplacingOnChank(codeChunks[i], define, offset, `Process ${define.prefix} in ${this.file.uri.fsPath}`);
 			} 
 	
 			code = codeChunks[stoptPos.chunkIndex];
 			let postCode = code.substring(stoptPos.positionInChunk);
 	
-			codeChunks[stoptPos.chunkIndex] = await this.substringrReplacingOnChank(code.substring(0, stoptPos.positionInChunk), define, offset) + postCode;
+			codeChunks[stoptPos.chunkIndex] = await this.substringrReplacingOnChank(code.substring(0, stoptPos.positionInChunk), define, offset, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
 		}
 		
 		return codeChunks;
@@ -621,12 +621,12 @@ export class PPParser
 	// }
 
 
-	private async substringrReplacingOnChank(str: string, define: Define, preShift: number): Promise<string>
+	private async substringrReplacingOnChank(str: string, define: Define, preShift: number, title: string = "Processing replacements..."): Promise<string>
 	{
 		return await vscode.window.withProgress(
 			{
 				location: vscode.ProgressLocation.Window,
-				title: "Processing replacements...",
+				title: title,
 				cancellable: true,
 			},
 			async (progress, token) => {
