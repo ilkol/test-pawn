@@ -33,7 +33,13 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 	}
 
 	public get isConstant(): boolean {
-		return this._modifires.find(el => el === VariableModifire.const) ? true : false;
+		for(let el of this._modifires) {
+			if(el === VariableModifire.const) {
+				return true;
+			}
+		}
+		return false;
+		// return this._modifires.find(el => el === VariableModifire.const) ? true : false;
 	}
 	
 }
