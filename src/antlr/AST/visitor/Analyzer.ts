@@ -535,13 +535,17 @@ export class Analyzer extends BaseVisitor
 					diagnosticMsg = l10n.t("Enum member");
 				}
 				else {
-					if((<VarDeclaration>element).isConstant)
+					if((<VarDeclaration>element).isConstant) {
 						diagnosticMsg = l10n.t("Constant");
-					else diagnosticMsg = l10n.t("Variable");
+						stock = true;
+					}
+					else {
+						diagnosticMsg = l10n.t("Variable");
+					}
 				}
 				
 				if(!stock) {
-					diagnostic = new DiagnosticWarning("warning 203: " + l10n.t("{0} \"{1}\" is never used", diagnosticMsg, key), element.idPos);
+					diagnostic = new DiagnosticWarning(l10n.t("{0} \"{1}\" is never used", diagnosticMsg, key), element.idPos);
 					diagnostic.tags = [DiagnosticTag.Unnecessary];
 				}
 				else
