@@ -185,6 +185,8 @@ export class FileManager {
 				console.error(e);
 			}
 			doc.updateSemanticTokens();
+			doc.includeIncludesScopse(includeFiles);
+			await doc.processDefines();
 			await vscode.window.withProgress(
 				{
 					location: vscode.ProgressLocation.Window,
@@ -192,8 +194,6 @@ export class FileManager {
 					cancellable: false,
 				},
 				async () => {
-					doc.includeIncludesScopse(includeFiles);
-					await doc.processDefines();
 					await doc.parseCode();
 				}
 			);
