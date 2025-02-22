@@ -1,4 +1,4 @@
-import vscode, { commands, CompletionItem, DocumentLink, FileSystemError, Hover, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
+import vscode, { commands, CompletionItem, DiagnosticSeverity, DocumentLink, FileSystemError, Hover, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
 import { DiagnosticManager } from "./diagnostic";
 import { AntrlOpenFile } from "../AntlrOpenFile";
 import { AbstractOpenFile } from "../AbstractOpenFile";
@@ -164,6 +164,8 @@ export class FileManager {
             console.error(e);
         }
         if(doc) {
+			this.diagnosticManager.clearFile(doc.uri);
+
 			await this.buildDependencyGraph(doc);
 	
 			const includeFiles: AbstractOpenFile[] = [];
@@ -183,7 +185,6 @@ export class FileManager {
 				console.error(e);
 			}
 			doc.updateSemanticTokens();
-			this.diagnosticManager.clearFile(doc.uri);
 			await vscode.window.withProgress(
 				{
 					location: vscode.ProgressLocation.Window,
@@ -193,7 +194,7 @@ export class FileManager {
 				async () => {
 					doc.includeIncludesScopse(includeFiles);
 					await doc.processDefines();
-					doc.parseCode();
+					await doc.parseCode();
 				}
 			);
 			this.diagnosticManager.updateFileDiagnostic(doc.uri.path);
@@ -316,7 +317,9 @@ export class FileManager {
 						uri = Uri.file(startUri.path + ".pwn");
 						if(!await this.isFileExist(uri)) {
 							uri = Uri.file(startUri.path + ".pawn");
-							throw new Error(`Файл не найден (${startUri})`);
+							openedFile.addDiagnostic(l10n.t("error 100: Cannot read from file: \"{0}\"", includePath.path), DiagnosticSeverity.Error, includePath.range);
+							continue;
+							// throw new Error(`Файл не найден (${startUri})`);
 						}
 					}
 				}
