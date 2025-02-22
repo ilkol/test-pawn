@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, ArrayInitContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -53,6 +53,7 @@ import { BoolLiteral } from "./AST/Nodes/Literals/BoolLiteral";
 import { HexLiteral } from "./AST/Nodes/Literals/HexLiteral";
 import { FixedLiteral } from "./AST/Nodes/Literals/FixedLiteral";
 import { BinarLiteral } from "./AST/Nodes/Literals/BinarLiteral";
+import { ArrayInit } from "./AST/Nodes/Literals/ArrayInit";
 
 export class PawnListener implements pawnListener
 {
@@ -461,7 +462,10 @@ export class PawnListener implements pawnListener
 	};
 	private evalLiteral(node: Literal<any>) {
 		const last = this.nodes.peek();
-		if(last instanceof Expresion) {
+		if(last instanceof ArrayInit) {
+			last.value.push(node);
+		}
+		else if(last instanceof Expresion) {
 			last.expresion = node;
 		}
 		else if(last instanceof FunctionDeclarationParameter) {
@@ -621,7 +625,30 @@ export class PawnListener implements pawnListener
 		// }
 	}
 	
+	enterArrayInit = (ctx: ArrayInitContext) => {
+		let node = new ArrayInit();	
+		this.nodes.push(node);
+	};
+	exitArrayInit = (ctx: ArrayInitContext) => {
+		let node = <ArrayInit>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+			
+			let last = this.nodes.peek();
+			if(last instanceof VariableInit) {
+				last.rightValue = node;
+			}
+			else if(last instanceof ArrayInit) {
+				last.value.push(node);
+			}
+			else {
+				console.debug(last);
+				this.addDiagnostic(l10n.t("Unexpected array init"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	};
 
+	
 	enterFunctionCallOperator(ctx: FunctionCallOperatorContext): void {
 		let node = new FunctionCall();	
 		this.nodes.push(node);
