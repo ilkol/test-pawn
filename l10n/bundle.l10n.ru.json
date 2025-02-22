@@ -65,7 +65,7 @@
     "Expected enum member from \"{0}\"": "Ожидается константа из перечисления \"{0}\"",
     "The identifier \"{0}\" is not an array": "Идентификатор \"{0}\" не является массивом",
     "The identifier \"{0}\" is a function": "Идентификатор \"{0}\" является функцией",
-    "Variable \"{0}\" is undefinded": "Неизвестня еременная \"{0}\"",
+    "Variable \"{0}\" is undefinded": "Неизвестня переменная \"{0}\"",
     "Function \"{0}\" not found": "Неизвестная функция \"{0}\"",
     "The return value must be with the tag \"{0}\", but the tag \"{1}\" was found": "Возвращаемое значение должно иметь тэг \"{0}\", а найден тэг \"{1}\"",
     "Assignment is only possible to a native function": "Присвоение возможно только нативной функции",
