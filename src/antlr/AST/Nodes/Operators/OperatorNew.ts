@@ -6,7 +6,8 @@ import { VarDeclaration } from "../Variables/VarDeclaration";
 export enum VariableModifire {
 	const,
 	stock,
-	static
+	static,
+	public
 }
 
 export class OperatorNew extends AbstractStatement implements IContainsVars<VarDeclaration>
