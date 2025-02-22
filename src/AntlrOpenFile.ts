@@ -106,14 +106,14 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 	
 	public async processIncludes(): Promise<void> {
-		const pawnDir = this.fileManager._includePath;
-		if(pawnDir) {
-			for (let el of this.ppParser.includes) {
-				if(el.skiped) {continue;}
-				if(el.uri)
-					{await this.handleInclude(el);}
-			}
-		}
+		// const pawnDir = this.fileManager._includePath;
+		// if(pawnDir) {
+		// 	for (let el of this.ppParser.includes) {
+		// 		if(el.skiped) {continue;}
+		// 		if(el.uri)
+		// 			{await this.handleInclude(el);}
+		// 	}
+		// }
 	}
 
 	public async parseCode() {
@@ -196,60 +196,6 @@ export class AntrlOpenFile extends AbstractOpenFile
 	public get includes()
 	{
 		return this.ppParser.includes;
-	}
-	/**
-	 * Открывает все инклуды в файле
-	 */
-	private async openAllIncludes()
-	{
-		const pawnDir = this.fileManager._includePath;
-		if (pawnDir) {
-			for (let el of this.ppParser.includes) {
-				if(el.skiped) {continue;}
-				let directive;
-				switch(el.type) {
-					case IncludeType.default: {
-						const directoryPath = path.dirname(this.file.uri.fsPath);
-						directive = vscode.Uri.file(directoryPath);
-						break;
-					}
-					default:
-						directive = pawnDir;
-
-				}
-
-				el.uri = await this.checkInclude(directive, el.path, "");
-				if(!el.uri) {
-					el.uri = await this.checkInclude(directive, el.path, ".inc");
-				}
-				else if(!el.uri) {
-					el.uri = await this.checkInclude(directive, el.path, ".pwn");
-				}
-				else if(!el.uri) {
-					el.uri = await this.checkInclude(directive, el.path, ".pawn");
-				}
-			
-				if(el.uri) {
-					if(el.uri.path.indexOf("YSI") !== -1 || el.uri.path.indexOf("y_") !== -1) {return;}
-		
-					if(!this.fileManager.openedFiles.has(el.uri)) {
-						await this.fileManager.openFile(el.uri);
-						const doc = this.fileManager.parsingStack.peek();
-						if(doc && this.file.uri !== doc.uri)
-						{
-							await this.fileManager.parse(doc);
-						}
-					}
-					
-					
-				}
-				else {
-					this.diagnositcManager.addDiagnostic("Файл не найден", vscode.DiagnosticSeverity.Error, this.file.uri.path, el.pathRange);
-			
-				}
-			}
-			
-		}
 	}
 
 	public async parsePreprocessor() {
