@@ -541,6 +541,7 @@ export class Analyzer extends BaseVisitor
 					}
 					else {
 						diagnosticMsg = l10n.t("Variable");
+						stock = (<VarDeclaration>element).modifires.indexOf(VariableModifire.public) !== -1;
 					}
 				}
 				
