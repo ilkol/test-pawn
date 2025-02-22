@@ -63,11 +63,14 @@ export class PPParser
 
 	get exportDirectives(): Define[] {
 		const dirs: Define[] = [];
-		// this.defines.forEach(dir => {
-		// 	if(!dir.skiped) {
-		// 		dirs.push(dir);
-		// 	}
-		// });
+		this.defines.forEach((dir, name) => {
+			if(dir.length !== 0) {
+				let define = dir[dir.length - 1];
+				if(define.undef === undefined) {
+					dirs.push(define);
+				}
+			}
+		});
 		return dirs;
 	}
 
@@ -278,7 +281,7 @@ export class PPParser
 		return code;
 	}
 
-	private async processDefines(codeChunks: string[])
+	public async processDefines(codeChunks: string[])
 	{
 		for(let definesArray of this.defines.values()) {
 			for(let findinglocalDefine of definesArray) {
@@ -396,7 +399,7 @@ export class PPParser
 	{
 		code = this.processCondtionsDirectives(code, array);	
 		let codeChunks = this.sliceCodeForChunks(code);
-		codeChunks = await this.processDefines(codeChunks);
+		// codeChunks = await this.processDefines(codeChunks);
 		
 		return codeChunks;
 	}
