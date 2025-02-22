@@ -83,6 +83,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 	private curCode: string = "";
 	private chunks: string[] = [];
 
+	get defines(): Map<string, Define[]> {
+		return this.ppParser.defines;
+	}
+
 
 	public constructor(file: vscode.TextDocument, fileManager: FileManager)
 	{
@@ -309,6 +313,9 @@ export class AntrlOpenFile extends AbstractOpenFile
 	{
 		this.chunks = await this.ppParser.processAllDirectives(this.curCode);
 	}
+	public async processDefines(): Promise<void> {
+		this.chunks = await this.ppParser.processDefines(this.chunks);
+	}
 
 	public includeIncludesScopse(includes: AbstractOpenFile[]) {
 		includes.forEach(file => {
@@ -339,6 +346,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 				directive.curStartIndex = 0;
 				directive.curEndIndex = this.file.getText().length;
 				directives.push(directive);
+			});
+
+			directives.forEach(define => {
+				this.ppParser.defines.set(define.prefix, [define]);
 			});
 		});
 	}

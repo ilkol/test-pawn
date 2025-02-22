@@ -67,7 +67,9 @@ export abstract class AbstractOpenFile
 	public readonly symbolsManager: SymbolsManager = new SymbolsManager();
 	protected complitions: CompletionItem[] = [];
 	protected functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
-	protected defines: Map<string, Define>  = new Map<string, Define>();
+
+	abstract get defines(): Map<string, Define[]>;
+	// protected defines: Map<string, Define>  = new Map<string, Define>();
 
 	public scope: IScope = new Scope(this);
 
@@ -96,16 +98,12 @@ export abstract class AbstractOpenFile
 		
 		let someThing;
 		if(someThing = this.functions.get(word)) {
-			// const label = someThing.label.replace(/([\\`*_\[\]{}()#+\-.!])/g, '\\$1');
 			const result = new MarkdownString("").appendCodeblock(someThing.label, "pawn");
 			if(someThing.docs) {
 
 				result.appendMarkdown(someThing.docs.text);
 			}
 			return result;
-		}
-		else if(someThing = this.defines.get(word)){
-			return someThing.doc;
 		}
 		return new MarkdownString();
 	}
@@ -269,4 +267,5 @@ export abstract class AbstractOpenFile
 	public abstract processIncludes(): Promise<void>;
 	public abstract openFileWithOutPreprocessor(): Promise<void>;
 	public abstract includeIncludesScopse(includes: AbstractOpenFile[]): void;
+	public abstract processDefines(): Promise<void>;
 }
