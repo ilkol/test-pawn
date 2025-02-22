@@ -44,9 +44,12 @@ import { IfStatement } from "../Nodes/Conditions/IfStatement";
 import * as funcDef from "../../../Linking/FunctionDefinition";
 import * as funcCall from "../../../Linking/FunctionCall";
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
+import { DiagnosticHint } from "../../diagnostic/DiagnosticHint";
 
 export class Analyzer extends BaseVisitor
 {
+	private undefindedFunctions: Map<string, Range[]> = new Map();
+
 	beforeVisitBoolLiteral(node: BoolLiteral): void {
 	}
 	afterVisitBoolLiteral(node: BoolLiteral): void {
@@ -283,8 +286,15 @@ export class Analyzer extends BaseVisitor
 				}
 			}
 		}
-		else 
-			this.addDiagnostic(new DiagnosticError(l10n.t("Function \"{0}\" not found", node.id), node.idPos));
+		else {
+			const ranges = this.undefindedFunctions.get(node.id);
+			if(ranges) {
+				ranges.push(node.idPos);
+			}
+			else {
+				this.undefindedFunctions.set(node.id, [node.idPos]);
+			}
+		}
 		
 		
 	}
@@ -381,6 +391,11 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
 		this.checkIds(this.curScope.identifires());
+		this.undefindedFunctions.forEach((ranges, id) => {
+			ranges.forEach(range => {
+				this.addDiagnostic(new DiagnosticError(l10n.t("Function \"{0}\" not found", id), range));
+			});
+		});
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
@@ -404,6 +419,13 @@ export class Analyzer extends BaseVisitor
 				else this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{0}\" is already taken", node.id), node.idPos));
 			} else {
 				this.curScope.addFunction(node);
+				const ranges = this.undefindedFunctions.get(node.id);
+				if(ranges) {
+					ranges.forEach(range => {
+						this.addDiagnostic(new DiagnosticHint(l10n.t("Function \"{0}\" used before definition", node.id), range));
+					});
+					this.undefindedFunctions.delete(node.id);
+				}
 
 				const array = this.functionsDeclarations.get(node.id);
 				const el = new funcDef.FunctionDeclaration(node, this.file.uri);
