@@ -118,7 +118,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 	public async parseCode() {
 
-		const stream = new ChunkedCharStream(this.chunks);	
+		// const stream = new ChunkedCharStream(this.chunks);	
+		const stream = CharStreams.fromString(this.curCode);
 		const lexer = new pawnLexer(stream);
 		const lexerErrorListener = new LexerErrorListener();
 		lexer.addErrorListener(lexerErrorListener);
@@ -311,10 +312,10 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 	public async processDirectives(): Promise<void>
 	{
-		this.chunks = await this.ppParser.processAllDirectives(this.curCode);
+		this.curCode = await this.ppParser.processAllDirectives(this.curCode);
 	}
 	public async processDefines(): Promise<void> {
-		this.chunks = await this.ppParser.processDefines(this.chunks);
+		this.curCode = await this.ppParser.processDefines(this.curCode);
 	}
 
 	public includeIncludesScopse(includes: AbstractOpenFile[]) {
@@ -418,14 +419,14 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const editor = await vscode.window.showTextDocument(document);
 
 		// Добавляем строки постепенно
-		for (const line of this.chunks) {
+		// for (const line of this.chunks) {
 			const position = new vscode.Position(document.lineCount, 0); // Позиция в конце документа
 			await editor.edit(editBuilder => {
-				editBuilder.insert(position, line + '\n'); // Вставляем строку с новой строкой
+				editBuilder.insert(position, this.curCode + '\n'); // Вставляем строку с новой строкой
 			});
 			// Ждем немного перед добавлением следующей строки
 			await new Promise(resolve => setTimeout(resolve, 500)); // Задержка 500 мс
-		}
+		// }
 		
 	}
 

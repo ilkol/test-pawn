@@ -281,7 +281,7 @@ export class PPParser
 		return code;
 	}
 
-	public async processDefines(codeChunks: string[])
+	public async processDefines(code: string)
 	{
 		for(let definesArray of this.defines.values()) {
 			for(let findinglocalDefine of definesArray) {
@@ -311,67 +311,89 @@ export class PPParser
 		for(let definesArray of this.defines.values()) {
 			for(let localDefine of definesArray) {
 				const count = this.replacedCode.length;
-				codeChunks = await this.processDefine(codeChunks, localDefine);
+				code = await this.processDefine(code, localDefine);
 				localDefine.used = count  < this.replacedCode.length;
 			}
 		}
 
-		return codeChunks;
+		return code;
 	}
 
-	private async processDefine(codeChunks: string[], define: Define)
+	private async processDefine(code: string, define: Define)
 	{
 
 		let lastindex = undefined;
 		if(define.undef) {
 			lastindex = define.undef.curStartIndex;
 		}
-		const startPos = this.findChunkAndPosition(define.curEndIndex, codeChunks);
-		let stoptPos: {
-			chunkIndex: number;
-			positionInChunk: number;
-		};
+		const startPos = define.curEndIndex;
+		let stoptPos: number;
 		if(lastindex) {
-			stoptPos = this.findChunkAndPosition(lastindex, codeChunks);
+			stoptPos = lastindex;
 		}
 		else {
-			stoptPos = {
-				chunkIndex: codeChunks.length - 1,
-				positionInChunk: codeChunks[codeChunks.length - 1].length - 1
-			};
+			stoptPos =  code.length - 1;
 		}
 		let offset = 0;
-		for(let i = 0; i < startPos.chunkIndex; i++) {
-			offset += codeChunks[i].length;
-		}
 	
-		if(startPos.chunkIndex === stoptPos.chunkIndex) {
-			let code = codeChunks[startPos.chunkIndex];
-			let preCode = code.substring(0, startPos.positionInChunk);
-			let postCode = code.substring(stoptPos.positionInChunk);
-			codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk, stoptPos.positionInChunk), define, offset + startPos.positionInChunk, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
-		}
-		else {
-			let code = codeChunks[startPos.chunkIndex];
-			let preCode = code.substring(0, startPos.positionInChunk);
+		let preCode = code.substring(0, startPos);
+		let postCode = code.substring(stoptPos);
+		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, offset + startPos, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
+		
+	}
+	// private async processDefineOnChunks(codeChunks: string[], define: Define)
+	// {
+
+	// 	let lastindex = undefined;
+	// 	if(define.undef) {
+	// 		lastindex = define.undef.curStartIndex;
+	// 	}
+	// 	const startPos = this.findChunkAndPosition(define.curEndIndex, codeChunks);
+	// 	let stoptPos: {
+	// 		chunkIndex: number;
+	// 		positionInChunk: number;
+	// 	};
+	// 	if(lastindex) {
+	// 		stoptPos = this.findChunkAndPosition(lastindex, codeChunks);
+	// 	}
+	// 	else {
+	// 		stoptPos = {
+	// 			chunkIndex: codeChunks.length - 1,
+	// 			positionInChunk: codeChunks[codeChunks.length - 1].length - 1
+	// 		};
+	// 	}
+	// 	let offset = 0;
+	// 	for(let i = 0; i < startPos.chunkIndex; i++) {
+	// 		offset += codeChunks[i].length;
+	// 	}
 	
-			codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk), define, offset, `Process ${define.prefix} in ${this.file.uri.fsPath}`);
+	// 	if(startPos.chunkIndex === stoptPos.chunkIndex) {
+	// 		let code = codeChunks[startPos.chunkIndex];
+	// 		let preCode = code.substring(0, startPos.positionInChunk);
+	// 		let postCode = code.substring(stoptPos.positionInChunk);
+	// 		codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk, stoptPos.positionInChunk), define, offset + startPos.positionInChunk, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
+	// 	}
+	// 	else {
+	// 		let code = codeChunks[startPos.chunkIndex];
+	// 		let preCode = code.substring(0, startPos.positionInChunk);
+	
+	// 		codeChunks[startPos.chunkIndex] = preCode + await this.substringrReplacingOnChank(code.substring(startPos.positionInChunk), define, offset, `Process ${define.prefix} in ${this.file.uri.fsPath}`);
 			
 	
-			offset += codeChunks[startPos.chunkIndex].length;
+	// 		offset += codeChunks[startPos.chunkIndex].length;
 	
-			for(let i = startPos.chunkIndex; i < stoptPos.chunkIndex; i++) {
-				codeChunks[i] = await this.substringrReplacingOnChank(codeChunks[i], define, offset, `Process ${define.prefix} in ${this.file.uri.fsPath}`);
-			} 
+	// 		for(let i = startPos.chunkIndex; i < stoptPos.chunkIndex; i++) {
+	// 			codeChunks[i] = await this.substringrReplacingOnChank(codeChunks[i], define, offset, `Process ${define.prefix} in ${this.file.uri.fsPath}`);
+	// 		} 
 	
-			code = codeChunks[stoptPos.chunkIndex];
-			let postCode = code.substring(stoptPos.positionInChunk);
+	// 		code = codeChunks[stoptPos.chunkIndex];
+	// 		let postCode = code.substring(stoptPos.positionInChunk);
 	
-			codeChunks[stoptPos.chunkIndex] = await this.substringrReplacingOnChank(code.substring(0, stoptPos.positionInChunk), define, offset, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
-		}
+	// 		codeChunks[stoptPos.chunkIndex] = await this.substringrReplacingOnChank(code.substring(0, stoptPos.positionInChunk), define, offset, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
+	// 	}
 		
-		return codeChunks;
-	}
+	// 	return codeChunks;
+	// }
 
 	private findChunkAndPosition(index: number, chunks: string[])
 	{
@@ -398,10 +420,10 @@ export class PPParser
 	public async processDirectives(code: string, array: PreprocessorDirective[])
 	{
 		code = this.processCondtionsDirectives(code, array);	
-		let codeChunks = this.sliceCodeForChunks(code);
+		// let codeChunks = this.sliceCodeForChunks(code);
 		// codeChunks = await this.processDefines(codeChunks);
 		
-		return codeChunks;
+		return code;
 	}
 
 	private sliceCodeForChunks(code: string): string[]
