@@ -179,7 +179,7 @@ export class FileManager {
 						includeFiles.push(include);
 					}
 				}
-			} catch (e) {
+			} catch (e) {	
 				console.error(e);
 			}
 			doc.updateSemanticTokens();
@@ -192,6 +192,7 @@ export class FileManager {
 				},
 				async () => {
 					doc.includeIncludesScopse(includeFiles);
+					await doc.processDefines();
 					doc.parseCode();
 				}
 			);
