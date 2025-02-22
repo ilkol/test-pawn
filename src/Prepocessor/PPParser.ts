@@ -454,11 +454,6 @@ export class PPParser
 	private handleInclude(directive: Include)
 	{
 		this.includes.push(directive);
-
-		// if (!this.includes.has(directive.pattern)) {
-        //     this.includes.set(directive.pattern, []);
-        // }
-        // this.includes.get(directive.pattern)!.push(directive);	
 	}
 	private isDefined(pattern: string, pos: number)
 	{
@@ -531,119 +526,8 @@ export class PPParser
 		const conditionResult = directive.checkCondition(this.isDefined.bind(this));
 		ifStack.push({ directive: directive, skip: !conditionResult }); // Важно: сохраняем состояние пропуска
 		directive.conditionResult = conditionResult;
-		/*if(element.endIf) {
-					
-			const preDirective = code.substring(0, element.curEndIndex);
-			const postDirective = code.substring(element.endIf.curStartIndex);
-			
-			let mainBlock = "";
-			let elseBlock = "";
-			if(element.elseBlock) {
-				mainBlock = code.substring(element.curEndIndex, element.elseBlock.curEndIndex);
-				elseBlock = code.substring(element.elseBlock.curEndIndex, element.endIf.curStartIndex);
-				
-			}
-			else {
-				mainBlock = code.substring(element.curEndIndex, element.endIf.curStartIndex);
-			}
-			
-
-			if(element.conditionResult) {
-				if(element.elseBlock) {
-					skipFrom = element.elseBlock.curStartIndex;
-					skipTo = element.endIf.curStartIndex;
-				}
-				elseBlock = elseBlock.replace(/[^\r\n]/g, ' ');
-			}
-			else {
-				mainBlock = mainBlock.replace(/[^\r\n]/g, ' ');
-				skipFrom = element.curStartIndex;
-				if(element.elseBlock) {
-					skipTo = element.elseBlock.curStartIndex;
-				}
-				else skipTo = element.endIf.curStartIndex;
-			}
-
-			code = preDirective + mainBlock + elseBlock + postDirective;
-
-			if(element.conditionResult) {
-				if(element.elseBlock) {
-					const range = new Range(
-						element.elseBlock.range.end,
-						element.endIf.range.start
-					);
-					this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
-				}
-			}
-			else {
-				let range: Range;
-				if(element.elseBlock) {
-					range = new Range(
-						element.range.end,
-						element.elseBlock.range.start
-					);
-				}
-				else range = new Range(
-					element.range.end,
-					element.endIf.range.start
-				);
-				this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
-			}
-		}*/
 	}
 
-	// private definesReplacing(def: Define) {
-	// 	const toReplace = def.replacement;
-
-	// 	let match: RegExpExecArray | null;
-	// 	for(let defineStruct of this.defines) {
-	// 		let define = defineStruct[1];
-	// 		if(def == define) continue;
-	// 		if(define.curStartIndex < def.curEndIndex) continue;
-	// 		let str = define.replacement;
-	// 		while((match = def.patternReg.exec(str)) !== null) {	
-	// 			const length = match[0].length;
-	// 			const curIndex = match.index;
-			
-	// 			const preStr = str.substring(0, curIndex);
-	// 			const findedStr = str.substring(curIndex, curIndex + length);
-	// 			const postStr = str.substring(curIndex + length);
-
-	// 			let origIndex = curIndex;
-
-	// 			let replace = toReplace;
-	// 			let index = 1;
-	// 			if(match !== null) {
-	// 				const matches = match;
-	// 				def.parameters.forEach(element => {
-	// 					replace = replace.replace(`%${element}`, matches[index]);
-	// 					index++;
-	// 				});
-	// 			}
-
-	// 			const curShift = findedStr.length - replace.length;
-			
-	// 			this.replacedCode.forEach(element => {
-	// 				if(element.newIndex < curIndex)
-	// 				{
-	// 					origIndex += element.shift;
-	// 				}
-	// 				else {
-	// 					element.move(-curShift);
-	// 				}
-	// 			});
-	// 			for(let element of this.directives) {
-	// 				if(element.startIndex < origIndex) continue;
-	// 				element.move(-curShift);
-	// 			}
-
-	// 			str = preStr + replace + postStr;
-	// 			define.replacement = str;
-	// 			this.defines.set(defineStruct[0], define);
-				
-	// 		}	
-	// 	}
-	// }
 
 
 	private async substringrReplacingOnChank(str: string, define: Define, preShift: number, title: string = "Processing replacements..."): Promise<string>
@@ -658,49 +542,6 @@ export class PPParser
 				return testPreprocess(str, define);
 			}
 		);
-	}
-
-	private removeBackslashesOutsideStrings(code: string): string {
-		// Регулярное выражение для нахождения строк в кавычках
-		const stringRegex = /"(([^"\\\r\n]|\\['"?\\abfnrtv]|\\(\r\n?|\n))*?)"/g;
-		const stringMatches: [number, number][] = [];
-	
-		// Находим диапазоны строк
-		let match: RegExpExecArray | null;
-		while ((match = stringRegex.exec(code)) !== null) {
-			stringMatches.push([match.index, match.index + match[0].length]);
-		}
-	
-		// Проверяем, находится ли индекс внутри строки
-		const isInString = (index: number): boolean => {
-			return stringMatches.some(([start, end]) => index >= start && index < end);
-		};
-	
-		// Удаляем обратные слэши вне строк
-		let result = '';
-		for (let i = 0; i < code.length; i++) {
-			if (code[i] === '\\' && !isInString(i)) {
-				continue; // Пропускаем слэш
-			}
-			result += code[i];
-		}
-	
-		return result;
-	}
-
-	private replaceMacroParameters(toReplace: string, match: RegExpExecArray, define: Define): string
-	{
-		let replace = toReplace;
-		if (match[1]) {
-			let index = 1;
-			const matches = match;
-			define.parameters.forEach(element => {
-				const regex = new RegExp(`%${element}`, 'g');
-				replace = replace.replace(regex, matches[index]);
-				index++;
-			});
-		}
-		return replace;
 	}
 
 	getDefinedRanges(): Range[]

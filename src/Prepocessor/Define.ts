@@ -28,8 +28,6 @@ export class Define extends PreprocessorDirective
 	readonly pattern: string;
 	readonly patternRange: Range;
 
-	parameters: number[] = [];
-
 	replacement: string;
 	undef?: Undef;
 	used: boolean = false;
