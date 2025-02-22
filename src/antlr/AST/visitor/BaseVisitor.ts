@@ -9,8 +9,8 @@ import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
 import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { UnarOperator } from "../Nodes/Operators/UnarOperator";
-import { OperatorNew } from "../Nodes/Operators/OperatorNew";
-import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
+import { OperatorNew, VariableModifire } from "../Nodes/Operators/OperatorNew";
+import { FunctionDeclaration, FunctionModifire } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
 import { IContainsVars } from "../Nodes/IContainsVars";
@@ -164,6 +164,12 @@ export abstract class BaseVisitor implements IVisitor
 	visitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.beforeVisitFunctionDeclaration(node);
 		if(node.code) {
+			
+			if(node.modifire === FunctionModifire.public) {
+				node.parameters.forEach(el => {
+					el.stock = true;
+				});
+			}
 			this.checkVars(node);
 			node.code.accept(this);
 		}
