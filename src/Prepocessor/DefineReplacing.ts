@@ -262,13 +262,12 @@ function substpattern(stream: CCharStream, define: Define)
 			if (e.getChar() == '%' && isdigit(e.getShiftChar(1)) && !instring) {
 				let argNum = +e.getShiftChar(1);
 				let arg = args.at(argNum);
-				if (arg) {
+				if (arg !== undefined) {
 
 					stream.strIns(arg, sourceShift);
 					sourceShift += arg.length;
 				}
 				else {
-					console.log(args.at(1));
 					throw new Error("236"); /* parameter does not exist, incorrect #define pattern */
 					stream.strIns(e.substr(2), sourceShift);
 					sourceShift += 2;
@@ -456,17 +455,24 @@ function litchar(lptr: CCharStream, flags: number): number
 					throw new Error("27"); /* invalid character constant - only valid in stringize */
                 }
                 break;
+			case '\r':
+				c = 13;
+				break;
+			case '\n':
+				c = 10;
+				break;
             default:
-                if (isdigit(cptr.char)) {   /* \ddd */
+                if (isdigit(cptr.getChar())) {   /* \ddd */
                     c = 0;
-                    while (cptr.getChar() >= '0' && cptr.getChar() <= '9')  /* decimal! */
-                        c = c * 10 + cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0);
+                    while (cptr.getChar() >= '0' && cptr.getChar() <= '9') {  /* decimal! */
+						c = c * 10 + cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0);
 						cptr.curIndex++;
+					}
                     if (cptr.getChar() == ';')
 						cptr.curIndex++; /* swallow a trailing ';' */
                 }
                 else {
-                    throw new Error("27");    /* invalid character constant */
+					throw new Error("27");    /* invalid character constant */
                 }
             }
         }
