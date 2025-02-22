@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind, DocumentLink, DocumentSymbol, l10n, MarkdownString, ParameterInformation, Range, SignatureHelp, SignatureInformation, SnippetString, TextDocument, Uri } from "vscode";
+import { CompletionItem, CompletionItemKind, DiagnosticSeverity, DiagnosticTag, DocumentLink, DocumentSymbol, l10n, MarkdownString, ParameterInformation, Range, SignatureHelp, SignatureInformation, SnippetString, TextDocument, Uri } from "vscode";
 import { FileManager } from "./Managers/FileManager";
 import { DiagnosticManager } from "./Managers/diagnostic";
 import { SemanticTokensManager, Token } from "./Managers/SemanticTokensManager";
@@ -70,6 +70,10 @@ export abstract class AbstractOpenFile
 
 	abstract get defines(): Map<string, Define[]>;
 	// protected defines: Map<string, Define>  = new Map<string, Define>();
+
+	public addDiagnostic(msg: string, type: DiagnosticSeverity, range: Range, tags?: DiagnosticTag[]) {
+		this.diagnositcManager.addDiagnostic(msg, type, this.uri.path, range, tags);
+	}
 
 	public scope: IScope = new Scope(this);
 
