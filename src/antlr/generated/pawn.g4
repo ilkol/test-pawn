@@ -70,7 +70,7 @@ assigments:
     ASSIGMENT_XOR           // ^=
 ;
 
-declParams:			(CONST)? (reference)? variable (ASSIGMENT expresion)?;	
+declParams:			(CONST)? (reference)? variable (ASSIGMENT (expresion|arrayInit))?;	
 ellipse:			COMA tag? PERIOD_FUNC;
 
 reference:			BIT_AND;
