@@ -186,6 +186,10 @@ export class PawnListener implements pawnListener
 					last.modifires.push(VariableModifire.static);
 					break;
 				}
+				case "public": {
+					last.modifires.push(VariableModifire.public);
+					break;
+				}
 				default: {
 					this.addDiagnostic(l10n.t("Undefinded var modifire \"{0}\"", modif), DiagnosticSeverity.Error, pos);	
 				}
@@ -640,6 +644,9 @@ export class PawnListener implements pawnListener
 			}
 			else if(last instanceof ArrayInit) {
 				last.value.push(node);
+			}
+			else if(last instanceof FunctionDeclarationParameter) {
+				last.defaultValue = node;
 			}
 			else {
 				console.debug(last);
