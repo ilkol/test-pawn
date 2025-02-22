@@ -290,8 +290,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 			const directives: Define[] = [];
 			file.exportDirectives.forEach(el => {
 				const directive = el.copy();
+				directive.curEndIndex = directive.curEndIndex - directive.curStartIndex;
 				directive.curStartIndex = 0;
-				directive.curEndIndex = this.file.getText().length;
 				directives.push(directive);
 			});
 
