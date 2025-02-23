@@ -48,8 +48,9 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitItStatement(node: IfStatement): void {
 		this.beforeVisitIfStatemnt(node);
-		node.else?.accept(this);
 		node.condition?.accept(this);
+		node.code?.accept(this);
+		node.else?.accept(this);
 		this.afterVisitIfStatemnt(node);
 	}
 	visitArray(node: ArrayNode.Array): void {
