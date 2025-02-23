@@ -20,7 +20,7 @@ export function findFullMultyLineDerictive(input: string) {
 		stream.curIndex++;
 	}
 	if(stream.char === '\0') {
-		return {rest: "", endlCount: 0, fullLength: 0};
+		return {rest: "", fullLength: 0};
 	}
 
 	let result = "";
@@ -28,31 +28,36 @@ export function findFullMultyLineDerictive(input: string) {
 
 	let char;
 		
-	let endlCount = 0;
-
 	while(stream.getChar() !== '\0') {
 		char = stream.getChar();
 		
+		// Если строка, то полностью ее включаем в паттерн
 		if (isStringStrating(stream)) {
 			result += getString(stream);
 			if (stream.char === '\0') {
-				break;        /* abort loop on error */
+				break;        
 			}
 		}
+		// Если начало комментария
 		if(char === '/') {
 			break;
 		}
-		if(char === "\r" || char === "\n") {
+		// если перенос строки
+		else if(char === "\n") {
+			if(stream.getShiftChar(-1) !== '\\' && stream.getShiftChar(-1) !== '\r') {
+				break;
+			}
+		}
+		else if(char === "\r") {
 			if(stream.getShiftChar(-1) !== '\\') {
 				break;
 			}
-			endlCount++;
 		}
 		result += char;
 		stream.curIndex++;
 	}
 
-	return {rest: result, endlCount, fullLength: stream.curIndex};
+	return {rest: result, fullLength: stream.curIndex};
 }
 
 class LikeCCharStream {

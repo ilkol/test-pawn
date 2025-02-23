@@ -81,13 +81,8 @@ export class PPParser
 	private findFullMultyLineDerictive(rest: string, endIndex: number, strartStr: string)
 	{
 
-		let result = findFullMultyLineDerictive(rest + strartStr);
+		return findFullMultyLineDerictive(rest + strartStr);
 
-		return {
-			rest: result.rest,
-			endIndex: result.fullLength,
-			endlCount: result.endlCount
-		};
 
 
 
@@ -126,32 +121,31 @@ export class PPParser
 	 */
 	public collectDirectives(code: string): string {
 
-		const reg = /^([\t ]*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#(\s*)(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
 		while ((match = reg.exec(code)) !== null) {
-			let [fullMatch, leadingWhitespace, directive, rest] = match;
+			let [fullMatch, leadingWhitespace, leadingWhitespaceAfterSharp, directive, rest] = match;
 			// Координата начала директивы (#)
   			const directiveIndex = match.index + leadingWhitespace.length;
-			// Окончания директивы
-			// Координата начала оставшейся части
 			let endIndex = match.index + fullMatch.length;
 			const restIndex = rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
-			// КРАЙНЕ ТУПОЕ РЕШЕНИЕ, но работает. Пока я не вижу как можно написать лучше, к сожалению :(
-			let res = this.findFullMultyLineDerictive(rest, endIndex, code.substring(match.index + fullMatch.length));
+			// sharp + spaces after sharp and before directive + directive length
+			let space = 1 + leadingWhitespaceAfterSharp.length + directive.length;
+
+			let res = findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
 			rest = res.rest;
-			endIndex = restIndex + res.endIndex;
-			
+			endIndex = restIndex + res.fullLength;
+
 			this.addNewDirective(directive, rest, directiveIndex, restIndex, endIndex);
 
 			changes.push({
 				start: directiveIndex,
 				end: endIndex,
-				replacement: ' '.repeat(endIndex - directiveIndex - res.endlCount * 2) + (res.endlCount > 0 ? '\r\n'.repeat(res.endlCount) : ""),
+				replacement: ' '.repeat(space) + (res.rest).replace(/[^\s]/g, " "),
 			});
-
 		}		
 
 		let codeWithoutDirectives = code;
