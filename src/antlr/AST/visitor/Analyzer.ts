@@ -414,7 +414,7 @@ export class Analyzer extends BaseVisitor
 							id.code = node.code;
 						}
 					}else {
-						if(id.modifire !== FunctionModifire.forward && node.modifire !== FunctionModifire.public) {
+						if((id.modifire !== FunctionModifire.forward && node.modifire !== FunctionModifire.public) && (id.modifire !== FunctionModifire.public && node.modifire !== FunctionModifire.forward)) {
 							this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{0}\" is already taken", node.id), node.idPos));
 						}
 					}
