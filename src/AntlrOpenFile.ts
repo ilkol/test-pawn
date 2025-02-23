@@ -153,13 +153,13 @@ export class AntrlOpenFile extends AbstractOpenFile
 			console.error(e);
 		}
 	
-		console.debug("Обход дерева окончен для файла ", this.file.uri.path);
+		// console.debug("Обход дерева окончен для файла ", this.file.uri.path);
 	
 		this.diagnostic(analyzer.diagnostics);
 		this.functions = analyzer.functions;
 		this.prepareSignatures();
 	
-		console.log(this.AST);
+		// console.log(this.AST);
 
 		analyzer.functionsDeclarations.forEach((value, key) => {	
 			const keyMap = this.fileManager.definitionProvider.definitions.get(key);
