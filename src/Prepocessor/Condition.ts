@@ -25,6 +25,7 @@ export class Condition extends PreprocessorDirective
 	}
 	public checkCondition(checkFunc: (pattern: string, pos: number) => boolean)
 	{
+		return false;
 		let condition = this.rest;
 		if (!condition) {
 			return false;
