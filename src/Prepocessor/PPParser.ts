@@ -268,7 +268,7 @@ export class PPParser
 				this.handleCondition(element, ifStack);					
 			}
 			else if(element instanceof Endif) {
-				this.handleEndIf(element, ifStack);	
+				code = this.handleEndIf(code, element, ifStack);	
 			}
 			else if(element instanceof Else) {
 				if(cur && cur.directive.conditionResult) {
@@ -478,7 +478,7 @@ export class PPParser
 		return false;
 	}
 
-	private handleEndIf(directive: Else, ifStack: ConditionStack)
+	private handleEndIf(code: string, directive: Endif, ifStack: ConditionStack)
 	{
 		if (ifStack.length === 0) {
 			throw new Error("Unexpected #endif");
@@ -493,7 +493,21 @@ export class PPParser
 		if(ifStack.length !== 0) {
 			const currentIf = ifStack.pop()!;
 			currentIf.directive.endIf = directive;
+			code = 
+				code.substring(0, currentIf.directive.endIndex) + 
+				code.substring(currentIf.directive.endIndex, directive.startIndex).replace(/[^\s]/g, " ") + 
+				code.substring(directive.startIndex)
+			;
+			if(currentIf.directive.range && directive.range) {
+				const range = new Range(
+					currentIf.directive.range.end,
+					directive.range.start
+				);
+				this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+
+			}
 		}
+		return code;
 	}
 	private handleElse(directive: Else, ifStack: ConditionStack)
 	{

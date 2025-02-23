@@ -32,7 +32,7 @@ export class Expresion extends AbstractStatement {
 
 	public accept(visitor: IVisitor): void {
 		if(this.exp) {
-			console.log(this.exp);
+			// console.log(this.exp);
 			this.exp?.accept(visitor);
 			this.range = this.exp.pos;
 		}

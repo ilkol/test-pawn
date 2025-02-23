@@ -107,7 +107,7 @@ export class PawnListener implements pawnListener
 
 			node.setIDPos(
 				ctx.OPERATOR().symbol.line, ctx.OPERATOR().symbol.charPositionInLine, 
-				ctx.OPEN_PARENTHESIS().symbol.charPositionInLine);
+				ctx.functionDeclarationParams().OPEN_PARENTHESIS().symbol.charPositionInLine);
 
 		}
 	}

@@ -23,8 +23,9 @@ enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEF
 
 varDeclaration:     (NEW varModifires*| varModifires+) (variable | varInit) (COMA (variable | varInit))*;
 varInit:			variable ASSIGMENT (expresion | arrayInit);
-functionDecl:		(funcDeclModif)? tag? IDENTIFIER OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
-operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
+functionDecl:		(funcDeclModif)? tag? IDENTIFIER functionDeclarationParams;
+operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded functionDeclarationParams;
+functionDeclarationParams: OPEN_PARENTHESIS (declParams (COMA declParams)*)? ellipse? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
 nativeAssigment:	ASSIGMENT IDENTIFIER SEMI;
 tag:				(IDENTIFIER|(CURLY_OPEN_BRACKET IDENTIFIER (COMA IDENTIFIER)* CURLY_CLOSE_BRACKET)) COLON;
 
@@ -71,7 +72,7 @@ assigments:
 ;
 
 declParams:			(CONST)? (reference)? variable (ASSIGMENT (expresion|arrayInit))?;	
-ellipse:			COMA tag? PERIOD_FUNC;
+ellipse:			COMA? tag? PERIOD_FUNC;
 
 reference:			BIT_AND;
 

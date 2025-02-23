@@ -13,6 +13,7 @@ import { VarDeclarationContext } from "./pawnParser";
 import { VarInitContext } from "./pawnParser";
 import { FunctionDeclContext } from "./pawnParser";
 import { OperatorOverloadContext } from "./pawnParser";
+import { FunctionDeclarationParamsContext } from "./pawnParser";
 import { NativeAssigmentContext } from "./pawnParser";
 import { TagContext } from "./pawnParser";
 import { VariableContext } from "./pawnParser";
@@ -201,6 +202,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitOperatorOverload?: (ctx: OperatorOverloadContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.functionDeclarationParams`.
+	 * @param ctx the parse tree
+	 */
+	enterFunctionDeclarationParams?: (ctx: FunctionDeclarationParamsContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.functionDeclarationParams`.
+	 * @param ctx the parse tree
+	 */
+	exitFunctionDeclarationParams?: (ctx: FunctionDeclarationParamsContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.nativeAssigment`.

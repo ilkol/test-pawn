@@ -13,6 +13,7 @@ import { VarDeclarationContext } from "./pawnParser";
 import { VarInitContext } from "./pawnParser";
 import { FunctionDeclContext } from "./pawnParser";
 import { OperatorOverloadContext } from "./pawnParser";
+import { FunctionDeclarationParamsContext } from "./pawnParser";
 import { NativeAssigmentContext } from "./pawnParser";
 import { TagContext } from "./pawnParser";
 import { VariableContext } from "./pawnParser";
@@ -164,6 +165,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitOperatorOverload?: (ctx: OperatorOverloadContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.functionDeclarationParams`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitFunctionDeclarationParams?: (ctx: FunctionDeclarationParamsContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.nativeAssigment`.
