@@ -346,6 +346,12 @@ export class PawnListener implements pawnListener
 				last.tag = node;
 				last.isTaged = true;
 			}
+			else if(last instanceof Ellipse) {
+				last.tag = node;
+			}
+			else {
+				this.addDiagnostic(l10n.t("Unexpected tag operator"), DiagnosticSeverity.Error, node.pos);
+			}
 		
 		}
 	}
