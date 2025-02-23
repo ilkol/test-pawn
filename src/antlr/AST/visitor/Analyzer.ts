@@ -268,18 +268,16 @@ export class Analyzer extends BaseVisitor
 				}
 				else
 				{
-					if(func) {
+					let tmpFunc: FunctionDeclaration = func;
+					node.vars.forEach(element => {
+						this.compareTag(tmpFunc.parameters[param], element, node.vars[param].pos);
+						param++;
+					});
 
-						node.vars.forEach(element => {
-							this.compareTag(func.parameters[param], element, node.vars[param].pos);
-							param++;
-						});
-	
-						for(let i = param; i < func.parameters.length; i++) {
-							if(func.parameters[i].defaultValue) continue;
-							this.addDiagnostic(new DiagnosticError(l10n.t("Expected {0} parameters, but passed {1}", func.parameters.length, node.vars.length), node.idPos));
-							break;
-						}
+					for(let i = param; i < tmpFunc.parameters.length; i++) {
+						if(tmpFunc.parameters[i].defaultValue) continue;
+						this.addDiagnostic(new DiagnosticError(l10n.t("Expected {0} parameters, but passed {1}", tmpFunc.parameters.length, node.vars.length), node.idPos));
+						break;
 					}
 				}
 			}
