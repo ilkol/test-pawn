@@ -32,6 +32,16 @@ export function findFullMultyLineDerictive(input: string) {
 
 	while(stream.getChar() !== '\0') {
 		char = stream.getChar();
+		
+		if (isStringStrating(stream)) {
+			result += getString(stream);
+			if (stream.char === '\0') {
+				break;        /* abort loop on error */
+			}
+		}
+		if(char === '/') {
+			break;
+		}
 		if(char === "\r" || char === "\n") {
 			if(stream.getShiftChar(-1) !== '\\') {
 				break;
@@ -403,6 +413,32 @@ function skipstring(stream: LikeCCharStream)
 
 	}
     return stream;
+}
+function getString(stream: LikeCCharStream)
+{
+    let 
+    	flags: number = 0,
+		result = "";
+	;
+
+    while (stream.char == '!' || stream.char == '\\') {
+        if (stream.char == '\\')
+            flags = 1;
+		result += stream.char;
+        stream.curIndex++;
+    }
+
+	let endquote : string = stream.char;
+
+	// Пропускаем открывающую ковычку
+	result += stream.char;
+	stream.curIndex++;
+    while (stream.char !== endquote && stream.char !== '\0') {
+		result += stream.char;
+        litchar(stream, flags);
+
+	}
+    return result;
 }
 
 function litchar(lptr: LikeCCharStream, flags: number): number
