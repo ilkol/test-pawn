@@ -289,6 +289,7 @@ export class PawnListener implements pawnListener
 
 			let decl = <Declarations>this.nodes.peek();
 			node.vars.forEach(element => {
+				element.tag = new Tag([node.id]);
 				decl.declarations.push(element);
 			});
 		}

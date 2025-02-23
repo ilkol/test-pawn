@@ -595,33 +595,50 @@ export class Analyzer extends BaseVisitor
 
 
 	private isEqualTag(a: Tag, b: Tag): boolean {
-		if(a.tags.length === 1 && b.tags.length) {
-			return a.id === b.id || (a.id === "_" && b.id === "bool") || (b.id === "_" && a.id === "bool");
-		}
-		else if(a.tags.length === 1) {
-			const tag = a.tags[0];
-			for(var element of b.tags)
-			{
-				if(tag === element) return true;
-			}
-		}
-		else if(b.tags.length === 1) {
-			const tag = b.tags[0];
-			for(var element of a.tags)
-			{
-				if(tag === element) return true;
-			}
-		
-		}
-		else {
-			for(var element of a.tags)
-			{
-				if(b.tags.indexOf(element) !== -1) return true;
+		for(let first of a.tags) {
+			for(let second of b.tags) {
+				if(this.isEqualSimpleTag(first,second)) {
+					return true;
+				}
 			}
 		}
 		return false;
+		// console.error(a, b);
+		// if(a.tags.length === 1 && b.tags.length) {
+		// 	return a.id === b.id || (a.id === "_" && b.id === "bool") || (b.id === "_" && a.id === "bool");
+		// }
+		// else if(a.tags.length === 1) {
+		// 	const tag = a.tags[0];
+		// 	for(var element of b.tags)
+		// 	{
+		// 		if(tag === element) return true;
+		// 	}
+		// }
+		// else if(b.tags.length === 1) {
+		// 	const tag = b.tags[0];
+		// 	for(var element of a.tags)
+		// 	{
+		// 		if(tag === element) return true;
+		// 	}
+		
+		// }
+		// else {
+		// 	for(var element of a.tags)
+		// 	{
+		// 		console.log(element, b.tags.indexOf(element));
+		// 		if(b.tags.indexOf(element) !== -1) return true;
+		// 	}
+		// }
+		// return false;
 
 	}
+	private isEqualSimpleTag(a: string, b: string) {
+		if(a === b) {
+			return true;
+		}
+		return a === "_" && b === "bool" || a === "_" && b === "bool";
+	}
+
 	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
 		if(!this.isEqualTag(a.tag, b.tag)) {
 			this.addDiagnostic(new DiagnosticWarning("warning 213: " + l10n.t("Tag mismatch") + ` (${a.tag.tagString}, ${b.tag.tagString}))`, errorRange));
