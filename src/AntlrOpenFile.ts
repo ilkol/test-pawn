@@ -159,7 +159,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this.functions = analyzer.functions;
 		this.prepareSignatures();
 	
-		// console.log(this.AST);
+		console.log(this.AST);
 
 		analyzer.functionsDeclarations.forEach((value, key) => {	
 			const keyMap = this.fileManager.definitionProvider.definitions.get(key);

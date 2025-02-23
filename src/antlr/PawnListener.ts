@@ -5,7 +5,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, ArrayInitContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -56,6 +56,8 @@ import { BinarLiteral } from "./AST/Nodes/Literals/BinarLiteral";
 import { ArrayInit } from "./AST/Nodes/Literals/ArrayInit";
 import { Break } from "./AST/Nodes/Cycles/Break";
 import { Continue } from "./AST/Nodes/Cycles/Continue";
+import { ArrayIndex } from "./AST/Nodes/Operators/ArrayIndex";
+import { ArrayChar } from "./AST/Nodes/Operators/ArrayChar";
 
 export class PawnListener implements pawnListener
 {
@@ -680,10 +682,13 @@ export class PawnListener implements pawnListener
 		}
 	};
 	
+
 	enterFunctionCallOperator(ctx: FunctionCallOperatorContext): void {
 		let node = new FunctionCall();	
 		this.nodes.push(node);
 	}
+
+	
 
 	exitFunctionCallOperator(ctx: FunctionCallOperatorContext): void 
 	{
@@ -1173,6 +1178,79 @@ export class PawnListener implements pawnListener
 			}
 		}
 	};
+
+	enterArrayIndexOperator(ctx: ArrayIndexOperatorContext) {
+		this.nodes.push(new UnarOperator());
+	}
+	exitArrayIndexOperator(ctx: ArrayIndexOperatorContext) {
+		const node = <ASTNode>this.nodes.pop();
+		if(!(node instanceof ArrayIndex || node instanceof ArrayChar)) {
+			console.error(node)
+			this.addDiagnostic(l10n.t("Unexpected node (AST error)"), DiagnosticSeverity.Error, node.pos);
+			return;
+		}
+		if(ctx.stop)
+		{	
+			node.setPos(ctx.start, ctx.stop);
+
+			const last = this.nodes.peek();	
+			if(last instanceof Expresion)
+			{
+				last.expresion = node;
+			}
+			else {
+				console.log(last);
+				this.addDiagnostic(l10n.t("Unexpected array"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+	}
+	enterArrayOperatorIndex(ctx: ArrayOperatorIndexContext) {
+		this.nodes.push(new ArrayIndex());
+	}
+	exitArrayOperatorIndex(ctx: ArrayOperatorIndexContext) {
+		this.enterArrayIndexOper(ctx);
+	}
+	enterArrayOperatorChar(ctx: ArrayOperatorCharContext) {
+		this.nodes.push(new ArrayChar());
+	}
+	exitArrayOperatorChar(ctx: ArrayOperatorCharContext) {
+		this.enterArrayIndexOper(ctx);
+	}
+
+	private enterArrayIndexOper(ctx: ArrayOperatorIndexContext|ArrayOperatorCharContext) {
+		const node = <ASTNode>this.nodes.pop();
+		if(!(node instanceof ArrayIndex || node instanceof ArrayChar)) {
+			console.error(node)
+			this.addDiagnostic(l10n.t("Unexpected node (AST error)"), DiagnosticSeverity.Error, node.pos);
+			return;
+		}
+		if(ctx.stop)
+		{	
+			node.setPos(ctx.start, ctx.stop);
+
+			const last = this.nodes.pop();	
+			if(last instanceof UnarOperator)
+			{
+				if(!last.value) {
+					this.addDiagnostic(l10n.t("Symbol not found"), DiagnosticSeverity.Error, last.pos);
+					this.nodes.push(last);
+					return;
+				}
+				node.left = last.value;
+			}
+			else if(last instanceof ArrayIndex || last instanceof ArrayChar)
+			{
+				node.left = last;
+				
+			}
+			else {
+				console.log(last);
+				this.addDiagnostic(l10n.t("Expected symbol or array index/char operator"), DiagnosticSeverity.Error, node.pos);
+				return;
+			}
+			this.nodes.push(node);
+		}
+	}
 
 	exitPredefinedConstants(ctx: PredefinedConstantsContext) {
 		const node = new Variable();

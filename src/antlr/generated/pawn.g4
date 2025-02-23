@@ -155,10 +155,16 @@ binarOperator:
 
     assigmentOperator |     // v = e
 
-    arrayIndexOperator |    // a[e]    
-    arrayCharOperator |     // a{e}
+	arrayIndexOperator |
     tagOperator             // tagname : e
 
+;
+
+arrayIndexOperator:
+	symbol (
+		arrayOperatorIndex |    // a[e]    
+		arrayOperatorChar     // a{e}
+	)+    
 ;
 
 binarExpressionOperators:
@@ -203,11 +209,11 @@ assigmentOperator:
 ;
 
 
-arrayIndexOperator: 
-    IDENTIFIER (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)+
+arrayOperatorIndex: 
+    (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)
 ;
-arrayCharOperator: 
-    IDENTIFIER (CURLY_OPEN_BRACKET expresion? CURLY_CLOSE_BRACKET)+
+arrayOperatorChar: 
+    (CURLY_OPEN_BRACKET expresion? CURLY_CLOSE_BRACKET)
 ;
 functionCallOperator:
     IDENTIFIER OPEN_PARENTHESIS (expresion (COMA expresion)*)? CLOSE_PARENTHESIS
@@ -219,7 +225,7 @@ tagOperator:
 symbol: IDENTIFIER;
 
 
-lvalue: symbol | arrayIndexOperator | arrayCharOperator;
+lvalue: symbol | arrayIndexOperator;
 
 postIncrement: lvalue INCREMENTS;
 preIncrement: INCREMENTS lvalue;

@@ -71,10 +71,11 @@ import { UnarOperatorContext } from "./pawnParser";
 import { PreExpresionOperatorContext } from "./pawnParser";
 import { PreSymbolOperatorContext } from "./pawnParser";
 import { BinarOperatorContext } from "./pawnParser";
+import { ArrayIndexOperatorContext } from "./pawnParser";
 import { BinarExpressionOperatorsContext } from "./pawnParser";
 import { AssigmentOperatorContext } from "./pawnParser";
-import { ArrayIndexOperatorContext } from "./pawnParser";
-import { ArrayCharOperatorContext } from "./pawnParser";
+import { ArrayOperatorIndexContext } from "./pawnParser";
+import { ArrayOperatorCharContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
 import { TagOperatorContext } from "./pawnParser";
 import { SymbolContext } from "./pawnParser";
@@ -840,6 +841,17 @@ export interface pawnListener extends ParseTreeListener {
 	exitBinarOperator?: (ctx: BinarOperatorContext) => void;
 
 	/**
+	 * Enter a parse tree produced by `pawnParser.arrayIndexOperator`.
+	 * @param ctx the parse tree
+	 */
+	enterArrayIndexOperator?: (ctx: ArrayIndexOperatorContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.arrayIndexOperator`.
+	 * @param ctx the parse tree
+	 */
+	exitArrayIndexOperator?: (ctx: ArrayIndexOperatorContext) => void;
+
+	/**
 	 * Enter a parse tree produced by `pawnParser.binarExpressionOperators`.
 	 * @param ctx the parse tree
 	 */
@@ -862,26 +874,26 @@ export interface pawnListener extends ParseTreeListener {
 	exitAssigmentOperator?: (ctx: AssigmentOperatorContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `pawnParser.arrayIndexOperator`.
+	 * Enter a parse tree produced by `pawnParser.arrayOperatorIndex`.
 	 * @param ctx the parse tree
 	 */
-	enterArrayIndexOperator?: (ctx: ArrayIndexOperatorContext) => void;
+	enterArrayOperatorIndex?: (ctx: ArrayOperatorIndexContext) => void;
 	/**
-	 * Exit a parse tree produced by `pawnParser.arrayIndexOperator`.
+	 * Exit a parse tree produced by `pawnParser.arrayOperatorIndex`.
 	 * @param ctx the parse tree
 	 */
-	exitArrayIndexOperator?: (ctx: ArrayIndexOperatorContext) => void;
+	exitArrayOperatorIndex?: (ctx: ArrayOperatorIndexContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `pawnParser.arrayCharOperator`.
+	 * Enter a parse tree produced by `pawnParser.arrayOperatorChar`.
 	 * @param ctx the parse tree
 	 */
-	enterArrayCharOperator?: (ctx: ArrayCharOperatorContext) => void;
+	enterArrayOperatorChar?: (ctx: ArrayOperatorCharContext) => void;
 	/**
-	 * Exit a parse tree produced by `pawnParser.arrayCharOperator`.
+	 * Exit a parse tree produced by `pawnParser.arrayOperatorChar`.
 	 * @param ctx the parse tree
 	 */
-	exitArrayCharOperator?: (ctx: ArrayCharOperatorContext) => void;
+	exitArrayOperatorChar?: (ctx: ArrayOperatorCharContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.functionCallOperator`.

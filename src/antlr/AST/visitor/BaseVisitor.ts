@@ -30,9 +30,25 @@ import { CaseStatement } from "../Nodes/Conditions/switch/CaseStatement";
 import { DefaultStatement } from "../Nodes/Conditions/switch/DefaultStatement";
 import { SwitchStatement } from "../Nodes/Conditions/switch/SwitchStatement";
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
+import { ArrayChar } from "../Nodes/Operators/ArrayChar";
+import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitOperatorArrayChar(node: ArrayChar): void {
+		this.beforeVisitOperatorArrayChar(node);
+		node.left?.accept(this);
+		node.right?.accept(this);
+		this.afterVisitOperatorArrayChar(node);
+	}
+
+	visitOperatorArrayIndex(node: ArrayIndex): void {
+		this.beforeVisitOperatorArrayIndex(node);
+		node.left?.accept(this);
+		node.right?.accept(this);
+		this.afterVisitOperatorArrayIndex(node);
+	}
+
 	visitSwitchStatement(node: SwitchStatement): void {
 		node.condition?.accept(this);
 		node.cases.forEach(el => {
@@ -203,7 +219,13 @@ export abstract class BaseVisitor implements IVisitor
 			element.accept(this);
 		});
 	}
+
+	abstract beforeVisitOperatorArrayIndex(node: ArrayChar): void;
+	abstract afterVisitOperatorArrayIndex(node: ArrayChar): void;
 	
+	abstract beforeVisitOperatorArrayChar(node: ArrayChar): void;
+	abstract afterVisitOperatorArrayChar(node: ArrayChar): void;
+
 	abstract beforeVisitDeclarations(node: Declarations): void;
 	abstract afterVisitDeclarations(node: Declarations): void;
 	

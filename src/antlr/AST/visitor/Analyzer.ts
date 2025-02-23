@@ -45,9 +45,22 @@ import * as funcDef from "../../../Linking/FunctionDefinition";
 import * as funcCall from "../../../Linking/FunctionCall";
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 import { DiagnosticHint } from "../../diagnostic/DiagnosticHint";
+import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitOperatorArrayIndex(node: ArrayChar): void {
+
+	}
+	afterVisitOperatorArrayIndex(node: ArrayChar): void {
+
+	}
+	beforeVisitOperatorArrayChar(node: ArrayChar): void {
+		
+	}
+	afterVisitOperatorArrayChar(node: ArrayChar): void {
+
+	}
 	private undefindedFunctions: Map<string, Range[]> = new Map();
 
 	beforeVisitBoolLiteral(node: BoolLiteral): void {
