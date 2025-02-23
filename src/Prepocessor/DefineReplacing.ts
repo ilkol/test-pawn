@@ -12,8 +12,40 @@ export function testPreprocess(code: string, define: Define) {
 	}
 	return "";
 }
+export function findFullMultyLineDerictive(input: string) {
+	let stream = new LikeCCharStream(input);
+		
 
-class CCharStream {
+	while(stream.char === ' ') {
+		stream.curIndex++;
+	}
+	if(stream.char === '\0') {
+		return {rest: "", endlCount: 0, fullLength: 0};
+	}
+
+	let result = "";
+
+
+	let char;
+		
+	let endlCount = 0;
+
+	while(stream.getChar() !== '\0') {
+		char = stream.getChar();
+		if(char === "\r" || char === "\n") {
+			if(stream.getShiftChar(-1) !== '\\') {
+				break;
+			}
+			endlCount++;
+		}
+		result += char;
+		stream.curIndex++;
+	}
+
+	return {rest: result, endlCount, fullLength: stream.curIndex};
+}
+
+class LikeCCharStream {
 	public curIndex: number = 0;
 
 	get char(): string {
@@ -79,7 +111,7 @@ function substallpatterns(line: string) {
 		subst: Define|null = null
 	;
 	
-	let stream = new CCharStream(line);
+	let stream = new LikeCCharStream(line);
 	
 
 	// Обход строки до ее конца
@@ -140,7 +172,7 @@ function substallpatterns(line: string) {
 
 let sc_needsemicolon = true;
 
-function substpattern(stream: CCharStream, define: Define)
+function substpattern(stream: LikeCCharStream, define: Define)
 {
     let prefixlen: number;
 	let instring: number;
@@ -151,7 +183,7 @@ function substpattern(stream: CCharStream, define: Define)
 	let args = [];
 	let arg = 0;
     let sourceShift = define.prefixLen;
-    let pattern = new CCharStream(define.postPrefix);
+    let pattern = new LikeCCharStream(define.postPrefix);
     let match = 1;         /* so far, pattern matches */
     while (match && stream.getShiftChar(sourceShift) != '\0' && pattern.char != '\0') {
 		if (pattern.char == '%') {
@@ -169,7 +201,7 @@ function substpattern(stream: CCharStream, define: Define)
                 /* match the source string up to the character after the digit
                  * (skipping strings in the process
                  */
-				let e = new CCharStream(stream.source);
+				let e = new LikeCCharStream(stream.source);
 				e.curIndex = stream.curIndex + sourceShift;
                 while (e.char != pattern.char && e.char != '\0' && e.char != '\n') {
 					// console.log(e.getChar());
@@ -238,7 +270,7 @@ function substpattern(stream: CCharStream, define: Define)
     if (match) {
         /* calculate the length of the substituted string */
         instring = 0;
-        for (let e = new CCharStream(define.replacement), len = 0; e.char != '\0'; e.curIndex++) {
+        for (let e = new LikeCCharStream(define.replacement), len = 0; e.char != '\0'; e.curIndex++) {
             if (e.getChar() == '%' && isdigit(e.getShiftChar(1)) && !instring) {
                 let argNum = +e.getShiftChar(1);
 				let arg = args[argNum];
@@ -258,7 +290,7 @@ function substpattern(stream: CCharStream, define: Define)
 		instring = 0;
 		stream.strdel(sourceShift);
 		sourceShift = 0;
-		for (let e = new CCharStream(define.replacement); e.char != '\0'; e.curIndex++) {
+		for (let e = new LikeCCharStream(define.replacement); e.char != '\0'; e.curIndex++) {
 			if (e.getChar() == '%' && isdigit(e.getShiftChar(1)) && !instring) {
 				let argNum = +e.getShiftChar(1);
 				let arg = args.at(argNum);
@@ -287,7 +319,7 @@ function substpattern(stream: CCharStream, define: Define)
     return match;
 }
 
-function skippgroup(stream: CCharStream): CCharStream
+function skippgroup(stream: LikeCCharStream): LikeCCharStream
 {
     let nest = 0;
     let open = stream.char;
@@ -326,13 +358,13 @@ function skippgroup(stream: CCharStream): CCharStream
 }
 
 
-function find_subst(stream: CCharStream, len: number)
+function find_subst(stream: LikeCCharStream, len: number)
 {
     let item = substindex.get(stream.char);
     return item != null ? find_stringpair(item, stream, len) : null;
 }
 
-function find_stringpair(array: Define[], stream: CCharStream, matchlength: number): Define|null
+function find_stringpair(array: Define[], stream: LikeCCharStream, matchlength: number): Define|null
 {
 	for(let define of array) {
 		if (matchlength !== define.prefixLen) {
@@ -350,7 +382,7 @@ function alphanum(c: string): boolean
     return (alpha(c) || isdigit(c));
 }
 
-function skipstring(stream: CCharStream)
+function skipstring(stream: LikeCCharStream)
 {
     let 
     	flags: number = 0
@@ -373,10 +405,10 @@ function skipstring(stream: CCharStream)
     return stream;
 }
 
-function litchar(lptr: CCharStream, flags: number): number
+function litchar(lptr: LikeCCharStream, flags: number): number
 {
     let c = 0;
-    let cptr: CCharStream = new CCharStream(lptr.source);
+    let cptr: LikeCCharStream = new LikeCCharStream(lptr.source);
 	cptr.curIndex = lptr.curIndex;
 
 	if ((flags & 1) != 0 || cptr.char != '\\') {  /* no escape character */
@@ -499,7 +531,7 @@ function alpha(c: string): boolean
 {
     return /[a-zA-Z_@]/.test(c);
 }
-function isStringStrating(stream: CCharStream): boolean
+function isStringStrating(stream: LikeCCharStream): boolean
 {
 	let c = stream.char;
     if (c === '\"' || c === '\'') {

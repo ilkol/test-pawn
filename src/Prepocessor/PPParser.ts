@@ -16,7 +16,7 @@ import { Pragma } from "./Pragma";
 import { Undef } from "./Undef";
 import { ElseIf } from "./ElseIf";
 import * as vscode from 'vscode';
-import { testPreprocess } from "./DefineReplacing";
+import { findFullMultyLineDerictive, testPreprocess } from "./DefineReplacing";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -80,31 +80,43 @@ export class PPParser
 
 	private findFullMultyLineDerictive(rest: string, endIndex: number, strartStr: string)
 	{
-		let endlCount = 0;
-		let postDir = strartStr;
-		while(rest[rest.length -1] === "\\") {
-			endlCount++;
-			rest = rest.substring(0, rest.length -1);
-			rest += "\\" + postDir.substring(0,2);
-			//Обрезаем все, что спереди и нам не нужно
-			postDir = postDir.substring(2);
-			//Ищем конец текущей строки
-			const findEndreg = /(?<!\\)(?:(?=\n)|(?<=^\n|[^\\]\n)|(?=$))/;
-			const postMatch = findEndreg.exec(postDir);
-			if(postMatch === null) {
-				throw new Error("Не найдено продолжение макроса");
-			}
-			// Обрезаем по конец добавляемой строки, не включая символ '\'
-			const newLine = postDir.substring(0, postMatch.index - 1);
+
+		let result = findFullMultyLineDerictive(rest + strartStr);
+
+		return {
+			rest: result.rest,
+			endIndex: result.fullLength,
+			endlCount: result.endlCount
+		};
+
+
+
+		// return rest;
+		// console.log(rest + strartStr);
+		// let endlCount = 0;
+		// let postDir = strartStr;
+		// while(rest[rest.length -1] === "\\") {
+		// 	endlCount++;
+		// 	rest = rest.substring(0, rest.length -1);
+		// 	rest += "\\" + postDir.substring(0,2);
+		// 	//Обрезаем все, что спереди и нам не нужно
+		// 	postDir = postDir.substring(2);
+		// 	//Ищем конец текущей строки
+		// 	const findEndreg = /(?<!\\)(?:(?=\n)|(?<=^\n|[^\\]\n)|(?=$))/;
+		// 	const postMatch = findEndreg.exec(postDir);
+		// 	if(postMatch === null) {
+		// 		throw new Error("Не найдено продолжение макроса");
+		// 	}
+		// 	// Обрезаем по конец добавляемой строки, не включая символ '\'
+		// 	const newLine = postDir.substring(0, postMatch.index - 1);
 			
 			
-			postDir = postDir.substring(postMatch.index - 1);
-			rest += newLine;
+		// 	postDir = postDir.substring(postMatch.index - 1);
+		// 	rest += newLine;
 			
-			endIndex += newLine.length + 2;			
-		}
-		// rest = rest.replace(/\\([^ntdifr%\\])/g, " $1");
-		return {rest, endIndex, endlCount};
+		// 	endIndex += newLine.length + 2;			
+		// }
+		// // rest = rest.replace(/\\([^ntdifr%\\])/g, " $1");
 	}
 
 	/**
@@ -113,8 +125,6 @@ export class PPParser
 	 * @returns код с удаленными командами препроцессора
 	 */
 	public collectDirectives(code: string): string {
-
-
 
 		const reg = /^([\t ]*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
@@ -129,15 +139,12 @@ export class PPParser
 			let endIndex = match.index + fullMatch.length;
 			const restIndex = rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
-
 			// КРАЙНЕ ТУПОЕ РЕШЕНИЕ, но работает. Пока я не вижу как можно написать лучше, к сожалению :(
 			let res = this.findFullMultyLineDerictive(rest, endIndex, code.substring(match.index + fullMatch.length));
 			rest = res.rest;
-			endIndex = res.endIndex;
-			
+			endIndex = restIndex + res.endIndex;
 			
 			this.addNewDirective(directive, rest, directiveIndex, restIndex, endIndex);
-
 
 			changes.push({
 				start: directiveIndex,
