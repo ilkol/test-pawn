@@ -401,6 +401,7 @@ fragment SIMPLEESCAPESEQUENCE:
     | '\\' ('\r' '\n'? | '\n')
     | '\\t'
     | '\\v'
+	| '\\0'
 ;
 
 IDENTIFIER:		[@a-zA-Z_][@a-zA-Z0-9_]*;
