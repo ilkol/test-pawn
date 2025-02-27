@@ -442,6 +442,7 @@ export class Analyzer extends BaseVisitor
 						this.addDiagnostic(new DiagnosticHint(l10n.t("Function \"{0}\" used before definition", node.id), range));
 					});
 					this.undefindedFunctions.delete(node.id);
+					node.used = true;
 				}
 
 				const array = this.functionsDeclarations.get(node.id);
