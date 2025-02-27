@@ -548,6 +548,9 @@ export class Analyzer extends BaseVisitor
 					stock = true;
 					diagnosticMsg = l10n.t("Enum member");
 				}
+				else if(element instanceof FunctionDeclarationParameter){
+					diagnosticMsg = l10n.t("Parameter");
+				}
 				else {
 					if((<VarDeclaration>element).isConstant) {
 						diagnosticMsg = l10n.t("Constant");
@@ -557,7 +560,7 @@ export class Analyzer extends BaseVisitor
 						diagnosticMsg = l10n.t("Variable");
 						stock = (<VarDeclaration>element).modifires.indexOf(VariableModifire.public) !== -1;
 					}
-				}
+				}				
 				
 				if(!stock) {
 					diagnostic = new DiagnosticWarning(l10n.t("{0} \"{1}\" is never used", diagnosticMsg, key), element.idPos);
