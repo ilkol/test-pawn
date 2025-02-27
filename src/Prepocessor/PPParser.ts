@@ -63,8 +63,6 @@ export class PPParser
 			define = new Define(this.file, defineStr,0,0,0);
 			this.defines.set(define.pattern, [define]);
 		});
-
-
 	}
 
 
