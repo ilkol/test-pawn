@@ -44,8 +44,28 @@ export class PPParser
 		readonly tokensManager: SemanticTokensManager,
 		readonly diagnosticManager: DiagnosticManager) {
 
+			this.addDefaultDefines();
 	}
 
+	private addDefaultDefines() {
+		const defaultDefines = [
+			"EOS '\\0'",
+			"cellmax 214748364",
+			"cellmin -214748364",
+			"cellbits 32",
+			"charbit 8",
+			"charmax 254",
+			"ucharmax 16777215"
+		];
+
+		let define;
+		defaultDefines.forEach(defineStr => {
+			define = new Define(this.file, defineStr,0,0,0);
+			this.defines.set(define.pattern, [define]);
+		});
+
+
+	}
 
 
 	// parse(): string
