@@ -31,6 +31,8 @@
 - Улучшение работы анализа кода.
 - Увеличение количества ошибок, которые может найти анализатор.
 - Быстрые исправления найденных ошибок (quick fix).
+- Отслеживание регистрируемых PVar-ов
+- Подсказки констант в структурированных массивах
 
 ### Сборка проекта
 
@@ -87,6 +89,8 @@ The extension includes:
 - Improved code analysis performance
 - Increasing the number of errors that the analyzer can find
 - Quick fixes for found errors (quick fix)
+- Tracking of registered PVars
+- Constant hints in structured arrays
 
 ### Build project
 
