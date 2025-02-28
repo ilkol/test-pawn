@@ -26,5 +26,10 @@ export class UnarOperator extends AbstractOperator
 	public get tag(): Tag {
 		return this.expresion?.tag ?? new DefaultTag();
 	}
+	public set tag(v: Tag) {
+		if(this.expresion) {
+			this.expresion.tag = v;
+		}
+	}
 
 }
