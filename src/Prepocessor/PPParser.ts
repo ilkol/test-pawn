@@ -53,7 +53,7 @@ export class PPParser
 			"cellmax 214748364",
 			"cellmin -214748364",
 			"cellbits 32",
-			"charbit 8",
+			"charbits 8",
 			"charmax 254",
 			"ucharmax 16777215"
 		];
