@@ -399,7 +399,9 @@ export class Analyzer extends BaseVisitor
 		
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
-		this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addVar(variable));		
+		if(node.id) {
+			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addVar(variable));		
+		}
 		this.tokens.addToken(node.idPos, SemanticTokens.enum, [SemanticTokensModifires.declaration]);
 	}
 	
