@@ -2,9 +2,12 @@ import { Range } from "vscode";
 import { IVisitor } from "../visitor/IVisitor";
 import { IHasID } from "./IHasID";
 import { Expresion } from "./Expresion";
+import { VarDeclaration } from "./Variables/VarDeclaration";
 
 export class Variable extends Expresion implements IHasID
 {
+
+	public declaration?: VarDeclaration;
 
     constructor(instance: Variable|undefined = undefined) {
         super();

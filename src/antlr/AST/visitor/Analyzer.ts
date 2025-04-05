@@ -69,7 +69,11 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitAssigment(node: AssigmentOperator): void {
-	
+		if(node.left?.declaration) {
+			if(node.left?.declaration.isConstant) {
+				this.addDiagnostic(new DiagnosticError(l10n.t("error 022: must be lvalue (non-constant)"), node.left.pos));
+			}
+		}
 	}
 	beforeVisitArrayDeclaration(node: ArrayDeclaration): void {
 
@@ -197,6 +201,10 @@ export class Analyzer extends BaseVisitor
 					}
 				}
 			}
+
+			node.declaration = variable;
+			variable.references.push(node);
+
 			const token = variable instanceof FunctionDeclarationParameter ? SemanticTokens.parameter : SemanticTokens.variable;
 			this.tokens.addToken(node.idPos, token, this.checkVarModifires(variable.modifires));
 			if(!node.isTaged)

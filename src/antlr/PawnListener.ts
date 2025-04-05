@@ -1004,11 +1004,15 @@ export class PawnListener implements pawnListener
 		this.nodes.push(node);
 	};
 	exitBinarExpressionOperator =(ctx: BinarExpressionOperatorContext) => {
-		const node = <BinarOperator>this.nodes.pop();
+		let node = <BinarOperator>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			node.operator = ctx._operator.text;
 			
+			if(node.operator === "=") {
+				node = AssigmentOperator.copy(node);
+			}
+
 			const last = this.nodes.peek();
 			if(last instanceof Expresion) {
 				node.left = last.expresion!;

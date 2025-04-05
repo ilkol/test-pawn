@@ -28,7 +28,7 @@ export class Expresion extends AbstractStatement {
 		this.translateTag = v;
 	}
 
-	private exp: Expresion|undefined;
+	protected exp: Expresion|undefined;
 
 	public accept(visitor: IVisitor): void {
 		if(this.exp) {

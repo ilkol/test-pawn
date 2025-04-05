@@ -14,7 +14,7 @@ export class BinarOperator extends AbstractOperator
 	public accept(visitor: IVisitor): void {
 		visitor.visitBinarOperator(this);
 	}
-	private _left: Expresion | undefined;
+	protected _left: Expresion | undefined;
 
 	
 	public get left() : Expresion | undefined {

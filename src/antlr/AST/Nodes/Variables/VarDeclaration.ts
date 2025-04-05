@@ -1,5 +1,6 @@
 import { IVisitor } from "../../visitor/IVisitor";
 import { VariableModifire } from "../Operators/OperatorNew";
+import { Variable } from "../Variable";
 import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 
 
@@ -7,6 +8,8 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 {
 	name = "объявление переменной";
 	protected _modifires: VariableModifire[] = [];
+
+	public references: Variable[] = [];
 
 	constructor(instance: VarDeclaration | undefined = undefined) {
 		super(instance);
