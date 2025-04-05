@@ -340,18 +340,17 @@ export class PPParser
 
 	private async processDefine(code: string, define: Define)
 	{
-
 		let lastindex = undefined;
 		if(define.undef) {
 			lastindex = define.undef.curStartIndex;
 		}
-		const startPos = define.curEndIndex;
+		const startPos = define.curStartIndex;
 		let stoptPos: number;
 		if(lastindex) {
 			stoptPos = lastindex;
 		}
 		else {
-			stoptPos =  code.length - 1;
+			stoptPos =  code.length;
 		}
 		let offset = 0;
 	
