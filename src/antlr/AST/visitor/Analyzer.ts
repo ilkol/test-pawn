@@ -197,7 +197,8 @@ export class Analyzer extends BaseVisitor
 					}
 				}
 			}
-			this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(variable.modifires));
+			const token = variable instanceof FunctionDeclarationParameter ? SemanticTokens.parameter : SemanticTokens.variable;
+			this.tokens.addToken(node.idPos, token, this.checkVarModifires(variable.modifires));
 			if(!node.isTaged)
 				node.tag = variable.tag;
 		}
@@ -463,7 +464,6 @@ export class Analyzer extends BaseVisitor
 			selectRange = node.code.pos;
 		}
 		const symbol = new DocumentSymbol(node.id, "function", SymbolKind.Function, symbolRange, selectRange);
-		// symbol.tags = [SymbolTag.Deprecated];
 		this.symbolsManager.addSymbol(symbol);
 
 		this.extendScope();
