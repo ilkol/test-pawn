@@ -151,7 +151,7 @@ export abstract class AbstractOpenFile
 			{label: "cellbits", doc: l10n.t("The size of a cell in bits; usually `32`.")},
 			{label: "cellmax", doc: l10n.t("The largest valid positive value that a cell can hold; usually `214748364`.")},
 			{label: "cellmin", doc: l10n.t("The largest valid negative value that a cell can hold; usually `-214748364`.")},
-			{label: "charbit", doc: l10n.t("The size of a packed character in bits; usually `8`.")},
+			{label: "charbits", doc: l10n.t("The size of a packed character in bits; usually `8`.")},
 			{label: "charmax", doc: l10n.t("The largest valid packed character value; a packed character is usually 8-bit and the maximum valid value isthus `25`")},
 		];
 

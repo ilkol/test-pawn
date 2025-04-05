@@ -23,8 +23,9 @@ enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEF
 
 varDeclaration:     (NEW varModifires*| varModifires+) (variable | varInit) (COMA (variable | varInit))*;
 varInit:			variable ASSIGMENT (expresion | arrayInit);
-functionDecl:		(funcDeclModif)? tag? IDENTIFIER OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
-operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded OPEN_PARENTHESIS (declParams (COMA declParams)* ellipse?)? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
+functionDecl:		(funcDeclModif)? tag? IDENTIFIER functionDeclarationParams;
+operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded functionDeclarationParams;
+functionDeclarationParams: OPEN_PARENTHESIS (declParams (COMA declParams)*)? ellipse? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
 nativeAssigment:	ASSIGMENT IDENTIFIER SEMI;
 tag:				(IDENTIFIER|(CURLY_OPEN_BRACKET IDENTIFIER (COMA IDENTIFIER)* CURLY_CLOSE_BRACKET)) COLON;
 
@@ -71,7 +72,7 @@ assigments:
 ;
 
 declParams:			(CONST)? (reference)? variable (ASSIGMENT (expresion|arrayInit))?;	
-ellipse:			COMA tag? PERIOD_FUNC;
+ellipse:			COMA? tag? PERIOD_FUNC;
 
 reference:			BIT_AND;
 
@@ -155,10 +156,16 @@ binarOperator:
 
     assigmentOperator |     // v = e
 
-    arrayIndexOperator |    // a[e]    
-    arrayCharOperator |     // a{e}
+	arrayIndexOperator |
     tagOperator             // tagname : e
 
+;
+
+arrayIndexOperator:
+	symbol (
+		arrayOperatorIndex |    // a[e]    
+		arrayOperatorChar     // a{e}
+	)+    
 ;
 
 binarExpressionOperators:
@@ -203,11 +210,11 @@ assigmentOperator:
 ;
 
 
-arrayIndexOperator: 
-    IDENTIFIER (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)+
+arrayOperatorIndex: 
+    (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)
 ;
-arrayCharOperator: 
-    IDENTIFIER (CURLY_OPEN_BRACKET expresion? CURLY_CLOSE_BRACKET)+
+arrayOperatorChar: 
+    (CURLY_OPEN_BRACKET expresion? CURLY_CLOSE_BRACKET)
 ;
 functionCallOperator:
     IDENTIFIER OPEN_PARENTHESIS (expresion (COMA expresion)*)? CLOSE_PARENTHESIS
@@ -219,7 +226,7 @@ tagOperator:
 symbol: IDENTIFIER;
 
 
-lvalue: symbol | arrayIndexOperator | arrayCharOperator;
+lvalue: symbol | arrayIndexOperator;
 
 postIncrement: lvalue INCREMENTS;
 preIncrement: INCREMENTS lvalue;
@@ -394,6 +401,7 @@ fragment SIMPLEESCAPESEQUENCE:
     | '\\' ('\r' '\n'? | '\n')
     | '\\t'
     | '\\v'
+	| '\\0'
 ;
 
 IDENTIFIER:		[@a-zA-Z_][@a-zA-Z0-9_]*;

@@ -25,9 +25,14 @@ import { SwitchStatement } from "../Nodes/Conditions/switch/SwitchStatement";
 import { DefaultStatement } from "../Nodes/Conditions/switch/DefaultStatement";
 import { CaseStatement } from "../Nodes/Conditions/switch/CaseStatement";
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
+import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
+import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 
 export interface IVisitor
 {
+	visitOperatorArrayIndex(node: ArrayIndex): void;
+	visitOperatorArrayChar(node: ArrayChar): void;
+
 	visitOperatorNew(node: OperatorNew): void;
 	visitUnarOperator(node: UnarOperator): void;
 	visitIntLiteral(node: IntLiteral): void;

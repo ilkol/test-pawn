@@ -44,8 +44,26 @@ export class PPParser
 		readonly tokensManager: SemanticTokensManager,
 		readonly diagnosticManager: DiagnosticManager) {
 
+			this.addDefaultDefines();
 	}
 
+	private addDefaultDefines() {
+		const defaultDefines = [
+			"EOS '\\0'",
+			"cellmax 214748364",
+			"cellmin -214748364",
+			"cellbits 32",
+			"charbits 8",
+			"charmax 254",
+			"ucharmax 16777215"
+		];
+
+		let define;
+		defaultDefines.forEach(defineStr => {
+			define = new Define(this.file, defineStr,0,0,0);
+			this.defines.set(define.pattern, [define]);
+		});
+	}
 
 
 	// parse(): string
@@ -81,13 +99,8 @@ export class PPParser
 	private findFullMultyLineDerictive(rest: string, endIndex: number, strartStr: string)
 	{
 
-		let result = findFullMultyLineDerictive(rest + strartStr);
+		return findFullMultyLineDerictive(rest + strartStr);
 
-		return {
-			rest: result.rest,
-			endIndex: result.fullLength,
-			endlCount: result.endlCount
-		};
 
 
 
@@ -126,32 +139,31 @@ export class PPParser
 	 */
 	public collectDirectives(code: string): string {
 
-		const reg = /^([\t ]*)#\s*(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#(\s*)(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
 		while ((match = reg.exec(code)) !== null) {
-			let [fullMatch, leadingWhitespace, directive, rest] = match;
+			let [fullMatch, leadingWhitespace, leadingWhitespaceAfterSharp, directive, rest] = match;
 			// Координата начала директивы (#)
   			const directiveIndex = match.index + leadingWhitespace.length;
-			// Окончания директивы
-			// Координата начала оставшейся части
 			let endIndex = match.index + fullMatch.length;
 			const restIndex = rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
-			// КРАЙНЕ ТУПОЕ РЕШЕНИЕ, но работает. Пока я не вижу как можно написать лучше, к сожалению :(
-			let res = this.findFullMultyLineDerictive(rest, endIndex, code.substring(match.index + fullMatch.length));
+			// sharp + spaces after sharp and before directive + directive length
+			let space = 1 + leadingWhitespaceAfterSharp.length + directive.length;
+
+			let res = findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
 			rest = res.rest;
-			endIndex = restIndex + res.endIndex;
-			
+			endIndex = restIndex + res.fullLength;
+
 			this.addNewDirective(directive, rest, directiveIndex, restIndex, endIndex);
 
 			changes.push({
 				start: directiveIndex,
 				end: endIndex,
-				replacement: ' '.repeat(endIndex - directiveIndex - res.endlCount * 2) + (res.endlCount > 0 ? '\r\n'.repeat(res.endlCount) : ""),
+				replacement: ' '.repeat(space) + (res.rest).replace(/[^\s]/g, " "),
 			});
-
 		}		
 
 		let codeWithoutDirectives = code;
@@ -274,7 +286,7 @@ export class PPParser
 				this.handleCondition(element, ifStack);					
 			}
 			else if(element instanceof Endif) {
-				this.handleEndIf(element, ifStack);	
+				code = this.handleEndIf(code, element, ifStack);	
 			}
 			else if(element instanceof Else) {
 				if(cur && cur.directive.conditionResult) {
@@ -484,7 +496,7 @@ export class PPParser
 		return false;
 	}
 
-	private handleEndIf(directive: Else, ifStack: ConditionStack)
+	private handleEndIf(code: string, directive: Endif, ifStack: ConditionStack)
 	{
 		if (ifStack.length === 0) {
 			throw new Error("Unexpected #endif");
@@ -499,7 +511,21 @@ export class PPParser
 		if(ifStack.length !== 0) {
 			const currentIf = ifStack.pop()!;
 			currentIf.directive.endIf = directive;
+			code = 
+				code.substring(0, currentIf.directive.endIndex) + 
+				code.substring(currentIf.directive.endIndex, directive.startIndex).replace(/[^\s]/g, " ") + 
+				code.substring(directive.startIndex)
+			;
+			if(currentIf.directive.range && directive.range) {
+				const range = new Range(
+					currentIf.directive.range.end,
+					directive.range.start
+				);
+				this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+
+			}
 		}
+		return code;
 	}
 	private handleElse(directive: Else, ifStack: ConditionStack)
 	{

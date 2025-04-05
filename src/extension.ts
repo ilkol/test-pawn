@@ -11,6 +11,7 @@ import { SemanticTokens, SemanticTokensModifires } from './SemanticTokens';
 import { DefinitionProvider } from './Providers/DefinitionProvider';
 import { ReferenceProvider } from './Providers/ReferenceProvider';
 import { getDefaultComplitions } from './DefaultComplitions/DefaultComplitions';
+import path from 'path';
 
 let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
@@ -202,13 +203,12 @@ export async function activate(context: vscode.ExtensionContext) {
 function registerTasks(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand("pawnlanguage.runBuildTask", () => {
-
 			const task = new vscode.Task(
 				{ type: 'shell' }, // Тип задачи
 				vscode.TaskScope.Workspace, // Область выполнения - весь рабочий проект
 				'build', // Имя задачи
 				'pawnlanguage', // Источник задачи (может быть вашим расширением)
-				new vscode.ShellExecution('Write-Host "[pawnlanguage] ' + vscode.l10n.t("Starting building") + '`n" -NoNewline; ${workspaceRoot}\\pawno\\pawncc.exe ${file}')
+				new vscode.ShellExecution('Write-Host "[pawnlanguage] ' + vscode.l10n.t("Starting building") + '`n" -NoNewline; " & Set-Location \'${fileDirname}\'; & \'${workspaceRoot}\\pawno\\pawncc.exe\' \'${file}\'"')
 			);
 
 			task.presentationOptions = {

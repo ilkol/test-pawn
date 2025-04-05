@@ -45,9 +45,22 @@ import * as funcDef from "../../../Linking/FunctionDefinition";
 import * as funcCall from "../../../Linking/FunctionCall";
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 import { DiagnosticHint } from "../../diagnostic/DiagnosticHint";
+import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitOperatorArrayIndex(node: ArrayChar): void {
+
+	}
+	afterVisitOperatorArrayIndex(node: ArrayChar): void {
+
+	}
+	beforeVisitOperatorArrayChar(node: ArrayChar): void {
+		
+	}
+	afterVisitOperatorArrayChar(node: ArrayChar): void {
+
+	}
 	private undefindedFunctions: Map<string, Range[]> = new Map();
 
 	beforeVisitBoolLiteral(node: BoolLiteral): void {
@@ -264,14 +277,15 @@ export class Analyzer extends BaseVisitor
 				}
 				else
 				{
+					let tmpFunc: FunctionDeclaration = func;
 					node.vars.forEach(element => {
-						this.compareTag(func.parameters[param], element, node.vars[param].pos);
+						this.compareTag(tmpFunc.parameters[param], element, node.vars[param].pos);
 						param++;
 					});
 
-					for(let i = param; i < func.parameters.length; i++) {
-						if(func.parameters[i].defaultValue) continue;
-						this.addDiagnostic(new DiagnosticError(l10n.t("Expected {0} parameters, but passed {1}", func.parameters.length, node.vars.length), node.idPos));
+					for(let i = param; i < tmpFunc.parameters.length; i++) {
+						if(tmpFunc.parameters[i].defaultValue) continue;
+						this.addDiagnostic(new DiagnosticError(l10n.t("Expected {0} parameters, but passed {1}", tmpFunc.parameters.length, node.vars.length), node.idPos));
 						break;
 					}
 				}
@@ -394,7 +408,9 @@ export class Analyzer extends BaseVisitor
 		
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
-		this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addVar(variable));		
+		if(node.id) {
+			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addVar(variable));		
+		}
 		this.tokens.addToken(node.idPos, SemanticTokens.enum, [SemanticTokensModifires.declaration]);
 	}
 	
@@ -437,6 +453,7 @@ export class Analyzer extends BaseVisitor
 						this.addDiagnostic(new DiagnosticHint(l10n.t("Function \"{0}\" used before definition", node.id), range));
 					});
 					this.undefindedFunctions.delete(node.id);
+					node.used = true;
 				}
 
 				const array = this.functionsDeclarations.get(node.id);
@@ -542,6 +559,9 @@ export class Analyzer extends BaseVisitor
 					stock = true;
 					diagnosticMsg = l10n.t("Enum member");
 				}
+				else if(element instanceof FunctionDeclarationParameter){
+					diagnosticMsg = l10n.t("Parameter");
+				}
 				else {
 					if((<VarDeclaration>element).isConstant) {
 						diagnosticMsg = l10n.t("Constant");
@@ -551,7 +571,7 @@ export class Analyzer extends BaseVisitor
 						diagnosticMsg = l10n.t("Variable");
 						stock = (<VarDeclaration>element).modifires.indexOf(VariableModifire.public) !== -1;
 					}
-				}
+				}				
 				
 				if(!stock) {
 					diagnostic = new DiagnosticWarning(l10n.t("{0} \"{1}\" is never used", diagnosticMsg, key), element.idPos);

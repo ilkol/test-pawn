@@ -194,7 +194,9 @@ export class FileManager {
 					cancellable: false,
 				},
 				async () => {
-					await doc.parseCode();
+					if(doc) {
+						await doc.parseCode();
+					}
 				}
 			);
 			this.diagnosticManager.updateFileDiagnostic(doc.uri.path);

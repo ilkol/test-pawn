@@ -368,7 +368,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		// for (const line of this.chunks) {
 			const position = new vscode.Position(document.lineCount, 0); // Позиция в конце документа
 			await editor.edit(editBuilder => {
-				editBuilder.insert(position, this.curCode + '\n'); // Вставляем строку с новой строкой
+				editBuilder.insert(position, this.curCode); // Вставляем строку с новой строкой
 			});
 			// Ждем немного перед добавлением следующей строки
 			await new Promise(resolve => setTimeout(resolve, 500)); // Задержка 500 мс
