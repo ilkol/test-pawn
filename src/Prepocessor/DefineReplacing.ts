@@ -40,7 +40,9 @@ export function findFullMultyLineDerictive(input: string) {
 		}
 		// Если начало комментария
 		if(char === '/') {
-			break;
+			if(stream.getShiftChar(1) === '/' || stream.getShiftChar(1) === '*') {
+				break;
+			}
 		}
 		// если перенос строки
 		else if(char === "\n") {
