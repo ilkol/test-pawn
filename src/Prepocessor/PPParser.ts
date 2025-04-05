@@ -153,16 +153,18 @@ export class PPParser
 			// sharp + spaces after sharp and before directive + directive length
 			let space = 1 + leadingWhitespaceAfterSharp.length + directive.length;
 
-			let res = findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
-			rest = res.rest;
-			endIndex = restIndex + res.fullLength;
+			if(directive !== "include") {
+				let res = findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
+				rest = res.rest;
+				endIndex = restIndex + res.fullLength;
+			}
 
 			this.addNewDirective(directive, rest, directiveIndex, restIndex, endIndex);
 
 			changes.push({
 				start: directiveIndex,
 				end: endIndex,
-				replacement: ' '.repeat(space) + (res.rest).replace(/[^\s]/g, " "),
+				replacement: ' '.repeat(space) + (rest).replace(/[^\s]/g, " "),
 			});
 		}		
 

@@ -6,6 +6,8 @@ import { Stack } from "../antlr/Stack/Stack";
 import { DefinitionProvider } from "../Providers/DefinitionProvider";
 import { ReferenceProvider } from "../Providers/ReferenceProvider";
 import { Scope } from "../antlr/Scopes/Scope";
+import { Include, IncludeType } from "../Prepocessor/Include";
+import path from "path";
 // import * as fs from 'fs';
 
 export class FileManager {
@@ -308,26 +310,17 @@ export class FileManager {
 		await openedFile.processDirectives();
 		const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
 	
+		const currentPath = Uri.file(path.dirname(fileUri.fsPath));
 
 		if(this.includePath) {
 			for (const includePath of includes) {
-				let uri = Uri.joinPath(this.includePath, includePath.path);
-				let startUri = uri;
-				if(!await this.isFileExist(uri)) {
-					uri = Uri.file(startUri.path + ".inc");
-					if(!await this.isFileExist(uri)) {
-						uri = Uri.file(startUri.path + ".pwn");
-						if(!await this.isFileExist(uri)) {
-							uri = Uri.file(startUri.path + ".pawn");
-							openedFile.addDiagnostic(l10n.t("error 100: Cannot read from file: \"{0}\"", includePath.path), DiagnosticSeverity.Error, includePath.range);
-							continue;
-							// throw new Error(`Файл не найден (${startUri})`);
-						}
-					}
+				
+				includePath.uri = await this.plungeInclude(includePath, currentPath);
+				if(!includePath.uri) {
+					openedFile.addDiagnostic(l10n.t("error 100: Cannot read from file: \"{0}\"", includePath.path), DiagnosticSeverity.Error, includePath.range);
+					continue;
 				}
-				includePath.uri = uri;
-				// Добавление ссылки в документе для перехода к инклуду
-				const link = new vscode.DocumentLink(includePath.pathRange, uri);
+				const link = new vscode.DocumentLink(includePath.pathRange, includePath.uri);
 				link.tooltip = includePath.path;
 				openedFile.documentsLinks.push(link);
 
@@ -335,6 +328,34 @@ export class FileManager {
 			}
 		}
     }
+
+	private async plungeInclude(include: Include, currentPath: Uri) {
+		let result: Uri | undefined = undefined;
+		const path = include.path;
+		if(include.type === IncludeType.default) {
+			// include.uri = Uri.joinPath(this.includePath!, include.path);
+			result = await this.plungeFile(path);
+			if(!result) {
+				result = await this.plungeFile(Uri.joinPath(currentPath, path).path);
+			}
+		}
+		else if(this.includePath){
+			result = await this.plungeFile(Uri.joinPath(this.includePath, path).path);
+		}
+		return result;
+	}
+
+	private async plungeFile(file: string) {
+		const extenisions = ["", ".inc", ".p", ".pawn"];
+		for (const ext of extenisions) {
+			const uri = Uri.file(file + ext);
+			if(await this.isFileExist(uri)) {
+				return uri;
+			}
+		}
+	}
+
+
 	private async topologicalSort(): Promise<Uri[]> {
         const visited = new Set<Uri>();
         const stack: Uri[] = [];
