@@ -85,9 +85,7 @@ export abstract class AbstractOpenFile
 	
 	constructor(protected file: TextDocument, public readonly fileManager: FileManager) {
 		this.diagnositcManager = fileManager.getDiagnostic();
-		// console.debug(`Был открыт файл! ${file.fileName}`);
 
-		
 		this.loadDefaultComplitions();
 	}
 
@@ -101,7 +99,7 @@ export abstract class AbstractOpenFile
 	public getHover(word: string): MarkdownString {
 		
 		let someThing;
-		if(someThing = this.functions.get(word)) {
+		if(someThing = this.functionsInfo.get(word)){
 			const result = new MarkdownString("").appendCodeblock(someThing.label, "pawn");
 			if(someThing.docs) {
 

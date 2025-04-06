@@ -156,7 +156,9 @@ export class AntrlOpenFile extends AbstractOpenFile
 		// console.debug("Обход дерева окончен для файла ", this.file.uri.path);
 	
 		this.diagnostic(analyzer.diagnostics);
-		this.functions = analyzer.functions;
+		analyzer.functions.forEach((val, key) => {
+			this.functions.set(key, val);
+		});
 		this.prepareSignatures();
 	
 		// console.log(this.AST);
@@ -299,6 +301,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 				this.ppParser.defines.set(define.prefix, [define]);
 			});
 		});
+
 	}
 
 	private async handleInclude(include: Include): Promise<void> {
