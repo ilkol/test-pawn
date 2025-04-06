@@ -401,7 +401,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
-		this.checkUsed(node, (variable: EnumMember) => this.curScope.addVar(variable));
+		this.checkUsed(node, (variable: EnumMember) => this.curScope.addEnumMember(variable));
 		this.tokens.addToken(node.idPos, SemanticTokens.enumMember, [SemanticTokensModifires.const, SemanticTokensModifires.declaration]);
 	}
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
@@ -409,7 +409,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
 		if(node.id) {
-			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addVar(variable));		
+			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addEnum(variable));		
 		}
 		this.tokens.addToken(node.idPos, SemanticTokens.enum, [SemanticTokensModifires.declaration]);
 	}

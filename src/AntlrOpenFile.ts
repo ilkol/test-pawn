@@ -28,6 +28,7 @@ import { Reference } from "./Linking/Reference";
 import { IHasID } from "./antlr/AST/Nodes/IHasID";
 import { ChunkedCharStream } from "./antlr/ChunkedCharStream";
 import { SemanticTokens } from "./SemanticTokens";
+import { EnumMember } from "./antlr/AST/Nodes/enum/EnumMember";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -262,6 +263,20 @@ export class AntrlOpenFile extends AbstractOpenFile
 				this.complitions.push(compl);
 
 			});
+		});
+
+		this.scope.enums.forEach(enumStruct => {
+			const compl = new vscode.CompletionItem(enumStruct.id, vscode.CompletionItemKind.Enum);
+			this.complitions.push(compl);
+		});
+		this.scope.variables().forEach(variable => {
+			if(variable instanceof EnumMember) {
+				const compl = new vscode.CompletionItem(variable.id, vscode.CompletionItemKind.EnumMember);
+				const parent = variable.parent?.id;
+				compl.detail = `(enummember) ${parent}`;
+				compl.documentation = new vscode.MarkdownString("").appendCodeblock(`enum ${parent} {\n\t...\n\t${variable.id} = ${variable.value}\n\t...\n}`, "pawn");
+				this.complitions.push(compl);
+			}
 		});
 
 		return this.complitions;

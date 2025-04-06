@@ -1,9 +1,8 @@
 import { VarDeclaration } from "../Variables/VarDeclaration";
-import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 import { IVisitor } from "../../visitor/IVisitor";
 import { EnumDeclaration } from "./EnumDeclaration";
 
-export class EnumMember extends VarOrFunctionDeclaration
+export class EnumMember extends VarDeclaration
 {
 	name = "член перечисления";
 

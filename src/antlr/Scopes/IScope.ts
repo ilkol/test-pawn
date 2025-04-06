@@ -1,4 +1,6 @@
 import { Declaration } from "../AST/Nodes/Declaration";
+import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
+import { EnumMember } from "../AST/Nodes/enum/EnumMember";
 import { FunctionDeclaration } from "../AST/Nodes/Functions/FunctionDeclaration";
 import { Tag } from "../AST/Nodes/Tag";
 import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
@@ -8,6 +10,8 @@ export interface IScope
 	extend(): IScope;
 	
 	addVar(variable: Declaration): void;
+	addEnum(variable: EnumDeclaration): void;
+	addEnumMember(variable: EnumMember): void;
 	addFunction(func: FunctionDeclaration): void;
 
 	find(id: string): Declaration|undefined;
@@ -19,6 +23,8 @@ export interface IScope
 	identifires(): Map<string, Declaration>;
 
 	get parent(): IScope|undefined;
+
+	get enums(): Map<string, EnumDeclaration>;
 
 	get returnTag(): Tag|undefined;
 	set returnTag(v: Tag);

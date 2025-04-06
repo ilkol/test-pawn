@@ -4,6 +4,8 @@ import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
 import { IScope } from "./IScope";
 import { Tag } from "../AST/Nodes/Tag";
 import { AbstractOpenFile } from "../../AbstractOpenFile";
+import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
+import { EnumMember } from "../AST/Nodes/enum/EnumMember";
 
 export class Scope implements IScope
 {
@@ -11,6 +13,7 @@ export class Scope implements IScope
 	protected _ids: Map<string, Declaration> = new Map<string, Declaration>();
 	protected _functions: Map<string, FunctionDeclaration> = new Map();
 	protected _variables: Map<string, VarDeclaration> = new Map();
+	protected _enums: Map<string, EnumDeclaration> = new Map();
 	protected _tag: Tag | undefined;
 	;
 	
@@ -18,6 +21,18 @@ export class Scope implements IScope
 	{
 		this._parent = IScope;
 		this._tag = IScope?.returnTag;
+	}
+	addEnum(variable: EnumDeclaration): void {
+		this.addIdent(variable);
+		this._enums.set(variable.id, variable);
+	}
+
+	get enums() {
+		return this._enums;
+	}
+
+	addEnumMember(variable: EnumMember): void {
+		this.addVar(variable);
 	}
 	get returnTag(): Tag | undefined {
 		return this._tag;
