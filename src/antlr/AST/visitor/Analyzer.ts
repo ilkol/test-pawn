@@ -46,6 +46,8 @@ import * as funcCall from "../../../Linking/FunctionCall";
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 import { DiagnosticHint } from "../../diagnostic/DiagnosticHint";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
+import { Definition } from "../../../Linking/Definition";
+import { Reference } from "../../../Linking/Reference";
 
 export class Analyzer extends BaseVisitor
 {
@@ -69,8 +71,8 @@ export class Analyzer extends BaseVisitor
 	}
 
 
-	public readonly functionsDeclarations: Map<string, funcDef.FunctionDeclaration[]> = new Map<string, funcDef.FunctionDeclaration[]>();
-	public readonly functionsCalls: Map<string, funcCall.FunctionCall[]> = new Map<string, funcCall.FunctionCall[]>();
+	public readonly functionsDeclarations: Map<string, Definition<Declaration>[]> = new Map();
+	public readonly functionsCalls: Map<string, Reference<IHasID>[]> = new Map<string, funcCall.FunctionCall[]>();
 
 	beforeVisitIfStatemnt(node: IfStatement): void {
 	
@@ -216,9 +218,18 @@ export class Analyzer extends BaseVisitor
 			}
 
 			node.declaration = variable;
+			const array = this.functionsCalls.get(node.id);
+			const el = new Reference<Variable>(node, this.file.uri);
+			if(array)
+			{
+				array.push(el);	
+			}
+			else {
+				this.functionsCalls.set(node.id, [el]);
+			}
 			variable.references.push(node);
 
-			const token = variable instanceof FunctionDeclarationParameter ? SemanticTokens.parameter : SemanticTokens.variable;
+			const token = variable instanceof FunctionDeclarationParameter ? SemanticTokens.parameter : (variable instanceof EnumMember ? SemanticTokens.enumMember : SemanticTokens.variable);
 			this.tokens.addToken(node.idPos, token, this.checkVarModifires(variable.modifires));
 			if(!node.isTaged)
 				node.tag = variable.tag;
@@ -411,6 +422,17 @@ export class Analyzer extends BaseVisitor
 		if(node.id) {
 			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addEnum(variable));		
 		}
+		const array = this.functionsDeclarations.get(node.id);
+		const el = new Definition<EnumDeclaration>(node, this.file.uri);
+		if(array)
+		{
+			array.push(el);
+		}
+		else {
+			this.functionsDeclarations.set(node.id, [el]);
+		}
+			
+		
 		this.tokens.addToken(node.idPos, SemanticTokens.enum, [SemanticTokensModifires.declaration]);
 	}
 	

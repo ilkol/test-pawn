@@ -1,6 +1,7 @@
 import { VarDeclaration } from "../Variables/VarDeclaration";
 import { IVisitor } from "../../visitor/IVisitor";
 import { EnumDeclaration } from "./EnumDeclaration";
+import { VariableModifire } from "../Operators/OperatorNew";
 
 export class EnumMember extends VarDeclaration
 {
@@ -9,6 +10,8 @@ export class EnumMember extends VarDeclaration
 	private _value: number = 0;
 	private _parent: EnumDeclaration | undefined;
 	
+	_modifires = [VariableModifire.const];
+
 	public accept(visitor: IVisitor): void {
 		visitor.visitEnumMember(this);
 	}
