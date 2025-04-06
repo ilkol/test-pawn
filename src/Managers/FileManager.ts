@@ -232,26 +232,20 @@ export class FileManager {
 	public async onDidChangeDocument(file: TextDocument) {
 		if(file.languageId !== "pawn") {return;}
 
-		let path = file.uri.path;
-		const newFile = !this.openedFiles.has(file.uri);
-		if(newFile)
-			{this.onDidOpenTextDocument(file);}
+		// let path = file.uri.path;
+		// const newFile = !this.openedFiles.has(file.uri);
+		// if(newFile)
+		// 	{this.onDidOpenTextDocument(file);}
 			
-		const doc: AbstractOpenFile | undefined = this.openedFiles.get(file.uri);
+		// const doc: AbstractOpenFile | undefined = this.openedFiles.get(file.uri);
 
 
-		if(doc instanceof AntrlOpenFile) {
-				this.diagnosticManager.clearFile(file.uri);
-				doc.scope = new Scope(doc);
-				this.activeFile = doc;
-				// await doc.findAndOpenAllDirectives();
-				await this.parseAll();
-
-				await this.parseFile(doc);
-
-				this.diagnosticManager.updateFileDiagnostic(path);
+		try {
+			this.analyzeFile(file.uri);
 		}
-
+		catch(err) {
+			console.error(`Analyzing error  ${file.uri}:`, err);
+		}
 		return;
 	}
 	
