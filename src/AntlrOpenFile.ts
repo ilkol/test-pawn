@@ -244,8 +244,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			this.complitions.push(el);
 		});
 
-		const functions = this.scope.functions();
-		functions.forEach(element => {
+		this.scope.functions().forEach(element => {
 			const compl = new vscode.CompletionItem(element.id, vscode.CompletionItemKind.Function);
 			if(element.parameters.length === 0) {
 				compl.insertText = new vscode.SnippetString(`${element.id}()$0`);
@@ -254,6 +253,15 @@ export class AntrlOpenFile extends AbstractOpenFile
 				compl.insertText = new vscode.SnippetString(`${element.id}`);
 			}
 			this.complitions.push(compl);
+		});
+
+		this.defines.forEach((defines, name) => {
+			defines.forEach(define => {
+				const compl = new vscode.CompletionItem(define.prefix, vscode.CompletionItemKind.Constant);
+				compl.detail = define.replacement;
+				this.complitions.push(compl);
+
+			});
 		});
 
 		return this.complitions;
