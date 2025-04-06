@@ -6,7 +6,7 @@ export class SignatureProvider implements vscode.SignatureHelpProvider {
 
 	}
 	provideSignatureHelp(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.SignatureHelpContext): vscode.ProviderResult<vscode.SignatureHelp> {
-		const file = this.fileManager.getFile(document.uri.path);
+		const file = this.fileManager.openedFiles.get(document.uri);
 		if(!file) {return;}
 		const signatures = file.signatures;
 		const functionName = this.getFunctionName(document, position);

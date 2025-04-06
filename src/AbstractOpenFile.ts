@@ -244,7 +244,7 @@ export abstract class AbstractOpenFile
 	}
 
 	protected prepareSignatures() {
-		this.functions.forEach((functionInfo, name) => {
+		this.functionsInfo.forEach((functionInfo, name) => {
 			const signatureHelp  =  new SignatureHelp();
 
 			const parameters: ParameterInformation[] = [];
