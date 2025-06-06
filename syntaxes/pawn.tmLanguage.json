@@ -69,7 +69,7 @@
 							"include": "#comments"
 						},
 						{
-							"match": "\\s*(?:([a-zA-Z_][\\w]*)\\s*:\\s*)?([a-zA-Z_][\\w]*)\\s*(\\[.*?\\])?(?:\\s*(=)\\s*([^,\\}]+))?\\s*(,)?",
+							"match": "\\s*(?:([a-zA-Z_][\\w]*)\\s*:\\s*)?([a-zA-Z_][\\w]*)\\s*((?:\\[.*?\\])|(?:\\{.*?\\}))?(?:\\s*(=)\\s*([^,\\}]+))?\\s*(,)?",
 							"captures": {
 								"1": {
 									"patterns": [
@@ -84,7 +84,7 @@
 								"3": {
 									"patterns": [
 										{
-											"include": "#square_brackets"
+											"include": "#array_operators"
 										}
 									]
 								},
@@ -118,10 +118,17 @@
 		},
 		"var_assigment": {
 			"name": "meta.assigment.pawn",
-			"begin": "\\b([a-zA-Z_][\\w]*)(?:\\s*\\[.*?\\])?\\s*=",
+			"begin": "\\b([a-zA-Z_][\\w]*)((?:\\[.*?\\])|(?:\\{.*?\\}))?\\s*=",
 			"beginCaptures": {
 				"1": {
 					"name": "variable.other.pawn"
+				},
+				"2": {
+					"patterns": [
+						{
+							"include": "#array_operators"
+						}
+					]
 				}
 			},
 			"end": "(?=;|\\))",
@@ -893,6 +900,9 @@
 					"include": "#ever_present_context"
 				},
 				{
+					"include": "#var_assigment"
+				},
+				{
 					"include": "#keywords"
 				},
 				{
@@ -1258,9 +1268,6 @@
 		"evaluation_context":{
 			"patterns": [
 				{
-					"include": "#new_var"
-				},
-				{
 					"include": "#comments"
 				},
 				{
@@ -1279,9 +1286,6 @@
 					"include": "#function_call"
 				},
 				{
-					"include": "#square_brackets"
-				},
-				{
 					"include": "#punctuation_semicolon"
 				},
 				{
@@ -1291,7 +1295,7 @@
 					"include": "#var_assigment"
 				},
 				{
-					"include": "variable"
+					"include": "#variable"
 				}
 			]
 		},
@@ -1387,6 +1391,9 @@
 				},
 				{
 					"include": "#ternary_operator"
+				},
+				{
+					"include": "#array_operators"
 				}
 			]
 		},
@@ -1418,9 +1425,6 @@
 				},
 				{
 					"include": "#function_call"
-				},
-				{
-					"include": "#square_brackets"
 				},
 				{
 					"include": "#punctuation_semicolon"
@@ -1563,21 +1567,12 @@
 									"include": "#number_literal"
 								},
 								{
-									"include": "#square_brackets"	
-								},
-								{
-									"include": "#curly_brackets_array"
-								},
-								{
 									"include": "#evaluation_context"
 								}
 							]						
 						},
 						{
 							"include": "#number_literal"
-						},
-						{
-							"include": "#square_brackets"	
 						},
 						{
 							"include": "#evaluation_context"
@@ -1589,44 +1584,22 @@
 				}
 			]
 		},
-		"brackets":{
+		"array_operators": {
 			"patterns": [
 				{
-					"include": "#curly_brackets"
+					"include": "#simple_array_operator"
 				},
 				{
-					"include": "#square_brackets"
+					"include": "#char_array_operator"
 				}
 			]
 		},
-		"curly_brackets":{
-			"name": "punctuation.section.block.pawn",
-			"begin": "\\{",
-			"end": "\\}",
-			"beginCaptures": {
-				"0":{
-					"name": "punctuation.section.block.begin.bracket.curly.pawn"
-				}
-			},
-			"endCaptures": {
-				"0":{
-					"name": "punctuation.section.block.end.bracket.curly.pawn"
-				}
-			},
-			"patterns": [
-				{
-					"include": "#evaluation_context"
-				}
-			]
-		},
-		"square_brackets":{
-			"begin": "([\\w]*)(\\[)",
+		"simple_array_operator": {
+			"name": "meta.bracket.square.array.pawn",
+			"begin": "\\[",
 			"end": "\\]",
 			"beginCaptures": {
-				"1": {
-					"name": "variable.other.pawn"
-				},
-				"2": {
+				"0": {
 					"name": "punctuation.definition.begin.bracket.square.array.type.pawn"
 				}
 			},
@@ -1635,33 +1608,24 @@
 					"name": "punctuation.definition.end.bracket.square.array.type.pawn"
 				}
 			},
-			"name": "meta.bracket.square.array.pawn",
 			"patterns": [
 				{
-					"include": "#operators"
+					"include": "#ever_present_context"
 				},
 				{
-					"include": "#number_literal"
+					"include": "#evaluation_context"
 				},
 				{
 					"include": "#type_char"
-				},
-				{
-					"include": "#tags"
 				}
 			]
 		},
-		"curly_brackets_array":{
-			"begin": "(?:([\\w]+)(\\{)|(\\{))",
+		"char_array_operator": {
+			"name": "meta.bracket.curly.array.pawn",
+			"begin": "\\{",
 			"end": "\\}",
 			"beginCaptures": {
-				"1": {
-					"name": "variable.other.pawn"
-				},
-				"2": {
-					"name": "punctuation.definition.begin.bracket.curly.array.type.pawn"
-				},
-				"3": {
+				"0": {
 					"name": "punctuation.definition.begin.bracket.curly.array.type.pawn"
 				}
 			},
@@ -1670,28 +1634,15 @@
 					"name": "punctuation.definition.end.bracket.curly.array.type.pawn"
 				}
 			},
-			"name": "meta.bracket.curly.array.pawn",
 			"patterns": [
 				{
 					"include": "#ever_present_context"
 				},
 				{
-					"include": "#curly_brackets_array"
-				},
-				{
-					"include": "#language_constants"
-				},
-				{
-					"include": "#number_literal"
-				},
-				{
-					"include": "#operators"
-				},
-				{
-					"include": "#comma"
-				},
-				{
 					"include": "#evaluation_context"
+				},
+				{
+					"include": "#type_char"
 				}
 			]
 		},
