@@ -1324,11 +1324,14 @@
 		"operators": {
 			"patterns": [
 				{
-					"begin": "((?<!\\w)sizeof)\\s*\\(",
+					"begin": "((?<!\\w)sizeof)\\s*(\\()",
 					"end": "\\)",
 					"beginCaptures": {
 						"1": {
 							"name": "keyword.operator.functionlike.pawn keyword.operator.sizeof.pawn"
+						},
+						"2": {
+							"name": "punctuation.section.arguments.begin.bracket.round.operator.sizeof.pawn"
 						}
 					},
 					"endCaptures": {
@@ -1339,16 +1342,16 @@
 					"contentName": "meta.arguments.operator.sizeof",
 					"patterns": [
 						{
-							"include": "#evaluation_context"
+							"include": "#variable"
 						},
 						{
-							"include": "#variable"
+							"include": "#evaluation_context"
 						}
 					]
 				},
 				{
 					"match": "sizeof",
-					"name": "keyword.operator.functionlike.pawn keyword.operator.sizeof.pawn"
+					"name": "keyword.operator.sizeof.pawn"
 				},
 				{
 					"match": "--",
