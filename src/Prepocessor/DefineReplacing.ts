@@ -86,7 +86,7 @@ class LikeCCharStream {
 				return false;
 			}
 			if(this._source[index] !== str[i]) {
-				return false
+				return false;
 			}
 		}
 		return true;
@@ -179,7 +179,7 @@ function substallpatterns(line: string, changes: Position[]) {
 			throw new Error("");
 		}
 		
-		subst = find_subst(stream, prefixlen);
+		subst = findSubstr(stream, prefixlen);
 		if (subst !== null) {
 			let replaceData: ReplaceInfo = { shift: 0};
 			/* properly match the pattern and substitute */
@@ -203,7 +203,7 @@ function substallpatterns(line: string, changes: Position[]) {
 	return stream.source;
 }
 
-let sc_needsemicolon = true;
+let needSemicolon = true;
 
 function substpattern(stream: LikeCCharStream, define: Define, replaceData: ReplaceInfo)
 {
@@ -218,8 +218,8 @@ function substpattern(stream: LikeCCharStream, define: Define, replaceData: Repl
     let sourceShift = define.prefixLen;
     let pattern = new LikeCCharStream(define.postPrefix);
     let match = 1;         /* so far, pattern matches */
-    while (match && stream.getShiftChar(sourceShift) != '\0' && pattern.char != '\0') {
-		if (pattern.char == '%') {
+    while (match && stream.getShiftChar(sourceShift) !== '\0' && pattern.char !== '\0') {
+		if (pattern.char === '%') {
 			pattern.curIndex++;
             if (isdigit(pattern.getChar())) {
                 arg = +pattern.getChar();
@@ -236,14 +236,17 @@ function substpattern(stream: LikeCCharStream, define: Define, replaceData: Repl
                  */
 				let e = new LikeCCharStream(stream.source);
 				e.curIndex = stream.curIndex + sourceShift;
-                while (e.char != pattern.char && e.char != '\0' && e.char != '\n') {
+                while (e.char !== pattern.char && e.char !== '\0' && e.char !== '\n') {
 					// console.log(e.getChar());
 
-                    if (isStringStrating(e))              /* skip strings */
-                        e = skipstring(e);
-                    else if (/\(\{\[/.exec(e.char))    /* skip parenthized groups */
+                    if (isStringStrating(e)) {/* skip strings */
+						e = skipstring(e);
+					}              
+                    else if (/\(\{\[/.exec(e.char)) { /* skip parenthized groups */
+						
                         e = skippgroup(e);
-                    if (e.char != '\0') {
+					}
+                    if (e.char !== '\0') {
                         e.curIndex++;      /* skip non-alphapetic character (or closing quote of
 											* a string, or the closing paranthese of a group) */
 					}
@@ -252,10 +255,10 @@ function substpattern(stream: LikeCCharStream, define: Define, replaceData: Repl
 				let len = e.curIndex - stream.curIndex;
 				args[arg] = stream.substr(len - sourceShift, sourceShift);
                 /* character behind the pattern was matched too */
-                if (e.char == pattern.char) {
+                if (e.char === pattern.char) {
 					sourceShift = len + 1;
                 }
-                else if (e.char == '\n' && pattern.getChar() == ';' && pattern.getShiftChar(1) == '\0' && !sc_needsemicolon) {
+                else if (e.char === '\n' && pattern.getChar() === ';' && pattern.getShiftChar(1) === '\0' && !needSemicolon) {
                     sourceShift = len;    /* allow a trailing ; in the pattern match to end of line */
                 }
                 else {
@@ -268,12 +271,14 @@ function substpattern(stream: LikeCCharStream, define: Define, replaceData: Repl
                 match = 1;
             } /* if */
         }
-        else if (pattern.char == ';' && pattern.getShiftChar(1) == '\0' && !sc_needsemicolon) {
+        else if (pattern.char === ';' && pattern.getShiftChar(1) === '\0' && !needSemicolon) {
             /* source may be ';' or end of the line */
-            while (stream.getShiftChar(sourceShift) <= ' ' && stream.getShiftChar(sourceShift) != '\0')
+            while (stream.getShiftChar(sourceShift) <= ' ' && stream.getShiftChar(sourceShift) !== '\0') {
                 stream.curIndex++;          /* skip white space */
-            if (stream.getShiftChar(sourceShift) != ';' && stream.getShiftChar(sourceShift) != '\0')
-                match = 0;
+			}
+            if (stream.getShiftChar(sourceShift) !== ';' && stream.getShiftChar(sourceShift) !== '\0') {
+				match = 0;
+			}
             pattern.curIndex++;            /* skip the semicolon in the pattern */
         }
         else {
@@ -281,41 +286,44 @@ function substpattern(stream: LikeCCharStream, define: Define, replaceData: Repl
             /* skip whitespace between two non-alphanumeric characters, except
              * for two identical symbols
              */
-            if (!alphanum(pattern.char) && pattern.getShiftChar(1) != pattern.char)
-                while (stream.getShiftChar(sourceShift) <= ' ' && stream.getShiftChar(sourceShift) != '\0')
+            if (!alphanum(pattern.char) && pattern.getShiftChar(1) !== pattern.char) {
+                while (stream.getShiftChar(sourceShift) <= ' ' && stream.getShiftChar(sourceShift) !== '\0') {
                     sourceShift++;                  /* skip white space */
+				}
+			}
             ch = litchar(pattern, 0);         /* this increments "p" */
-            if (stream.getShiftChar(sourceShift).charCodeAt(0) != ch)
+            if (stream.getShiftChar(sourceShift).charCodeAt(0) !== ch) {
                 match = 0;
-            else
+			}
+            else {
 				sourceShift++;                    /* this character matches */
+			}
         } 
     }
 
-    if (match && pattern.char == '\0') {
+    if (match && pattern.char === '\0') {
         /* if the last character to match is an alphanumeric character, the
          * current character in the source may not be alphanumeric
          */
-        if (alphanum(pattern.getShiftChar(-1)) && alphanum(stream.getShiftChar(sourceShift)))
+        if (alphanum(pattern.getShiftChar(-1)) && alphanum(stream.getShiftChar(sourceShift))) {
             match = 0;
-    } /* if */
+		}
+    }
 
     if (match) {
         /* calculate the length of the substituted string */
         instring = 0;
-        for (let e = new LikeCCharStream(define.replacement), len = 0; e.char != '\0'; e.curIndex++) {
-            if (e.getChar() == '%' && isdigit(e.getShiftChar(1)) && !instring) {
+        for (let e = new LikeCCharStream(define.replacement), len = 0; e.char !== '\0'; e.curIndex++) {
+            if (e.getChar() === '%' && isdigit(e.getShiftChar(1)) && !instring) {
                 let argNum = +e.getShiftChar(1);
 				let arg = args[argNum];
-                if (arg)
-                    len += arg.length;
-                else
-                    len += 2;     /* copy '%' plus digit */
+				len += arg ? arg.length : 2;
 				e.curIndex++;          /* skip %, digit is skipped later */
             }
             else {
-                if (e.getChar() == '"')
+                if (e.getChar() === '"') {
                     instring = instring > 0 ? 0 : 1;
+				}
                 len++;
             }
         }
@@ -325,8 +333,8 @@ function substpattern(stream: LikeCCharStream, define: Define, replaceData: Repl
 		const lengthBeforeReplace = sourceShift;
 		
 		sourceShift = 0;
-		for (let e = new LikeCCharStream(define.replacement); e.char != '\0'; e.curIndex++) {
-			if (e.getChar() == '%' && isdigit(e.getShiftChar(1)) && !instring) {
+		for (let e = new LikeCCharStream(define.replacement); e.char !== '\0'; e.curIndex++) {
+			if (e.getChar() === '%' && isdigit(e.getShiftChar(1)) && !instring) {
 				let argNum = +e.getShiftChar(1);
 				let arg = args.at(argNum);
 				if (arg !== undefined) {
@@ -342,8 +350,9 @@ function substpattern(stream: LikeCCharStream, define: Define, replaceData: Repl
 				e.curIndex++;          /* skip %, digit is skipped later */
 			}
 			else {
-				if (e.char == '"')
+				if (e.char === '"') {
 					instring = instring > 0 ? 0 : 1;
+				}
 				stream.strIns(e.substr(1), sourceShift);
 				sourceShift++;
 			}
@@ -380,28 +389,32 @@ function skippgroup(stream: LikeCCharStream): LikeCCharStream
 	}/* switch */
 
     stream.curIndex++;
-    while (stream.char != close || nest > 0) {
-        if (stream.char == open)
+    while (stream.char !== close || nest > 0) {
+        if (stream.char === open) {
             nest++;
-        else if (stream.char == close)
+		}
+        else if (stream.char === close) {
             nest--;
-        else if (isStringStrating(stream))
+		}
+        else if (isStringStrating(stream)) {
             stream = skipstring(stream);
-        if (stream.char == '\0')
+		}
+        if (stream.char === '\0') {
             break;
+		}
         stream.curIndex++;
     } /* while */
     return stream;
 }
 
 
-function find_subst(stream: LikeCCharStream, len: number)
+function findSubstr(stream: LikeCCharStream, len: number)
 {
     let item = substindex.get(stream.char);
-    return item ? find_stringpair(item, stream, len) : null;
+    return item ? findStringpair(item, stream, len) : null;
 }
 
-function find_stringpair(array: Define[], stream: LikeCCharStream, matchlength: number): Define|null
+function findStringpair(array: Define[], stream: LikeCCharStream, matchlength: number): Define|null
 {
 	for(let define of array) {
 		if (matchlength !== define.prefixLen) {
@@ -425,9 +438,10 @@ function skipstring(stream: LikeCCharStream)
     	flags: number = 0
 	;
 
-    while (stream.char == '!' || stream.char == '\\') {
-        if (stream.char == '\\')
+    while (stream.char === '!' || stream.char === '\\') {
+        if (stream.char === '\\') {
             flags = 1;
+		}
         stream.curIndex++;
     }
 
@@ -437,7 +451,6 @@ function skipstring(stream: LikeCCharStream)
 	stream.curIndex++;
     while (stream.char !== endquote && stream.char !== '\0') {
         litchar(stream, flags);
-
 	}
     return stream;
 }
@@ -448,9 +461,10 @@ function getString(stream: LikeCCharStream)
 		result = "";
 	;
 
-    while (stream.char == '!' || stream.char == '\\') {
-        if (stream.char == '\\')
+    while (stream.char === '!' || stream.char === '\\') {
+        if (stream.char === '\\') {
             flags = 1;
+		}
 		result += stream.char;
         stream.curIndex++;
     }
@@ -474,13 +488,13 @@ function litchar(lptr: LikeCCharStream, flags: number): number
     let cptr: LikeCCharStream = new LikeCCharStream(lptr.source);
 	cptr.curIndex = lptr.curIndex;
 
-	if ((flags & 1) != 0 || cptr.char != '\\') {  /* no escape character */
+	if ((flags & 1) !== 0 || cptr.char !== '\\') {  /* no escape character */
             c = cptr.char.charCodeAt(0);
             cptr.curIndex += 1;
     }
     else {
         cptr.curIndex += 1;
-        if (cptr.char == "\\") {
+        if (cptr.char === "\\") {
             c = cptr.char.charCodeAt(0);          /* \\ == \ (the escape character itself) */
             cptr.curIndex += 1;
         }
@@ -522,14 +536,17 @@ function litchar(lptr: LikeCCharStream, flags: number): number
                 cptr.curIndex += 1;
                 c = 0;
                 while (ishex(cptr.getChar())) {
-                    if (isdigit(cptr.getChar()))
+                    if (isdigit(cptr.getChar())) {
                         c = (c << 4) + (cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0));
-                    else
+					}
+                    else {
                         c = (c << 4) + (cptr.getChar().toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0) + 10);
+					}
 					cptr.curIndex++;
                 }
-                if (cptr.getChar() == ';')
+                if (cptr.getChar() === ';') {
                     cptr.curIndex++;       /* swallow a trailing ';' */
+				}
                 break;
             case '\'':        /* \' == ' (single quote) */
             case '"':         /* \" == " (single quote) */
@@ -563,8 +580,9 @@ function litchar(lptr: LikeCCharStream, flags: number): number
 						c = c * 10 + cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0);
 						cptr.curIndex++;
 					}
-                    if (cptr.getChar() == ';')
+                    if (cptr.getChar() === ';') {
 						cptr.curIndex++; /* swallow a trailing ';' */
+					}
                 }
                 else {
 					throw new Error("27");    /* invalid character constant */
