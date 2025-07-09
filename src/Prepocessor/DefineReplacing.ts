@@ -1,12 +1,13 @@
+import { Position } from "vscode";
 import { Define } from "./Define";
 
 const substindex = new Map<string, Define[]>();
 
-export function testPreprocess(code: string, define: Define) {
+export function testPreprocess(code: string, define: Define, changes: Position[]) {
 	try {
 		substindex.set(define.prefix[0], [define]);
 	
-		return substallpatterns(code);
+		return substallpatterns(code, changes);
 	} catch(e) {
 		console.error(e);
 	}
@@ -120,21 +121,29 @@ class LikeCCharStream {
 	}
 }
 
-function substallpatterns(line: string) {
+interface ReplaceInfo {
+	shift: number;
+}
+
+function substallpatterns(line: string, changes: Position[]) {
 	let 
 		start: number,
 		end: number,
 		prefixlen: number,
-		subst: Define|null = null
+		subst: Define|null = null,
+		shift = 0
 	;
 	
+	/**
+	 * Стрим для работы с входной строкой
+	 */
 	let stream = new LikeCCharStream(line);
 	
 
 	// Обход строки до ее конца
 	while(stream.char !== '\0') {
 		// Поиск начала префикса макроса
-		while (!alpha(stream.char) && stream.char !== '\0') {
+		while (!isAlphabeticSymbol(stream.char) && stream.char !== '\0') {
 			// Пропуск строк
 			if (isStringStrating(stream)) {
 				stream = skipstring(stream);
@@ -171,10 +180,17 @@ function substallpatterns(line: string) {
 		}
 		
 		subst = find_subst(stream, prefixlen);
-		if (subst != null) {
+		if (subst !== null) {
+			let replaceData: ReplaceInfo = { shift: 0};
 			/* properly match the pattern and substitute */
-			if (!substpattern(stream, subst))
+			if (!substpattern(stream, subst, replaceData)) {
 				stream.curIndex += prefixlen;      /* match failed, skip this prefix */
+			}
+			else {
+				changes.push(new Position(stream.curIndex + shift, prefixlen));
+				shift += replaceData.shift;
+			}
+			
 			/* match succeeded: do not update "start", because the substitution text
 			 * may be matched by other macros
 			 */
@@ -189,7 +205,7 @@ function substallpatterns(line: string) {
 
 let sc_needsemicolon = true;
 
-function substpattern(stream: LikeCCharStream, define: Define)
+function substpattern(stream: LikeCCharStream, define: Define, replaceData: ReplaceInfo)
 {
     let prefixlen: number;
 	let instring: number;
@@ -212,7 +228,7 @@ function substpattern(stream: LikeCCharStream, define: Define)
 					throw new Error("");
 				}
 				pattern.curIndex++;          /* skip parameter id */
-				if(!(pattern.getChar() != '\0')) {
+				if(!(pattern.getChar() !== '\0')) {
 					throw new Error("");	
 				}
                 /* match the source string up to the character after the digit
@@ -234,7 +250,7 @@ function substpattern(stream: LikeCCharStream, define: Define)
                 }
                 /* store the parameter (overrule any earlier) */
 				let len = e.curIndex - stream.curIndex;
-				args[arg] = (stream.substr(len - sourceShift, sourceShift));
+				args[arg] = stream.substr(len - sourceShift, sourceShift);
                 /* character behind the pattern was matched too */
                 if (e.char == pattern.char) {
 					sourceShift = len + 1;
@@ -306,6 +322,8 @@ function substpattern(stream: LikeCCharStream, define: Define)
         /* substitute pattern */
 		instring = 0;
 		stream.strdel(sourceShift);
+		const lengthBeforeReplace = sourceShift;
+		
 		sourceShift = 0;
 		for (let e = new LikeCCharStream(define.replacement); e.char != '\0'; e.curIndex++) {
 			if (e.getChar() == '%' && isdigit(e.getShiftChar(1)) && !instring) {
@@ -330,8 +348,10 @@ function substpattern(stream: LikeCCharStream, define: Define)
 				sourceShift++;
 			}
 		}
+		replaceData.shift = lengthBeforeReplace - sourceShift;
     }
 
+	
 
     return match;
 }
@@ -378,7 +398,7 @@ function skippgroup(stream: LikeCCharStream): LikeCCharStream
 function find_subst(stream: LikeCCharStream, len: number)
 {
     let item = substindex.get(stream.char);
-    return item != null ? find_stringpair(item, stream, len) : null;
+    return item ? find_stringpair(item, stream, len) : null;
 }
 
 function find_stringpair(array: Define[], stream: LikeCCharStream, matchlength: number): Define|null
@@ -396,7 +416,7 @@ function find_stringpair(array: Define[], stream: LikeCCharStream, matchlength: 
 
 function alphanum(c: string): boolean
 {
-    return (alpha(c) || isdigit(c));
+    return (isAlphabeticSymbol(c) || isdigit(c));
 }
 
 function skipstring(stream: LikeCCharStream)
@@ -570,7 +590,7 @@ function isdigit(c: string): boolean
 }
 
 
-function alpha(c: string): boolean
+function isAlphabeticSymbol(c: string): boolean
 {
     return /[a-zA-Z_@]/.test(c);
 }

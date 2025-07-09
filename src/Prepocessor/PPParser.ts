@@ -163,15 +163,16 @@ export class PPParser
 
 			changes.push({
 				start: directiveIndex,
-				end: endIndex,
-				replacement: ' '.repeat(space) + (rest).replace(/[^\s]/g, " "),
+				end: directiveIndex + fullMatch.length,
+				replacement: ' '.repeat(fullMatch.length),
 			});
 		}		
+		
 
 		let codeWithoutDirectives = code;
 		changes.sort((a, b) => b.start - a.start);
 		for (const change of changes) {
-			codeWithoutDirectives = codeWithoutDirectives.substring(0, change.start) + change.replacement + codeWithoutDirectives.substring(change.end);
+			codeWithoutDirectives = codeWithoutDirectives.substring(0, change.start) + change.replacement + codeWithoutDirectives.substring(change.end	);
 		}
 		return codeWithoutDirectives;
 	}
@@ -346,7 +347,7 @@ export class PPParser
 		if(define.undef) {
 			lastindex = define.undef.curStartIndex;
 		}
-		const startPos = define.curStartIndex;
+		const startPos = define.curEndIndex;
 		let stoptPos: number;
 		if(lastindex) {
 			stoptPos = lastindex;
@@ -358,6 +359,7 @@ export class PPParser
 	
 		let preCode = code.substring(0, startPos);
 		let postCode = code.substring(stoptPos);
+		console.log(code.length);
 		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, offset + startPos, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
 		
 	}
@@ -573,7 +575,19 @@ export class PPParser
 				cancellable: true,
 			},
 			async (progress, token) => {
-				return testPreprocess(str, define);
+				const changes: Position[] = [];
+				// const range = new Range(this.file.positionAt(change.start), this.file.positionAt(change.end));
+				// this.tokensManager.addToken(range, SemanticTokens.macro);
+				const res = testPreprocess(str, define, changes);
+
+				changes.forEach(change => {
+					const range = new Range(this.file.positionAt(change.line + preShift), this.file.positionAt(change.line + preShift + change.character));
+					console.log(this.file.getText(range));
+					this.tokensManager.addToken(range, SemanticTokens.macro);
+				});
+
+
+				return res;
 			}
 		);
 	}
