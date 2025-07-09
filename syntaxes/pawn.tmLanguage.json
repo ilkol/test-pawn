@@ -1202,9 +1202,6 @@
 					"include": "#ever_present_context"
 				},
 				{
-					"include": "#evaluation_context"
-				},
-				{
 					"match": "((?:static|const)+\\s+)?(\\s*&\\s*)?(?:([a-zA-Z_]\\w*|{[a-zA-Z_]\\w*(?:\\s*,\\s*[a-zA-Z_]\\w*)*})\\s*:\\s*)?([a-zA-Z_]\\w*|\\.\\.\\.)(?:\\[.*?\\])?",
 					"captures": {
 						"1": {
