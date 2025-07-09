@@ -1,6 +1,11 @@
 import { FindedDefine } from "./PPParser";
 
 interface Change {
+
+	/**
+	 * Определяет начальную позицию изменения в оригинальном тексте файла.
+	 */
+	originalStartPos: number;
 	/**
 	 * Определяет начальную позицию изменения в файле.
 	 */
@@ -24,8 +29,7 @@ export class CodeMapper {
 	 * @param change изменение, которое нужно добавить в маппер
 	 */
 	public addChange(change: Change): void {
-		const index = this.findStartIndex(change.startIndex);
-		
+		const index = this.findStartIndex(change.startIndex, (change) => change.startIndex);
 		this.changes.splice(index, 0, change);
 
 		this.cumulativeOffsets.splice(index, 0, change.changeLength + (this.cumulativeOffsets[index - 1] || 0));
@@ -40,13 +44,13 @@ export class CodeMapper {
 	 * @param start начальная позиция изменения
 	 * @returns индекс, в который нужно вставить изменение
 	 */
-	private findStartIndex(start: number): number {
+	private findStartIndex(start: number, getIndex: (change: Change) => number): number {
 		let left = 0;
 		let right = this.changes.length;
 
 		while (left < right) {
 		const mid = Math.floor((left + right) / 2);
-		if (this.changes[mid].startIndex > start) {
+		if (getIndex(this.changes[mid]) > start) {
 			right = mid;
 		} else {
 			left = mid + 1;
@@ -61,7 +65,7 @@ export class CodeMapper {
 	 * @returns позиция в оригинальном файле
 	 */
 	public getOriginalPos(pos: number): number {
-		const index = this.findStartIndex(pos);
+		const index = this.findStartIndex(pos, (change) => change.startIndex);
 		let offset = 0;
 		if (index > 0) {
 			offset = this.cumulativeOffsets[index - 1];
@@ -75,7 +79,7 @@ export class CodeMapper {
 	 * @returns позиция в файле после препроцессинга
 	 */
 	public getMappedPos(pos: number): number {
-		const index = this.findStartIndex(pos);
+		const index = this.findStartIndex(pos, (change) => change.originalStartPos);
 		let offset = 0;
 		if (index > 0) {
 			offset = this.cumulativeOffsets[index - 1];

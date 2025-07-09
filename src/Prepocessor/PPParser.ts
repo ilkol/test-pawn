@@ -574,7 +574,7 @@ export class PPParser
 	{
 		return await vscode.window.withProgress(
 			{
-				location: vscode.ProgressLocation.Window,
+				location: vscode.ProgressLocation.Window,	
 				title: title,
 				cancellable: true,
 			},
@@ -587,6 +587,7 @@ export class PPParser
 					startPos = change.start + preShift;
 					originalStartPos = this.codeMapper.getOriginalPos(startPos);
 					this.codeMapper.addChange({
+						originalStartPos: originalStartPos,
 						startIndex: startPos,
 						changeLength: change.shift
 					});
