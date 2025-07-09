@@ -359,7 +359,6 @@ export class PPParser
 	
 		let preCode = code.substring(0, startPos);
 		let postCode = code.substring(stoptPos);
-		console.log(code.length);
 		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, offset + startPos, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
 		
 	}
@@ -576,8 +575,6 @@ export class PPParser
 			},
 			async (progress, token) => {
 				const changes: Position[] = [];
-				// const range = new Range(this.file.positionAt(change.start), this.file.positionAt(change.end));
-				// this.tokensManager.addToken(range, SemanticTokens.macro);
 				const res = testPreprocess(str, define, changes);
 
 				changes.forEach(change => {
