@@ -28,6 +28,12 @@ interface ConditionStackElement {
 	skip: boolean;
 }
 
+export class FindedDefine {
+	constructor(public readonly start: number, public readonly length: number) {
+
+	}
+}
+
 export class PPParser
 {
 	private readonly directives: PreprocessorDirective[] = [];
@@ -150,9 +156,7 @@ export class PPParser
 			let endIndex = match.index + fullMatch.length;
 			const restIndex = rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
-			// sharp + spaces after sharp and before directive + directive length
-			let space = 1 + leadingWhitespaceAfterSharp.length + directive.length;
-
+			
 			if(directive !== "include") {
 				let res = findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
 				rest = res.rest;
@@ -163,7 +167,7 @@ export class PPParser
 
 			changes.push({
 				start: directiveIndex,
-				end: directiveIndex + fullMatch.length,
+				end: endIndex,
 				replacement: ' '.repeat(fullMatch.length),
 			});
 		}		
@@ -574,12 +578,12 @@ export class PPParser
 				cancellable: true,
 			},
 			async (progress, token) => {
-				const changes: Position[] = [];
+				const changes: FindedDefine[] = [];
 				const res = testPreprocess(str, define, changes);
-
+				let startPos: number;
 				changes.forEach(change => {
-					const range = new Range(this.file.positionAt(change.line + preShift), this.file.positionAt(change.line + preShift + change.character));
-					console.log(this.file.getText(range));
+					startPos = change.start + preShift;
+					const range = new Range(this.file.positionAt(startPos), this.file.positionAt(startPos + change.length));
 					this.tokensManager.addToken(range, SemanticTokens.macro);
 				});
 

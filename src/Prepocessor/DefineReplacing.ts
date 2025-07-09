@@ -1,5 +1,6 @@
 import { Position } from "vscode";
 import { Define } from "./Define";
+import { FindedDefine } from "./PPParser";
 
 const FILE_END_CHAR = '\0';
 
@@ -9,7 +10,7 @@ function isFileEnd(char: string): boolean {
 	return char === FILE_END_CHAR;
 }
 
-export function testPreprocess(code: string, define: Define, changes: Position[]) {
+export function testPreprocess(code: string, define: Define, changes: FindedDefine[]) {
 	try {
 		substindex.set(define.prefix[0], [define]);
 	
@@ -128,7 +129,7 @@ interface ReplaceInfo {
 	shift: number;
 }
 
-function substallpatterns(line: string, changes: Position[]) {
+function substallpatterns(line: string, changes: FindedDefine[]) {
 	let 
 		start: number,
 		end: number,
@@ -190,7 +191,7 @@ function substallpatterns(line: string, changes: Position[]) {
 				stream.curIndex += prefixlen;      /* match failed, skip this prefix */
 			}
 			else {
-				changes.push(new Position(stream.curIndex + shift, prefixlen));
+				changes.push(new FindedDefine(stream.curIndex + shift, prefixlen));
 				shift += replaceData.shift;
 			}
 			
