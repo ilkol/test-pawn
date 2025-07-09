@@ -1188,7 +1188,7 @@ export class PawnListener implements pawnListener
 	exitArrayIndexOperator(ctx: ArrayIndexOperatorContext) {
 		const node = <ASTNode>this.nodes.pop();
 		if(!(node instanceof ArrayIndex || node instanceof ArrayChar)) {
-			console.error(node)
+			console.error(node);
 			this.addDiagnostic(l10n.t("Unexpected node (AST error)"), DiagnosticSeverity.Error, node.pos);
 			return;
 		}
@@ -1223,7 +1223,7 @@ export class PawnListener implements pawnListener
 	private enterArrayIndexOper(ctx: ArrayOperatorIndexContext|ArrayOperatorCharContext) {
 		const node = <ASTNode>this.nodes.pop();
 		if(!(node instanceof ArrayIndex || node instanceof ArrayChar)) {
-			console.error(node)
+			console.error(node);
 			this.addDiagnostic(l10n.t("Unexpected node (AST error)"), DiagnosticSeverity.Error, node.pos);
 			return;
 		}
