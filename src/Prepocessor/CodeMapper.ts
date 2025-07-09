@@ -25,9 +25,11 @@ export class CodeMapper {
 	 */
 	public addChange(change: Change): void {
 		const index = this.findStartIndex(change.startIndex);
+		
 		this.changes.splice(index, 0, change);
 
-		this.cumulativeOffsets.splice(index, 0, change.changeLength);
+		this.cumulativeOffsets.splice(index, 0, change.changeLength + (this.cumulativeOffsets[index - 1] || 0));
+
 		for (let i = index + 1; i < this.cumulativeOffsets.length; i++) {
 			this.cumulativeOffsets[i] += change.changeLength;
 		}
@@ -62,9 +64,9 @@ export class CodeMapper {
 		const index = this.findStartIndex(pos);
 		let offset = 0;
 		if (index > 0) {
-		offset = this.cumulativeOffsets[index - 1];
+			offset = this.cumulativeOffsets[index - 1];
 		}
-		return pos - offset;
+		return pos + offset;
 	}
 
 	/**
@@ -78,6 +80,6 @@ export class CodeMapper {
 		if (index > 0) {
 			offset = this.cumulativeOffsets[index - 1];
 		}
-		return pos + offset;
+		return pos - offset;
 	}
 }

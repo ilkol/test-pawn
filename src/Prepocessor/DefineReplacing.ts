@@ -12,6 +12,7 @@ function isFileEnd(char: string): boolean {
 
 export function testPreprocess(code: string, define: Define, changes: FindedDefine[]) {
 	try {
+		substindex.clear(); // очищаем индекс макросов
 		substindex.set(define.prefix[0], [define]); // добавляем в массив макрос с ключом равным первому символу макроса
 	
 		return substallpatterns(code, changes);

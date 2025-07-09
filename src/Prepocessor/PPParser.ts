@@ -361,11 +361,10 @@ export class PPParser
 		else {
 			stoptPos =  code.length;
 		}
-		let offset = 0;
 	
 		let preCode = code.substring(0, startPos);
 		let postCode = code.substring(stoptPos);
-		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, offset + startPos, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
+		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, startPos, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
 		
 	}
 	// private async processDefineOnChunks(codeChunks: string[], define: Define)
@@ -582,19 +581,19 @@ export class PPParser
 			async (progress, token) => {
 				const changes: FindedDefine[] = [];
 				const res = testPreprocess(str, define, changes);
-				let startPos: number;
+				
+				let startPos: number, originalStartPos: number;
 				changes.forEach(change => {
-					startPos = this.codeMapper.getOriginalPos(change.start + preShift);
+					startPos = change.start + preShift;
+					originalStartPos = this.codeMapper.getOriginalPos(startPos);
 					this.codeMapper.addChange({
 						startIndex: startPos,
 						changeLength: change.shift
 					});
-					const range = new Range(this.file.positionAt(startPos), this.file.positionAt(startPos + change.length));
-					console.log(define.prefix, change.start + preShift, startPos);
+					const range = new Range(this.file.positionAt(originalStartPos), this.file.positionAt(originalStartPos + change.length));
 					this.tokensManager.addToken(range, SemanticTokens.macro);
+					preShift -= change.shift;
 				});
-
-
 				return res;
 			}
 		);
