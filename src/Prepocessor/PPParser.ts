@@ -17,6 +17,7 @@ import { Undef } from "./Undef";
 import { ElseIf } from "./ElseIf";
 import * as vscode from 'vscode';
 import { findFullMultyLineDerictive, testPreprocess } from "./DefineReplacing";
+import { CodeMapper } from "./CodeMapper";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -29,7 +30,7 @@ interface ConditionStackElement {
 }
 
 export class FindedDefine {
-	constructor(public readonly start: number, public readonly length: number) {
+	constructor(public readonly start: number, public readonly length: number, public readonly shift: number) {
 
 	}
 }
@@ -309,6 +310,7 @@ export class PPParser
 
 	public async processDefines(code: string)
 	{
+		console.log(this.defines.values());
 		for(let definesArray of this.defines.values()) {
 			for(let findinglocalDefine of definesArray) {
 				const start = findinglocalDefine.endIndex;
@@ -567,7 +569,7 @@ export class PPParser
 		directive.conditionResult = conditionResult;
 	}
 
-
+	private codeMapper: CodeMapper = new CodeMapper();
 
 	private async substringrReplacingOnChank(str: string, define: Define, preShift: number, title: string = "Processing replacements..."): Promise<string>
 	{
@@ -582,8 +584,13 @@ export class PPParser
 				const res = testPreprocess(str, define, changes);
 				let startPos: number;
 				changes.forEach(change => {
-					startPos = change.start + preShift;
+					startPos = this.codeMapper.getOriginalPos(change.start + preShift);
+					this.codeMapper.addChange({
+						startIndex: startPos,
+						changeLength: change.shift
+					});
 					const range = new Range(this.file.positionAt(startPos), this.file.positionAt(startPos + change.length));
+					console.log(define.prefix, change.start + preShift, startPos);
 					this.tokensManager.addToken(range, SemanticTokens.macro);
 				});
 
