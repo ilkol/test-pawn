@@ -22,7 +22,6 @@ export function testPreprocess(code: string, define: Define, changes: Position[]
 export function findFullMultyLineDerictive(input: string) {
 	let stream = new LikeCCharStream(input);
 		
-
 	while(stream.char === ' ') {
 		stream.curIndex++;
 	}
@@ -31,8 +30,6 @@ export function findFullMultyLineDerictive(input: string) {
 	}
 
 	let result = "";
-
-
 	let char;
 		
 	while(!isFileEnd(stream.getChar())) {
