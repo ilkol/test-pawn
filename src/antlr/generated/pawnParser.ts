@@ -2002,7 +2002,7 @@ export class pawnParser extends Parser {
 			this.enterOuterAlt(_localctx, 1);
 			{
 			this.state = 456;
-			this.expresion();
+			this.literal();
 			this.state = 458;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
@@ -2039,7 +2039,7 @@ export class pawnParser extends Parser {
 			this.state = 460;
 			this.match(pawnParser.PERIOD);
 			this.state = 461;
-			this.expresion();
+			this.literal();
 			}
 		}
 		catch (re) {
@@ -4433,10 +4433,10 @@ export class pawnParser extends Parser {
 		"\x02\x02\u01C0\u01C1\x03\x02\x02\x02\u01C1\u01C3\x03\x02\x02\x02\u01C2" +
 		"\u01C0\x03\x02\x02\x02\u01C3\u01C4\x07%\x02\x02\u01C4\u01C5\x05$\x13\x02" +
 		"\u01C5;\x03\x02\x02\x02\u01C6\u01C7\x07F\x02\x02\u01C7\u01C8\x07%\x02" +
-		"\x02\u01C8\u01C9\x05$\x13\x02\u01C9=\x03\x02\x02\x02\u01CA\u01CC\x05z" +
-		">\x02\u01CB\u01CD\x05@!\x02\u01CC\u01CB\x03\x02\x02\x02\u01CC\u01CD\x03" +
+		"\x02\u01C8\u01C9\x05$\x13\x02\u01C9=\x03\x02\x02\x02\u01CA\u01CC\x05n" +
+		"8\x02\u01CB\u01CD\x05@!\x02\u01CC\u01CB\x03\x02\x02\x02\u01CC\u01CD\x03" +
 		"\x02\x02\x02\u01CD?\x03\x02\x02\x02\u01CE\u01CF\x070\x02\x02\u01CF\u01D0" +
-		"\x05z>\x02\u01D0A\x03\x02\x02\x02\u01D1\u01D2\x07\x05\x02\x02\u01D2\u01D7" +
+		"\x05n8\x02\u01D0A\x03\x02\x02\x02\u01D1\u01D2\x07\x05\x02\x02\u01D2\u01D7" +
 		"\x05D#\x02\u01D3\u01D4\x07\t\x02\x02\u01D4\u01D6\x05D#\x02\u01D5\u01D3" +
 		"\x03\x02\x02\x02\u01D6\u01D9\x03\x02\x02\x02\u01D7\u01D5\x03\x02\x02\x02" +
 		"\u01D7\u01D8\x03\x02\x02\x02\u01D8\u01DA\x03\x02\x02\x02\u01D9\u01D7\x03" +
@@ -5826,8 +5826,8 @@ export class DefaultContext extends ParserRuleContext {
 
 
 export class Case_listContext extends ParserRuleContext {
-	public expresion(): ExpresionContext {
-		return this.getRuleContext(0, ExpresionContext);
+	public literal(): LiteralContext {
+		return this.getRuleContext(0, LiteralContext);
 	}
 	public range(): RangeContext | undefined {
 		return this.tryGetRuleContext(0, RangeContext);
@@ -5862,8 +5862,8 @@ export class Case_listContext extends ParserRuleContext {
 
 export class RangeContext extends ParserRuleContext {
 	public PERIOD(): TerminalNode { return this.getToken(pawnParser.PERIOD, 0); }
-	public expresion(): ExpresionContext {
-		return this.getRuleContext(0, ExpresionContext);
+	public literal(): LiteralContext {
+		return this.getRuleContext(0, LiteralContext);
 	}
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
