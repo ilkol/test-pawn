@@ -146,7 +146,7 @@ export class PPParser
 	 */
 	public collectDirectives(code: string): string {
 
-		const reg = /^([\t ]*)#(\s*)(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
@@ -165,11 +165,10 @@ export class PPParser
 			}
 
 			this.addNewDirective(directive, rest, directiveIndex, restIndex, endIndex);
-
 			changes.push({
 				start: directiveIndex,
 				end: endIndex,
-				replacement: ' '.repeat(fullMatch.length),
+				replacement: ' '.repeat(endIndex - directiveIndex),
 			});
 		}		
 		
@@ -310,7 +309,6 @@ export class PPParser
 
 	public async processDefines(code: string)
 	{
-		console.log(this.defines.values());
 		for(let definesArray of this.defines.values()) {
 			for(let findinglocalDefine of definesArray) {
 				const start = findinglocalDefine.endIndex;
