@@ -1,12 +1,21 @@
+import { Position } from "vscode";
 import { Define } from "./Define";
+import { FindedDefine } from "./PPParser";
+
+const FILE_END_CHAR = '\0';
 
 const substindex = new Map<string, Define[]>();
 
-export function testPreprocess(code: string, define: Define) {
+function isFileEnd(char: string): boolean {
+	return char === FILE_END_CHAR;
+}
+
+export function testPreprocess(code: string, define: Define, changes: FindedDefine[]) {
 	try {
-		substindex.set(define.prefix[0], [define]);
+		substindex.clear(); // очищаем индекс макросов
+		substindex.set(define.prefix[0], [define]); // добавляем в массив макрос с ключом равным первому символу макроса
 	
-		return substallpatterns(code);
+		return substallpatterns(code, changes);
 	} catch(e) {
 		console.error(e);
 	}
@@ -15,26 +24,23 @@ export function testPreprocess(code: string, define: Define) {
 export function findFullMultyLineDerictive(input: string) {
 	let stream = new LikeCCharStream(input);
 		
-
 	while(stream.char === ' ') {
 		stream.curIndex++;
 	}
-	if(stream.char === '\0') {
+	if(isFileEnd(stream.char)) {
 		return {rest: "", fullLength: 0};
 	}
 
 	let result = "";
-
-
 	let char;
 		
-	while(stream.getChar() !== '\0') {
+	while(!isFileEnd(stream.getChar())) {
 		char = stream.getChar();
 		
 		// Если строка, то полностью ее включаем в паттерн
 		if (isStringStrating(stream)) {
 			result += getString(stream);
-			if (stream.char === '\0') {
+			if (isFileEnd(stream.char)) {
 				break;        
 			}
 		}
@@ -85,7 +91,7 @@ class LikeCCharStream {
 				return false;
 			}
 			if(this._source[index] !== str[i]) {
-				return false
+				return false;
 			}
 		}
 		return true;
@@ -110,7 +116,7 @@ class LikeCCharStream {
 	public getShiftChar(shift: number = 0) {
 		let index = this.curIndex + shift;
 		if(this._source.length <= index) {
-			return '\0';
+			return FILE_END_CHAR;
 		}
 		return this._source[index];
 	}
@@ -120,38 +126,49 @@ class LikeCCharStream {
 	}
 }
 
-function substallpatterns(line: string) {
+interface ReplaceInfo {
+	shift: number;
+}
+
+function substallpatterns(line: string, changes: FindedDefine[]) {
 	let 
 		start: number,
 		end: number,
+		/**
+		 * Длина префикса макроса, который мы ищем в строке
+		 */
 		prefixlen: number,
-		subst: Define|null = null
+		subst: Define|null = null,
+		shift = 0
 	;
 	
+	/**
+	 * Стрим для работы с входной строкой
+	 */
 	let stream = new LikeCCharStream(line);
 	
 
 	// Обход строки до ее конца
-	while(stream.char !== '\0') {
+	while(!isFileEnd(stream.char)) {
 		// Поиск начала префикса макроса
-		while (!alpha(stream.char) && stream.char !== '\0') {
+		while (!isAlphabeticSymbol(stream.char) && !isFileEnd(stream.char)) {
 			// Пропуск строк
 			if (isStringStrating(stream)) {
 				stream = skipstring(stream);
-				if (stream.char === '\0') {
+				if (isFileEnd(stream.char)) {
 					break;        /* abort loop on error */
 				}
 			}
 			stream.curIndex++;          /* skip non-alphapetic character (or closing quote of a string) */
 		}
-		if (stream.char === '\0') {
+		if (isFileEnd(stream.char)) {
 			break; /* abort loop on error */
 		}
 		/* if matching the operator "defined", skip it plus the symbol behind it */
         if (stream.compare("defined") && stream.getShiftChar(7) <= ' ') {
 			stream.curIndex += 7; /* skip "defined" */
 			/* skip white space & parantheses */
-			while ((stream.getChar() <= ' ' && stream.getChar() !== '\0') || stream.getChar() === '(') {
+			while ((stream.getChar() <= ' ' && !isFileEnd(stream.getChar())) || stream.getChar() === '(') {
 				stream.curIndex++;
 			}
 			/* skip the symbol behind it */
@@ -170,11 +187,19 @@ function substallpatterns(line: string) {
 			throw new Error("");
 		}
 		
-		subst = find_subst(stream, prefixlen);
-		if (subst != null) {
+		subst = findSubstr(stream, prefixlen);
+		if (subst !== null) {
+			let replaceData: ReplaceInfo = { shift: 0};
+			const mappingInfo = { findedLength: 0, replacingLength: 0 };
 			/* properly match the pattern and substitute */
-			if (!substpattern(stream, subst))
+			if (!substpattern(stream, subst, replaceData, mappingInfo)) {
 				stream.curIndex += prefixlen;      /* match failed, skip this prefix */
+			}
+			else {
+				changes.push(new FindedDefine(stream.curIndex + shift, prefixlen, mappingInfo.findedLength - mappingInfo.replacingLength));
+				shift += replaceData.shift;
+			}
+			
 			/* match succeeded: do not update "start", because the substitution text
 			 * may be matched by other macros
 			 */
@@ -187,11 +212,20 @@ function substallpatterns(line: string) {
 	return stream.source;
 }
 
-let sc_needsemicolon = true;
+let needSemicolon = true;
 
-function substpattern(stream: LikeCCharStream, define: Define)
+interface MappingInfo {
+	/**
+	 * Количество символов, найденных в строке
+	 */
+	findedLength: number;
+	/**
+	 * Количество символов, на которые нужно заменить
+	 */
+	replacingLength: number;
+}
+function substpattern(stream: LikeCCharStream, define: Define, replaceData: ReplaceInfo, mappingInfo: MappingInfo)
 {
-    let prefixlen: number;
 	let instring: number;
 
     /* pattern prefix matches; match the rest of the pattern, gather
@@ -202,62 +236,63 @@ function substpattern(stream: LikeCCharStream, define: Define)
     let sourceShift = define.prefixLen;
     let pattern = new LikeCCharStream(define.postPrefix);
     let match = 1;         /* so far, pattern matches */
-    while (match && stream.getShiftChar(sourceShift) != '\0' && pattern.char != '\0') {
-		if (pattern.char == '%') {
-			pattern.curIndex++;
-            if (isdigit(pattern.getChar())) {
-                arg = +pattern.getChar();
-				
-				if(!(arg >= 0 && arg <= 9)) {
-					throw new Error("");
-				}
-				pattern.curIndex++;          /* skip parameter id */
-				if(!(pattern.getChar() != '\0')) {
-					throw new Error("");	
-				}
-                /* match the source string up to the character after the digit
-                 * (skipping strings in the process
-                 */
-				let e = new LikeCCharStream(stream.source);
-				e.curIndex = stream.curIndex + sourceShift;
-                while (e.char != pattern.char && e.char != '\0' && e.char != '\n') {
-					// console.log(e.getChar());
 
-                    if (isStringStrating(e))              /* skip strings */
-                        e = skipstring(e);
-                    else if (/\(\{\[/.exec(e.char))    /* skip parenthized groups */
-                        e = skippgroup(e);
-                    if (e.char != '\0') {
-                        e.curIndex++;      /* skip non-alphapetic character (or closing quote of
-											* a string, or the closing paranthese of a group) */
-					}
-                }
-                /* store the parameter (overrule any earlier) */
-				let len = e.curIndex - stream.curIndex;
-				args[arg] = (stream.substr(len - sourceShift, sourceShift));
-                /* character behind the pattern was matched too */
-                if (e.char == pattern.char) {
-					sourceShift = len + 1;
-                }
-                else if (e.char == '\n' && pattern.getChar() == ';' && pattern.getShiftChar(1) == '\0' && !sc_needsemicolon) {
-                    sourceShift = len;    /* allow a trailing ; in the pattern match to end of line */
-                }
-                else {
-                    match = 0;
-                    sourceShift = len;
-                } /* if */
-                pattern.curIndex++;
-            }
-            else {
-                match = 1;
-            } /* if */
+    while (match && !isFileEnd(stream.getShiftChar(sourceShift)) && !isFileEnd(pattern.char)) {
+		if (pattern.char === '%') { // обработка параметра в паттерне
+			pattern.curIndex++; // получаем следующий символ
+            if (!isdigit(pattern.getChar())) { // если символ не число
+				match = 1;
+				continue;
+			}
+			arg = +pattern.getChar(); // получаем номер параметра
+			
+			if(!(arg >= 0 && arg <= 9)) { // если номер параметра не в диапазоне от 0 до 9
+				throw new Error(""); // выбрасываем исключение
+			}
+			pattern.curIndex++;	// берём следующий символ после номера параметра
+			if(isFileEnd(pattern.getChar())) {
+				throw new Error("");	// файл закончился, а паттерн не закончился
+			}
+
+			let e = new LikeCCharStream(stream.source); // создаем копию основного стрима
+			e.curIndex = stream.curIndex + sourceShift; // сдвигаем его на позицию, где мы ищем параметр
+			while (e.char !== pattern.char && !isFileEnd(e.char) && e.char !== '\n') { // пока символ не совпал с паттерном и это не конец файла или строки
+				if (isStringStrating(e)) { // пропуск строки
+					e = skipstring(e);
+				}              
+				else if (/\(\{\[/.exec(e.char)) { // пропуск групп
+					
+					e = skippgroup(e);
+				}
+				if (!isFileEnd(e.char)) {
+					e.curIndex++;      /* skip non-alphapetic character (or closing quote of
+										* a string, or the closing paranthese of a group) */
+				}
+			}
+			/* store the parameter (overrule any earlier) */
+			let len = e.curIndex - stream.curIndex; // длина найденного параметра
+			args[arg] = stream.substr(len - sourceShift, sourceShift); // сохраняем параметр в массив
+			/* character behind the pattern was matched too */
+			if (e.char === pattern.char) { // если символ совпал с паттерном
+				sourceShift = len + 1;
+			}
+			else if (e.char === '\n' && pattern.getChar() === ';' && isFileEnd(pattern.getShiftChar(1)) && !needSemicolon) {
+				sourceShift = len;    /* allow a trailing ; in the pattern match to end of line */
+			}
+			else {
+				match = 0;
+				sourceShift = len;
+			} /* if */
+			pattern.curIndex++;
         }
-        else if (pattern.char == ';' && pattern.getShiftChar(1) == '\0' && !sc_needsemicolon) {
+        else if (pattern.char === ';' && isFileEnd(pattern.getShiftChar(1)) && !needSemicolon) {
             /* source may be ';' or end of the line */
-            while (stream.getShiftChar(sourceShift) <= ' ' && stream.getShiftChar(sourceShift) != '\0')
+            while (stream.getShiftChar(sourceShift) <= ' ' && !isFileEnd(stream.getShiftChar(sourceShift))) {
                 stream.curIndex++;          /* skip white space */
-            if (stream.getShiftChar(sourceShift) != ';' && stream.getShiftChar(sourceShift) != '\0')
-                match = 0;
+			}
+            if (stream.getShiftChar(sourceShift) !== ';' && !isFileEnd(stream.getShiftChar(sourceShift))) {
+				match = 0;
+			}
             pattern.curIndex++;            /* skip the semicolon in the pattern */
         }
         else {
@@ -265,50 +300,57 @@ function substpattern(stream: LikeCCharStream, define: Define)
             /* skip whitespace between two non-alphanumeric characters, except
              * for two identical symbols
              */
-            if (!alphanum(pattern.char) && pattern.getShiftChar(1) != pattern.char)
-                while (stream.getShiftChar(sourceShift) <= ' ' && stream.getShiftChar(sourceShift) != '\0')
+            if (!alphanum(pattern.char) && pattern.getShiftChar(1) !== pattern.char) {
+                while (stream.getShiftChar(sourceShift) <= ' ' && !isFileEnd(stream.getShiftChar(sourceShift))) {
                     sourceShift++;                  /* skip white space */
+				}
+			}
             ch = litchar(pattern, 0);         /* this increments "p" */
-            if (stream.getShiftChar(sourceShift).charCodeAt(0) != ch)
+            if (stream.getShiftChar(sourceShift).charCodeAt(0) !== ch) {
                 match = 0;
-            else
+			}
+            else {
 				sourceShift++;                    /* this character matches */
+			}
         } 
     }
+	mappingInfo.findedLength = sourceShift;
 
-    if (match && pattern.char == '\0') {
+
+    if (match && isFileEnd(pattern.char)) {
         /* if the last character to match is an alphanumeric character, the
          * current character in the source may not be alphanumeric
          */
-        if (alphanum(pattern.getShiftChar(-1)) && alphanum(stream.getShiftChar(sourceShift)))
+        if (alphanum(pattern.getShiftChar(-1)) && alphanum(stream.getShiftChar(sourceShift))) {
             match = 0;
-    } /* if */
+		}
+    }
 
     if (match) {
         /* calculate the length of the substituted string */
         instring = 0;
-        for (let e = new LikeCCharStream(define.replacement), len = 0; e.char != '\0'; e.curIndex++) {
-            if (e.getChar() == '%' && isdigit(e.getShiftChar(1)) && !instring) {
+        for (let e = new LikeCCharStream(define.replacement), len = 0; !isFileEnd(e.char); e.curIndex++) {
+            if (e.getChar() === '%' && isdigit(e.getShiftChar(1)) && !instring) {
                 let argNum = +e.getShiftChar(1);
 				let arg = args[argNum];
-                if (arg)
-                    len += arg.length;
-                else
-                    len += 2;     /* copy '%' plus digit */
+				len += arg ? arg.length : 2;
 				e.curIndex++;          /* skip %, digit is skipped later */
             }
             else {
-                if (e.getChar() == '"')
+                if (e.getChar() === '"') {
                     instring = instring > 0 ? 0 : 1;
+				}
                 len++;
             }
         }
         /* substitute pattern */
 		instring = 0;
 		stream.strdel(sourceShift);
+		const lengthBeforeReplace = sourceShift;
+		
 		sourceShift = 0;
-		for (let e = new LikeCCharStream(define.replacement); e.char != '\0'; e.curIndex++) {
-			if (e.getChar() == '%' && isdigit(e.getShiftChar(1)) && !instring) {
+		for (let e = new LikeCCharStream(define.replacement); !isFileEnd(e.char); e.curIndex++) {
+			if (e.getChar() === '%' && isdigit(e.getShiftChar(1)) && !instring) {
 				let argNum = +e.getShiftChar(1);
 				let arg = args.at(argNum);
 				if (arg !== undefined) {
@@ -324,14 +366,18 @@ function substpattern(stream: LikeCCharStream, define: Define)
 				e.curIndex++;          /* skip %, digit is skipped later */
 			}
 			else {
-				if (e.char == '"')
+				if (e.char === '"') {
 					instring = instring > 0 ? 0 : 1;
+				}
 				stream.strIns(e.substr(1), sourceShift);
 				sourceShift++;
 			}
 		}
+		replaceData.shift = lengthBeforeReplace - sourceShift;
+		mappingInfo.replacingLength = sourceShift;
     }
 
+	
 
     return match;
 }
@@ -360,28 +406,32 @@ function skippgroup(stream: LikeCCharStream): LikeCCharStream
 	}/* switch */
 
     stream.curIndex++;
-    while (stream.char != close || nest > 0) {
-        if (stream.char == open)
+    while (stream.char !== close || nest > 0) {
+        if (stream.char === open) {
             nest++;
-        else if (stream.char == close)
+		}
+        else if (stream.char === close) {
             nest--;
-        else if (isStringStrating(stream))
+		}
+        else if (isStringStrating(stream)) {
             stream = skipstring(stream);
-        if (stream.char == '\0')
+		}
+        if (isFileEnd(stream.char)) {
             break;
+		}
         stream.curIndex++;
     } /* while */
     return stream;
 }
 
 
-function find_subst(stream: LikeCCharStream, len: number)
+function findSubstr(stream: LikeCCharStream, len: number)
 {
     let item = substindex.get(stream.char);
-    return item != null ? find_stringpair(item, stream, len) : null;
+    return item ? findStringpair(item, stream, len) : null;
 }
 
-function find_stringpair(array: Define[], stream: LikeCCharStream, matchlength: number): Define|null
+function findStringpair(array: Define[], stream: LikeCCharStream, matchlength: number): Define|null
 {
 	for(let define of array) {
 		if (matchlength !== define.prefixLen) {
@@ -396,7 +446,7 @@ function find_stringpair(array: Define[], stream: LikeCCharStream, matchlength: 
 
 function alphanum(c: string): boolean
 {
-    return (alpha(c) || isdigit(c));
+    return (isAlphabeticSymbol(c) || isdigit(c));
 }
 
 function skipstring(stream: LikeCCharStream)
@@ -405,9 +455,10 @@ function skipstring(stream: LikeCCharStream)
     	flags: number = 0
 	;
 
-    while (stream.char == '!' || stream.char == '\\') {
-        if (stream.char == '\\')
+    while (stream.char === '!' || stream.char === '\\') {
+        if (stream.char === '\\') {
             flags = 1;
+		}
         stream.curIndex++;
     }
 
@@ -415,9 +466,8 @@ function skipstring(stream: LikeCCharStream)
 
 	// Пропускаем открывающую ковычку
 	stream.curIndex++;
-    while (stream.char !== endquote && stream.char !== '\0') {
+    while (stream.char !== endquote && !isFileEnd(stream.char)) {
         litchar(stream, flags);
-
 	}
     return stream;
 }
@@ -428,9 +478,10 @@ function getString(stream: LikeCCharStream)
 		result = "";
 	;
 
-    while (stream.char == '!' || stream.char == '\\') {
-        if (stream.char == '\\')
+    while (stream.char === '!' || stream.char === '\\') {
+        if (stream.char === '\\') {
             flags = 1;
+		}
 		result += stream.char;
         stream.curIndex++;
     }
@@ -440,7 +491,7 @@ function getString(stream: LikeCCharStream)
 	// Пропускаем открывающую ковычку
 	result += stream.char;
 	stream.curIndex++;
-    while (stream.char !== endquote && stream.char !== '\0') {
+    while (stream.char !== endquote && !isFileEnd(stream.char)) {
 		result += stream.char;
         litchar(stream, flags);
 
@@ -454,13 +505,13 @@ function litchar(lptr: LikeCCharStream, flags: number): number
     let cptr: LikeCCharStream = new LikeCCharStream(lptr.source);
 	cptr.curIndex = lptr.curIndex;
 
-	if ((flags & 1) != 0 || cptr.char != '\\') {  /* no escape character */
+	if ((flags & 1) !== 0 || cptr.char !== '\\') {  /* no escape character */
             c = cptr.char.charCodeAt(0);
             cptr.curIndex += 1;
     }
     else {
         cptr.curIndex += 1;
-        if (cptr.char == "\\") {
+        if (cptr.char === "\\") {
             c = cptr.char.charCodeAt(0);          /* \\ == \ (the escape character itself) */
             cptr.curIndex += 1;
         }
@@ -502,14 +553,17 @@ function litchar(lptr: LikeCCharStream, flags: number): number
                 cptr.curIndex += 1;
                 c = 0;
                 while (ishex(cptr.getChar())) {
-                    if (isdigit(cptr.getChar()))
+                    if (isdigit(cptr.getChar())) {
                         c = (c << 4) + (cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0));
-                    else
+					}
+                    else {
                         c = (c << 4) + (cptr.getChar().toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0) + 10);
+					}
 					cptr.curIndex++;
                 }
-                if (cptr.getChar() == ';')
+                if (cptr.getChar() === ';') {
                     cptr.curIndex++;       /* swallow a trailing ';' */
+				}
                 break;
             case '\'':        /* \' == ' (single quote) */
             case '"':         /* \" == " (single quote) */
@@ -543,8 +597,9 @@ function litchar(lptr: LikeCCharStream, flags: number): number
 						c = c * 10 + cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0);
 						cptr.curIndex++;
 					}
-                    if (cptr.getChar() == ';')
+                    if (cptr.getChar() === ';') {
 						cptr.curIndex++; /* swallow a trailing ';' */
+					}
                 }
                 else {
 					throw new Error("27");    /* invalid character constant */
@@ -570,7 +625,7 @@ function isdigit(c: string): boolean
 }
 
 
-function alpha(c: string): boolean
+function isAlphabeticSymbol(c: string): boolean
 {
     return /[a-zA-Z_@]/.test(c);
 }

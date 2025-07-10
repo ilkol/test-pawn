@@ -17,6 +17,7 @@ import { Undef } from "./Undef";
 import { ElseIf } from "./ElseIf";
 import * as vscode from 'vscode';
 import { findFullMultyLineDerictive, testPreprocess } from "./DefineReplacing";
+import { CodeMapper } from "./CodeMapper";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -26,6 +27,12 @@ type ConditionStack = ConditionStackElement[];
 interface ConditionStackElement {
 	directive: Condition;
 	skip: boolean;
+}
+
+export class FindedDefine {
+	constructor(public readonly start: number, public readonly length: number, public readonly shift: number) {
+
+	}
 }
 
 export class PPParser
@@ -139,7 +146,7 @@ export class PPParser
 	 */
 	public collectDirectives(code: string): string {
 
-		const reg = /^([\t ]*)#(\s*)(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
@@ -150,9 +157,7 @@ export class PPParser
 			let endIndex = match.index + fullMatch.length;
 			const restIndex = rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
-			// sharp + spaces after sharp and before directive + directive length
-			let space = 1 + leadingWhitespaceAfterSharp.length + directive.length;
-
+			
 			if(directive !== "include") {
 				let res = findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
 				rest = res.rest;
@@ -160,18 +165,18 @@ export class PPParser
 			}
 
 			this.addNewDirective(directive, rest, directiveIndex, restIndex, endIndex);
-
 			changes.push({
 				start: directiveIndex,
 				end: endIndex,
-				replacement: ' '.repeat(space) + (rest).replace(/[^\s]/g, " "),
+				replacement: ' '.repeat(endIndex - directiveIndex),
 			});
 		}		
+		
 
 		let codeWithoutDirectives = code;
 		changes.sort((a, b) => b.start - a.start);
 		for (const change of changes) {
-			codeWithoutDirectives = codeWithoutDirectives.substring(0, change.start) + change.replacement + codeWithoutDirectives.substring(change.end);
+			codeWithoutDirectives = codeWithoutDirectives.substring(0, change.start) + change.replacement + codeWithoutDirectives.substring(change.end	);
 		}
 		return codeWithoutDirectives;
 	}
@@ -346,7 +351,7 @@ export class PPParser
 		if(define.undef) {
 			lastindex = define.undef.curStartIndex;
 		}
-		const startPos = define.curStartIndex;
+		const startPos = define.curEndIndex;
 		let stoptPos: number;
 		if(lastindex) {
 			stoptPos = lastindex;
@@ -354,11 +359,10 @@ export class PPParser
 		else {
 			stoptPos =  code.length;
 		}
-		let offset = 0;
 	
 		let preCode = code.substring(0, startPos);
 		let postCode = code.substring(stoptPos);
-		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, offset + startPos, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
+		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, startPos, `Process ${define.prefix} in ${this.file.uri.fsPath}`) + postCode;
 		
 	}
 	// private async processDefineOnChunks(codeChunks: string[], define: Define)
@@ -562,18 +566,34 @@ export class PPParser
 		directive.conditionResult = conditionResult;
 	}
 
-
+	private codeMapper: CodeMapper = new CodeMapper();
 
 	private async substringrReplacingOnChank(str: string, define: Define, preShift: number, title: string = "Processing replacements..."): Promise<string>
 	{
 		return await vscode.window.withProgress(
 			{
-				location: vscode.ProgressLocation.Window,
+				location: vscode.ProgressLocation.Window,	
 				title: title,
 				cancellable: true,
 			},
 			async (progress, token) => {
-				return testPreprocess(str, define);
+				const changes: FindedDefine[] = [];
+				const res = testPreprocess(str, define, changes);
+				
+				let startPos: number, originalStartPos: number;
+				changes.forEach(change => {
+					startPos = change.start + preShift;
+					originalStartPos = this.codeMapper.getOriginalPos(startPos);
+					this.codeMapper.addChange({
+						originalStartPos: originalStartPos,
+						startIndex: startPos,
+						changeLength: change.shift
+					});
+					const range = new Range(this.file.positionAt(originalStartPos), this.file.positionAt(originalStartPos + change.length));
+					this.tokensManager.addToken(range, SemanticTokens.macro);
+					preShift -= change.shift;
+				});
+				return res;
 			}
 		);
 	}

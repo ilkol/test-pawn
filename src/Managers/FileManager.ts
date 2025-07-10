@@ -87,8 +87,8 @@ export class FileManager {
 	}
 	public async isFileExist(uri: Uri): Promise<boolean> {
 		try {
-			await workspace.fs.stat(uri);
-			return true;
+			const fileStat = await workspace.fs.stat(uri);
+			return fileStat.type === vscode.FileType.File;
 		}
 		catch(e) {
 			return false;
@@ -306,6 +306,7 @@ export class FileManager {
 	
 		const currentPath = Uri.file(path.dirname(fileUri.fsPath));
 
+		
 		if(this.includePath) {
 			for (const includePath of includes) {
 				
@@ -347,6 +348,7 @@ export class FileManager {
 				return uri;
 			}
 		}
+		return undefined;
 	}
 
 
