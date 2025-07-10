@@ -798,6 +798,9 @@ export class PawnListener implements pawnListener
 			else if(last instanceof FunctionDeclarationParameter) {
 				last.defaultValue = node;
 			}
+			else if(last instanceof CaseStatement) {
+				last.condition = node;
+			}
 			else {
 				console.debug(last);
 				this.addDiagnostic(l10n.t("Unexpected string"), DiagnosticSeverity.Error, node.pos);
