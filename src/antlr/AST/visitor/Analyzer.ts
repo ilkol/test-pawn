@@ -48,6 +48,7 @@ import { DiagnosticHint } from "../../diagnostic/DiagnosticHint";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { Definition } from "../../../Linking/Definition";
 import { Reference } from "../../../Linking/Reference";
+import { Serializer } from "../../../cache/Serializer";
 
 export class Analyzer extends BaseVisitor
 {

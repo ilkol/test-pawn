@@ -1,4 +1,3 @@
 export interface Serializable {
-	toJSON(): any;
-	fromJSON(json: any): Serializable;
+	toJSON(): object;
 }

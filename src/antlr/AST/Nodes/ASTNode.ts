@@ -19,22 +19,19 @@ export abstract class ASTNode implements Serializable {
 	}
 	toJSON() {
 		return {
-			__type: 'ASTNode',
-			_pos: {
-				start: {
-					line: this._pos.start.line,
-					character: this._pos.start.character
-				},
-				end: {
-					line: this._pos.end.line,
-					character: this._pos.end.character
-				}
+			__type: "ASTNOde",
+			start: {
+				line: this._pos.start.line + 1,
+				character: this._pos.start.character
+			},
+			end: {
+				line: this._pos.end.line + 1,
+				character: this._pos.end.character
 			}
 		}
-
 	}
-	fromJSON(json: any): ASTNode {
-		throw new Error("Нельзя инстанцировать абстрактный класс");
+	static fromJSON(json: any): ASTNode {
+		throw new Error("Method not implemented.");
 	}
 	
 	/**

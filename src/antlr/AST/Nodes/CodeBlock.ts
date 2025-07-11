@@ -7,13 +7,13 @@ import { Position } from "vscode";
 
 export class CodeBlock extends ASTNode implements Serializable
 {
-	toJSON() {
+	public toJSON() {
 		return {
 			...super.toJSON(),
 			__type: "CodeBlock",
 		};
 	}
-	fromJSON(json: any): CodeBlock {
+	static fromJSON(json: any): CodeBlock {
 		const instance = new CodeBlock(new Statements());
 		instance.setRange(
 			new Position(json.start.line, json.start.character),

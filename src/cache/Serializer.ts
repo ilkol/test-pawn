@@ -2,27 +2,44 @@ import { ASTNode } from "../antlr/AST/Nodes/ASTNode";
 import { CodeBlock } from "../antlr/AST/Nodes/CodeBlock";
 import { Serializable } from "./Serializable";
 
-interface SerializableContructor extends Serializable {
-	new (...args: any[]): Serializable;
+export type SerializableConstructor<T extends Serializable> = {
+	// __type: string; // метка типа (например, "CodeBlock")
+	fromJSON(json: any): T;
+};
+
+const registry: Record<string, SerializableConstructor<any>> = {};
+
+export function registerSerializable<T extends Serializable>(type: string, ctor: SerializableConstructor<T>) {
+	registry[type] = ctor;
 }
 
+export function getSerializableConstructor<T extends Serializable>(type: string): SerializableConstructor<T> | undefined {
+	return registry[type];
+}
 export class Serializer {
-	private static typeRegistry: { [key: string]: SerializableContructor } = {
-		CodeBlock
-	};
+	static init() {
+		registerSerializable("CodeBlock", CodeBlock);
+	}
 
 	static serialize(obj: Serializable) {
-		return JSON.stringify(obj);
+		return JSON.stringify(obj.toJSON());
 	}
 
 	static deserialize<T extends Serializable>(json: string): T {
-		const parsed = JSON.parse(json);
-		const type = parsed.__type;
-		if (!type || !this.typeRegistry[type]) {
-			throw new Error(`Unknown type: ${type}`);
-		}
-		const clazz = this.typeRegistry[type];
+		const obj = JSON.parse(json);
+		const type = obj.__type;
 
-		return clazz.fromJSON(parsed);
+		if (!type) {
+			throw new Error("Missing __type in serialized object");
+		}
+
+		const ctor = getSerializableConstructor<T>(type);
+
+		if (!ctor) {
+			throw new Error(`No registered class for type ${type}`);
+		}
+
+		const instance = ctor.fromJSON(obj);
+		return instance;
 	}
 }
