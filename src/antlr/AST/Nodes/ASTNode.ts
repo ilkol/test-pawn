@@ -1,8 +1,9 @@
 import { Position, Range } from "vscode";
 import { Token } from "antlr4ts";
 import { IVisitor } from "../visitor/IVisitor";
+import { Serializable } from "../../../cache/Serializable";
 
-export abstract class ASTNode {
+export abstract class ASTNode implements Serializable {
 	/**
 	 * Позиция узла
 	 */
@@ -15,6 +16,25 @@ export abstract class ASTNode {
 
 	public constructor() {
 
+	}
+	toJSON() {
+		return {
+			__type: 'ASTNode',
+			_pos: {
+				start: {
+					line: this._pos.start.line,
+					character: this._pos.start.character
+				},
+				end: {
+					line: this._pos.end.line,
+					character: this._pos.end.character
+				}
+			}
+		}
+
+	}
+	fromJSON(json: any): ASTNode {
+		throw new Error("Нельзя инстанцировать абстрактный класс");
 	}
 	
 	/**
