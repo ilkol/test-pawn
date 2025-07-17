@@ -2,6 +2,7 @@ import { Position, Range } from "vscode";
 import { Token } from "antlr4ts";
 import { IVisitor } from "../visitor/IVisitor";
 import { Serializable } from "../../../cache/Serializable";
+import { Serialization } from "../../../cache/Serialization/utils";
 
 export abstract class ASTNode implements Serializable {
 	/**
@@ -14,24 +15,10 @@ export abstract class ASTNode implements Serializable {
 	 */
 	public name: string = "Node";
 
+
+
 	public constructor() {
 
-	}
-	toJSON() {
-		return {
-			__type: "ASTNOde",
-			start: {
-				line: this._pos.start.line + 1,
-				character: this._pos.start.character
-			},
-			end: {
-				line: this._pos.end.line + 1,
-				character: this._pos.end.character
-			}
-		}
-	}
-	static fromJSON(json: any): ASTNode {
-		throw new Error("Method not implemented.");
 	}
 	
 	/**
@@ -57,4 +44,17 @@ export abstract class ASTNode implements Serializable {
 	}
 	
 	public abstract accept(visitor: IVisitor): void;
+
+
+
+
+	toJSON() {
+		return {
+			__type: "ASTNOde",
+			pos: Serialization.Serialize.range(this._pos),
+		};
+	}
+	static fromJSON(json: any): ASTNode {
+		throw new Error("Method not implemented.");
+	}
 }

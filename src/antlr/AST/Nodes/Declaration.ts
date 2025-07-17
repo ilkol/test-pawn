@@ -29,4 +29,17 @@ export abstract class Declaration extends HasID
 	public set native(v: true) {
 		this._native = v;
 	}
+
+
+
+	
+	toJSON() {
+		return {
+			...super.toJSON(),
+			used: this.used,
+			stocked: this.stock,
+			native: this.native,
+			// file: this.file ? this.file.toJSON() : undefined,
+		};
+	}
 }

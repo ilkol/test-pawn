@@ -1,5 +1,8 @@
+import { Serialization } from "../../../../cache/Serialization/utils";
+import { Serializer } from "../../../../cache/Serializer";
 import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractStatement } from "../AbstractStatement";
+import { ASTNodes } from "../ASTNodes";
 import { CodeBlock } from "../CodeBlock";
 import { Docs } from "../Docs/Dosc";
 import { IContainsVars } from "../IContainsVars";
@@ -28,6 +31,9 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 
 	private _assigmentNative?: string;
 
+
+
+	
 	public accept(visitor: IVisitor): void {
 		visitor.visitFunctionDeclaration(this);
 	}
@@ -78,5 +84,35 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	set assigmentFunctionID(v: string)
 	{
 		this._assigmentNative = v;
+	}
+
+	public toJSON() {
+		return {
+			...super.toJSON(),
+			__type: ASTNodes.FunctionDeclaration,
+			parameters: this._parameters.map(el => el.toJSON()),
+			code: this._code ? this._code.toJSON() : undefined,
+			modifire: this._modifire,
+			ellipse: this._ellipse ? this._ellipse.toJSON() : undefined,
+			// docs: this.docs ? this.docs.toJSON
+		};
+	}
+	static fromJSON(json: any): FunctionDeclaration {
+		const instance = new FunctionDeclaration();
+		instance.range = Serialization.Deserialize.range(json.pos);
+		instance.code = Serializer.deserialize<CodeBlock>(json.code);
+		instance.id = json.identifire.text;
+		instance.idPos = Serialization.Deserialize.range(json.identifire.pos);
+		instance.used = json.used;
+		if(json.stocked) {
+			instance._modifire = FunctionModifire.stock;
+		}
+		instance.native = json.native;
+		instance.tag = Serializer.deserialize(json.tag);
+		instance._parameters = json.parameters.map((el: any) => Serializer.deserialize<FunctionDeclarationParameter>(el));
+		if (json.ellipse) {
+			instance._ellipse = Serializer.deserialize<Ellipse>(json.ellipse);
+		}
+		return instance;
 	}
 }

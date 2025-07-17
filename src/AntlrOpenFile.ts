@@ -29,6 +29,12 @@ import { IHasID } from "./antlr/AST/Nodes/IHasID";
 import { ChunkedCharStream } from "./antlr/ChunkedCharStream";
 import { SemanticTokens } from "./SemanticTokens";
 import { EnumMember } from "./antlr/AST/Nodes/enum/EnumMember";
+import { Serializer } from "./cache/Serializer";
+import { ASTNodes } from "./antlr/AST/Nodes/ASTNodes";
+import { CodeBlock } from "./antlr/AST/Nodes/CodeBlock";
+import { Ellipse } from "./antlr/AST/Nodes/Operators/Ellipse";
+import { FunctionDeclaration } from "./antlr/AST/Nodes/Functions/FunctionDeclaration";
+import { Tag } from "./antlr/AST/Nodes/Tag";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -162,7 +168,23 @@ export class AntrlOpenFile extends AbstractOpenFile
 		});
 		this.prepareSignatures();
 	
-		// console.log(this.AST);
+		console.log(this.AST);
+		Serializer.init();
+		Serializer.registerSerializable(ASTNodes.CodeBlock, CodeBlock);
+		Serializer.registerSerializable(ASTNodes.Declarations, Declarations);
+		Serializer.registerSerializable(ASTNodes.Ellipse, Ellipse);
+		Serializer.registerSerializable(ASTNodes.FunctionDeclaration, FunctionDeclaration);
+		Serializer.registerSerializable(ASTNodes.Tag, Tag);
+		try {
+			console.log("Сериализую AST");
+			const code = Serializer.serialize(this.AST);
+			console.log(code);
+			const newAST = Serializer.deserialize(code);
+			console.log(newAST);
+			console.log(this.AST === newAST);
+		} catch (e) {
+			console.error("Ошибка сериализации AST: ", e);
+		}
 
 		analyzer.functionsDeclarations.forEach((value, key) => {	
 			const keyMap = this.fileManager.definitionProvider.definitions.get(key);

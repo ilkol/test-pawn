@@ -1,6 +1,7 @@
 import { Range } from "vscode";
 import { ASTNode } from "./ASTNode";
 import { IHasID } from "./IHasID";
+import { Serialization } from "../../../cache/Serialization/utils";
 
 export abstract class HasID extends ASTNode implements IHasID
 {
@@ -12,6 +13,10 @@ export abstract class HasID extends ASTNode implements IHasID
 	 * Позиция идентификатора
 	 */
 	protected _idPos: Range = new Range(0,0,0,0);
+
+
+
+
 	public constructor(instance: HasID|undefined = undefined)
 	{
 		super();
@@ -39,6 +44,19 @@ export abstract class HasID extends ASTNode implements IHasID
 	
 	public setIDPos(line: number, start: number, end: number): void {
 		this._idPos = new Range(line - 1, <number>start, line - 1, <number>end);
+	}
+
+
+
+	
+	toJSON() {
+		return {
+			...super.toJSON(),
+			identifire: {
+				text: this._identifire,
+				pos: Serialization.Serialize.range(this._idPos)
+			}
+		};
 	}
 	
 }

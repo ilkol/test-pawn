@@ -1,6 +1,8 @@
 import { ASTNode } from "./ASTNode";
 import { HasID } from "./HasID";
 import { IVisitor } from "../visitor/IVisitor";
+import { ASTNodes } from "./ASTNodes";
+import { Serialization } from "../../../cache/Serialization/utils";
 
 export class Tag extends HasID
 {
@@ -33,5 +35,18 @@ export class Tag extends HasID
 			return this._tags[0];
 		}
 		return "{" + this._tags.map(el => el).join(", ") + "}";
+	}
+
+	toJSON() {
+		return {
+			...super.toJSON(),
+			__type: ASTNodes.Tag,
+			tags: this._tags,
+		};
+	}
+	static fromJSON(json: any): Tag {
+		const node = new Tag(json.tags);
+		node.range = Serialization.Deserialize.range(json.pos);
+		return node;
 	}
 }

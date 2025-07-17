@@ -4,21 +4,20 @@ import { Statements } from "./Statements";
 import { Serializable } from "../../../cache/Serializable";
 import { Statement } from "./Statement";
 import { Position } from "vscode";
+import { ASTNodes } from "./ASTNodes";
+import { Serialization } from "../../../cache/Serialization/utils";
 
 export class CodeBlock extends ASTNode implements Serializable
 {
 	public toJSON() {
 		return {
 			...super.toJSON(),
-			__type: "CodeBlock",
+			__type: ASTNodes.CodeBlock,
 		};
 	}
 	static fromJSON(json: any): CodeBlock {
 		const instance = new CodeBlock(new Statements());
-		instance.setRange(
-			new Position(json.start.line, json.start.character),
-			new Position(json.end.line, json.end.character)
-		);
+		instance.range = Serialization.Deserialize.range(json.pos);
 		return instance;
 	}
 

@@ -1,9 +1,9 @@
 import { IVisitor } from "../../visitor/IVisitor";
 import { Variable } from "../Variable";
-import { Range } from "vscode";
 import { RightValue } from "../RightValue";
 import { VariableModifire } from "../Operators/OperatorNew";
 import { VarDeclaration } from "../Variables/VarDeclaration";
+import { ASTNodes } from "../ASTNodes";
 
 export class FunctionDeclarationParameter extends VarDeclaration
 {
@@ -53,5 +53,12 @@ export class FunctionDeclarationParameter extends VarDeclaration
 
 	public get reference(): boolean {
 		return this.isRef;
+	}
+
+	public toJSON() {
+		return {
+			...super.toJSON(),
+			__type: ASTNodes.FunctionDeclarationParameter,
+		};
 	}
 }

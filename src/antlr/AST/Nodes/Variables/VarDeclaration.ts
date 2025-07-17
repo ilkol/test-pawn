@@ -1,3 +1,4 @@
+import { Serialization } from "../../../../cache/Serialization/utils";
 import { IVisitor } from "../../visitor/IVisitor";
 import { VariableModifire } from "../Operators/OperatorNew";
 import { Variable } from "../Variable";
@@ -43,6 +44,13 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 		}
 		return false;
 		// return this._modifires.find(el => el === VariableModifire.const) ? true : false;
+	}
+
+	public toJSON() {
+		return {
+			...super.toJSON(),
+			modifires: this.modifires
+		};
 	}
 	
 }
