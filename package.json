@@ -123,6 +123,7 @@
 		"package": "npm run check-types && node esbuild.js --production"
 	},
 	"devDependencies": {
+		"@types/deep-diff": "^1.0.5",
 		"@types/glob": "^8.1.0",
 		"@types/mocha": "^10.0.2",
 		"@types/node": "^20.8.6",
@@ -132,6 +133,7 @@
 		"@vscode/l10n-dev": "^0.0.35",
 		"@vscode/test-electron": "^2.3.5",
 		"antlr4ts-cli": "^0.5.0-alpha.4",
+		"deep-diff": "^1.0.2",
 		"esbuild": "^0.23.1",
 		"eslint": "^8.51.0",
 		"glob": "^10.3.10",
