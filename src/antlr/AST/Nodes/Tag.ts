@@ -1,8 +1,7 @@
 import { ASTNode } from "./ASTNode";
 import { HasID } from "./HasID";
 import { IVisitor } from "../visitor/IVisitor";
-import { ASTNodes } from "./ASTNodes";
-import { Serialization } from "../../../cache/Serialization/utils";
+import { Serialization } from "../../../cache/Serialization";
 
 export class Tag extends HasID
 {
@@ -37,16 +36,17 @@ export class Tag extends HasID
 		return "{" + this._tags.map(el => el).join(", ") + "}";
 	}
 
-	toJSON() {
+	toJSON(): Serialization.Nodes.Tag {
 		return {
 			...super.toJSON(),
-			__type: ASTNodes.Tag,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.Tag,
 			tags: this._tags,
 		};
 	}
-	static fromJSON(json: any): Tag {
-		const node = new Tag(json.tags);
-		node.range = Serialization.Deserialize.range(json.pos);
-		return node;
+	static fromJSON(json: Serialization.Nodes.Tag): Tag {
+		const instance = new Tag(json.tags);
+		instance.prepareFromJSON(json);
+		return instance;
 	}
 }

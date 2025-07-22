@@ -85,7 +85,7 @@ export class Scope implements IScope
 	}
 
 	private addIdent(id: Declaration) {
-		id.file = this._file;
+		id.importFile = this._file;
 		this._ids.set(id.id, id);
 	}
 	public addVar(variable: VarDeclaration) {

@@ -1,7 +1,7 @@
 import { Range } from "vscode";
 import { ASTNode } from "./ASTNode";
 import { IHasID } from "./IHasID";
-import { Serialization } from "../../../cache/Serialization/utils";
+import { Serialization } from "../../../cache/Serialization";
 
 export abstract class HasID extends ASTNode implements IHasID
 {
@@ -49,7 +49,7 @@ export abstract class HasID extends ASTNode implements IHasID
 
 
 	
-	toJSON() {
+	toJSON(): Serialization.Nodes.HastId {
 		return {
 			...super.toJSON(),
 			identifire: {
@@ -59,4 +59,9 @@ export abstract class HasID extends ASTNode implements IHasID
 		};
 	}
 	
+	protected prepareFromJSON(json: Serialization.Nodes.HastId) {
+		super.prepareFromJSON(json);
+		this._identifire = json.identifire.text;
+		this._idPos = Serialization.Deserialize.range(json.identifire.pos);
+	}
 }

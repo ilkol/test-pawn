@@ -26,15 +26,16 @@ import { Definition } from "./Linking/Definition";
 import { Declaration } from "./antlr/AST/Nodes/Declaration";
 import { Reference } from "./Linking/Reference";
 import { IHasID } from "./antlr/AST/Nodes/IHasID";
-import { ChunkedCharStream } from "./antlr/ChunkedCharStream";
 import { SemanticTokens } from "./SemanticTokens";
 import { EnumMember } from "./antlr/AST/Nodes/enum/EnumMember";
 import { Serializer } from "./cache/Serializer";
-import { ASTNodes } from "./antlr/AST/Nodes/ASTNodes";
 import { CodeBlock } from "./antlr/AST/Nodes/CodeBlock";
 import { Ellipse } from "./antlr/AST/Nodes/Operators/Ellipse";
 import { FunctionDeclaration } from "./antlr/AST/Nodes/Functions/FunctionDeclaration";
 import { Tag } from "./antlr/AST/Nodes/Tag";
+import { diff } from "deep-diff";
+import { FunctionDeclarationParameter } from "./antlr/AST/Nodes/Functions/FunctionDeclarationParameter";
+import { Serialization } from "./cache/Serialization";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -170,20 +171,37 @@ export class AntrlOpenFile extends AbstractOpenFile
 	
 		console.log(this.AST);
 		Serializer.init();
-		Serializer.registerSerializable(ASTNodes.CodeBlock, CodeBlock);
-		Serializer.registerSerializable(ASTNodes.Declarations, Declarations);
-		Serializer.registerSerializable(ASTNodes.Ellipse, Ellipse);
-		Serializer.registerSerializable(ASTNodes.FunctionDeclaration, FunctionDeclaration);
-		Serializer.registerSerializable(ASTNodes.Tag, Tag);
+		Serializer.registerSerializable(Serialization.NodeList.CodeBlock, CodeBlock);
+		Serializer.registerSerializable(Serialization.NodeList.Declarations, Declarations);
+		Serializer.registerSerializable(Serialization.NodeList.Ellipse, Ellipse);
+		Serializer.registerSerializable(Serialization.NodeList.FunctionDeclaration, FunctionDeclaration);
+		Serializer.registerSerializable(Serialization.NodeList.FunctionDeclarationParameter, FunctionDeclarationParameter);
+		Serializer.registerSerializable(Serialization.NodeList.Tag, Tag);
 		try {
 			console.log("Сериализую AST");
 			const code = Serializer.serialize(this.AST);
+			if(code === undefined) {
+				throw new Error("Ошибка сериализации AST: код не определен");
+			}
 			console.log(code);
 			const newAST = Serializer.deserialize(code);
 			console.log(newAST);
-			console.log(this.AST === newAST);
+			const differences = diff(this.AST, newAST);
+			if(differences) {
+				differences.forEach((difference) => {
+					if(difference.path) {
+						console.log(`Difference at path: ${difference.path.join(".")}`);
+					}
+				});
+			}
+			else {
+				console.log("AST идентичны");
+			}
+			
+			// console.log(this.AST === newAST);
 		} catch (e) {
-			console.error("Ошибка сериализации AST: ", e);
+			console.error("Ошибка сериализации AST: ");
+			console.error(e);
 		}
 
 		analyzer.functionsDeclarations.forEach((value, key) => {	
@@ -328,11 +346,11 @@ export class AntrlOpenFile extends AbstractOpenFile
 	
 			file.scope.variables().forEach((value) => {
 				this.scope.addVar(value);
-				value.file = file;
+				value.importFile = file;
 			});
 			file.scope.functions().forEach((value) => {
 				this.scope.addFunction(value);
-				value.file = file;
+				value.importFile = file;
 			});
 			const directives: Define[] = [];
 			file.exportDirectives.forEach(el => {
@@ -370,11 +388,11 @@ export class AntrlOpenFile extends AbstractOpenFile
 	
 			file.scope.variables().forEach((value) => {
 				this.scope.addVar(value);
-				value.file = file;
+				value.importFile = file;
 			});
 			file.scope.functions().forEach((value) => {
 				this.scope.addFunction(value);
-				value.file = file;
+				value.importFile = file;
 			});
 			const directives: Define[] = [];
 			file.exportDirectives.forEach(el => {

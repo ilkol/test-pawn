@@ -1,6 +1,7 @@
 import { l10n } from "vscode";
 import { IVisitor } from "../../visitor/IVisitor";
 import { ASTNode } from "../ASTNode";
+import { Serialization } from "../../../../cache/Serialization";
 
 export class Docs extends ASTNode
 {
@@ -103,5 +104,20 @@ export class Docs extends ASTNode
 	get text(): string 
 	{
 		return this._text;
+	}
+
+
+	toJSON(): Serialization.Nodes.Docs {
+		return {
+			...super.toJSON(),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.Docs,
+			text: this._text,
+		};
+	}
+	static fromJSON(json: Serialization.Nodes.Docs): Docs {
+		const instance = new Docs(json.text);
+		instance.prepareFromJSON(json);
+		return instance;
 	}
 }

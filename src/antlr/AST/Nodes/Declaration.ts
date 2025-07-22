@@ -1,4 +1,5 @@
 import { AbstractOpenFile } from "../../../AbstractOpenFile";
+import { Serialization } from "../../../cache/Serialization";
 import { HasID } from "./HasID";
 
 export abstract class Declaration extends HasID
@@ -8,7 +9,23 @@ export abstract class Declaration extends HasID
 	protected _stocked: boolean = false;
 	protected _native: boolean = false;
 
-	public file?: AbstractOpenFile;
+	private fileName?: string = "";
+	private file?: AbstractOpenFile = undefined; 
+
+	public get importFileName(): string | undefined {
+		return this.fileName;
+	}
+	public set importFileName(v: string) {
+		this.fileName = v;
+	}
+	public set importFile(v: AbstractOpenFile) {
+		this.fileName = v.uri.path;
+		this.file = v;
+	}
+	public get importFile(): AbstractOpenFile | undefined {
+		return this.file;
+	}
+
 
 	constructor(instance: Declaration|undefined = undefined) {
 		super(instance);
@@ -33,13 +50,23 @@ export abstract class Declaration extends HasID
 
 
 	
-	toJSON() {
+	toJSON(): Serialization.Nodes.Declaration {
 		return {
 			...super.toJSON(),
 			used: this.used,
-			stocked: this.stock,
+			stocked: this._stocked,
 			native: this.native,
-			// file: this.file ? this.file.toJSON() : undefined,
+			file: this.fileName,
 		};
+	}
+
+	protected prepareFromJSON(json: Serialization.Nodes.Declaration) {
+		super.prepareFromJSON(json);
+		this.used = json.used;
+		this._stocked = json.stocked;
+		this._native = json.native;
+		if(json.file) {
+			this.fileName = json.file;
+		}
 	}
 }

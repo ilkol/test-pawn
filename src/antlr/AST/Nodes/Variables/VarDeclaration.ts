@@ -1,4 +1,4 @@
-import { Serialization } from "../../../../cache/Serialization/utils";
+import { Serialization } from "../../../../cache/Serialization";
 import { IVisitor } from "../../visitor/IVisitor";
 import { VariableModifire } from "../Operators/OperatorNew";
 import { Variable } from "../Variable";
@@ -46,7 +46,7 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 		// return this._modifires.find(el => el === VariableModifire.const) ? true : false;
 	}
 
-	public toJSON() {
+	public toJSON(): Serialization.Nodes.VarDeclaration {
 		return {
 			...super.toJSON(),
 			modifires: this.modifires

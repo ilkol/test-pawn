@@ -29,8 +29,8 @@ export class Serializer {
 		// 
 	}
 
-	static serialize(obj: Serializable) {
-		return JSON.stringify(obj.toJSON());
+	static serialize(obj: Serializable | undefined) {
+		return obj ? JSON.stringify(obj.toJSON()) : undefined;
 	}
 
 	static deserialize<T extends Serializable>(json: string|object): T {
@@ -40,6 +40,9 @@ export class Serializer {
 		}
 		else {
 			obj = json;
+		}
+		if(!obj) {
+			return obj;
 		}
 		const type = obj.__type;
 

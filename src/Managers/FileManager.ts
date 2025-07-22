@@ -197,7 +197,11 @@ export class FileManager {
 				},
 				async () => {
 					if(doc) {
-						await doc.parseCode();
+						try {
+							await doc.parseCode();
+						} catch(e) {
+							console.error(e);
+						}
 					}
 				}
 			);

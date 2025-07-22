@@ -2,9 +2,7 @@ import { ASTNode } from "./ASTNode";
 import { Declaration } from "./Declaration";
 import { IVisitor } from "../visitor/IVisitor";
 import { Serializer } from "../../../cache/Serializer";
-import { Position } from "vscode";
-import { ASTNodes } from "./ASTNodes";
-import { Serialization } from "../../../cache/Serialization/utils";
+import { Serialization } from "../../../cache/Serialization";
 
 export class Declarations extends ASTNode 
 {
@@ -22,14 +20,15 @@ export class Declarations extends ASTNode
 		return this._declarations;
 	}
 	
-	toJSON()  {
+	toJSON(): Serialization.Nodes.Declarations {
 		return {
 			...super.toJSON(),
-			__type: ASTNodes.Declarations,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.Declarations,
 			declarations: this._declarations.map(el => el.toJSON()),
 		};
 	}
-	static fromJSON(json: any): Declarations {
+	static fromJSON(json: Serialization.Nodes.Declarations): Declarations {
 		const node = new Declarations();
 		node.range = Serialization.Deserialize.range(json.pos);
 		if (json.declarations) {

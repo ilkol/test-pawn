@@ -1,7 +1,6 @@
-import { Serialization } from "../../../../cache/Serialization/utils";
+import { Serialization } from "../../../../cache/Serialization";
 import { IVisitor } from "../../visitor/IVisitor";
 import { ASTNode } from "../ASTNode";
-import { ASTNodes } from "../ASTNodes";
 import { DefaultTag } from "../DefaultTag";
 import { IHasTag } from "../IHasTag";
 import { Tag } from "../Tag";
@@ -20,12 +19,19 @@ export class Ellipse extends ASTNode implements IHasTag
 		this._tag = v;
 	}
 
-	toJSON() {
+	toJSON(): Serialization.Nodes.Ellipse {
 		return {
 			...super.toJSON(),
 			tag: this._tag.toJSON(),
-			__type: ASTNodes.Ellipse,
-		}
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.Ellipse,
+		};
+	}
+
+	static fromJSON(json: Serialization.Nodes.Ellipse): Ellipse {
+		const instance = new Ellipse();
+		instance.range = Serialization.Deserialize.range(json.pos);
+		return instance;
 	}
 
 }

@@ -2,7 +2,7 @@ import { Position, Range } from "vscode";
 import { Token } from "antlr4ts";
 import { IVisitor } from "../visitor/IVisitor";
 import { Serializable } from "../../../cache/Serializable";
-import { Serialization } from "../../../cache/Serialization/utils";
+import { Serialization } from "../../../cache/Serialization";
 
 export abstract class ASTNode implements Serializable {
 	/**
@@ -48,13 +48,18 @@ export abstract class ASTNode implements Serializable {
 
 
 
-	toJSON() {
+	toJSON(): Serialization.Nodes.Node {
 		return {
-			__type: "ASTNOde",
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.Undefined,
 			pos: Serialization.Serialize.range(this._pos),
 		};
 	}
-	static fromJSON(json: any): ASTNode {
+	static fromJSON(json: Serialization.Nodes.Node): ASTNode {
 		throw new Error("Method not implemented.");
+	}
+
+	protected prepareFromJSON(json: Serialization.Nodes.Node) {
+		this.range = Serialization.Deserialize.range(json.pos);
 	}
 }

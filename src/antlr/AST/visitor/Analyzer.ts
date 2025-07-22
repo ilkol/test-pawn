@@ -564,7 +564,7 @@ export class Analyzer extends BaseVisitor
 
 	private checkIds(ids: Map<string, Declaration>) {
 		ids.forEach((element, key) => {
-			if(element.file !== this.file) return;
+			if(element.importFileName !== this.file.uri.path) return;
 			if(key === "cellmin" || key === "cellmax") return;
 			if(!element.used && !element.native) {
 				let diagnostic: DiagnosticMessage, diagnosticMsg: string;

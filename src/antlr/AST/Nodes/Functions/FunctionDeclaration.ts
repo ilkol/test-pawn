@@ -1,8 +1,7 @@
-import { Serialization } from "../../../../cache/Serialization/utils";
+import { Serialization } from "../../../../cache/Serialization";
 import { Serializer } from "../../../../cache/Serializer";
 import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractStatement } from "../AbstractStatement";
-import { ASTNodes } from "../ASTNodes";
 import { CodeBlock } from "../CodeBlock";
 import { Docs } from "../Docs/Dosc";
 import { IContainsVars } from "../IContainsVars";
@@ -27,7 +26,7 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	private _modifire: FunctionModifire = FunctionModifire.none;
 	private _ellipse: Ellipse | undefined;
 
-	public docs?: Docs;
+	public docs?: Docs = undefined;
 
 	private _assigmentNative?: string;
 
@@ -86,32 +85,39 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 		this._assigmentNative = v;
 	}
 
-	public toJSON() {
+	public toJSON(): Serialization.Nodes.FunctionDeclaration {
 		return {
 			...super.toJSON(),
-			__type: ASTNodes.FunctionDeclaration,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.FunctionDeclaration,
 			parameters: this._parameters.map(el => el.toJSON()),
-			code: this._code ? this._code.toJSON() : undefined,
+			code: this._code as CodeBlock ? (<CodeBlock>this._code).toJSON() : undefined,
 			modifire: this._modifire,
 			ellipse: this._ellipse ? this._ellipse.toJSON() : undefined,
-			// docs: this.docs ? this.docs.toJSON
+			docs: this.docs ? this.docs.toJSON() : undefined
 		};
 	}
-	static fromJSON(json: any): FunctionDeclaration {
+	static fromJSON(json: Serialization.Nodes.FunctionDeclaration): FunctionDeclaration {
 		const instance = new FunctionDeclaration();
-		instance.range = Serialization.Deserialize.range(json.pos);
-		instance.code = Serializer.deserialize<CodeBlock>(json.code);
-		instance.id = json.identifire.text;
-		instance.idPos = Serialization.Deserialize.range(json.identifire.pos);
-		instance.used = json.used;
-		if(json.stocked) {
-			instance._modifire = FunctionModifire.stock;
+		instance.prepareFromJSON(json);
+		if(json.code) {
+			instance.code = Serializer.deserialize<CodeBlock>(json.code);
 		}
-		instance.native = json.native;
-		instance.tag = Serializer.deserialize(json.tag);
+		instance._modifire = json.modifire;
+		if(json.docs) {
+			instance.docs = Serializer.deserialize<Docs>(json.docs);
+		}
+		
+		
+		if(json.native) {
+			instance.native = true;
+		}
 		instance._parameters = json.parameters.map((el: any) => Serializer.deserialize<FunctionDeclarationParameter>(el));
 		if (json.ellipse) {
 			instance._ellipse = Serializer.deserialize<Ellipse>(json.ellipse);
+		}
+		if (json.docs) {
+			instance.docs = Serializer.deserialize<Docs>(json.docs);
 		}
 		return instance;
 	}

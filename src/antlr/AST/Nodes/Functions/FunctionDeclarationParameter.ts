@@ -3,7 +3,7 @@ import { Variable } from "../Variable";
 import { RightValue } from "../RightValue";
 import { VariableModifire } from "../Operators/OperatorNew";
 import { VarDeclaration } from "../Variables/VarDeclaration";
-import { ASTNodes } from "../ASTNodes";
+import { Serialization } from "../../../../cache/Serialization";
 
 export class FunctionDeclarationParameter extends VarDeclaration
 {
@@ -55,10 +55,16 @@ export class FunctionDeclarationParameter extends VarDeclaration
 		return this.isRef;
 	}
 
-	public toJSON() {
+	public toJSON(): Serialization.Nodes.ParameterDeclaration {
 		return {
 			...super.toJSON(),
-			__type: ASTNodes.FunctionDeclarationParameter,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.FunctionDeclarationParameter,
 		};
+	}
+	public static fromJSON(json: Serialization.Nodes.ParameterDeclaration): FunctionDeclarationParameter {
+		const instance = new FunctionDeclarationParameter();
+		instance.prepareFromJSON(json);
+		return instance;
 	}
 }
