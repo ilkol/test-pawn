@@ -1,6 +1,6 @@
 import { IVisitor } from "../../visitor/IVisitor";
 import { ASTNode } from "../ASTNode";
-import { Expresion } from "../Expresion";
+import { Expression } from "../Expresion";
 
 export class ArrayIndexes extends ASTNode
 {
@@ -8,11 +8,11 @@ export class ArrayIndexes extends ASTNode
         throw new Error("AHTUNG");
     }
 
-    private _indexes: Expresion[] = [];
-    public push(index: Expresion) {
+    private _indexes: Expression[] = [];
+    public push(index: Expression) {
         this._indexes.push(index);
     }
-    public get indexes(): Expresion[] {
+    public get indexes(): Expression[] {
         return this._indexes;
     }
 }

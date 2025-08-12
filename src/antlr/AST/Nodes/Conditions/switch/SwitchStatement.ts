@@ -1,12 +1,12 @@
 import { IVisitor } from "../../../visitor/IVisitor";
-import { Expresion } from "../../Expresion";
+import { Expression } from "../../Expresion";
 import { AbstractStatement } from "../../AbstractStatement";
 import { CaseStatement } from "./CaseStatement";
 import { DefaultStatement } from "./DefaultStatement";
 
 export class SwitchStatement extends AbstractStatement
 {
-	public condition?: Expresion;
+	public condition?: Expression;
 	public readonly cases: CaseStatement[] = [];
     public default?: DefaultStatement;
 

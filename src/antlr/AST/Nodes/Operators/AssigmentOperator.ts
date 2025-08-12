@@ -1,5 +1,5 @@
 import { IVisitor } from "../../visitor/IVisitor";
-import { Expresion } from "../Expresion";
+import { Expression } from "../Expresion";
 import { Variable } from "../Variable";
 import { BinarOperator } from "./BinarOperator";
 

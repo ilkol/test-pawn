@@ -2,6 +2,7 @@ import { VarDeclaration } from "../Variables/VarDeclaration";
 import { IVisitor } from "../../visitor/IVisitor";
 import { EnumDeclaration } from "./EnumDeclaration";
 import { VariableModifire } from "../Operators/OperatorNew";
+import { Serialization } from "../../../../cache/Serialization";
 
 export class EnumMember extends VarDeclaration
 {
@@ -33,5 +34,25 @@ export class EnumMember extends VarDeclaration
 	}
 	public set parent(v: EnumDeclaration) {
 		this._parent = v;
+	}
+
+	public toJSON(): Serialization.Nodes.EnumMember {
+		return {
+			...super.toJSON(),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.EnumMember,
+			value: this.value,
+		};
+	}
+
+	static fromJSON(json: Serialization.Nodes.EnumMember): EnumMember {
+		const instance = new EnumMember();
+		instance.prepareFromJSON(json);
+		return instance;
+	}
+
+	protected prepareFromJSON(json: Serialization.Nodes.EnumMember): void {
+		super.prepareFromJSON(json);
+		this._value = json.value;
 	}
 }

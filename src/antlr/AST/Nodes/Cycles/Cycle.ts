@@ -1,4 +1,4 @@
-import { Expresion } from "../Expresion";
+import { Expression } from "../Expresion";
 import { AbstractStatement } from "../AbstractStatement";
 
 export abstract class Cycle extends AbstractStatement {
@@ -7,7 +7,7 @@ export abstract class Cycle extends AbstractStatement {
     /**
      * Условие выполнения цикла
      */
-    private _condition: Expresion|undefined;
+    private _condition: Expression|undefined;
     /**
      * Тело цикла
      */
@@ -29,13 +29,13 @@ export abstract class Cycle extends AbstractStatement {
     /**
      * Условие выполнения цикла
      */
-    public get condition(): Expresion|undefined {
+    public get condition(): Expression|undefined {
         return this._condition;
     }
     /**
      * Условие выполнения цикла
      */
-   public set condition(v: Expresion) {
+   public set condition(v: Expression) {
         this._condition = v;
     }
 }

@@ -4,10 +4,10 @@ import { CodeBlock } from "../CodeBlock";
 import { IContainsVars } from "../IContainsVars";
 import { FunctionParameter } from "./FunctionParameter";
 import { IHasID } from "../IHasID";
-import { Expresion } from "../Expresion";
+import { Expression } from "../Expresion";
 
 
-export class FunctionCall extends Expresion implements IContainsVars<FunctionParameter>, IHasID
+export class FunctionCall extends Expression implements IContainsVars<FunctionParameter>, IHasID
 {
 	name = "вызов функции";
 

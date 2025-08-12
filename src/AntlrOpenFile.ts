@@ -16,9 +16,7 @@ import { ParserErrorListener } from "./antlr/ParserErrorListener";
 import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
 import { PPParser } from "./Prepocessor/PPParser";
 import path = require("path");
-import { Scope } from "./antlr/Scopes/Scope";
-import { IScope } from "./antlr/Scopes/IScope";
-import { Include, IncludeType } from "./Prepocessor/Include";
+import { Include } from "./Prepocessor/Include";
 import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 import { Define } from "./Prepocessor/Define";
 import { Token } from "./Managers/SemanticTokensManager";
@@ -28,7 +26,6 @@ import { Reference } from "./Linking/Reference";
 import { IHasID } from "./antlr/AST/Nodes/IHasID";
 import { SemanticTokens } from "./SemanticTokens";
 import { EnumMember } from "./antlr/AST/Nodes/enum/EnumMember";
-import { Serializer } from "./cache/Serializer";
 import { CodeBlock } from "./antlr/AST/Nodes/CodeBlock";
 import { Ellipse } from "./antlr/AST/Nodes/Operators/Ellipse";
 import { FunctionDeclaration } from "./antlr/AST/Nodes/Functions/FunctionDeclaration";
@@ -36,6 +33,19 @@ import { Tag } from "./antlr/AST/Nodes/Tag";
 import { diff } from "deep-diff";
 import { FunctionDeclarationParameter } from "./antlr/AST/Nodes/Functions/FunctionDeclarationParameter";
 import { Serialization } from "./cache/Serialization";
+import { Variable } from "./antlr/AST/Nodes/Variable";
+import { IntLiteral } from "./antlr/AST/Nodes/Literals/IntLiteral";
+import { FloatLiteral } from "./antlr/AST/Nodes/Literals/FloatLiteral";
+import { FixedLiteral } from "./antlr/AST/Nodes/Literals/FixedLiteral";
+import { StringLiteral } from "./antlr/AST/Nodes/Literals/StringLiteral";
+import { BinarLiteral } from "./antlr/AST/Nodes/Literals/BinarLiteral";
+import { HexLiteral } from "./antlr/AST/Nodes/Literals/HexLiteral";
+import { OperatorNew } from "./antlr/AST/Nodes/Operators/OperatorNew";
+import { VarDeclaration } from "./antlr/AST/Nodes/Variables/VarDeclaration";
+import { VariableInit } from "./antlr/AST/Nodes/VariableInit";
+import { ArrayDeclaration } from "./antlr/AST/Nodes/Variables/ArrayDeclaration";
+import { EnumDeclaration } from "./antlr/AST/Nodes/enum/EnumDeclaration";
+import { Array } from "./antlr/AST/Nodes/Variables/Array";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -170,21 +180,34 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this.prepareSignatures();
 	
 		console.log(this.AST);
-		Serializer.init();
-		Serializer.registerSerializable(Serialization.NodeList.CodeBlock, CodeBlock);
-		Serializer.registerSerializable(Serialization.NodeList.Declarations, Declarations);
-		Serializer.registerSerializable(Serialization.NodeList.Ellipse, Ellipse);
-		Serializer.registerSerializable(Serialization.NodeList.FunctionDeclaration, FunctionDeclaration);
-		Serializer.registerSerializable(Serialization.NodeList.FunctionDeclarationParameter, FunctionDeclarationParameter);
-		Serializer.registerSerializable(Serialization.NodeList.Tag, Tag);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.CodeBlock, CodeBlock);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Declarations, Declarations);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Ellipse, Ellipse);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.FunctionDeclaration, FunctionDeclaration);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.FunctionDeclarationParameter, FunctionDeclarationParameter);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Tag, Tag);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Variable, Variable);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.IntLiteral, IntLiteral);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.FloatLiteral, FloatLiteral);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.FixedLiteral, FixedLiteral);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.StringLiteral, StringLiteral);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.BinaryLiteral, BinarLiteral);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.HexLiteral, HexLiteral);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.OperatorNew, OperatorNew);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.VariableDeclaration, VarDeclaration);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.VariableInit, VariableInit);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayDeclaration, ArrayDeclaration);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.EnumMember, EnumMember);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Enum, EnumDeclaration);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Array, Array);
 		try {
 			console.log("Сериализую AST");
-			const code = Serializer.serialize(this.AST);
+			const code = Serialization.Serialize.toString(this.AST);
 			if(code === undefined) {
 				throw new Error("Ошибка сериализации AST: код не определен");
 			}
 			console.log(code);
-			const newAST = Serializer.deserialize(code);
+			const newAST = Serialization.Deserialize.object(code);
 			console.log(newAST);
 			const differences = diff(this.AST, newAST);
 			if(differences) {

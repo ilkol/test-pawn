@@ -3,6 +3,7 @@ import { Position as EPosition, Range as ERange }	from "./types";
 import { Serialize as ESerialize } from "./Serialize";
 import { Deserialize as EDeserialize } from "./Deserialize";
 import * as AllNodes from "./Nodes";
+import { Serializable as ESerializable } from "./Serializable";
 
 export namespace Serialization {
 	export import NodeList = ENodeList;
@@ -12,5 +13,5 @@ export namespace Serialization {
 
 	export import Serialize = ESerialize;
 	export import Deserialize = EDeserialize;
-	
+	export type Serializable = ESerializable;
 }

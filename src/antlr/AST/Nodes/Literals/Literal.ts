@@ -1,6 +1,7 @@
-import { Expresion } from "../Expresion";
+import { Serialization } from "../../../../cache/Serialization";
+import { Expression } from "../Expresion";
 
-export abstract class Literal<T> extends Expresion
+export abstract class Literal<T> extends Expression
 {
 	name = "литерал";
 	protected _value!: T;
@@ -10,4 +11,16 @@ export abstract class Literal<T> extends Expresion
 	public set value(v : T) {
 		this._value = v;
 	}	
+
+	toJSON(): Serialization.Nodes.Literal<T> {
+		return {
+			...super.toJSON(),
+			value: this.value
+		};
+	}
+
+	protected prepareFromJSON(json: Serialization.Nodes.Literal<T>): void {
+		super.prepareFromJSON(json);
+		this.value = json.value;
+	}
 }

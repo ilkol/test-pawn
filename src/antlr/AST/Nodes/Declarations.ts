@@ -1,7 +1,6 @@
 import { ASTNode } from "./ASTNode";
 import { Declaration } from "./Declaration";
 import { IVisitor } from "../visitor/IVisitor";
-import { Serializer } from "../../../cache/Serializer";
 import { Serialization } from "../../../cache/Serialization";
 
 export class Declarations extends ASTNode 
@@ -33,7 +32,7 @@ export class Declarations extends ASTNode
 		node.range = Serialization.Deserialize.range(json.pos);
 		if (json.declarations) {
 			for (const decl of json.declarations) {
-				const declNode = Serializer.deserialize<Declaration>(JSON.stringify(decl));
+				const declNode = Serialization.Deserialize.object<Declaration>(JSON.stringify(decl));
 				node._declarations.push(declNode);
 			}
 		}

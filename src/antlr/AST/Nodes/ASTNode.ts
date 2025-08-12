@@ -1,10 +1,9 @@
 import { Position, Range } from "vscode";
 import { Token } from "antlr4ts";
 import { IVisitor } from "../visitor/IVisitor";
-import { Serializable } from "../../../cache/Serializable";
 import { Serialization } from "../../../cache/Serialization";
 
-export abstract class ASTNode implements Serializable {
+export abstract class ASTNode implements Serialization.Serializable {
 	/**
 	 * Позиция узла
 	 */

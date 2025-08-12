@@ -2,18 +2,19 @@ import { IVisitor } from "../visitor/IVisitor";
 import { DefaultTag } from "./DefaultTag";
 import { AbstractStatement } from "./AbstractStatement";
 import { Tag } from "./Tag";
+import { Serialization } from "../../../cache/Serialization";
+import { IHasTag } from "./IHasTag";
 
-export class Expresion extends AbstractStatement {
+export class Expression extends AbstractStatement implements IHasTag {
 	name = "вырожение";
-
+	
 	private translateTag: boolean = false;
 	private _tag: Tag = new DefaultTag();
+	protected exp: Expression|undefined = undefined;
 
 	public get tag() : Tag {
 		return this._tag;
 	}
-
-	
 
 	public set tag(v : Tag) {
 		this._tag = v;
@@ -28,7 +29,6 @@ export class Expresion extends AbstractStatement {
 		this.translateTag = v;
 	}
 
-	protected exp: Expresion|undefined;
 
 	public accept(visitor: IVisitor): void {
 		if(this.exp) {
@@ -38,11 +38,32 @@ export class Expresion extends AbstractStatement {
 		}
 	}
 
-	public get expresion(): Expresion|undefined {
+	public get expresion(): Expression|undefined {
 		return this.exp;
 	}
-	public set expresion(v: Expresion) {
+	public set expresion(v: Expression) {
 		this.exp = v;
 	}
 
+	toJSON(): Serialization.Nodes.Expression {
+		return {
+			...super.toJSON(),
+			tag: this.tag.toJSON(),
+			translateTag: this.translateTag,
+			expression: this.exp?.toJSON(),
+		};
+	}
+
+	static fromJSON(json: Serialization.Nodes.Expression): Expression {
+		const instance = new Expression();
+		instance.prepareFromJSON(json);
+		return instance;
+	}
+
+	protected prepareFromJSON(json: Serialization.Nodes.Expression): void {
+		super.prepareFromJSON(json);
+		this.tag = Serialization.Deserialize.object(json.tag);
+		this.exp = Serialization.Deserialize.object(json.expression);
+		this.translateTag = json.translateTag;
+	}
 }

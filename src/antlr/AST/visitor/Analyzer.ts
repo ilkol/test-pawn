@@ -30,7 +30,7 @@ import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
-import { Expresion } from "../Nodes/Expresion";
+import { Expression } from "../Nodes/Expresion";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 import { Array } from "../Nodes/Variables/Array";
 import { SemanticTokens, SemanticTokensModifires } from "../../../SemanticTokens";
@@ -48,7 +48,6 @@ import { DiagnosticHint } from "../../diagnostic/DiagnosticHint";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { Definition } from "../../../Linking/Definition";
 import { Reference } from "../../../Linking/Reference";
-import { Serializer } from "../../../cache/Serializer";
 
 export class Analyzer extends BaseVisitor
 {
@@ -102,7 +101,7 @@ export class Analyzer extends BaseVisitor
 		let index = -1;
 		node.indexes = node.indexes.map(el => {
 			index++;
-			if(el instanceof Expresion) {
+			if(el instanceof Expression) {
 				if(el.expresion instanceof IntLiteral) {
 					node.pushSize(index, el.expresion.value);
 					return el.expresion;
@@ -252,8 +251,8 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVarInit(node: VariableInit): void {
 		this.checkUsed(node, (variable: VariableInit) => this.curScope.addVar(variable));
-		if(node.var)
-			this.compareTag(node.var, node.rightValue, node.rightValue.pos);
+		if(node.rightValue)
+			this.compareTag(node, node.rightValue, node.rightValue.pos);
 	}
 	beforeVisitFunctionCall(node: FunctionCall): void {
 
@@ -458,9 +457,10 @@ export class Analyzer extends BaseVisitor
 						if(!node.code) {
 							this.addDiagnostic(new DiagnosticError("Повтороное определение заголовка функции", node.idPos));
 						}
-						else {
-							id.code = node.code;
-						}
+						// хз зачем оно было, но может надо будет вернуть костыль
+						// else {
+						// 	id.code = node.code;
+						// }
 					}else {
 						if((id.modifire !== FunctionModifire.forward && node.modifire !== FunctionModifire.public) && (id.modifire !== FunctionModifire.public && node.modifire !== FunctionModifire.forward)) {
 							this.addDiagnostic(new DiagnosticError(l10n.t("Identifire \"{0}\" is already taken", node.id), node.idPos));

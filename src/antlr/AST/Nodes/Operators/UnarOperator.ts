@@ -1,4 +1,4 @@
-import { Expresion } from "../Expresion";
+import { Expression } from "../Expresion";
 import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractOperator } from "./AbstractOperator";
 import { Tag } from "../Tag";
@@ -16,11 +16,11 @@ export class UnarOperator extends AbstractOperator
 		visitor.visitUnarOperator(this);
 	}
 	
-	public get value() : Expresion | undefined {
+	public get value() : Expression | undefined {
 		return this.expresion;
 	}
 	
-	public set value(v: Expresion) {
+	public set value(v: Expression) {
 		this.expresion = v;
 	}
 	public get tag(): Tag {

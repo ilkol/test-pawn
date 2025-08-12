@@ -1,6 +1,8 @@
 import { ASTNode } from "./ASTNode";
 import { IVisitor } from "../visitor/IVisitor";
 import { AbstractStatement } from "./AbstractStatement";
+import { Node } from "../../../cache/Serialization/Nodes";
+import { Serialization } from "../../../cache/Serialization";
 
 export class Statements extends ASTNode {
 	name = "утверждения";

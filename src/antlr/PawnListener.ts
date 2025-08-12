@@ -15,7 +15,7 @@ import { CodeBlock } from "./AST/Nodes/CodeBlock";
 import { Statements } from "./AST/Nodes/Statements";
 import { IntLiteral } from "./AST/Nodes/Literals/IntLiteral";
 import { ReturnStatement } from "./AST/Nodes/ReturnStatement";
-import { Expresion } from "./AST/Nodes/Expresion";
+import { Expression } from "./AST/Nodes/Expresion";
 import { AbstractOperator } from "./AST/Nodes/Operators/AbstractOperator";
 import { BinarOperator } from "./AST/Nodes/Operators/BinarOperator";
 import { UnarOperator } from "./AST/Nodes/Operators/UnarOperator";
@@ -246,7 +246,7 @@ export class PawnListener implements pawnListener
 			{
 				last.var = declarationVar;
 			}
-			else if(last instanceof Expresion)
+			else if(last instanceof Expression)
 			{
 				last.expresion = node;
 			}
@@ -343,7 +343,7 @@ export class PawnListener implements pawnListener
 			if(last instanceof VarOrFunctionDeclaration) {
 				last.tag = node;
 			}
-			else if(last instanceof Expresion) {
+			else if(last instanceof Expression) {
 				last.tag = node;
 				last.isTaged = true;
 			}
@@ -479,7 +479,7 @@ export class PawnListener implements pawnListener
 		if(last instanceof ArrayInit) {
 			last.value.push(node);
 		}
-		else if(last instanceof Expresion) {
+		else if(last instanceof Expression) {
 			last.expresion = node;
 		}
 		else if(last instanceof FunctionDeclarationParameter) {
@@ -526,14 +526,14 @@ export class PawnListener implements pawnListener
 		}
 	}
 	enterTagableExpression(ctx: TagableExpressionContext): void {
-		const node = new Expresion();
+		const node = new Expression();
 		this.nodes.push(node);
 	}
 	exitTagableExpression(ctx: TagableExpressionContext): void {
 		this.evalExpression(ctx);
 	}
 	enterExpresion(ctx: ExpresionContext): void {
-		const node = new Expresion();
+		const node = new Expression();
 		this.nodes.push(node);
 	}
 	exitExpresion(ctx: ExpresionContext): void {
@@ -541,7 +541,7 @@ export class PawnListener implements pawnListener
 	}
 
 	private evalExpression(ctx: ExpresionContext | TagableExpressionContext) {
-		let node = <Expresion>this.nodes.pop();
+		let node = <Expression>this.nodes.pop();
 
 		if(!node.expresion) {
 			if(ctx.stop) {
@@ -607,7 +607,7 @@ export class PawnListener implements pawnListener
 			{
 				last.code = node;
 			}
-			else if(last instanceof Expresion)
+			else if(last instanceof Expression)
 			{
 				last.expresion = node;
 			}
@@ -705,7 +705,7 @@ export class PawnListener implements pawnListener
 			}
 			
 			let last = this.nodes.peek();
-			if(last instanceof Expresion) {
+			if(last instanceof Expression) {
 				last.expresion = node;
 			}
 			else {
@@ -768,7 +768,7 @@ export class PawnListener implements pawnListener
 			node.value = +ctx.FLOAT().text;
 
 			const last = this.nodes.peek();
-			if(last instanceof Expresion) {
+			if(last instanceof Expression) {
 				last.expresion = node;
 			}
 			else if(last instanceof FunctionDeclarationParameter) {
@@ -792,7 +792,7 @@ export class PawnListener implements pawnListener
 			node.setRange(new Position(ctx.start.line - 1, ctx.start.charPositionInLine), new Position(ctx.start.line - 1, ctx.start.charPositionInLine + ctx.text.length));
 
 			const last = this.nodes.peek();
-			if(last instanceof Expresion) {
+			if(last instanceof Expression) {
 				last.expresion = node;
 			}
 			else if(last instanceof FunctionDeclarationParameter) {
@@ -1021,7 +1021,7 @@ export class PawnListener implements pawnListener
 			}
 
 			const last = this.nodes.peek();
-			if(last instanceof Expresion) {
+			if(last instanceof Expression) {
 				node.left = last.expresion!;
 				last.expresion = node;
 			}
@@ -1041,7 +1041,7 @@ export class PawnListener implements pawnListener
 			// node.operator = ctx.chainedRelationalOperators()[0].text;
 			
 			const last = this.nodes.peek();
-			if(last instanceof Expresion) {
+			if(last instanceof Expression) {
 				node.setFirstLeft(last.expresion!);
 				last.expresion = node;
 			}
@@ -1077,7 +1077,7 @@ export class PawnListener implements pawnListener
 			node.setPos(ctx.start, ctx.stop);
 			
 			const last = this.nodes.peek();
-			if(last instanceof Expresion) {
+			if(last instanceof Expression) {
 				last.expresion = node;
 			}
 			else {
@@ -1174,7 +1174,7 @@ export class PawnListener implements pawnListener
 			{
 				last.expresion = node;
 			}
-			else if(last instanceof Expresion)
+			else if(last instanceof Expression)
 			{
 				last.expresion = node;
 			}
@@ -1200,7 +1200,7 @@ export class PawnListener implements pawnListener
 			node.setPos(ctx.start, ctx.stop);
 
 			const last = this.nodes.peek();	
-			if(last instanceof Expresion)
+			if(last instanceof Expression)
 			{
 				last.expresion = node;
 			}
@@ -1267,7 +1267,7 @@ export class PawnListener implements pawnListener
 			node.setIDPos(ctx._start.line, ctx._start.charPositionInLine, ctx.stop.charPositionInLine + ctx.text.length);
 			const last = this.nodes.peek();
 			
-			if(last instanceof Expresion)
+			if(last instanceof Expression)
 			{
 				last.expresion = node;
 			}

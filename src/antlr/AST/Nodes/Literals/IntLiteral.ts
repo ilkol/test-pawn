@@ -1,7 +1,8 @@
 import { DefaultTag } from "../DefaultTag";
-import { Tag } from "../Tag";
 import { IVisitor } from "../../visitor/IVisitor";
 import { NumberLiteral } from "./NumberLiteral";
+import { Serialization } from "../../../../cache/Serialization";
+import { Expression } from "../Expresion";
 
 export class IntLiteral extends NumberLiteral<number>
 {
@@ -13,6 +14,18 @@ export class IntLiteral extends NumberLiteral<number>
 	public accept(visitor: IVisitor): void {
 		visitor.visitIntLiteral(this);
 	}
-	
-	
+
+	toJSON(): Serialization.Nodes.Literal<number> {
+		return {
+			...super.toJSON(),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.IntLiteral
+		};
+	}
+
+	static fromJSON(json: Serialization.Nodes.Literal<number>): IntLiteral {
+		const instance = new IntLiteral();
+		instance.prepareFromJSON(json);
+		return instance;
+	}
 }

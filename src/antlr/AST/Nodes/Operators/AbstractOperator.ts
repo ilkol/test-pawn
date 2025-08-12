@@ -1,7 +1,8 @@
-import { Expresion } from "../Expresion";
+import { Serialization } from "../../../../cache/Serialization";
+import { Expression } from "../Expresion";
 import { Tag } from "../Tag";
 
-export class AbstractOperator extends Expresion
+export class AbstractOperator extends Expression
 {
 	name = "оператор";
 	
@@ -20,6 +21,18 @@ export class AbstractOperator extends Expresion
 				this.tag.tags = ["bool"];
 			}
 		}
+	}
+
+	toJSON(): Serialization.Nodes.Operators.Operator {
+		return {
+			...super.toJSON(),
+			operator: this.operator, 
+		};
+	}
+
+	protected prepareFromJSON(json: Serialization.Nodes.Operators.Operator): void {
+		super.prepareFromJSON(json);
+		this.operator = this.operator;
 	}
 	
 }

@@ -1,4 +1,4 @@
-import { Expresion } from "../Expresion";
+import { Expression } from "../Expresion";
 import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractOperator } from "./AbstractOperator";
 import { BinarOperator } from "./BinarOperator";
@@ -30,7 +30,7 @@ export class ChainedOperator extends AbstractOperator
 		this.operators.push(operator);
 	}
 	
-	private getLastLeft(): Expresion|undefined {
+	private getLastLeft(): Expression|undefined {
 		const length = this.operators.length;
 		if(length < 1) {
 			return undefined;
@@ -38,13 +38,13 @@ export class ChainedOperator extends AbstractOperator
 		return this.operators[length - 1];
 	}
 
-	public set expresion(v: Expresion) {
+	public set expresion(v: Expression) {
 		if(!this.cur) {
 			return;
 		}
 		this.cur.right = v;
 	}
-	public setFirstLeft(value: Expresion): void {
+	public setFirstLeft(value: Expression): void {
 		if(!this.operators.length) {
 			return;
 		}

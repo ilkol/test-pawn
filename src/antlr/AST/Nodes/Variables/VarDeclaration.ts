@@ -1,5 +1,6 @@
 import { Serialization } from "../../../../cache/Serialization";
 import { IVisitor } from "../../visitor/IVisitor";
+import { ASTNode } from "../ASTNode";
 import { VariableModifire } from "../Operators/OperatorNew";
 import { Variable } from "../Variable";
 import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
@@ -49,8 +50,22 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 	public toJSON(): Serialization.Nodes.VarDeclaration {
 		return {
 			...super.toJSON(),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.VariableDeclaration,
 			modifires: this.modifires
 		};
 	}
+
+	static fromJSON(json: Serialization.Nodes.VarDeclaration): VarDeclaration {
+		const instance = new VarDeclaration();
+		instance.prepareFromJSON(json);
+		return instance;
+	}
+
+	protected prepareFromJSON(json: Serialization.Nodes.VarDeclaration): void {
+		super.prepareFromJSON(json);
+		this.modifires = json.modifires;
+	}
+
 	
 }

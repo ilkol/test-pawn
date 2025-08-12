@@ -1,5 +1,5 @@
 import { IVisitor } from "../../visitor/IVisitor";
-import { Expresion } from "../Expresion";
+import { Expression } from "../Expresion";
 import { AbstractStatement } from "../AbstractStatement";
 import { Cycle } from "./Cycle";
 
@@ -19,15 +19,15 @@ export class ForCycle extends Cycle
         this.preCode = v;
     }
 
-    private postCode: Expresion|undefined;
-    public get increment(): Expresion|undefined {
+    private postCode: Expression|undefined;
+    public get increment(): Expression|undefined {
         return this.postCode;
     }
-    public set increment(v: Expresion) {
+    public set increment(v: Expression) {
         this.postCode = v;
     }
 
-    public addExpresion(condition: Expresion) {
+    public addExpresion(condition: Expression) {
         if(!this.initialization) {
             this.initialization = condition;
         }

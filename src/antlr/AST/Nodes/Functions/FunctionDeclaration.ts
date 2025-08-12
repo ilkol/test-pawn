@@ -1,5 +1,4 @@
 import { Serialization } from "../../../../cache/Serialization";
-import { Serializer } from "../../../../cache/Serializer";
 import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractStatement } from "../AbstractStatement";
 import { CodeBlock } from "../CodeBlock";
@@ -22,13 +21,13 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	name = "объявление функции";
 	
 	private _parameters: FunctionDeclarationParameter[] = [];
-	private _code: AbstractStatement | undefined;
+	private _code?: AbstractStatement = undefined;
 	private _modifire: FunctionModifire = FunctionModifire.none;
-	private _ellipse: Ellipse | undefined;
+	private _ellipse?: Ellipse = undefined;
 
 	public docs?: Docs = undefined;
 
-	private _assigmentNative?: string;
+	private _assigmentNative?: string = undefined;
 
 
 
@@ -100,25 +99,14 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	static fromJSON(json: Serialization.Nodes.FunctionDeclaration): FunctionDeclaration {
 		const instance = new FunctionDeclaration();
 		instance.prepareFromJSON(json);
-		if(json.code) {
-			instance.code = Serializer.deserialize<CodeBlock>(json.code);
-		}
+		instance._code = Serialization.Deserialize.object<CodeBlock>(json.code);
 		instance._modifire = json.modifire;
-		if(json.docs) {
-			instance.docs = Serializer.deserialize<Docs>(json.docs);
-		}
-		
-		
+		instance.docs = Serialization.Deserialize.object<Docs>(json.docs);
 		if(json.native) {
 			instance.native = true;
 		}
-		instance._parameters = json.parameters.map((el: any) => Serializer.deserialize<FunctionDeclarationParameter>(el));
-		if (json.ellipse) {
-			instance._ellipse = Serializer.deserialize<Ellipse>(json.ellipse);
-		}
-		if (json.docs) {
-			instance.docs = Serializer.deserialize<Docs>(json.docs);
-		}
+		instance._parameters = json.parameters.map((el: any) => Serialization.Deserialize.object<FunctionDeclarationParameter>(el));
+		instance._ellipse = Serialization.Deserialize.object<Ellipse>(json.ellipse);
 		return instance;
 	}
 }

@@ -1,13 +1,16 @@
 import { Range } from "vscode";
 import { IVisitor } from "../visitor/IVisitor";
 import { IHasID } from "./IHasID";
-import { Expresion } from "./Expresion";
+import { Expression } from "./Expresion";
 import { VarDeclaration } from "./Variables/VarDeclaration";
+import { Serialization } from "../../../cache/Serialization";
 
-export class Variable extends Expresion implements IHasID
+export class Variable extends Expression implements IHasID
 {
 
 	public declaration?: VarDeclaration;
+	private _identifire: string = "";
+	private _idPos: Range = new Range(0,0,0,0);
 
     constructor(instance: Variable|undefined = undefined) {
         super();
@@ -22,8 +25,6 @@ export class Variable extends Expresion implements IHasID
         visitor.visitVariable(this);
     }
  
-    private _identifire: string = "";
-	private _idPos: Range = new Range(0,0,0,0);
 	
 	public get id() : string {
 		return this._identifire;
@@ -43,5 +44,28 @@ export class Variable extends Expresion implements IHasID
 
 	public setIDPos(line: number, start: number, end: number): void {
 		this._idPos = new Range(line - 1, <number>start, line - 1, <number>end);
+	}
+
+	toJSON(): Serialization.Nodes.Variable {
+		return {
+			...super.toJSON(),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.Variable,
+			identifire: {
+				text: this._identifire,
+				pos: Serialization.Serialize.range(this._idPos)
+			}
+		};
+	}
+
+	static fromJSON(json: Serialization.Nodes.Variable): Variable {
+		const instance = new Variable();
+		instance.prepareFromJSON(json);
+		return instance;
+	}
+	protected prepareFromJSON(json: Serialization.Nodes.Variable): void {
+		super.prepareFromJSON(json);
+		this._identifire = json.identifire.text;
+		this.idPos = Serialization.Deserialize.range(json.identifire.pos);
 	}
 }

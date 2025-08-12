@@ -9,9 +9,8 @@ export class FunctionDeclarationParameter extends VarDeclaration
 {
 	name = "параметр объявляемой функции";
 
-	private _var: Variable|undefined;
-	private _value: RightValue|undefined;
-	private isConst: boolean = false;
+	private _var: Variable|undefined = undefined;
+	private _value: RightValue|undefined = undefined;
 	private isRef: boolean = false;
 	
 	constructor(param: VarDeclaration|undefined = undefined) {
@@ -60,11 +59,20 @@ export class FunctionDeclarationParameter extends VarDeclaration
 			...super.toJSON(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			__type: Serialization.NodeList.FunctionDeclarationParameter,
-		};
+			defaultValue: this._value?.toJSON(),
+			isReference: this.isRef,
+			variable: this._var ? this._var.toJSON() : undefined,
+ 		};
 	}
 	public static fromJSON(json: Serialization.Nodes.ParameterDeclaration): FunctionDeclarationParameter {
 		const instance = new FunctionDeclarationParameter();
 		instance.prepareFromJSON(json);
 		return instance;
+	}
+	protected prepareFromJSON(json: Serialization.Nodes.ParameterDeclaration): void {
+		super.prepareFromJSON(json);
+		this._var = Serialization.Deserialize.object(json.variable);
+		this._value = Serialization.Deserialize.object(json.defaultValue);
+		this.isRef = json.isReference;
 	}
 }

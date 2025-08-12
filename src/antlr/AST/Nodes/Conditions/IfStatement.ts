@@ -1,12 +1,12 @@
 import { IVisitor } from "../../visitor/IVisitor";
 import { CodeBlock } from "../CodeBlock";
-import { Expresion } from "../Expresion";
+import { Expression } from "../Expresion";
 import { AbstractStatement } from "../AbstractStatement";
 
 export class IfStatement extends AbstractStatement
 {
 	public code?: AbstractStatement;
-	public condition?: Expresion;
+	public condition?: Expression;
 	public else?: CodeBlock | AbstractStatement;
 
 	public accept(visitor: IVisitor): void {
