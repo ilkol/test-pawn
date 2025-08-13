@@ -2,6 +2,8 @@ import { AbstractOpenFile, FunctionInfo } from "./AbstractOpenFile";
 import { FileManager } from "./Managers/FileManager";
 import * as vscode from 'vscode';
 
+import * as fs from 'fs';
+
 import { CharStreams, CommonTokenStream } from "antlr4ts";
 import { ParseTreeWalker } from 'antlr4ts/tree/ParseTreeWalker';
 import { pawnLexer } from "./antlr/generated/pawnLexer";
@@ -46,6 +48,24 @@ import { VariableInit } from "./antlr/AST/Nodes/VariableInit";
 import { ArrayDeclaration } from "./antlr/AST/Nodes/Variables/ArrayDeclaration";
 import { EnumDeclaration } from "./antlr/AST/Nodes/enum/EnumDeclaration";
 import { Array } from "./antlr/AST/Nodes/Variables/Array";
+import { BinarOperator } from "./antlr/AST/Nodes/Operators/BinarOperator";
+import { FunctionCall } from "./antlr/AST/Nodes/Functions/FunctionCall";
+import { UnarOperator } from "./antlr/AST/Nodes/Operators/UnarOperator";
+import { ReturnStatement } from "./antlr/AST/Nodes/ReturnStatement";
+import { ForCycle } from "./antlr/AST/Nodes/Cycles/ForCycle";
+import { WhileCycle } from "./antlr/AST/Nodes/Cycles/WhileCycle";
+import { DoWhileCycle } from "./antlr/AST/Nodes/Cycles/DoWhileCycle";
+import { ArrayChar } from "./antlr/AST/Nodes/Operators/ArrayChar";
+import { ArrayIndex } from "./antlr/AST/Nodes/Operators/ArrayIndex";
+import { AssigmentOperator } from "./antlr/AST/Nodes/Operators/AssigmentOperator";
+import { ChainedOperator } from "./antlr/AST/Nodes/Operators/ChainedOperators";
+import { OperatorOverload } from "./antlr/AST/Nodes/Operators/OperatorOverload";
+import { SwitchStatement } from "./antlr/AST/Nodes/Conditions/switch/SwitchStatement";
+import { CaseStatement } from "./antlr/AST/Nodes/Conditions/switch/CaseStatement";
+import { DefaultStatement } from "./antlr/AST/Nodes/Conditions/switch/DefaultStatement";
+import { ArrayInit } from "./antlr/AST/Nodes/Literals/ArrayInit";
+import { IfStatement } from "./antlr/AST/Nodes/Conditions/IfStatement";
+import { Docs } from "./antlr/AST/Nodes/Docs/Dosc";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -200,6 +220,26 @@ export class AntrlOpenFile extends AbstractOpenFile
 		Serialization.Deserialize.registerSerializable(Serialization.NodeList.EnumMember, EnumMember);
 		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Enum, EnumDeclaration);
 		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Array, Array);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.BinarOperator, BinarOperator);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.FunctionCall, FunctionCall);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.UnarOperator, UnarOperator );
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ReturnStatement, ReturnStatement );
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ReturnStatement, ReturnStatement );
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.For, ForCycle);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.While, WhileCycle);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.DoWhile, DoWhileCycle);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayChar, ArrayChar);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayIndex, ArrayIndex);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Assigment, AssigmentOperator);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ChainedOperator, ChainedOperator);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.OperatorOverload, OperatorOverload);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.If, IfStatement);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Switch, SwitchStatement);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Case, CaseStatement);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Default, DefaultStatement);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayInit, ArrayInit);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Docs, Docs);
+		
 		try {
 			console.log("Сериализую AST");
 			const code = Serialization.Serialize.toString(this.AST);
@@ -213,7 +253,11 @@ export class AntrlOpenFile extends AbstractOpenFile
 			if(differences) {
 				differences.forEach((difference) => {
 					if(difference.path) {
-						console.log(`Difference at path: ${difference.path.join(".")}`);
+						const lastPath = difference.path[difference.path.length - 1];
+						if(lastPath !== "file" && lastPath !== "references" && lastPath !== "declaration") { 
+						
+							console.log(`Difference at path: ${difference.path.join(".")}`);
+						}
 					}
 				});
 			}

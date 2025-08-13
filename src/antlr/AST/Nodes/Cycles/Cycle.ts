@@ -1,5 +1,6 @@
 import { Expression } from "../Expresion";
 import { AbstractStatement } from "../AbstractStatement";
+import { Serialization } from "../../../../cache/Serialization";
 
 export abstract class Cycle extends AbstractStatement {
     name = "Цикл";
@@ -7,7 +8,7 @@ export abstract class Cycle extends AbstractStatement {
     /**
      * Условие выполнения цикла
      */
-    private _condition: Expression|undefined;
+    private _condition?: Expression;
     /**
      * Тело цикла
      */
@@ -38,4 +39,18 @@ export abstract class Cycle extends AbstractStatement {
    public set condition(v: Expression) {
         this._condition = v;
     }
+
+	protected prepareFromJSON(json: Serialization.Nodes.Cycles.Abstract): void {
+		super.prepareFromJSON(json);
+		this._condition = Serialization.Deserialize.object(json.condition);
+		this._code = Serialization.Deserialize.object(json.code);
+	}
+	
+	toJSON(): Serialization.Nodes.Cycles.Abstract {
+		return {
+			...super.toJSON(),
+			condition: this.condition?.toJSON(),
+			code: this.code?.toJSON(),
+		};
+	}
 }

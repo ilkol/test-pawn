@@ -3,6 +3,7 @@ import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractOperator } from "./AbstractOperator";
 import { BinarOperator } from "./BinarOperator";
 import { Tag } from "../Tag";
+import { Serialization } from "../../../../cache/Serialization";
 
 export class ChainedOperator extends AbstractOperator
 {
@@ -49,5 +50,23 @@ export class ChainedOperator extends AbstractOperator
 			return;
 		}
 		this.operators[0].left = value;
+	}
+
+	toJSON(): Serialization.Nodes.Operators.Chained {
+		return {
+			...super.toJSON(),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.ChainedOperator,
+			operators: this.operators.map(op => op.toJSON()),
+		};
+	}
+	static fromJSON(json: Serialization.Nodes.Operators.Chained): ChainedOperator {
+		const instance = new ChainedOperator();
+		instance.prepareFromJSON(json);
+		for(const op of json.operators) {
+			const binarOp = Serialization.Deserialize.object<BinarOperator>(op);
+			instance.push(binarOp);
+		}
+		return instance;
 	}
 }

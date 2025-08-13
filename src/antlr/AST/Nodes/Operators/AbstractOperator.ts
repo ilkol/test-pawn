@@ -32,7 +32,7 @@ export class AbstractOperator extends Expression
 
 	protected prepareFromJSON(json: Serialization.Nodes.Operators.Operator): void {
 		super.prepareFromJSON(json);
-		this.operator = this.operator;
+		this.operator = json.operator;
 	}
 	
 }

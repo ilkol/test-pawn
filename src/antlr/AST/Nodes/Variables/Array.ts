@@ -1,4 +1,3 @@
-import { Range } from "vscode";
 import { Variable } from "../Variable";
 import { Expression } from "../Expresion";
 import { IVisitor } from "../../visitor/IVisitor";
@@ -10,6 +9,9 @@ export class Array extends Variable
     constructor(instance: Variable, private _indexes: Expression[]) {
         super(instance);
     }
+
+
+	
     public accept(visitor: IVisitor): void {
         visitor.visitArray(this);
     } 

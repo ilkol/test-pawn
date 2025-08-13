@@ -2,6 +2,8 @@ import { Expression } from "../Expresion";
 import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractOperator } from "./AbstractOperator";
 import { Serialization } from "../../../../cache/Serialization";
+import { OperatorPlus } from "./OperatorPlus";
+import { OperatorMinus } from "./OperatorMinus";
 
 export class BinarOperator extends AbstractOperator
 {
@@ -33,11 +35,23 @@ export class BinarOperator extends AbstractOperator
 		this.expresion = v;
 	}
 
+	static fromJSON(json: Serialization.Nodes.Operators.Binar): BinarOperator {
+		let instance: BinarOperator = new BinarOperator();
+		instance.prepareFromJSON(json);
+		return instance;
+	}
+
+	protected prepareFromJSON(json: Serialization.Nodes.Operators.Binar): void {
+		super.prepareFromJSON(json);
+		this._left = Serialization.Deserialize.object(json.left);
+	}
+
 	toJSON(): Serialization.Nodes.Operators.Binar {
 		return {
 			...super.toJSON(),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.BinarOperator,
 			left: this.left?.toJSON(),
-			right: this.right?.toJSON(),
 		};
 	}
 }

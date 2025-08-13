@@ -19,7 +19,7 @@ export class EnumDeclaration extends Declaration implements IContainsVars<EnumMe
 		visitor.visitEnumDeclaration(this);
 	}
 	
-	push(el: EnumMember): void {
+	pushParameter(el: EnumMember): void {
 		if(el.value === 0) {
 			el.value = this.lastIndex;
 		}

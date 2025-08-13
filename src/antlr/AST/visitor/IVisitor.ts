@@ -2,7 +2,6 @@ import { CodeBlock } from "../Nodes/CodeBlock";
 import { Declarations } from "../Nodes/Declarations";
 import { EnumDeclaration } from "../Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../Nodes/enum/EnumMember";
-import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
 import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
 import { OperatorNew } from "../Nodes/Operators/OperatorNew";
@@ -27,6 +26,7 @@ import { CaseStatement } from "../Nodes/Conditions/switch/CaseStatement";
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
+import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 
 export interface IVisitor
 {
@@ -40,7 +40,6 @@ export interface IVisitor
 	visitBinarOperator(node: BinarOperator): void;
 	visitReturn(node: ReturnStatement): void;
 	visitCodeBlock(node: CodeBlock): void;
-	visitFunctionParameter(node: FunctionParameter): void;
 	visitEnumMember(node: EnumMember): void;
 	visitEnumDeclaration(node: EnumDeclaration): void;
 	visitDeclarations(node: Declarations): void;
@@ -55,8 +54,10 @@ export interface IVisitor
 	visitAssigment(node: AssigmentOperator): void;
 
 	visitWhile(node: WhileCycle): void;
+	visitDoWhile(node: DoWhileCycle): void;
 	visitWFor(node: ForCycle): void;
 	
+
 	visitArray(ndoe: Array): void;
 	visitArrayDeclaration(node: ArrayDeclaration): void;
 

@@ -38,7 +38,7 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	public constructor() {
 		super();
 	}
-	push(el: FunctionDeclarationParameter): void {
+	pushParameter(el: FunctionDeclarationParameter): void {
 		this._parameters.push(el);
 	}
 	get vars(): FunctionDeclarationParameter[] {
@@ -99,14 +99,18 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	static fromJSON(json: Serialization.Nodes.FunctionDeclaration): FunctionDeclaration {
 		const instance = new FunctionDeclaration();
 		instance.prepareFromJSON(json);
-		instance._code = Serialization.Deserialize.object<CodeBlock>(json.code);
-		instance._modifire = json.modifire;
-		instance.docs = Serialization.Deserialize.object<Docs>(json.docs);
-		if(json.native) {
-			instance.native = true;
-		}
-		instance._parameters = json.parameters.map((el: any) => Serialization.Deserialize.object<FunctionDeclarationParameter>(el));
-		instance._ellipse = Serialization.Deserialize.object<Ellipse>(json.ellipse);
 		return instance;
+	}
+
+	protected prepareFromJSON(json: Serialization.Nodes.FunctionDeclaration): void {
+		super.prepareFromJSON(json);
+		this._code = Serialization.Deserialize.object<CodeBlock>(json.code);
+		this._modifire = json.modifire;
+		this.docs = Serialization.Deserialize.object<Docs>(json.docs);
+		if(json.native) {
+			this.native = true;
+		}
+		this._parameters = json.parameters.map((el: any) => Serialization.Deserialize.object<FunctionDeclarationParameter>(el));
+		this._ellipse = Serialization.Deserialize.object<Ellipse>(json.ellipse);
 	}
 }

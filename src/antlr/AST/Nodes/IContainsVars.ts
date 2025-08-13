@@ -6,7 +6,7 @@ export interface IContainsVars<T extends ASTNode>
 	 * Добавление элемента
 	 * @param el элемент
 	 */
-	push(el: T): void;
+	pushParameter(el: T): void;
 	/**
 	 * Массив всех элементов
 	 */

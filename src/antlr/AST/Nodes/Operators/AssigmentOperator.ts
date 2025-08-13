@@ -1,3 +1,4 @@
+import { Serialization } from "../../../../cache/Serialization";
 import { IVisitor } from "../../visitor/IVisitor";
 import { Expression } from "../Expresion";
 import { Variable } from "../Variable";
@@ -7,12 +8,12 @@ export class AssigmentOperator extends BinarOperator
 {
 	name = "операртор присваения";
 
-    protected _left: Variable | undefined;
+    protected override _left: Variable | undefined;
 
-    public get left(): Variable | undefined {
+    public override get left(): Variable | undefined {
         return this._left;   
     }
-    public set left(v: Variable | undefined) {
+    public override set left(v: Variable | undefined) {
         this._left = v;
     }
 	
@@ -35,4 +36,19 @@ export class AssigmentOperator extends BinarOperator
         tmp.tag = node.tag;
         return tmp;
     }
+
+	static fromJSON(json: Serialization.Nodes.Operators.Assigment): AssigmentOperator {
+		let instance: AssigmentOperator = new AssigmentOperator();
+		instance.prepareFromJSON(json);
+		return instance;
+	}
+
+	toJSON(): Serialization.Nodes.Operators.Assigment {
+		return {
+			...super.toJSON(),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.Assigment,
+			left: this.left?.toJSON(),
+		};
+	}
 }

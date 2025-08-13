@@ -16,9 +16,12 @@ export { IVarOrFunctionDeclaration as VarOrFunctionDeclaration } from "./VarOrFu
 export { IVariable as Variable } from "./Variable/Variable";
 export { ILiteral as Literal} from "./Literals/Literal";
 export { IRightValue as RightValue} from "./RightValue";
+export * as Functions from "./Functions";
+export * as Cycles from "./Cycles";
 
 export { IArray as Array } from "./Variable/Array/Array";
 export { IVarDeclaration as VarDeclaration } from "./VarDeclaration";
+export { IReturn as Return } from "./Return";
 
 export { IEnumMember as EnumMember } from "./EnumMember";
 
@@ -29,3 +32,5 @@ export { IVariableInit as VariableInit } from "./Variable/VariableInit";
 export { IParameterDeclaration as ParameterDeclaration } from "./Functions/ParameterDeclaration";
 
 export { IFunctionDeclaration as FunctionDeclaration } from "./Functions/FunctionDeclaration";
+
+export * as Conditions from "./Conditions";

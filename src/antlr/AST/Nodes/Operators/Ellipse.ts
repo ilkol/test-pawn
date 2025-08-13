@@ -30,7 +30,8 @@ export class Ellipse extends ASTNode implements IHasTag
 
 	static fromJSON(json: Serialization.Nodes.Ellipse): Ellipse {
 		const instance = new Ellipse();
-		instance.range = Serialization.Deserialize.range(json.pos);
+		instance.prepareFromJSON(json);
+		instance._tag = Serialization.Deserialize.object(json.tag);
 		return instance;
 	}
 

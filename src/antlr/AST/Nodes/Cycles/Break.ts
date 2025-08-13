@@ -1,7 +1,7 @@
 import { IVisitor } from "../../visitor/IVisitor";
-import { Statement } from "../Statement";
+import { AbstractStatement } from "../AbstractStatement";
 
-export class Break extends Statement {
+export class Break extends AbstractStatement {
 	name = "Break";
 
 	public accept(visitor: IVisitor): void {

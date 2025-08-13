@@ -23,7 +23,6 @@ import { ASTNode } from "./AST/Nodes/ASTNode";
 import { FunctionDeclaration, FunctionModifire } from "./AST/Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "./AST/Nodes/Functions/FunctionCall";
 import { VariableInit } from "./AST/Nodes/VariableInit";
-import { FunctionParameter } from "./AST/Nodes/Functions/FunctionParameter";
 import { Variable } from "./AST/Nodes/Variable";
 import { FunctionDeclarationParameter } from "./AST/Nodes/Functions/FunctionDeclarationParameter";
 import { FloatLiteral } from "./AST/Nodes/Literals/FloatLiteral";
@@ -31,7 +30,6 @@ import { StringLiteral } from "./AST/Nodes/Literals/StringLiteral";
 import { WhileCycle } from "./AST/Nodes/Cycles/WhileCycle";
 import { Cycle } from "./AST/Nodes/Cycles/Cycle";
 import { ForCycle } from "./AST/Nodes/Cycles/ForCycle";
-import { ArrayIndexes } from "./AST/Nodes/Variables/ArrayIndexes";
 import { Array } from "./AST/Nodes/Variables/Array";
 import { ArrayDeclaration } from "./AST/Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "./AST/Nodes/Operators/AssigmentOperator";
@@ -45,7 +43,6 @@ import { DefaultStatement } from "./AST/Nodes/Conditions/switch/DefaultStatement
 import { Docs } from "./AST/Nodes/Docs/Dosc";
 import { Statement } from "./AST/Nodes/Statement";
 import { AbstractStatement } from "./AST/Nodes/AbstractStatement";
-import { ElseStatement } from "./AST/Nodes/Conditions/ElseStatement";
 import { ChainedOperator } from "./AST/Nodes/Operators/ChainedOperators";
 import { VarOrFunctionDeclaration } from "./AST/Nodes/VarOrFunctionDeclaration";
 import { BoolLiteral } from "./AST/Nodes/Literals/BoolLiteral";
@@ -240,7 +237,7 @@ export class PawnListener implements pawnListener
 			declarationVar.tag = node.tag;
 			
 			if(last instanceof OperatorNew) {
-				last.push(declarationVar);
+				last.pushParameter(declarationVar);
 			}
 			else if(last instanceof VariableInit)
 			{
@@ -309,7 +306,7 @@ export class PawnListener implements pawnListener
 		{	
 			node.setPos(ctx.start, ctx.stop);
 			const last = <EnumDeclaration>this.nodes.peek();
-			last.push(node);
+			last.pushParameter(node);
 			node.parent = last;
 		}
 	}
@@ -575,9 +572,6 @@ export class PawnListener implements pawnListener
 			else if(last instanceof SwitchStatement) {
 				last.condition = node;
 			}
-			else if(last instanceof ArrayIndexes) {
-				last.push(node);
-			}
 			else if(last instanceof ForCycle) {
 				try {
 					last.addExpresion(node);
@@ -598,7 +592,7 @@ export class PawnListener implements pawnListener
 			}
 			else if(last instanceof FunctionCall)
 			{
-				last.push(new FunctionParameter(node));
+				last.pushParameter(node);
 			}
 			else if(last instanceof EnumMember) {
 				// last.value = node;
@@ -725,7 +719,7 @@ export class PawnListener implements pawnListener
 			node.setPos(ctx.start, ctx.stop);
 			const last = this.nodes.peek();
 			if(last instanceof OperatorNew) {
-				last.push(node);
+				last.pushParameter(node);
 			}
 			else {
 				console.log(last);
@@ -748,7 +742,7 @@ export class PawnListener implements pawnListener
 				node.reference = true;
 			const last = this.nodes.peek();
 			if(last instanceof FunctionDeclaration) {
-				last.push(node);
+				last.pushParameter(node);
 			}
 			else {
 				console.debug(last);
@@ -861,23 +855,7 @@ export class PawnListener implements pawnListener
 			}
 		}
 	}
-	enterArrayIndex(ctx: ArrayIndexContext): void {
-		const node = new ArrayIndexes();
-		this.nodes.push(node);
-	}
-	exitArrayIndex(ctx: ArrayIndexContext): void {
-		const node = <ArrayIndexes>this.nodes.pop();
-		const last = this.nodes.pop();
-		if(!last) return;
-		if(last instanceof Array) {
-			last.pushIndexes(node.indexes);
-			this.nodes.push(last);
-		}
-		else {
-			this.nodes.push(new Array(<Variable>last, node.indexes));
-			
-		}
-	}
+	
 
 	enterIfStatement(ctx: IfStatementContext): void {
 		const node = new IfStatement();
@@ -973,7 +951,6 @@ export class PawnListener implements pawnListener
 			last instanceof FunctionDeclaration || 
 			last instanceof IfStatement || 
 			last instanceof Cycle || 
-			last instanceof ElseStatement || 
 			last instanceof CaseStatement || 
 			last instanceof DefaultStatement
 		) {
@@ -989,23 +966,7 @@ export class PawnListener implements pawnListener
 		}	
 	}
 
-	enterElseStatement(ctx: ElseStatementContext): void
-	{
-		const node = new ElseStatement();
-		this.nodes.push(node);
-	}
-	exitElseStatement(ctx: ElseStatementContext): void
-	{
-		const node = <ElseStatement>this.nodes.pop();
-		let last = this.nodes.peek();
-		if(last instanceof IfStatement) {
-			last.else = node.code;
-		}
-		else {
-			this.addDiagnostic(l10n.t("Unexpected else block"), DiagnosticSeverity.Error, node.pos);
-		}
-		
-	}
+	
 	enterBinarExpressionOperator =(ctx: BinarExpressionOperatorContext) => {
 		const node = new BinarOperator();
 		this.nodes.push(node);

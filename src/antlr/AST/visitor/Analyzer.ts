@@ -6,7 +6,6 @@ import { Declarations } from "../Nodes/Declarations";
 import { DiagnosticWarning } from "../../diagnostic/DiagnosticWarning";
 import { EnumDeclaration } from "../Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../Nodes/enum/EnumMember";
-import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
 import { CodeBlock } from "../Nodes/CodeBlock";
 import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
@@ -48,9 +47,16 @@ import { DiagnosticHint } from "../../diagnostic/DiagnosticHint";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { Definition } from "../../../Linking/Definition";
 import { Reference } from "../../../Linking/Reference";
+import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 
 export class Analyzer extends BaseVisitor
 {
+	beforeVisitWDohile(node: DoWhileCycle): void {
+
+	}
+	afterVisitWDohile(node: DoWhileCycle): void {
+
+	}
 	beforeVisitOperatorArrayIndex(node: ArrayChar): void {
 
 	}
@@ -401,12 +407,6 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitCodeBlock(node: CodeBlock): void {
 		this.restrictScope();
-	}
-	beforeVisitFunctionParameter(node: FunctionParameter): void {
-	
-	}
-	afterVisitFunctionParameter(node: FunctionParameter): void {
-		
 	}
 	beforeVisitEnumMember(node: EnumMember): void {
 

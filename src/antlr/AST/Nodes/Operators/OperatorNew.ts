@@ -22,7 +22,7 @@ export class OperatorNew extends AbstractStatement implements IContainsVars<VarD
 	public constructor() {
 		super();
 	}
-	push(el: VarDeclaration): void {
+	pushParameter(el: VarDeclaration): void {
 		this._variables.push(el);
 		el.modifires = this.modifires;
 	}

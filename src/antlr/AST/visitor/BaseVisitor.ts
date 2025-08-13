@@ -3,7 +3,6 @@ import { Declarations } from "../Nodes/Declarations";
 import { IVisitor } from "./IVisitor";
 import { EnumDeclaration } from "../Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../Nodes/enum/EnumMember";
-import { FunctionParameter } from "../Nodes/Functions/FunctionParameter";
 import { CodeBlock } from "../Nodes/CodeBlock";
 import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
@@ -32,9 +31,16 @@ import { SwitchStatement } from "../Nodes/Conditions/switch/SwitchStatement";
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
+import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 
 export abstract class BaseVisitor implements IVisitor
 {
+	visitDoWhile(node: DoWhileCycle): void {
+		this.beforeVisitWDohile(node);
+		this.visitCycle(node);
+		this.afterVisitWDohile(node);
+	}
+
 	visitOperatorArrayChar(node: ArrayChar): void {
 		this.beforeVisitOperatorArrayChar(node);
 		node.left?.accept(this);
@@ -164,11 +170,6 @@ export abstract class BaseVisitor implements IVisitor
 		this.beforeVisitFunctionDeclarationParameter(node);
 		this.afterVisitFunctionDeclarationParameter(node);
 	}
-	visitFunctionParameter(node: FunctionParameter): void {
-		this.beforeVisitFunctionParameter(node);
-		node.val.accept(this);
-		this.afterVisitFunctionParameter(node);
-	}
 	visitEnumMember(node: EnumMember): void {
 		this.beforeVisitEnumMember(node);
 		this.afterVisitEnumMember(node);
@@ -220,8 +221,11 @@ export abstract class BaseVisitor implements IVisitor
 		});
 	}
 
-	abstract beforeVisitOperatorArrayIndex(node: ArrayChar): void;
-	abstract afterVisitOperatorArrayIndex(node: ArrayChar): void;
+	abstract beforeVisitWDohile(node: DoWhileCycle): void;
+	abstract afterVisitWDohile(node: DoWhileCycle): void;
+
+	abstract beforeVisitOperatorArrayIndex(node: ArrayIndex): void;
+	abstract afterVisitOperatorArrayIndex(node: ArrayIndex): void;
 	
 	abstract beforeVisitOperatorArrayChar(node: ArrayChar): void;
 	abstract afterVisitOperatorArrayChar(node: ArrayChar): void;
@@ -243,9 +247,7 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void;
 	abstract afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void;
-	
-	abstract beforeVisitFunctionParameter(node: FunctionParameter): void;
-	abstract afterVisitFunctionParameter(node: FunctionParameter): void;
+
 	
 	abstract beforeVisitCodeBlock(node: CodeBlock): void;
 	abstract afterVisitCodeBlock(node: CodeBlock): void;

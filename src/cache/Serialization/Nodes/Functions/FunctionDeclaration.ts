@@ -8,7 +8,7 @@ import { IVarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 import { IParameterDeclaration } from "./ParameterDeclaration";
 
 export interface IFunctionDeclaration extends IVarOrFunctionDeclaration {
-	__type: NodeList.FunctionDeclaration;
+	__type: NodeList.FunctionDeclaration | NodeList.OperatorOverload;
 	parameters: IParameterDeclaration[];
 	code?: ICodeBlock;
 	modifire: FunctionModifire;

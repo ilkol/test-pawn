@@ -2,17 +2,17 @@ import { Serialization } from "../../../../cache/Serialization";
 import { IVisitor } from "../../visitor/IVisitor";
 import { Cycle } from "./Cycle";
 
-export class WhileCycle extends Cycle
+export class DoWhileCycle extends Cycle
 {
-    name = "цикл while";
+    name = "цикл do-while";
     
     public accept(visitor: IVisitor): void {
-        visitor.visitWhile(this);
+        visitor.visitDoWhile(this);
     }    
 
 
-	static fromJSON(json: Serialization.Nodes.Cycles.While): WhileCycle {
-		const instance = new WhileCycle();
+	static fromJSON(json: Serialization.Nodes.Cycles.While): DoWhileCycle {
+		const instance = new DoWhileCycle();
 		instance.prepareFromJSON(json);
 		return instance;
 	}
@@ -28,5 +28,4 @@ export class WhileCycle extends Cycle
 			__type: Serialization.NodeList.While,
 		};
 	}
-		
 }

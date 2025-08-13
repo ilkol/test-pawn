@@ -3,6 +3,7 @@ import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractOperator } from "./AbstractOperator";
 import { Tag } from "../Tag";
 import { DefaultTag } from "../DefaultTag";
+import { Serialization } from "../../../../cache/Serialization";
 
 export class UnarOperator extends AbstractOperator
 {
@@ -30,6 +31,21 @@ export class UnarOperator extends AbstractOperator
 		if(this.expresion) {
 			this.expresion.tag = v;
 		}
+	}
+
+
+	static fromJSON(json: Serialization.Nodes.Operators.Unar): UnarOperator {
+		let instance: UnarOperator = new UnarOperator();
+		instance.prepareFromJSON(json);
+		return instance;
+	}
+
+	toJSON(): Serialization.Nodes.Operators.Unar {
+		return {			
+			...super.toJSON(),
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			__type: Serialization.NodeList.UnarOperator,
+		};
 	}
 
 }

@@ -62,7 +62,7 @@ export class Expression extends AbstractStatement implements IHasTag {
 
 	protected prepareFromJSON(json: Serialization.Nodes.Expression): void {
 		super.prepareFromJSON(json);
-		this.tag = Serialization.Deserialize.object(json.tag);
+		this._tag = Serialization.Deserialize.object(json.tag);
 		this.exp = Serialization.Deserialize.object(json.expression);
 		this.translateTag = json.translateTag;
 	}
