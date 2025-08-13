@@ -1,4 +1,4 @@
-import { ASTNode } from "../antlr/AST/Nodes/ASTNode";
+import { Node } from "./Serialization/Nodes";
 
 /**
  * Интерфейс для кэширования файлов.
@@ -15,11 +15,11 @@ export interface FileCache {
 	 * Последнее время редактирования файла.
 	 * Используется для определения, был ли файл изменен с момента последнего анализа.
 	 */
-	lastEdit: number;
+	fileVersion: number;
 
 	/**
 	 * Корень абстрактного синтаксического дерева (AST) для данного файла.
 	 * Содержит информацию о структуре и содержании файла.
 	 */
-	rootAST: ASTNode;
+	rootAST?: string;
 }

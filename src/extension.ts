@@ -12,6 +12,8 @@ import { DefinitionProvider } from './Providers/DefinitionProvider';
 import { ReferenceProvider } from './Providers/ReferenceProvider';
 import { getDefaultComplitions } from './DefaultComplitions/DefaultComplitions';
 import path from 'path';
+import { Serialization } from './cache/Serialization';
+import { serializeInit } from './cache/Serialization/serializeInit';
 
 let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
@@ -27,6 +29,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	await fileManage.findPawnDir();
 	const documentLinkProvider = new DocumentLinkProvider(fileManage);
+
+	serializeInit();
 
 	const tokenTypes = [
 		SemanticTokens.type,
@@ -198,6 +202,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	})
 	);
+}
+
+export async function deactivate() {
+	// TODO: сохранение кэша
 }
 
 function registerTasks(context: vscode.ExtensionContext) {

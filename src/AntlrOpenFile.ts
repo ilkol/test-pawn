@@ -28,81 +28,9 @@ import { Reference } from "./Linking/Reference";
 import { IHasID } from "./antlr/AST/Nodes/IHasID";
 import { SemanticTokens } from "./SemanticTokens";
 import { EnumMember } from "./antlr/AST/Nodes/enum/EnumMember";
-import { CodeBlock } from "./antlr/AST/Nodes/CodeBlock";
-import { Ellipse } from "./antlr/AST/Nodes/Operators/Ellipse";
-import { FunctionDeclaration } from "./antlr/AST/Nodes/Functions/FunctionDeclaration";
-import { Tag } from "./antlr/AST/Nodes/Tag";
-import { diff } from "deep-diff";
-import { FunctionDeclarationParameter } from "./antlr/AST/Nodes/Functions/FunctionDeclarationParameter";
 import { Serialization } from "./cache/Serialization";
-import { Variable } from "./antlr/AST/Nodes/Variable";
-import { IntLiteral } from "./antlr/AST/Nodes/Literals/IntLiteral";
-import { FloatLiteral } from "./antlr/AST/Nodes/Literals/FloatLiteral";
-import { FixedLiteral } from "./antlr/AST/Nodes/Literals/FixedLiteral";
-import { StringLiteral } from "./antlr/AST/Nodes/Literals/StringLiteral";
-import { BinarLiteral } from "./antlr/AST/Nodes/Literals/BinarLiteral";
-import { HexLiteral } from "./antlr/AST/Nodes/Literals/HexLiteral";
-import { OperatorNew } from "./antlr/AST/Nodes/Operators/OperatorNew";
-import { VarDeclaration } from "./antlr/AST/Nodes/Variables/VarDeclaration";
-import { VariableInit } from "./antlr/AST/Nodes/VariableInit";
-import { ArrayDeclaration } from "./antlr/AST/Nodes/Variables/ArrayDeclaration";
-import { EnumDeclaration } from "./antlr/AST/Nodes/enum/EnumDeclaration";
-import { Array } from "./antlr/AST/Nodes/Variables/Array";
-import { BinarOperator } from "./antlr/AST/Nodes/Operators/BinarOperator";
-import { FunctionCall } from "./antlr/AST/Nodes/Functions/FunctionCall";
-import { UnarOperator } from "./antlr/AST/Nodes/Operators/UnarOperator";
-import { ReturnStatement } from "./antlr/AST/Nodes/ReturnStatement";
-import { ForCycle } from "./antlr/AST/Nodes/Cycles/ForCycle";
-import { WhileCycle } from "./antlr/AST/Nodes/Cycles/WhileCycle";
-import { DoWhileCycle } from "./antlr/AST/Nodes/Cycles/DoWhileCycle";
-import { ArrayChar } from "./antlr/AST/Nodes/Operators/ArrayChar";
-import { ArrayIndex } from "./antlr/AST/Nodes/Operators/ArrayIndex";
-import { AssigmentOperator } from "./antlr/AST/Nodes/Operators/AssigmentOperator";
-import { ChainedOperator } from "./antlr/AST/Nodes/Operators/ChainedOperators";
-import { OperatorOverload } from "./antlr/AST/Nodes/Operators/OperatorOverload";
-import { SwitchStatement } from "./antlr/AST/Nodes/Conditions/switch/SwitchStatement";
-import { CaseStatement } from "./antlr/AST/Nodes/Conditions/switch/CaseStatement";
-import { DefaultStatement } from "./antlr/AST/Nodes/Conditions/switch/DefaultStatement";
-import { ArrayInit } from "./antlr/AST/Nodes/Literals/ArrayInit";
-import { IfStatement } from "./antlr/AST/Nodes/Conditions/IfStatement";
-import { Docs } from "./antlr/AST/Nodes/Docs/Dosc";
-import { BoolLiteral } from "./antlr/AST/Nodes/Literals/BoolLiteral";
+import { FileCache } from "./cache/FileCache";
 
-class Semaphore {
-    private tasks: (() => void)[] = [];
-    private count: number;
-
-
-    constructor(count: number) {
-        this.count = count;
-    }
-
-    public acquire(): Promise<void> {
-        if (this.count > 0) {
-            this.count--;
-            return Promise.resolve();
-        }
-
-        return new Promise(resolve => {
-            this.tasks.push(resolve);
-        });
-    }
-
-    public release(): void {
-        this.count++;
-        if (this.tasks.length > 0) {
-            const resolve = this.tasks.shift();
-            if (resolve) {
-                this.count--;
-                resolve();
-            }
-        }
-    }
-}
-
-// Пример использования в вашем коде
-
-const semaphore = new Semaphore(1);
 
 export class AntrlOpenFile extends AbstractOpenFile
 {
@@ -201,75 +129,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this.prepareSignatures();
 	
 		console.log(this.AST);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.CodeBlock, CodeBlock);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Declarations, Declarations);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Ellipse, Ellipse);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.FunctionDeclaration, FunctionDeclaration);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.FunctionDeclarationParameter, FunctionDeclarationParameter);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Tag, Tag);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Variable, Variable);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.IntLiteral, IntLiteral);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.FloatLiteral, FloatLiteral);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.FixedLiteral, FixedLiteral);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.StringLiteral, StringLiteral);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.BinaryLiteral, BinarLiteral);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.HexLiteral, HexLiteral);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.OperatorNew, OperatorNew);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.VariableDeclaration, VarDeclaration);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.VariableInit, VariableInit);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayDeclaration, ArrayDeclaration);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.EnumMember, EnumMember);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Enum, EnumDeclaration);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Array, Array);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.BinarOperator, BinarOperator);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.FunctionCall, FunctionCall);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.UnarOperator, UnarOperator );
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ReturnStatement, ReturnStatement );
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ReturnStatement, ReturnStatement );
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.For, ForCycle);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.While, WhileCycle);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.DoWhile, DoWhileCycle);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayChar, ArrayChar);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayIndex, ArrayIndex);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Assigment, AssigmentOperator);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ChainedOperator, ChainedOperator);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.OperatorOverload, OperatorOverload);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.If, IfStatement);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Switch, SwitchStatement);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Case, CaseStatement);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Default, DefaultStatement);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayInit, ArrayInit);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Docs, Docs);
-		Serialization.Deserialize.registerSerializable(Serialization.NodeList.BoolLiteral, BoolLiteral);
 		
-		
-		try {
-			console.log("Сериализую AST");
-			const code = Serialization.Serialize.toString(this.AST);
-			if(code === undefined) {
-				throw new Error("Ошибка сериализации AST: код не определен");
-			}
-			const newAST = Serialization.Deserialize.object(code);
-			const differences = diff(this.AST, newAST);
-			if(differences) {
-				differences.forEach((difference) => {
-					if(difference.path) {
-						const lastPath = difference.path[difference.path.length - 1];
-						if(lastPath !== "file" && lastPath !== "references" && lastPath !== "declaration" && lastPath !== "_parent") { 
-						
-							console.log(`Difference at path: ${difference.path.join(".")}`);
-						}
-					}
-				});
-			}
-			else {
-				console.log("AST идентичны");
-			}			
-		} catch (e) {
-			console.error("Ошибка сериализации AST: ");
-			console.error(e);
-		}
-
 		analyzer.functionsDeclarations.forEach((value, key) => {	
 			const keyMap = this.fileManager.definitionProvider.definitions.get(key);
 			if(keyMap) {
@@ -293,6 +153,45 @@ export class AntrlOpenFile extends AbstractOpenFile
 			}
 		});
 		this._isParsed = true;
+	}
+
+	public getCash(): FileCache {
+		return {
+			path: this.file.uri.path,
+			rootAST: this.serializeAST(),
+			fileVersion: this.file.version,
+		};
+	}
+
+	private serializeAST(): string | undefined {
+		if(!this.AST) {
+			return undefined;
+		}
+		try {
+			console.log("Сериализую AST");
+			const code = Serialization.Serialize.toString(this.AST);
+			if(code === undefined) {
+				throw new Error("Ошибка сериализации AST: код не определен");
+			}
+			return code;
+			// const newAST = Serialization.Deserialize.object(code);
+			// const differences = diff(this.AST, newAST);
+			// if(differences) {
+			// 	differences.forEach((difference) => {
+			// 		if(difference.path) {
+			// 			const lastPath = difference.path[difference.path.length - 1];
+			// 			if(lastPath !== "file" && lastPath !== "references" && lastPath !== "declaration" && lastPath !== "_parent") { 
+						
+			// 				console.log(`Difference at path: ${difference.path.join(".")}`);
+			// 			}
+			// 		}
+			// 	});
+			// }	
+		} catch (e) {
+			console.error("Ошибка сериализации AST: ");
+			console.error(e);
+			return undefined;
+		}
 	}
 
 	/**

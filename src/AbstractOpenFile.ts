@@ -9,6 +9,7 @@ import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 import { Define } from "./Prepocessor/Define";
 import { Docs } from "./antlr/AST/Nodes/Docs/Dosc";
 import { Include } from "./Prepocessor/Include";
+import { FileCache } from "./cache/FileCache";
 
 export class FunctionInfo
 {
@@ -265,6 +266,7 @@ export abstract class AbstractOpenFile
 	}
 
 	public abstract parseCode(): Promise<void>;
+	public abstract getCash(): FileCache;
 	public abstract processDirectives(): Promise<void>;
 	public abstract processIncludes(): Promise<void>;
 	public abstract openFileWithOutPreprocessor(): Promise<void>;
