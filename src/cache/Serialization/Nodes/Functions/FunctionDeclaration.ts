@@ -14,4 +14,5 @@ export interface IFunctionDeclaration extends IVarOrFunctionDeclaration {
 	modifire: FunctionModifire;
 	ellipse?: IEllipse;
 	docs?: IDocs;
+	assigmentFunctionID?: string;
 }

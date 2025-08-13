@@ -66,6 +66,7 @@ import { DefaultStatement } from "./antlr/AST/Nodes/Conditions/switch/DefaultSta
 import { ArrayInit } from "./antlr/AST/Nodes/Literals/ArrayInit";
 import { IfStatement } from "./antlr/AST/Nodes/Conditions/IfStatement";
 import { Docs } from "./antlr/AST/Nodes/Docs/Dosc";
+import { BoolLiteral } from "./antlr/AST/Nodes/Literals/BoolLiteral";
 
 class Semaphore {
     private tasks: (() => void)[] = [];
@@ -239,6 +240,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Default, DefaultStatement);
 		Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayInit, ArrayInit);
 		Serialization.Deserialize.registerSerializable(Serialization.NodeList.Docs, Docs);
+		Serialization.Deserialize.registerSerializable(Serialization.NodeList.BoolLiteral, BoolLiteral);
+		
 		
 		try {
 			console.log("Сериализую AST");
@@ -246,15 +249,13 @@ export class AntrlOpenFile extends AbstractOpenFile
 			if(code === undefined) {
 				throw new Error("Ошибка сериализации AST: код не определен");
 			}
-			console.log(code);
 			const newAST = Serialization.Deserialize.object(code);
-			console.log(newAST);
 			const differences = diff(this.AST, newAST);
 			if(differences) {
 				differences.forEach((difference) => {
 					if(difference.path) {
 						const lastPath = difference.path[difference.path.length - 1];
-						if(lastPath !== "file" && lastPath !== "references" && lastPath !== "declaration") { 
+						if(lastPath !== "file" && lastPath !== "references" && lastPath !== "declaration" && lastPath !== "_parent") { 
 						
 							console.log(`Difference at path: ${difference.path.join(".")}`);
 						}
@@ -263,9 +264,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			}
 			else {
 				console.log("AST идентичны");
-			}
-			
-			// console.log(this.AST === newAST);
+			}			
 		} catch (e) {
 			console.error("Ошибка сериализации AST: ");
 			console.error(e);

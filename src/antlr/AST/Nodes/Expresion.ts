@@ -48,7 +48,7 @@ export class Expression extends AbstractStatement implements IHasTag {
 	toJSON(): Serialization.Nodes.Expression {
 		return {
 			...super.toJSON(),
-			tag: this.tag.toJSON(),
+			tag: this._tag.toJSON(),
 			translateTag: this.translateTag,
 			expression: this.exp?.toJSON(),
 		};

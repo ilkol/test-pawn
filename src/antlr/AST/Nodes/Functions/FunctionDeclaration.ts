@@ -93,7 +93,8 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 			code: this._code as CodeBlock ? (<CodeBlock>this._code).toJSON() : undefined,
 			modifire: this._modifire,
 			ellipse: this._ellipse ? this._ellipse.toJSON() : undefined,
-			docs: this.docs ? this.docs.toJSON() : undefined
+			docs: this.docs ? this.docs.toJSON() : undefined,
+			assigmentFunctionID: this._assigmentNative,
 		};
 	}
 	static fromJSON(json: Serialization.Nodes.FunctionDeclaration): FunctionDeclaration {
@@ -112,5 +113,6 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 		}
 		this._parameters = json.parameters.map((el: any) => Serialization.Deserialize.object<FunctionDeclarationParameter>(el));
 		this._ellipse = Serialization.Deserialize.object<Ellipse>(json.ellipse);
+		this._assigmentNative = json.assigmentFunctionID;
 	}
 }

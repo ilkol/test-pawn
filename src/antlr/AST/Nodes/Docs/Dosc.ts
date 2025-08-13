@@ -116,8 +116,12 @@ export class Docs extends ASTNode
 		};
 	}
 	static fromJSON(json: Serialization.Nodes.Docs): Docs {
-		const instance = new Docs(json.text);
+		const instance = new Docs("");
 		instance.prepareFromJSON(json);
 		return instance;
+	}
+	protected prepareFromJSON(json: Serialization.Nodes.Docs): void {
+		super.prepareFromJSON(json);
+		this._text = json.text;
 	}
 }
