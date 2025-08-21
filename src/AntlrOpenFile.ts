@@ -261,7 +261,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 			
 		});
 	}
-	public getComplitions(): vscode.CompletionItem[] {
+	public getCompletions(): vscode.CompletionItem[] {
 		this.complitions = [];
 		this.loadDefaultComplitions();
 
@@ -318,7 +318,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 	public includeIncludesScopse(includes: AbstractOpenFile[]) {
 		includes.forEach(file => {
 			const uri = file.uri;
-			file.getComplitions().forEach(compl => {
+			file.getCompletions().forEach(compl => {
 				if (!compl.detail)
 					{compl.detail = path.parse(path.basename(uri.fsPath)).name;}
 				this.complitions.push(compl);
@@ -360,7 +360,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		const file = this.fileManager.getFile(uri.path);
 		if (file) {
 			
-			file.getComplitions().forEach(compl => {
+			file.getCompletions().forEach(compl => {
 				if (!compl.detail)
 					{compl.detail = path.parse(path.basename(uri.fsPath)).name;}
 				this.complitions.push(compl);
@@ -406,7 +406,7 @@ export class AntrlOpenFile extends AbstractOpenFile
 		});
 	}
 
-	public async openFileWithOutPreprocessor() {
+	public async openFileWithoutPreprocessor() {
 		console.log("Открываю распаршенный файл");
 		const document = await vscode.workspace.openTextDocument({
 			content: '', // Изначально пустой документ

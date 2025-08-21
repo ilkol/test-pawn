@@ -359,7 +359,7 @@ export class FileManager {
 	getFileComplitions(path: string): CompletionItem[] {
 		const file = this.getFile(path);
 		if(file)
-			{return file.getComplitions();}
+			{return file.getCompletions();}
 		return [];	
 	}
 	updateFileSemanticTokens(path: string)

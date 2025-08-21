@@ -218,7 +218,7 @@ export abstract class AbstractOpenFile
 	public abstract get includes(): Include[];
 	public abstract findDirectives(): Promise<void>;
 	protected abstract findAllDirectives(): Promise<void>;
-	public abstract getComplitions(): CompletionItem[];
+	public abstract getCompletions(): CompletionItem[];
 	public addComplition(comp: CompletionItem) {
 		this.complitions.push(comp);
 	}
@@ -270,7 +270,7 @@ export abstract class AbstractOpenFile
 	public abstract getCash(): FileCache;
 	public abstract processDirectives(): Promise<void>;
 	public abstract processIncludes(): Promise<void>;
-	public abstract openFileWithOutPreprocessor(): Promise<void>;
+	public abstract openFileWithoutPreprocessor(): Promise<void>;
 	public abstract includeIncludesScopse(includes: AbstractOpenFile[]): void;
 	public abstract processDefines(): Promise<void>;
 	public abstract setCache(cache: FileCache): boolean;

@@ -73,7 +73,7 @@ export class CacheManager {
 		this.saveAllCache();
 	}
 
-	static flushWorspaceCache(): void {
+	static flushWorkspaceCache(): void {
 		this.fileCaches.clear();
 		this.saveAllCache();
 	}

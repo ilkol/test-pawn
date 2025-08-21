@@ -10,8 +10,8 @@ export interface IDefaultEvent {
 	deprecated?: boolean
 }
 
-export function getDefaultComplitions(): vscode.CompletionItem[] {
-	let complitions: vscode.CompletionItem[] = [];
+export function getDefaultCompletions(): vscode.CompletionItem[] {
+	let completions: vscode.CompletionItem[] = [];
 	let insertText: string = "";
 	defaultEvents.forEach(eventNames => {
 
@@ -32,33 +32,33 @@ export function getDefaultComplitions(): vscode.CompletionItem[] {
 		event.kind = vscode.CompletionItemKind.Event;
 		event.insertText =  new vscode.SnippetString("public" + insertText + " {\n\t$0\n\treturn 1\n}");;
 		
-		complitions.push(event);
+		completions.push(event);
 	});
 
 	let compl = new vscode.CompletionItem("stock", vscode.CompletionItemKind.Keyword);
 	compl.documentation = new vscode.MarkdownString("Функции и переменные, помеченные этим ключвым словом, не будут включены в итоговую программу, если они нигде не используются.");
 	
-	complitions.push(compl);
+	completions.push(compl);
 
-	complitions.push(new vscode.CompletionItem("for", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("while", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("do", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("switch", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("case", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("default", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("public", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("break", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("continue", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("else", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("return", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("const", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("enum", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("native", vscode.CompletionItemKind.Keyword));
-	complitions.push(new vscode.CompletionItem("operator", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("for", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("while", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("do", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("switch", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("case", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("default", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("public", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("break", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("continue", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("else", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("return", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("const", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("enum", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("native", vscode.CompletionItemKind.Keyword));
+	completions.push(new vscode.CompletionItem("operator", vscode.CompletionItemKind.Keyword));
 
-	complitions.push(new vscode.CompletionItem("char", vscode.CompletionItemKind.Operator));
-	complitions.push(new vscode.CompletionItem("sizeof", vscode.CompletionItemKind.Operator));
-	complitions.push(new vscode.CompletionItem("tagof", vscode.CompletionItemKind.Operator));
+	completions.push(new vscode.CompletionItem("char", vscode.CompletionItemKind.Operator));
+	completions.push(new vscode.CompletionItem("sizeof", vscode.CompletionItemKind.Operator));
+	completions.push(new vscode.CompletionItem("tagof", vscode.CompletionItemKind.Operator));
 
 
 	/*DefaultFunctionsComplitions.forEach(func => {
@@ -93,5 +93,5 @@ export function getDefaultComplitions(): vscode.CompletionItem[] {
 		complitions.push(event);
 	});
 	*/
-	return complitions;
+	return completions;
 }

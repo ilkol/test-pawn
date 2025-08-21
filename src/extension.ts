@@ -7,10 +7,10 @@ import { DocumentSemanticTokensProvider } from './Providers/DocumentSemanticToke
 import { SymbolProvider } from './Providers/SymbolProvider';
 import { PawnColorProvider } from './Providers/ColorProvider';
 import { AbstractOpenFile } from './AbstractOpenFile';
-import { SemanticTokens, SemanticTokensModifires } from './SemanticTokens';
+import { SemanticTokens, SemanticTokensModifires as SemanticTokensModifiers } from './SemanticTokens';
 import { DefinitionProvider } from './Providers/DefinitionProvider';
 import { ReferenceProvider } from './Providers/ReferenceProvider';
-import { getDefaultComplitions } from './DefaultComplitions/DefaultComplitions';
+import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
 import { serializeInit } from './cache/Serialization/serializeInit';
 import { CacheManager } from './cache/CacheManager';
 
@@ -32,9 +32,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	serializeInit();
 	CacheManager.initialize(context);
 	if(version !== CacheManager.getExtensionVersion()) {
-		CacheManager.flushWorspaceCache();
+		CacheManager.flushWorkspaceCache();
 		console.debug(`Сброс кэша расширения из-за обновления версии с ${CacheManager.getExtensionVersion()} на ${version}`);
 		CacheManager.setExtensionVersion(version);
+		vscode.window.showInformationMessage('Кэш рабочей области был очищен из-за обновления расширения. Пожалуйста, перезапустите VSCode для полной работы.');
 	}
 
 
@@ -53,14 +54,13 @@ export async function activate(context: vscode.ExtensionContext) {
 		SemanticTokens.variable
 	];
 	const tokenModifiers = [
-		SemanticTokensModifires.declaration,
-		SemanticTokensModifires.declaration,
-		SemanticTokensModifires.const,
-		SemanticTokensModifires.static,
-		SemanticTokensModifires.deprecated,
-		SemanticTokensModifires.doc,
-		SemanticTokensModifires.modification,
-		SemanticTokensModifires.default
+		SemanticTokensModifiers.declaration,
+		SemanticTokensModifiers.const,
+		SemanticTokensModifiers.static,
+		SemanticTokensModifiers.deprecated,
+		SemanticTokensModifiers.doc,
+		SemanticTokensModifiers.modification,
+		SemanticTokensModifiers.default
 	];
 	const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
 
@@ -74,7 +74,6 @@ export async function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 		if (connect[0].text === ";") {
-			console.error(e.contentChanges);
 			await fileManage.onDidChangeDocument(e.document);
 		}
 	});
@@ -82,16 +81,16 @@ export async function activate(context: vscode.ExtensionContext) {
 	parseAllOpenedFiles();
 
 
-	vscode.workspace.onDidSaveTextDocument((file) => {
+	vscode.workspace.onDidSaveTextDocument(async (file) => {
 		if (file.languageId !== "pawn") { return; }
 		console.error("SAVE FILE");
-		return fileManage.onDidChangeDocument(file);
+		return await fileManage.onDidChangeDocument(file);
 	});
 
 
 	//регистрируем таск
 	registerTasks(context);
-	registerCommands();
+	registerCommands(context);
 
 	
 
@@ -117,25 +116,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.languages.registerDocumentFormattingEditProvider('pawn', {
 		provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
 			const edits: vscode.TextEdit[] = [];
-			const fullText = document.getText();
-
-			// Регулярное выражение для поиска операторов
-			let formatted = fullText.replace(
-				/ *(=|\+|-|\*|\/) */g, ' $1 '
-			);
-			formatted = formatted.replace(
-				/ *(,) */g, '$1 '
-			);
-			formatted = formatted.replace(
-				/ {4}/g, '\t'
-			);
-
-			const fullRange = new vscode.Range(
-				document.positionAt(0),
-				document.positionAt(fullText.length)
-			);
-
-			edits.push(vscode.TextEdit.replace(fullRange, formatted));
 			return edits;
 		}
 	}));
@@ -149,62 +129,11 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('pawn', {
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
 
-			let complitions: vscode.CompletionItem[] = getDefaultComplitions();
+			let completions: vscode.CompletionItem[] = getDefaultCompletions();
 
 			const file: AbstractOpenFile | undefined = fileManage.openedFiles.get(document.uri);
-			if (file) { complitions = complitions.concat(file.getComplitions()); }
-
-			// a simple completion item which inserts `Hello World!`
-			// const simpleCompletion = new vscode.CompletionItem('Hello World!');
-
-			// a completion item that inserts its text as snippet,
-			// the `insertText`-property is a `SnippetString` which will be
-			// honored by the editor.
-			// const snippetCompletion = new vscode.CompletionItem('Good part of the day');
-			// snippetCompletion.insertText = new vscode.SnippetString('Good ${1|morning,afternoon,evening|}. It is ${1}, right?');
-			// const docs: any = new vscode.MarkdownString("Inserts a snippet that lets you select [link](x.ts).");
-			// snippetCompletion.documentation = docs;
-			// docs.baseUri = vscode.Uri.parse('http://example.com/a/b/c/');
-
-
-			// defines.forEach(defineEl => {
-			// 	const complition = new vscode.CompletionItem(defineEl.name);
-			// 	complition.documentation = new vscode.MarkdownString('');
-			// 	complition.documentation.appendCodeblock(`#define ${defineEl.name} ${defineEl.value}`, "pawn");
-			// 	complition.kind = vscode.CompletionItemKind.Constant;
-			// 	complition.detail = `define constant`;
-
-			// 	complitions.push(complition);
-			// });
-
-
-
-			// const maxPlayerDefine = new vscode.CompletionItem('MAX_PLAYERS');
-			// maxPlayerDefine.documentation = new vscode.MarkdownString('Максимальное число игроков на сервере');
-			// maxPlayerDefine.documentation.isTrusted = true;
-			// maxPlayerDefine.documentation.appendCodeblock("#define MAX_PLAYERS 200", "pawn");
-			// maxPlayerDefine.kind = vscode.CompletionItemKind.Constant;
-			// complitions.push(maxPlayerDefine);
-
-
-			// a completion item that can be accepted by a commit character,
-			// the `commitCharacters`-property is set which means that the completion will
-			// be inserted and then the character will be typed.
-			// const commitCharacterCompletion = new vscode.CompletionItem('console');
-			// commitCharacterCompletion.commitCharacters = ['.'];
-			// commitCharacterCompletion.documentation = new vscode.MarkdownString('Press `.` to get `console.`');
-
-			// a completion item that retriggers IntelliSense when being accepted,
-			// the `command`-property is set which the editor will execute after 
-			// completion has been inserted. Also, the `insertText` is set so that 
-			// a space is inserted after `new`
-			// const commandCompletion = new vscode.CompletionItem('new');
-			// commandCompletion.kind = vscode.CompletionItemKind.Keyword;
-			// commandCompletion.insertText = 'new ';
-			// commandCompletion.command = { command: 'editor.action.triggerSuggest', title: 'Re-trigger completions...' };
-
-			// return all completion items as array
-			return complitions;
+			if (file) { completions = completions.concat(file.getCompletions()); }
+			return completions;
 		}
 	})
 	);
@@ -240,33 +169,31 @@ function parseAllOpenedFiles() {
 		fileManage.onDidOpenTextDocument(document);
 	});
 }
-function registerCommands() {
-	vscode.commands.registerCommand("pawnlanguage.openParsed",() => {
+function registerCommands(context: vscode.ExtensionContext) {
+	context.subscriptions.push(vscode.commands.registerCommand("pawnlanguage.openParsed",() => {
 		if(!vscode.window.activeTextEditor) {
 			return;
 		}
 		const file = fileManage.getFileByURI(vscode.window.activeTextEditor.document.uri);
-		file?.openFileWithOutPreprocessor();
-	});
-	vscode.commands.registerCommand("pawnlanguage.parseCurrnetFile",() => {
+		file?.openFileWithoutPreprocessor();
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand("pawnlanguage.parseCurrnetFile",() => {
 		if(!vscode.window.activeTextEditor) {
 			return;
 		}
 		fileManage.onDidOpenTextDocument(vscode.window.activeTextEditor.document);
 		
-	});
-	vscode.commands.registerCommand("pawnlanguage.flushFileCache",() => {
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand("pawnlanguage.flushFileCache",() => {
 		if (!vscode.window.activeTextEditor) {
 			return;
 		}
 		CacheManager.flushFileCache(vscode.window.activeTextEditor.document.uri.path);
+		vscode.window.showInformationMessage('Кэш файла очищен');
 	
-	});
-	vscode.commands.registerCommand("pawnlanguage.flushWorkspaceCache",() => {
-		if (!vscode.window.activeTextEditor) {
-			return;
-		}
-		CacheManager.flushWorspaceCache();
-	
-	});
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand("pawnlanguage.flushWorkspaceCache",() => {
+		CacheManager.flushWorkspaceCache();
+		vscode.window.showInformationMessage('Кэш рабочей области очищен');
+	}));
 }
