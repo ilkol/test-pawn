@@ -1,16 +1,15 @@
-import vscode, { commands, CompletionItem, DiagnosticSeverity, DocumentLink, FileSystemError, Hover, l10n, Position, Range, TextDocument, Uri, window, workspace } from "vscode";
+import { CompletionItem, DiagnosticSeverity, DocumentLink, FileSystemError, FileType, Hover, l10n, Position, ProgressLocation, Range, TextDocument, Uri, window, workspace } from "vscode";
 import { DiagnosticManager } from "./diagnostic";
 import { AntrlOpenFile } from "../AntlrOpenFile";
 import { AbstractOpenFile } from "../AbstractOpenFile";
 import { Stack } from "../antlr/Stack/Stack";
 import { DefinitionProvider } from "../Providers/DefinitionProvider";
 import { ReferenceProvider } from "../Providers/ReferenceProvider";
-import { Scope } from "../antlr/Scopes/Scope";
 import { Include, IncludeType } from "../Prepocessor/Include";
 import path from "path";
 import { CacheManager } from "../cache/CacheManager";
 import { Serialization } from "../cache/Serialization";
-// import * as fs from 'fs';
+import { FileCache } from "../cache/FileCache";
 
 export class FileManager {
 	/**
@@ -22,16 +21,9 @@ export class FileManager {
 	 * Содержит список инклудов для каждого файла
 	 */
 	private dependencyGraph: Map<Uri, Set<Uri>> = new Map();
-	/**
-	 * Очередь для парсинга файлов
-	 */
-    private parsingQueue: Set<Uri> = new Set();
-
-	private activeFile?: AntrlOpenFile = undefined; 
-
 
 	public root = workspace.workspaceFolders;
-	public _includePath?: Uri = undefined;
+	private _includePath?: Uri = undefined;
 
 	public readonly parsingStack: Stack<AbstractOpenFile> = new Stack<AbstractOpenFile>();
 	public readonly parsedFiles: string[] = [];
@@ -39,31 +31,11 @@ export class FileManager {
 	constructor(private diagnosticManager: DiagnosticManager,
 		public readonly definitionProvider: DefinitionProvider,
 		public readonly referenceProvider: ReferenceProvider) {
-		this.openFile.bind(this);
-		// this.onDidOpenTextDocument.bind(this);
-		// if(this.includePath == "") {
-		// 	// let notifAboutInclude = window.showInputBox({title: "test"});
-		// 	window.showInformationMessage("Не выбрана папка с подгружаемыми библиотеками.\nНеобходимо выбрать папку, чтобы избежать ошибок", "Выбрать", "Нет").then(but => {
-		// 		if(but == "Выбрать") {
-		// 			if(this.root && this.root[0]) {
-		// 				this.test();
-						
-		// 				console.log(workspace.getWorkspaceFolder(this.root[0].uri));
-		// 			}
-						
-		// 			// window.showInputBox({title: "Папка со стандартными инклудами"});
-		// 			window.showWorkspaceFolderPick();
-		// 		}
-		// 	})
-		// }
-		// let input = window.createInputBox();
-		
-		// input.title = "Введите путь ";
-		// input.show();
 	}
-	public async findPawnDir() {
+	public async findPawnDir(): Promise<void> {
 		if(!this.root || !this.root[0]) {
-			return window.showErrorMessage(l10n.t("For the extension to work correctly, open the folder with the compiler directory"));
+			window.showErrorMessage(l10n.t("For the extension to work correctly, open the folder with the compiler directory"));
+			return;
 		}
 		let pawno = Uri.joinPath(this.root[0].uri, "/pawno");
 		try {
@@ -74,7 +46,8 @@ export class FileManager {
 				this._includePath = pawno;
 			} catch(e) {
 				if(e instanceof FileSystemError) {
-					return window.showErrorMessage(l10n.t("The include folder was not found"));
+					window.showErrorMessage(l10n.t("The include folder was not found"));
+					return;
 				}
 				else {
 					console.error(e);
@@ -82,7 +55,8 @@ export class FileManager {
 			}
 		} catch(e) {
 			if(e instanceof FileSystemError) {
-				return window.showErrorMessage(l10n.t("The pawno folder was not found"));
+				window.showErrorMessage(l10n.t("The pawno folder was not found"));
+				return;
 			}
 			else {console.error(e);}
 		}		
@@ -90,7 +64,7 @@ export class FileManager {
 	public async isFileExist(uri: Uri): Promise<boolean> {
 		try {
 			const fileStat = await workspace.fs.stat(uri);
-			return fileStat.type === vscode.FileType.File;
+			return fileStat.type === FileType.File;
 		}
 		catch(e) {
 			return false;
@@ -149,132 +123,98 @@ export class FileManager {
 
 	private parsingFiles = new Map<string, Promise<void|AbstractOpenFile>>();
 
-	private async analyzeFilePromise(textDocument: vscode.TextDocument) {
+	private async analyzeFilePromise(document: TextDocument): Promise<AbstractOpenFile | undefined> {
+		if (document.languageId !== 'pawn') {
+			return undefined;
+		}
 		let doc: AbstractOpenFile|undefined = undefined;
+		
 		try
         {
-			if(textDocument && !this.openedFiles.has(textDocument.uri))
-			{
-				try {
-					doc = new AntrlOpenFile(textDocument, this);
-					this.openedFiles.set(textDocument.uri, doc);
-				} catch (error) {
-					console.error(`Failed to open file model ${textDocument.uri}: ${error}`);
-				}
+			if(!this.openedFiles.has(document.uri)) {
+				doc = new AntrlOpenFile(document, this);
+				this.openedFiles.set(document.uri, doc);
+			} else {
+				doc = this.openedFiles.get(document.uri);
 			}
+			if(!doc) {
+				return;
+			}
+
+			this.flushFileInfo(doc);
+			const fileCache = CacheManager.getFileCache(doc.uri.path);
+			if (fileCache && doc.setCache(fileCache)) {
+				await this.processCachedFile(doc, fileCache);
+			} else {
+				await this.processNonCachedFile(doc);
+			}
+			this.diagnosticManager.updateFileDiagnostic(doc.uri.path); // Обновление предупреждений для файла
+			return doc;
         }
         catch(e)
         {
             console.error(e);
         }
-        if(doc) {
-			this.flushFileInfo(doc);
-
-			const fileCache = CacheManager.getFileCache(doc.uri.path);
-			if(fileCache && doc.setCache(fileCache)) {
-				console.debug("Кэш файла найден: " + fileCache.path);
-				var includeFilesUri: Uri[] = [];
-				try {
-					if(fileCache.includes.length === 0) {
-						await doc.findDirectives();
-						// Выполнение всех директив препроцессора
-						await doc.processDirectives();
-						// Построение графа зависимостей по инклудам
-						await this.buildDependencyGraph(doc);
-						// Создание ссылок на инклуды в документе
-						this.createIncludesLinks(doc);
-
-						
-						try {
-							includeFilesUri = await this.topologicalSort();
-						}
-						catch (e) {
-							console.error(e);
-						}
-					}
-					else {
-						includeFilesUri = fileCache.includes.map((include) => Uri.file(include.path));
-						for (const includePath of fileCache.includes) {
-							this.createIncludeLink(Serialization.Deserialize.range(includePath.range), Uri.file(includePath.path), doc, includePath.path);
-						}
-					}
-				} catch (e) {
-					console.error(e);
-				}
-			
-				
-				/**
-				 * Список файлов, которые были включены в текущий файл.
-				 * Используется для дальнейшего анализа и обработки инклудов.
-				 */
-				const includeFiles = await this.analyzeIncludes(doc.uri, includeFilesUri);
-				doc.includeIncludesScopse(includeFiles);
-				this.createProgressTask(`Выполняется обход AST (${doc.uri.fsPath})`, async () => {
-					try {
-						await doc.walkAST();
-					} catch(e) {
-						console.error(e);
-					}
-				});
-			}
-			// TODO: немножкол надо переделать, чтобы проверялось все ли закэшировано
-			else {
-				console.debug("Кэш файла НЕ найден: " + doc.uri.path);
-				// Поиск всех директив препроцессора в файле
-				await doc.findDirectives();
-				// Выполнение всех директив препроцессора
-				await doc.processDirectives();
-				// Построение графа зависимостей по инклудам
-				await this.buildDependencyGraph(doc);
-				// Создание ссылок на инклуды в документе
-				this.createIncludesLinks(doc);
-
-				/**
-				 * Список файлов, которые были включены в текущий файл.
-				 * Используется для дальнейшего анализа и обработки инклудов.
-				 */
-				var includeFiles: AbstractOpenFile[] = [];
-
-				try {
-					const sortedFiles = await this.topologicalSort();
-					includeFiles = await this.analyzeIncludes(doc.uri, sortedFiles);
-
-				} catch (e) {	
-					console.error(e);
-				}
-				doc.updateSemanticTokens(); // Обновляет подсветку для дефайнов. Такая себе идея
-				doc.includeIncludesScopse(includeFiles); // Добавление областей видимости из инклудов в файл
-				await doc.processDefines(); // выполнение директив препроцессора #define
-				this.createProgressTask(`Выполняется построение AST (${doc.uri.fsPath})`, async () => {
-					try {
-						await doc.parseCode();
-					} catch(e) {
-						console.error(e);
-					}
-				});
-				this.createProgressTask(`Выполняется обход AST (${doc.uri.fsPath})`, async () => {
-					try {
-						await doc.walkAST();
-					} catch(e) {
-						console.error(e);
-					}
-				});
-				this.createProgressTask(`Кэширование файла (${doc.uri.fsPath})`, async () => {
-					try {
-						const fileCache = doc.getCash();
-						CacheManager.setFileCache(fileCache.path, fileCache);
-						CacheManager.saveAllCache();
-					} catch(e) {
-						console.error(e);
-					}
-				});
-			}
-
-			this.diagnosticManager.updateFileDiagnostic(doc.uri.path); // Обновление предупреждений для файла
-		}
-		return doc;
+		
 	}
 
+	private async processCachedFile(doc: AbstractOpenFile, fileCache: FileCache): Promise<void> {
+		const includeFilesUri = fileCache.includes.length
+			? fileCache.includes.map((include: any) => Uri.file(include.path))
+			: await this.processDirectivesAndIncludes(doc);
+
+		for (const includePath of fileCache.includes) {
+			this.createIncludeLink(
+				Serialization.Deserialize.range(includePath.range), 
+				Uri.file(includePath.path), 
+				doc, 
+				includePath.path
+			);
+		}
+
+		/**
+		 * Список файлов, которые были включены в текущий файл.
+		 * Используется для дальнейшего анализа и обработки инклудов.
+		 */
+		const includeFiles = await this.analyzeIncludes(doc.uri, includeFilesUri);
+		doc.includeIncludesScopse(includeFiles);
+		this.createProgressTask(`Выполняется обход AST (${doc.uri.fsPath})`, async () => {
+			try {
+				await doc.walkAST();
+			} catch(e) {
+				console.error(e);
+			}
+		});
+		
+	}
+
+	private async processNonCachedFile(doc: AbstractOpenFile): Promise<void> {
+		const includeFilesUri = await this.processDirectivesAndIncludes(doc);
+		const includeFiles = await this.analyzeIncludes(doc.uri, includeFilesUri);
+		doc.includeIncludesScopse(includeFiles);
+		doc.updateSemanticTokens();
+		await doc.processDefines();
+
+		await this.createProgressTask(`Парсинг и кэширование (${doc.uri.fsPath})`, async () => {
+			await doc.parseCode();
+			await doc.walkAST();
+			const fileCache = doc.getCash();
+			CacheManager.setFileCache(fileCache.path, fileCache);
+			CacheManager.saveAllCache();
+		});
+	}
+
+	private async processDirectivesAndIncludes(doc: AbstractOpenFile): Promise<Uri[]> {
+		await doc.findDirectives();
+		// Выполнение всех директив препроцессора
+		await doc.processDirectives();
+		// Построение графа зависимостей по инклудам
+		await this.buildDependencyGraph(doc);
+		// Создание ссылок на инклуды в документе
+		this.createIncludesLinks(doc);
+		return await this.topologicalSort();
+	}
+	
 	private async analyzeIncludes(docUri: Uri, incldues: Uri[]): Promise<AbstractOpenFile[]> {
 		const includeFiles: AbstractOpenFile[] = [];
 		for(let element of incldues ) {
@@ -290,9 +230,9 @@ export class FileManager {
 	}
 	
 	private async createProgressTask(title: string, task: () => Promise<void>) {
-		await vscode.window.withProgress(
+		await window.withProgress(
 			{
-				location: vscode.ProgressLocation.Window,
+				location: ProgressLocation.Window,
 				title,
 				cancellable: false,
 			},
@@ -305,7 +245,7 @@ export class FileManager {
 		doc.documentsLinksClear();
 	}
 
-	public async analyzeFile(uri: vscode.Uri) {
+	public async analyzeFile(uri: Uri) {
 		const filePath = uri.fsPath;
 
 		// Если файл уже анализируется – ждём его завершения
@@ -315,7 +255,7 @@ export class FileManager {
 
 		const parsingPromise = (async () => {
 			try {
-				const document = await vscode.workspace.openTextDocument(uri);
+				const document = await workspace.openTextDocument(uri);
 				return await this.analyzeFilePromise(document);
 			} finally {
 				this.parsingFiles.delete(filePath); // Убираем файл из списка обрабатываемых
@@ -397,7 +337,7 @@ export class FileManager {
 	 * @param openedFile Файл, для которого нужно построить граф зависимостей
 	 */
 	private async buildDependencyGraph(openedFile: AbstractOpenFile): Promise<void> {
-		this.dependencyGraph.clear(); // очищаем текущий граф зависимостей
+		// this.dependencyGraph.clear(); // очищаем текущий граф зависимостей
 		const fileUri = openedFile.uri; // Получаем URI файла
 
 		this.dependencyGraph.set(fileUri, new Set()); // зануляем граф зависимостей для текущего файла
@@ -428,7 +368,7 @@ export class FileManager {
 	}
 
 	private createIncludeLink(range: Range, uri: Uri, doc: AbstractOpenFile, tooltip: string) {
-		const link = new vscode.DocumentLink(range, uri);
+		const link = new DocumentLink(range, uri);
 		link.tooltip = tooltip;
 		doc.documentsLinks.push(link);
 	}
@@ -440,19 +380,17 @@ export class FileManager {
 	 * @returns URI инклуда, если он найден, иначе undefined
 	 */
 	private async plungeInclude(include: Include, currentPath: Uri): Promise<Uri | undefined> {
-		let result: Uri | undefined = undefined;
 		const path = include.path;
 		if(include.type === IncludeType.default) {
-			// include.uri = Uri.joinPath(this.includePath!, include.path);
-			result = await this.plungeFile(path);
+			let result = await this.plungeFile(path);
 			if(!result) {
 				result = await this.plungeFile(Uri.joinPath(currentPath, path).path);
 			}
+			return result;
+		} else if(this.includePath){
+			return await this.plungeFile(Uri.joinPath(this.includePath, path).path);
 		}
-		else if(this.includePath){
-			result = await this.plungeFile(Uri.joinPath(this.includePath, path).path);
-		}
-		return result;
+		return undefined;
 	}
 
 	private async plungeFile(file: string) {
@@ -478,6 +416,7 @@ export class FileManager {
             {
                 for (const neighbor of self.dependencyGraph.get(node)!) {
                     if (visited.has(neighbor)) {
+						window.showErrorMessage(l10n.t("Finded cycle dependency: {0} -> {1}", node.fsPath, neighbor.fsPath));
                         throw new Error(`Циклическая зависимость обнаружена: ${node} -> ${neighbor}`);
                     }
                     if (!stack.includes(neighbor))
