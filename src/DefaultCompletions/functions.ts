@@ -1,4 +1,3 @@
-import { IDefaultEvent } from "./DefaultComplitions";
 
 interface Arg
 {
@@ -14,7 +13,7 @@ interface FunctionCompl {
 	args?: Arg[];
 }
 
-export const DefaultFunctionsComplitions: FunctionCompl[] = [
+export const defaultFunctionsCompletions: FunctionCompl[] = [
 	{
 		name: "print",
 		description: "Выводит текст в консоль.",

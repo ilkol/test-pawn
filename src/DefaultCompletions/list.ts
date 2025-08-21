@@ -1,4 +1,4 @@
-import { IDefaultEvent } from "./DefaultComplitions";
+import { IDefaultEvent } from "./DefaultCompletions";
 
 export let defaultEvents: IDefaultEvent[] = [
 	{
