@@ -11,16 +11,15 @@ import { SemanticTokens, SemanticTokensModifires } from './SemanticTokens';
 import { DefinitionProvider } from './Providers/DefinitionProvider';
 import { ReferenceProvider } from './Providers/ReferenceProvider';
 import { getDefaultComplitions } from './DefaultComplitions/DefaultComplitions';
-import path from 'path';
-import { Serialization } from './cache/Serialization';
 import { serializeInit } from './cache/Serialization/serializeInit';
+import { CacheManager } from './cache/CacheManager';
 
 let diagnosticManager: DiagnosticManager;
 let fileManage: FileManager;
 
 export async function activate(context: vscode.ExtensionContext) {
-	console.debug('Активация TEST расширения!');
-
+	const version = context.extension.packageJSON.version;
+	console.debug(`Активация TEST расширения v${version}!`);
 
 	diagnosticManager = new DiagnosticManager(vscode.languages.createDiagnosticCollection("pawn"));
 	const definitionProvider = new DefinitionProvider();
@@ -31,6 +30,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	const documentLinkProvider = new DocumentLinkProvider(fileManage);
 
 	serializeInit();
+	CacheManager.initialize(context);
+	if(version !== CacheManager.getExtensionVersion()) {
+		CacheManager.flushWorspaceCache();
+		console.debug(`Сброс кэша расширения из-за обновления версии с ${CacheManager.getExtensionVersion()} на ${version}`);
+		CacheManager.setExtensionVersion(version);
+	}
+
 
 	const tokenTypes = [
 		SemanticTokens.type,
@@ -248,5 +254,19 @@ function registerCommands() {
 		}
 		fileManage.onDidOpenTextDocument(vscode.window.activeTextEditor.document);
 		
+	});
+	vscode.commands.registerCommand("pawnlanguage.flushFileCache",() => {
+		if (!vscode.window.activeTextEditor) {
+			return;
+		}
+		CacheManager.flushFileCache(vscode.window.activeTextEditor.document.uri.path);
+	
+	});
+	vscode.commands.registerCommand("pawnlanguage.flushWorkspaceCache",() => {
+		if (!vscode.window.activeTextEditor) {
+			return;
+		}
+		CacheManager.flushWorspaceCache();
+	
 	});
 }

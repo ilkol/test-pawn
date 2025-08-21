@@ -30,6 +30,7 @@ import { SemanticTokens } from "./SemanticTokens";
 import { EnumMember } from "./antlr/AST/Nodes/enum/EnumMember";
 import { Serialization } from "./cache/Serialization";
 import { FileCache } from "./cache/FileCache";
+import { createHash } from "crypto";
 
 
 export class AntrlOpenFile extends AbstractOpenFile
@@ -83,29 +84,17 @@ export class AntrlOpenFile extends AbstractOpenFile
 		// }
 	}
 
-	public async parseCode() {
+	private tmpDiagnostic: DiagnosticMessage[] = [];
 
-		// const stream = new ChunkedCharStream(this.chunks);	
-		const stream = CharStreams.fromString(this.curCode);
-		const lexer = new pawnLexer(stream);
-		const lexerErrorListener = new LexerErrorListener();
-		lexer.addErrorListener(lexerErrorListener);
-		const tokenStream = new CommonTokenStream(lexer);
-		const parser = new pawnParser(tokenStream);
-		const parserErrorListener = new ParserErrorListener();
-		parser.addErrorListener(parserErrorListener);
-		const ruleContext = parser.file();
-		const listener: pawnListener = new PawnListener();
-		
-		ParseTreeWalker.DEFAULT.walk(listener, ruleContext);
-	
-		let listen = (<PawnListener>listener);
-		this.AST = <Declarations>listen.Root;
-	
+	public async walkAST(): Promise<void> {
+		if(!this.AST) {
+			console.warn("AST is not initialized, cannot walk the tree.");
+			return;
+		}
 		let analyzer = new Analyzer(
 			this,
 			this.scope,
-			listen.diagnostics.concat(parserErrorListener.diagnostic).concat(lexerErrorListener.diagnostic),
+			this.tmpDiagnostic,
 			this.tokensManager,
 			this.symbolsManager,
 			this.complitions,
@@ -155,12 +144,44 @@ export class AntrlOpenFile extends AbstractOpenFile
 		this._isParsed = true;
 	}
 
+	public async parseCode() {
+
+		// const stream = new ChunkedCharStream(this.chunks);	
+		const stream = CharStreams.fromString(this.curCode);
+		const lexer = new pawnLexer(stream);
+		const lexerErrorListener = new LexerErrorListener();
+		lexer.addErrorListener(lexerErrorListener);
+		const tokenStream = new CommonTokenStream(lexer);
+		const parser = new pawnParser(tokenStream);
+		const parserErrorListener = new ParserErrorListener();
+		parser.addErrorListener(parserErrorListener);
+		const ruleContext = parser.file();
+		const listener: pawnListener = new PawnListener();
+		
+		ParseTreeWalker.DEFAULT.walk(listener, ruleContext);
+	
+		let listen = (<PawnListener>listener);
+		this.AST = <Declarations>listen.Root;
+
+		this.tmpDiagnostic = listen.diagnostics.concat(parserErrorListener.diagnostic).concat(lexerErrorListener.diagnostic);
+	}
+
 	public getCash(): FileCache {
 		return {
 			path: this.file.uri.path,
 			rootAST: this.serializeAST(),
-			fileVersion: this.file.version,
+			texttHash: this.getTextHash(),
+			includes: this.ppParser.includes.map(include => {
+				return {
+					path: include.uri ? include.uri.path : "",
+					range: Serialization.Serialize.range(include.range),
+				};
+			}),
 		};
+	}
+
+	private getTextHash(): string {
+		return createHash("md5").update(this.file.getText()).digest("hex");
 	}
 
 	private serializeAST(): string | undefined {
@@ -405,6 +426,17 @@ export class AntrlOpenFile extends AbstractOpenFile
 			await new Promise(resolve => setTimeout(resolve, 500)); // Задержка 500 мс
 		// }
 		
+	}
+
+	public setCache(cache: FileCache): boolean {
+		if(this.getTextHash() !== cache.texttHash) {
+			console.warn(`Хэш текста файла ${this.file.uri.path} не совпадает с кэшем. Ожидалось: ${cache.texttHash}, получено: ${this.getTextHash()}`);
+			return false;
+		}
+		if(cache.rootAST) {
+			this.AST = Serialization.Deserialize.object<ASTNode>(cache.rootAST);
+		}
+		return true;
 	}
 
 }

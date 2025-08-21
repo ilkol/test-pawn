@@ -101,6 +101,14 @@
 			{
 				"command": "pawnlanguage.parseCurrnetFile",
 				"title": "Проаналиировать текущий файл"
+			},
+			{
+				"command": "pawnlanguage.flushFileCache",
+				"title": "Очистить кэш текущего файла"
+			},
+			{
+				"command": "pawnlanguage.flushWorkspaceCache",
+				"title": "Очистить кэш текущей рабочей области"
 			}
 		]
 	},
@@ -108,6 +116,7 @@
 		"@vscode/l10n": "^0.0.18",
 		"@vscode/vsce": "^3.2.2",
 		"antlr4ts": "^0.5.0-alpha.4",
+		"crypto": "^1.0.1",
 		"findup-sync": "^5.0.0",
 		"vsce": "^2.15.0"
 	},

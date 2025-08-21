@@ -8,6 +8,8 @@ import { ReferenceProvider } from "../Providers/ReferenceProvider";
 import { Scope } from "../antlr/Scopes/Scope";
 import { Include, IncludeType } from "../Prepocessor/Include";
 import path from "path";
+import { CacheManager } from "../cache/CacheManager";
+import { Serialization } from "../cache/Serialization";
 // import * as fs from 'fs';
 
 export class FileManager {
@@ -166,48 +168,141 @@ export class FileManager {
             console.error(e);
         }
         if(doc) {
-			this.diagnosticManager.clearFile(doc.uri);
+			this.flushFileInfo(doc);
 
-			await this.buildDependencyGraph(doc);
-	
-			const includeFiles: AbstractOpenFile[] = [];
+			const fileCache = CacheManager.getFileCache(doc.uri.path);
+			if(fileCache && doc.setCache(fileCache)) {
+				console.debug("Кэш файла найден: " + fileCache.path);
+				var includeFilesUri: Uri[] = [];
+				try {
+					if(fileCache.includes.length === 0) {
+						await doc.findDirectives();
+						// Выполнение всех директив препроцессора
+						await doc.processDirectives();
+						// Построение графа зависимостей по инклудам
+						await this.buildDependencyGraph(doc);
+						// Создание ссылок на инклуды в документе
+						this.createIncludesLinks(doc);
 
-			try {
-				const sortedFiles = await this.topologicalSort();
-				for(let element of sortedFiles ) {
-					if(element === doc?.uri) {
-						continue;
-					}
-					const include = await this.analyzeFile(element);
-					if(include) {
-						includeFiles.push(include);
-					}
-				}
-			} catch (e) {	
-				console.error(e);
-			}
-			doc.updateSemanticTokens();
-			doc.includeIncludesScopse(includeFiles);
-			await doc.processDefines();
-			await vscode.window.withProgress(
-				{
-					location: vscode.ProgressLocation.Window,
-					title: `Выполняется обход AST (${doc.uri.fsPath})`,
-					cancellable: false,
-				},
-				async () => {
-					if(doc) {
+						
 						try {
-							await doc.parseCode();
-						} catch(e) {
+							includeFilesUri = await this.topologicalSort();
+						}
+						catch (e) {
 							console.error(e);
 						}
 					}
+					else {
+						includeFilesUri = fileCache.includes.map((include) => Uri.file(include.path));
+						for (const includePath of fileCache.includes) {
+							this.createIncludeLink(Serialization.Deserialize.range(includePath.range), Uri.file(includePath.path), doc, includePath.path);
+						}
+					}
+				} catch (e) {
+					console.error(e);
 				}
-			);
-			this.diagnosticManager.updateFileDiagnostic(doc.uri.path);
+			
+				
+				/**
+				 * Список файлов, которые были включены в текущий файл.
+				 * Используется для дальнейшего анализа и обработки инклудов.
+				 */
+				const includeFiles = await this.analyzeIncludes(doc.uri, includeFilesUri);
+				doc.includeIncludesScopse(includeFiles);
+				this.createProgressTask(`Выполняется обход AST (${doc.uri.fsPath})`, async () => {
+					try {
+						await doc.walkAST();
+					} catch(e) {
+						console.error(e);
+					}
+				});
+			}
+			// TODO: немножкол надо переделать, чтобы проверялось все ли закэшировано
+			else {
+				console.debug("Кэш файла НЕ найден: " + doc.uri.path);
+				// Поиск всех директив препроцессора в файле
+				await doc.findDirectives();
+				// Выполнение всех директив препроцессора
+				await doc.processDirectives();
+				// Построение графа зависимостей по инклудам
+				await this.buildDependencyGraph(doc);
+				// Создание ссылок на инклуды в документе
+				this.createIncludesLinks(doc);
+
+				/**
+				 * Список файлов, которые были включены в текущий файл.
+				 * Используется для дальнейшего анализа и обработки инклудов.
+				 */
+				var includeFiles: AbstractOpenFile[] = [];
+
+				try {
+					const sortedFiles = await this.topologicalSort();
+					includeFiles = await this.analyzeIncludes(doc.uri, sortedFiles);
+
+				} catch (e) {	
+					console.error(e);
+				}
+				doc.updateSemanticTokens(); // Обновляет подсветку для дефайнов. Такая себе идея
+				doc.includeIncludesScopse(includeFiles); // Добавление областей видимости из инклудов в файл
+				await doc.processDefines(); // выполнение директив препроцессора #define
+				this.createProgressTask(`Выполняется построение AST (${doc.uri.fsPath})`, async () => {
+					try {
+						await doc.parseCode();
+					} catch(e) {
+						console.error(e);
+					}
+				});
+				this.createProgressTask(`Выполняется обход AST (${doc.uri.fsPath})`, async () => {
+					try {
+						await doc.walkAST();
+					} catch(e) {
+						console.error(e);
+					}
+				});
+				this.createProgressTask(`Кэширование файла (${doc.uri.fsPath})`, async () => {
+					try {
+						const fileCache = doc.getCash();
+						CacheManager.setFileCache(fileCache.path, fileCache);
+						CacheManager.saveAllCache();
+					} catch(e) {
+						console.error(e);
+					}
+				});
+			}
+
+			this.diagnosticManager.updateFileDiagnostic(doc.uri.path); // Обновление предупреждений для файла
 		}
 		return doc;
+	}
+
+	private async analyzeIncludes(docUri: Uri, incldues: Uri[]): Promise<AbstractOpenFile[]> {
+		const includeFiles: AbstractOpenFile[] = [];
+		for(let element of incldues ) {
+			if(element === docUri) {
+				continue;
+			}
+			const include = await this.analyzeFile(element);
+			if(include) {
+				includeFiles.push(include);
+			}
+		}
+		return includeFiles;
+	}
+	
+	private async createProgressTask(title: string, task: () => Promise<void>) {
+		await vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Window,
+				title,
+				cancellable: false,
+			},
+			task
+		);
+	}
+
+	private flushFileInfo(doc: AbstractOpenFile) {
+		this.diagnosticManager.clearFile(doc.uri);
+		doc.documentsLinksClear();
 	}
 
 	public async analyzeFile(uri: vscode.Uri) {
@@ -250,6 +345,7 @@ export class FileManager {
 		catch(err) {
 			console.error(`Analyzing error  ${file.uri}:`, err);
 		}
+
 		return;
 	}
 	
@@ -296,39 +392,54 @@ export class FileManager {
 		await doc.parseCode();
 	}
 
+	/**
+	 * Построение графа зависимостей для файла.
+	 * @param openedFile Файл, для которого нужно построить граф зависимостей
+	 */
 	private async buildDependencyGraph(openedFile: AbstractOpenFile): Promise<void> {
-		this.dependencyGraph.clear();
-		const fileUri = openedFile.uri;
+		this.dependencyGraph.clear(); // очищаем текущий граф зависимостей
+		const fileUri = openedFile.uri; // Получаем URI файла
 
-		// Очистка списка ссылок на инклуды
-		openedFile.documentsLinksClear();
-		
-		this.dependencyGraph.set(fileUri, new Set());
-		openedFile.findDirectives();
-		await openedFile.processDirectives();
-		const includes = openedFile.includes; // Получаем инклуды из AntrlOpenFile
+		this.dependencyGraph.set(fileUri, new Set()); // зануляем граф зависимостей для текущего файла
+		const includes = openedFile.includes; // Получаем инклуды
+		const currentPath = Uri.file(path.dirname(fileUri.fsPath)); // Получаем текущий путь файла
 	
-		const currentPath = Uri.file(path.dirname(fileUri.fsPath));
-
-		
-		if(this.includePath) {
-			for (const includePath of includes) {
-				
-				includePath.uri = await this.plungeInclude(includePath, currentPath);
-				if(!includePath.uri) {
-					openedFile.addDiagnostic(l10n.t("error 100: Cannot read from file: \"{0}\"", includePath.path), DiagnosticSeverity.Error, includePath.range);
-					continue;
-				}
-				const link = new vscode.DocumentLink(includePath.pathRange, includePath.uri);
-				link.tooltip = includePath.path;
-				openedFile.documentsLinks.push(link);
-
-				this.dependencyGraph.get(fileUri)?.add(includePath.uri);
+		for (const includePath of includes) {
+			// Получаем URI инклуда
+			includePath.uri = await this.plungeInclude(includePath, currentPath);
+			if(!includePath.uri) { // Если URI инклуда не найден, пропускаем его
+				openedFile.addDiagnostic(l10n.t("error 100: Cannot read from file: \"{0}\"", includePath.path), DiagnosticSeverity.Error, includePath.range);
+				continue;
 			}
+			includePath.exist = true;
+
+			this.dependencyGraph.get(fileUri)?.add(includePath.uri);
 		}
     }
 
-	private async plungeInclude(include: Include, currentPath: Uri) {
+	private createIncludesLinks(doc: AbstractOpenFile) {
+		const includes = doc.includes;
+		for (const includePath of includes) {
+			if(!includePath.exist) {
+				continue;
+			}
+			this.createIncludeLink(includePath.pathRange, includePath.uri!, doc, includePath.path);
+		}
+	}
+
+	private createIncludeLink(range: Range, uri: Uri, doc: AbstractOpenFile, tooltip: string) {
+		const link = new vscode.DocumentLink(range, uri);
+		link.tooltip = tooltip;
+		doc.documentsLinks.push(link);
+	}
+
+	/**
+	 * Погружение в инклуд для получения его URI.
+	 * @param include Инклуд, для которого нужно получить URI
+	 * @param currentPath Текущий путь файла, в котором находится инклуд
+	 * @returns URI инклуда, если он найден, иначе undefined
+	 */
+	private async plungeInclude(include: Include, currentPath: Uri): Promise<Uri | undefined> {
 		let result: Uri | undefined = undefined;
 		const path = include.path;
 		if(include.type === IncludeType.default) {

@@ -13,6 +13,7 @@ export class Include extends PreprocessorDirective
 	type: IncludeType = IncludeType.default;
 	private delLength = 0;
 	public uri?: Uri;
+	public exist: boolean = false;
 
 	constructor(file: TextDocument, private readonly rest: string, startIndex: number, restIndex: number, endIndex: number) {
 		super(file, startIndex, endIndex);
