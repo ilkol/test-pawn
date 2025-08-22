@@ -18,9 +18,13 @@ import {
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
+import { Logger } from './Logger/Logger';
 
 function main() {
 	const connection = createConnection(ProposedFeatures.all);
+
+	Logger.init(connection.console);
+
 	const documents = new TextDocuments(TextDocument);
 
 	let hasConfigurationCapability = false;
@@ -30,8 +34,6 @@ function main() {
 	connection.onInitialize((params: InitializeParams) => {
 		const capabilities = params.capabilities;
 
-		// Does the client support the `workspace/configuration` request?
-		// If not, we fall back using global settings.
 		hasConfigurationCapability = !!(
 			capabilities.workspace && !!capabilities.workspace.configuration
 		);
@@ -47,7 +49,6 @@ function main() {
 		const result: InitializeResult = {
 			capabilities: {
 				textDocumentSync: TextDocumentSyncKind.Incremental,
-				// Tell the client that this server supports code completion.
 				completionProvider: {
 					resolveProvider: true
 				},
@@ -70,10 +71,10 @@ function main() {
 	connection.onInitialized(() => {
 		if (hasWorkspaceFolderCapability) {
 			connection.workspace.onDidChangeWorkspaceFolders(_event => {
-				connection.console.log('Workspace folder change event received.');
+				Logger.log('Workspace folder change event received.');
 			});
 		}
-		connection.console.log('LSP server initialized.');
+		Logger.log('LSP server initialized.');
 	});
 
 
@@ -82,11 +83,9 @@ function main() {
 		if (document !== undefined) {
 			return {
 				kind: DocumentDiagnosticReportKind.Full,
-				items: await validateTextDocument(document)
+				items: []
 			} satisfies DocumentDiagnosticReport;
 		} else {
-			// We don't know the document. We can either try to read it from disk
-			// or we don't report problems for it.
 			return {
 				kind: DocumentDiagnosticReportKind.Full,
 				items: []
@@ -94,104 +93,31 @@ function main() {
 		}
 	});
 
-	// The content of a text document has changed. This event is emitted
-	// when the text document first opened or when its content has changed.
 	documents.onDidChangeContent(change => {
-		validateTextDocument(change.document);
+
 	});
 
-	async function validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
-		// In this simple example we get the settings for every validate run.
-
-		// The validator creates diagnostics for all uppercase words length 2 and more
-		const text = textDocument.getText();
-		const pattern = /\b[A-Z]{2,}\b/g;
-		let m: RegExpExecArray | null;
-
-		let problems = 0;
-		const diagnostics: Diagnostic[] = [];
-		while ((m = pattern.exec(text))) {
-			problems++;
-			const diagnostic: Diagnostic = {
-				severity: DiagnosticSeverity.Warning,
-				range: {
-					start: textDocument.positionAt(m.index),
-					end: textDocument.positionAt(m.index + m[0].length)
-				},
-				message: `${m[0]} is all uppercase.`,
-				source: 'ex'
-			};
-			if (hasDiagnosticRelatedInformationCapability) {
-				diagnostic.relatedInformation = [
-					{
-						location: {
-							uri: textDocument.uri,
-							range: Object.assign({}, diagnostic.range)
-						},
-						message: 'Spelling matters'
-					},
-					{
-						location: {
-							uri: textDocument.uri,
-							range: Object.assign({}, diagnostic.range)
-						},
-						message: 'Particularly for names'
-					}
-				];
-			}
-			diagnostics.push(diagnostic);
-		}
-		return diagnostics;
-	}
-
+	
 	connection.onDidChangeWatchedFiles(_change => {
-		// Monitored files have change in VSCode
-		connection.console.log('We received a file change event');
+
 	});
 
-	// This handler provides the initial list of the completion items.
 	connection.onCompletion(
 		(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-			// The pass parameter contains the position of the text document in
-			// which code complete got requested. For the example we ignore this
-			// info and always provide the same completion items.
-			return [
-				{
-					label: 'TypeScript',
-					kind: CompletionItemKind.Text,
-					data: 1
-				},
-				{
-					label: 'JavaScript',
-					kind: CompletionItemKind.Text,
-					data: 2
-				}
-			];
+			return [];
 		}
 	);
 
-	// This handler resolves additional information for the item selected in
-	// the completion list.
+	const outputchanel = connection.console;
+
 	connection.onCompletionResolve(
 		(item: CompletionItem): CompletionItem => {
-			if (item.data === 1) {
-				item.detail = 'TypeScript details';
-				item.documentation = 'TypeScript documentation';
-			} else if (item.data === 2) {
-				item.detail = 'JavaScript details';
-				item.documentation = 'JavaScript documentation';
-			}
 			return item;
 		}
 	);
 
-	// Make the text document manager listen on the connection
-	// for open, change and close text document events
 	documents.listen(connection);
-
-	// Listen on the connection
 	connection.listen();
-
 }
 
 
