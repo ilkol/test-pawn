@@ -18,6 +18,7 @@ import {
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
+import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
 import { Logger } from './Logger/Logger';
 
 function main() {
@@ -104,7 +105,7 @@ function main() {
 
 	connection.onCompletion(
 		(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-			return [];
+			return getDefaultCompletions();
 		}
 	);
 
