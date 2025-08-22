@@ -91,7 +91,7 @@ export function getDefaultCompletions(): CompletionItem[] {
 			value: keyword.documentation
 		} : undefined,
 
-	 })});
+	})});
 	
 	[
 		{label: "char", doc: l10n.t("Results in the number of cells needed to store a packed array of characters")},
