@@ -109,8 +109,6 @@ function main() {
 		}
 	);
 
-	const outputchanel = connection.console;
-
 	connection.onCompletionResolve(
 		(item: CompletionItem): CompletionItem => {
 			return item;
