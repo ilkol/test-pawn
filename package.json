@@ -29,6 +29,7 @@
 	],
 	"l10n": "./l10n",
 	"contributes": {
+		
 		"configuration": [
 			{
 				"title": "Pawn Language",
@@ -38,6 +39,18 @@
 						"default": true,
 						"description": "%configuration.clearOnBuild.description%"
 					}
+				}
+			}, {
+				"languageServerExample.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "verbose",
+					"description": "Traces the communication between VS Code and the language server."
 				}
 			}
 		],
@@ -113,6 +126,7 @@
 		]
 	},
 	"dependencies": {
+		"@types/vscode": "^1.103.0",
 		"@vscode/l10n": "^0.0.18",
 		"@vscode/vsce": "^3.2.2",
 		"antlr4ts": "^0.5.0-alpha.4",
@@ -127,27 +141,19 @@
 		"check-types": "tsc --noEmit",
 		"watch": "npm-run-all -p watch:*",
 		"watch:esbuild": "node esbuild.js --watch",
-		"watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+		"watch:tsc": "tsc -b -w",
 		"vscode:prepublish": "npm run package",
 		"package": "npm run check-types && node esbuild.js --production"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.13.0",
+		"@stylistic/eslint-plugin": "^2.9.0",
 		"@types/deep-diff": "^1.0.5",
-		"@types/glob": "^8.1.0",
-		"@types/mocha": "^10.0.10",
-		"@types/node": "^24.3.0",
-		"@types/vscode": "^1.103.0",
-		"@typescript-eslint/eslint-plugin": "^8.40.0",
-		"@typescript-eslint/parser": "^8.40.0",
-		"@vscode/l10n-dev": "^0.0.35",
-		"@vscode/test-electron": "^2.3.5",
-		"antlr4ts-cli": "^0.5.0-alpha.4",
+		"@types/mocha": "^10.0.6",
+		"@types/node": "^22",
 		"deep-diff": "^1.0.2",
-		"esbuild": "^0.25.9",
 		"eslint": "^9.13.0",
-		"glob": "^10.3.10",
-		"mocha": "^10.2.0",
-		"npm-run-all": "^4.1.5",
+		"mocha": "^10.3.0",
 		"typescript": "^5.9.2",
 		"typescript-eslint": "^8.39.0"
 	}

@@ -1,0 +1,20 @@
+{
+	"name": "lsp-pawn-server",
+	"description": "LSP node server for Pawn language",
+	"version": "0.0.1",
+	"author": {
+		"name": "il_kol"
+	},
+	"engines": {
+		"node": "*"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ilkol/test-pawn"
+	},
+	"dependencies": {
+		"vscode-languageserver": "^9.0.1",
+		"vscode-languageserver-textdocument": "^1.0.11"
+	},
+	"scripts": {}
+}

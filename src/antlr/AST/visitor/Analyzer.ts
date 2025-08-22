@@ -176,7 +176,7 @@ export class Analyzer extends BaseVisitor
 						node.indexes = node.indexes.map(el => {
 							iter++;
 							if(el.expresion instanceof IntLiteral) {
-								const size = variable.size.at(iter);
+								const size = variable.size[iter];
 								if(!size)
 									this.addDiagnostic(new DiagnosticError(l10n.t("Constant expected"), el.pos));
 								else {
@@ -191,7 +191,7 @@ export class Analyzer extends BaseVisitor
 								return el.expresion;
 							}
 							if(el.expresion instanceof Variable) {
-								const enumer = variable.indexes.at(iter);
+								const enumer = variable.indexes[iter];
 								const checkVar = this.curScope.findVar(el.expresion.id);
 								if(!(enumer instanceof EnumDeclaration)) {
 									variable.used = true;
