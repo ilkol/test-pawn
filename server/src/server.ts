@@ -28,6 +28,7 @@ function main() {
 
 	const documents = new TextDocuments(TextDocument);
 
+
 	let hasConfigurationCapability = false;
 	let hasWorkspaceFolderCapability = false;
 	let hasDiagnosticRelatedInformationCapability = false;

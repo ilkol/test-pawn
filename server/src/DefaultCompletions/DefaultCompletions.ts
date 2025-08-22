@@ -1,5 +1,6 @@
 import { CompletionItem, CompletionItemKind, CompletionItemTag, InsertTextFormat, MarkupKind } from 'vscode-languageserver';
 import { defaultEvents } from './list';
+import { l10n } from 'vscode';
 
 export interface IDefaultEvent {
 	name: string
@@ -51,28 +52,77 @@ export function getDefaultCompletions(): CompletionItem[] {
 	);
 
 	[
-		"for",
-		"while",
-		"do",
-		"switch",
-		"case",
-		"default",
-		"public",
-		"break",
-		"continue",
-		"else",
-		"return",
-		"const",
-		"enum",
-		"native",
-		"operator"
-	].map(keyword => {completions.push({ label: keyword, kind: CompletionItemKind.Keyword })});
+		{label: "new", insertText: "new", detail: l10n.t("new `identifire`;"), documentation: (l10n.t("The keyword `new` declares a new variable."))},
+		{label: "new", kind: CompletionItemKind.Struct, insertText: "new ${0};", detail: l10n.t("new `identifire`;"), documentation: (l10n.t("The keyword `new` declares a new variable."))},
+		{label: "if", insertText: "if", detail: l10n.t("if (`conditional expression`) `statement`"), documentation: (l10n.t("The `if` keyword divides the command execution flow into two cases. If the condition is met, the following code is executed. Otherwise, the code is skipped."))},
+		{label: "if", kind: CompletionItemKind.Struct, insertText: "if ($1)$0", detail: l10n.t("if (`conditional expression`) `statement`"), documentation: (l10n.t("The `if` keyword divides the command execution flow into two cases. If the condition is met, the following code is executed. Otherwise, the code is skipped."))},
+		{label: "else", insertText: "else $0", detail: l10n.t("else `statement`"), documentation: (l10n.t("The `else` keyword must follow the `if` statement. The code after `else` is executed if the condition in `if` is equal logically \"true\". When `if` statements are nested and `else` clauses are present, a given `else` is associated with the closest preceding if statement in the same block."))},
+		{label: "return", insertText: "return", detail: l10n.t("return `expression`;"), documentation: (l10n.t("Terminates the current function and moves program control to the statement following the calling statement. The value of the expression is returned as the function result."))},
+		{label: "return", kind: CompletionItemKind.Struct, insertText: "return $0;", detail: l10n.t("return `expression`;"), documentation: (l10n.t("Terminates the current function and moves program control to the statement following the calling statement. The value of the expression is returned as the function result."))},
+		{label: "true", detail: "true", documentation: l10n.t("Constant equal 1, but tagged as bool:")},
+		{label: "false", detail: "false", documentation: l10n.t("Constant equal 0, but tagged as bool:")},
+		{label: "switch", insertText: "switch", detail: l10n.t("switch (`expression`) { `case list` }"), documentation: l10n.t("Transfers control to different statements within the switch body de pending on the value of the switch expression. The body of the switch statement is a compound statement, which contains a series of “case clauses”.")},
+		{label: "switch", insertText: "switch ($1)\r\n{\r\n\tcase $2:\r\n\t{\r\n\t\t$3\r\n\t}\r\n\tdefault:\r\n\t{\r\n\t\t$0\r\n\t}\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("switch (`expression`) { `case list` }"), documentation: l10n.t("Transfers control to different statements within the switch body de pending on the value of the switch expression. The body of the switch statement is a compound statement, which contains a series of “case clauses”.")},
+		{label: "for", detail: l10n.t("for (`expression 1`; `expression 2`; `expression 3`) statement")},
+		{label: "while", detail: l10n.t("while (`expression`) statement")},
+		{label: "case", insertText: "case $0"},
+		{label: "case", insertText: "case $1:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("Case Statement")},
+		{label: "default", insertText: "default"},
+		{label: "default", insertText: "default:\r\n{\r\n\t$0\r\n}", kind: CompletionItemKind.Struct, detail: l10n.t("defaultComplitionKeywordDefaultStatmentDetail")},
+		{label: "break", insertText: "break;\r\n$0"},
+		{label: "continue", insertText: "continue;\r\n$0"},
+		{label: "enum", insertText: "enum $1 {\r\n\t$0\r\n}"},
+		{label: "stock", insertText: "stock $0"},
+		{label: "forward", insertText: "forward $0", detail: l10n.t("forward ")},
+		{label: "public", insertText: "public $0"},
+		{label: "const", insertText: "const $0"},
+		{label: "static", insertText: "static $0"},
+		{label: "char"},
+		{label: "native", insertText: "native $0"},
+		{label: "operator"}
+	].map(keyword => {completions.push({ 
+		label: keyword.label, 
+		kind: keyword.kind ?? CompletionItemKind.Keyword,
+		insertTextFormat: keyword.insertText ? InsertTextFormat.Snippet : undefined,
+		insertText: keyword.insertText,
+		detail: keyword.detail,
+		documentation: keyword.documentation ? {
+			kind: MarkupKind.Markdown,
+			value: keyword.documentation
+		} : undefined,
+
+	 })});
 	
 	[
-		"char",
-		"sizeof",
-		"tagof",
-	].map(keyword => {completions.push({ label: keyword, kind: CompletionItemKind.Operator })});
+		{label: "char", doc: l10n.t("Results in the number of cells needed to store a packed array of characters")},
+		{label: "sizeof", doc: l10n.t("Returns the size of the array (number of cells)")},
+		{label: "tagof", doc: l10n.t("Returns the tag ID")},
+	].map(keyword => {completions.push({ 
+		label: keyword.label, 
+		kind: CompletionItemKind.Operator,
+		documentation: {
+			kind: MarkupKind.PlainText,
+			value: keyword.doc
+		},
+	})});
+
+	[
+		{label: "cellbits", doc: l10n.t("The size of a cell in bits; usually `32`.")},
+		{label: "cellmax", doc: l10n.t("The largest valid positive value that a cell can hold; usually `214748364`.")},
+		{label: "cellmin", doc: l10n.t("The largest valid negative value that a cell can hold; usually `-214748364`.")},
+		{label: "charbits", doc: l10n.t("The size of a packed character in bits; usually `8`.")},
+		{label: "charmax", doc: l10n.t("The largest valid packed character value; a packed character is usually 8-bit and the maximum valid value isthus `25`")},
+	].map(completion => {
+		completions.push({ 
+			label: completion.label, 
+			kind: CompletionItemKind.Constant, 
+			documentation: {
+				kind: MarkupKind.PlainText,
+				value: completion.doc
+			},
+			detail: "define"
+		});
+	});
 
 	return completions;
 }
