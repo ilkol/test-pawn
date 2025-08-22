@@ -8,7 +8,7 @@ export class AssigmentOperator extends BinarOperator
 {
 	name = "операртор присваения";
 
-    protected override _left: Variable | undefined;
+    protected declare _left: Variable | undefined;
 
     public override get left(): Variable | undefined {
         return this._left;   

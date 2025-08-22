@@ -6,10 +6,10 @@ import { Stack } from "../antlr/Stack/Stack";
 import { DefinitionProvider } from "../Providers/DefinitionProvider";
 import { ReferenceProvider } from "../Providers/ReferenceProvider";
 import { Include, IncludeType } from "../Prepocessor/Include";
-import path from "path";
 import { CacheManager } from "../cache/CacheManager";
 import { Serialization } from "../cache/Serialization";
 import { FileCache } from "../cache/FileCache";
+import path = require("path");
 
 export class FileManager {
 	/**
