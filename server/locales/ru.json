@@ -13,9 +13,9 @@
     "The size of a packed character in bits; usually `8`.": "The size of a packed character in bits; usually `8`.",
     "The largest valid packed character value; a packed character is usually 8-bit and the maximum valid value isthus `25`": "The largest valid packed character value; a packed character is usually 8-bit and the maximum valid value isthus `25`",
 
-	"The keyword new declares a new variable.": "Ключевое слово \"new\" предоставляеть возможность объявить новую переменную",
+	"The keyword `new` declares a new variable.": "Ключевое слово `new` предоставляеть возможность объявить новую переменную",
 	"new `identifire`;": "new `идентификатор`;",
-	"The if keyword divides the program execution flow into two parts. If the condition is true, the following code is executed. Otherwise, the code is skipped.": "Ключевое слово if разделяет поток выполнения программы на две части. Если условие истинно, то следующий код выполняется. В противном случае код пропускается.",
+	"The `if` keyword divides the program execution flow into two parts. If the condition is true, the following code is executed. Otherwise, the code is skipped.": "Ключевое слово `if` разделяет поток выполнения программы на две части. Если условие истинно, то следующий код выполняется. В противном случае код пропускается.",
 	"if (`conditional expression`) `statement`": "if (`условие`) `инструкция`",
 	"The `else` keyword must follow the `if` statement. The code after `else` is executed if the condition in `if` is equal logically \"true\". When `if` statements are nested and `else` clauses are present, a given `else` is associated with the closest preceding `if` statement in the same block.": "Ключевое слово `else` должно следовать за оператором `if`. Код после `else` выполняется, если условие в `if` логически равно \"true\". Когда операторы `if` вложены и присутствуют предложения `else`, заданный `else` связывается с ближайшим предшествующим оператором `if` в том же блоке.",
 	"else `statement`": "else `инструкция`",
