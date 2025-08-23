@@ -13,6 +13,8 @@
 		"url": "https://github.com/ilkol/test-pawn"
 	},
 	"dependencies": {
+		"@types/i18n": "^0.13.12",
+		"i18n": "^0.15.1",
 		"vscode-languageserver": "^9.0.1",
 		"vscode-languageserver-textdocument": "^1.0.11",
 		"vscode-uri": "^3.1.0"

@@ -20,11 +20,13 @@ import {
 } from 'vscode-languageserver-textdocument';
 import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
 import { Logger } from './Logger/Logger';
+import { Locale } from './Locale';
 
 function main() {
 	const connection = createConnection(ProposedFeatures.all);
 
 	Logger.init(connection.console);
+	Locale.init();
 
 	const documents = new TextDocuments(TextDocument);
 
@@ -35,6 +37,10 @@ function main() {
 
 	connection.onInitialize((params: InitializeParams) => {
 		const capabilities = params.capabilities;
+
+		if(params.locale) {
+			Locale.locale = params.locale;
+		}
 
 		hasConfigurationCapability = !!(
 			capabilities.workspace && !!capabilities.workspace.configuration
@@ -70,13 +76,18 @@ function main() {
 		return result;
 	});
 
+	// const test = async () => {
+	// 	Logger.log(JSON.stringify(await connection.workspace.getConfiguration()));
+	// }
+
 	connection.onInitialized(() => {
 		if (hasWorkspaceFolderCapability) {
 			connection.workspace.onDidChangeWorkspaceFolders(_event => {
 				Logger.log('Workspace folder change event received.');
 			});
 		}
-		Logger.log('LSP server initialized.');
+		Logger.log(Locale.t('LSP server initialized.'));
+		// test();
 	});
 
 

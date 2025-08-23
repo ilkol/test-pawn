@@ -1,11 +1,11 @@
 import { TextDocuments, URI  } from "vscode-languageserver";
 import { URI as Uri } from "vscode-uri";
 import { AbstractOpenFile } from "../AbstractOpenFile";
-import { l10n } from "vscode";
 import { join } from "path";
 import { access, stat } from "fs/promises";
 import { Logger } from "../Logger/Logger";
 import { TextDocument } from "vscode-languageserver-textdocument";
+import { Locale } from "../Locale";
 
 export class FileManager {
 	/**
@@ -63,7 +63,7 @@ export class FileManager {
 	 */
 	public async findPawnDir(): Promise<void> {
 		if(!this._currentWorkspacePath) {
-			throw new Error(l10n.t("Workspace path not found"));
+			throw new Error(Locale.t("Workspace path not found"));
 		}
 
 		const pawnoPath = join(this._currentWorkspacePath, 'pawno');
@@ -84,10 +84,10 @@ export class FileManager {
 			await access(path);	
 		} catch(e) {
 			if (e instanceof Error && 'code' in e && e.code === 'ENOENT') {
-				throw new Error(l10n.t("{0} folder was not found", errorFileName))
+				throw new Error(Locale.t("{0} folder was not found", errorFileName))
 			}
 			Logger.error(`Error accessing pawn include folder: ${e}`);
-			throw new Error(l10n.t("Error accessing folder {0}", errorFileName))
+			throw new Error(Locale.t("Error accessing folder {0}", errorFileName))
 		}	
 	}
 
