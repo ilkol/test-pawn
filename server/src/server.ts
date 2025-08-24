@@ -1,13 +1,9 @@
 import {
 	createConnection,
 	TextDocuments,
-	Diagnostic,
-	DiagnosticSeverity,
 	ProposedFeatures,
 	InitializeParams,
-	DidChangeConfigurationNotification,
 	CompletionItem,
-	CompletionItemKind,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
 	InitializeResult,
@@ -21,14 +17,17 @@ import {
 import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
 import { Logger } from './Logger/Logger';
 import { Locale } from './Locale';
+import { FileManager } from './Managers/FileManager';
+import { VSCode } from './VSCode';
+import { sendNotification } from './utils';
 
-function main() {
+
+async function main() {
 	const connection = createConnection(ProposedFeatures.all);
 
 	Logger.init(connection.console);
 	Locale.init();
-
-	const documents = new TextDocuments(TextDocument);
+	const fileManager = new FileManager();
 
 
 	let hasConfigurationCapability = false;
@@ -38,6 +37,13 @@ function main() {
 	connection.onInitialize((params: InitializeParams) => {
 		const capabilities = params.capabilities;
 
+		// fileManager.currentUri = params.workspaceFolders
+		if(params.workspaceFolders) {
+			const uri = params.workspaceFolders[0];
+			if(uri) {
+				fileManager.currentUri = uri.uri;
+			}
+		}
 		if(params.locale) {
 			Locale.locale = params.locale;
 		}
@@ -76,9 +82,19 @@ function main() {
 		return result;
 	});
 
-	// const test = async () => {
-	// 	Logger.log(JSON.stringify(await connection.workspace.getConfiguration()));
-	// }
+	const afterInitializing = async () => {
+		try {
+			await fileManager.findPawnDir();
+		} catch(e) {
+			console.log(e instanceof Error);
+			if(e instanceof Error) {
+				sendNotification(connection, VSCode.NotificationType.Error, e.message);
+			}
+			else {
+				console.error(e);
+			}
+		}
+	}
 
 	connection.onInitialized(() => {
 		if (hasWorkspaceFolderCapability) {
@@ -87,12 +103,12 @@ function main() {
 			});
 		}
 		Logger.log(Locale.t('LSP server initialized.'));
-		// test();
+		afterInitializing();
 	});
 
 
 	connection.languages.diagnostics.on(async (params) => {
-		const document = documents.get(params.textDocument.uri);
+		const document = fileManager.documentsManager.get(params.textDocument.uri);
 		if (document !== undefined) {
 			return {
 				kind: DocumentDiagnosticReportKind.Full,
@@ -106,14 +122,19 @@ function main() {
 		}
 	});
 
-	documents.onDidChangeContent(change => {
+	// documents.onDidChangeContent(change => {
 
-	});
+	// });
 
 	
 	connection.onDidChangeWatchedFiles(_change => {
 
 	});
+
+	// documents.onDidOpen(e => {
+		
+	// 	console.log(e.document.uri);
+	// });
 
 	connection.onCompletion(
 		(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
@@ -127,7 +148,7 @@ function main() {
 		}
 	);
 
-	documents.listen(connection);
+	fileManager.documentsManager.listen(connection);
 	connection.listen();
 }
 

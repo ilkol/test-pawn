@@ -90,6 +90,9 @@
 	"while (`expression`) statement": "while (`выражение`) инструкция",
 	"forward ": "forward ",
 	"LSP server initialized.": "LSP сервер иниициализирован.",
+	"Workspace path not found": "Путь рабочей области не найден",
+	"%s folder was not found": "Папка %s не найдена",
+	"Error accessing folder %s": "Ошибка доступа к папке %s",
 
 	"Functions and variables marked with this keyword will not be included in the resulting program if they are not used anywhere.": "Функции и переменные, помеченные этим ключвым словом, не будут включены в итоговую программу, если они нигде не используются.",
 	"Print text to console.": "Выводит текст в консоль.",

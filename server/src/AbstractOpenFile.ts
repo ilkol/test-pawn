@@ -1,4 +1,4 @@
-import { CompletionItem, DocumentLink, ParameterInformation, SignatureHelp, SignatureInformation } from "vscode-languageserver";
+import { CompletionItem, Diagnostic, DocumentLink, ParameterInformation, SignatureHelp, SignatureInformation } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { FileManager } from "./Managers/FileManager";
 
@@ -70,21 +70,29 @@ export abstract class AbstractOpenFile
 		this.path = FileManager.getPathByURI(value.uri);
 	}
 
-	protected _path?: string;
+	protected _path: string;
 
-	get path(): string | undefined {
+	get path(): string {
 		return this._path;
 	}
 	set path(value: string) {
 		this._path = value;
 	}
 
-	constructor() {
+	protected _diagnostics: Diagnostic[] = [];
 
+	get diagnostics(): Diagnostic[] {
+		return this._diagnostics;
 	}
 
-	protected complitions: CompletionItem[] = [];
-	public abstract getCompletions(): CompletionItem[];
+	constructor(protected document: TextDocument) {
+		this._path = FileManager.getPathByURI(document.uri);
+	}
+
+	protected _complitions: CompletionItem[] = [];
+	public get completions(): CompletionItem[] {
+		return this.completions;
+	}
 
 	protected functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
 	// abstract get defines(): Map<string, Define[]>;
@@ -122,7 +130,7 @@ export abstract class AbstractOpenFile
 	public abstract findDirectives(): Promise<void>;
 	protected abstract findAllDirectives(): Promise<void>;
 	public addComplition(comp: CompletionItem) {
-		this.complitions.push(comp);
+		this._complitions.push(comp);
 	}
 
 	private _documentsLinks: DocumentLink[] = [];

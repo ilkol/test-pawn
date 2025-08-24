@@ -73,9 +73,11 @@
 	"Tag mismatch": "Tag mismatch",
 	"Starting building": "Starting building",
 	"Outdated documentation": "Outdated documentation",
-
 	"for (`expression 1`; `expression 2`; `expression 3`) statement": "for (`expression 1`; `expression 2`; `expression 3`) statement",
 	"while (`expression`) statement": "while (`expression`) statement",
 	"forward ": "forward ",
-	"LSP server initialized.": "LSP server initialized."
+	"LSP server initialized.": "LSP server initialized.",
+	"Workspace path not found": "Workspace path not found",
+	"%s folder was not found": "%s folder was not found",
+	"Error accessing folder %s": "Error accessing folder %s"
 }

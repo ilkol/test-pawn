@@ -1,4 +1,4 @@
-import { TextDocuments, URI  } from "vscode-languageserver";
+import { TextDocumentChangeEvent, TextDocuments, URI  } from "vscode-languageserver";
 import { URI as Uri } from "vscode-uri";
 import { AbstractOpenFile } from "../AbstractOpenFile";
 import { join } from "path";
@@ -6,8 +6,17 @@ import { access, stat } from "fs/promises";
 import { Logger } from "../Logger/Logger";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { Locale } from "../Locale";
+import { constants } from "fs";
+import { AntlrOpenedFile } from "../AntrlOpenedFile";
 
 export class FileManager {
+
+	private documents = new TextDocuments(TextDocument);
+
+	get documentsManager(): TextDocuments<TextDocument> {
+		return this.documents;
+	}
+
 	/**
 	 * Массив всех открытых файлов
 	 */
@@ -41,20 +50,27 @@ export class FileManager {
 	}
 	
 	/**
-	 * URI корня текущей рабочей области
+	 * Путь корня текущей рабочей области
 	 */
 	private _currentWorkspacePath?: string;
 	
 	/**
-	 * URI корня текущей рабочей области
+	 * Путь корня текущей рабочей области
 	 */
 	get currentPath(): string | undefined {
 		return this._currentWorkspacePath;
+	}
+	/**
+	 * URI корня текущей рабочей области
+	 */
+	set currentUri(value: URI) {
+		this._currentWorkspacePath = FileManager.getPathByURI(value);
 	}
 
 	private textDocuments: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
 	constructor() {
+		this.documents.onDidOpen(e => this.onDidOpenDocument(e.document))
 	}
 
 	/**
@@ -67,11 +83,11 @@ export class FileManager {
 		}
 
 		const pawnoPath = join(this._currentWorkspacePath, 'pawno');
-		this.checkFileExists(pawnoPath, "pawno");
+		await this.checkFolderExists(pawnoPath, "pawno");
 		this._pawnPath = pawnoPath;
 
 		const includePath = join(pawnoPath, 'include');
-		this.checkFileExists(includePath, "pawn include");
+		await this.checkFolderExists(includePath, "pawn include");
 		this._pawnIncludePath = includePath;
 	}
 	/**
@@ -79,15 +95,15 @@ export class FileManager {
 	 * @param path путь до директории, который необходимо проверить
 	 * @param errorFileName имя, которое будет отображться в исключениях
 	 */
-	private async checkFileExists(path: string, errorFileName: string = path) {
+	private async checkFolderExists(path: string, errorFileName: string = path) {
 		try {
-			await access(path);	
+			await access(path, constants.R_OK);	
 		} catch(e) {
 			if (e instanceof Error && 'code' in e && e.code === 'ENOENT') {
-				throw new Error(Locale.t("{0} folder was not found", errorFileName))
+				throw new Error(Locale.t("%s folder was not found", errorFileName))
 			}
 			Logger.error(`Error accessing pawn include folder: ${e}`);
-			throw new Error(Locale.t("Error accessing folder {0}", errorFileName))
+			throw new Error(Locale.t("Error accessing folder %s", errorFileName))
 		}	
 	}
 
@@ -106,7 +122,7 @@ export class FileManager {
 	}
 
 	public static getPathByURI(uri: URI): string {
-		return Uri.parse(uri).path;
+		return Uri.parse(uri).path.slice(1);
 	}
 
 	public async openFile(path: string): Promise<boolean> {
@@ -130,5 +146,15 @@ export class FileManager {
 	
 	getOpenedFile(path: string): AbstractOpenFile | undefined {
 		return this.openedFiles.get(path);
+	}
+
+
+	private onDidOpenDocument(document: TextDocument) {
+		const path = FileManager.getPathByURI(document.uri);
+		let openedFile = this.getOpenedFile(path);
+		if(!openedFile) {
+			openedFile = new AntlrOpenedFile(document);
+			this.openedFiles.set(openedFile.path, openedFile);
+		}
 	}
 }
