@@ -1,4 +1,4 @@
-import { CompletionItem, Diagnostic, DocumentLink, ParameterInformation, SignatureHelp, SignatureInformation } from "vscode-languageserver";
+import { CompletionItem, Diagnostic, DocumentLink, ParameterInformation, SignatureHelp, SignatureInformation, URI } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { FileManager } from "./Managers/FileManager";
 
@@ -70,6 +70,9 @@ export abstract class AbstractOpenFile
 		this.path = FileManager.getPathByURI(value.uri);
 	}
 
+	get URI(): URI {
+		return this.document.uri;
+	}
 	protected _path: string;
 
 	get path(): string {

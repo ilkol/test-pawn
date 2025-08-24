@@ -9,12 +9,19 @@ import { Locale } from "../Locale";
 import { constants } from "fs";
 import { AntlrOpenedFile } from "../AntrlOpenedFile";
 
+export type OnFileManagerOpenFileListener = (document: AbstractOpenFile) => (Promise<void> | void);
+
 export class FileManager {
 
 	private documents = new TextDocuments(TextDocument);
 
 	get documentsManager(): TextDocuments<TextDocument> {
 		return this.documents;
+	}
+
+	private _onFileManagerOpenFileListener?: OnFileManagerOpenFileListener;
+	set onFileManagerOpenFileListener(value: OnFileManagerOpenFileListener) {
+		this._onFileManagerOpenFileListener = value;
 	}
 
 	/**
@@ -156,5 +163,6 @@ export class FileManager {
 			openedFile = new AntlrOpenedFile(document);
 			this.openedFiles.set(openedFile.path, openedFile);
 		}
+		this._onFileManagerOpenFileListener?.(openedFile);
 	}
 }

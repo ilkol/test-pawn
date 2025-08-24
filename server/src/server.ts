@@ -20,15 +20,35 @@ import { Locale } from './Locale';
 import { FileManager } from './Managers/FileManager';
 import { VSCode } from './VSCode';
 import { sendNotification } from './utils';
+import { Parser } from './Parser/Parser';
+import { LSPConnection } from './types';
+import { AbstractOpenFile } from './AbstractOpenFile';
+import { Preprocessor } from './Preprocessor/Preprocessor';
 
+function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
+	connection.sendDiagnostics({
+		uri: document.URI,
+		diagnostics: document.diagnostics
+	});
+}
 
 async function main() {
 	const connection = createConnection(ProposedFeatures.all);
 
 	Logger.init(connection.console);
 	Locale.init();
+	
 	const fileManager = new FileManager();
-
+	fileManager.onFileManagerOpenFileListener = async (document) => {
+		await Preprocessor.processFile(document);
+	}
+	Preprocessor.onFileProcessedListener = async (document) => {
+		await Parser.parseFile(document);
+	}
+	Parser.onFileParsedListener = (document) => {
+		sendFileDiagnostics(connection, document);
+	}
+	
 
 	let hasConfigurationCapability = false;
 	let hasWorkspaceFolderCapability = false;
