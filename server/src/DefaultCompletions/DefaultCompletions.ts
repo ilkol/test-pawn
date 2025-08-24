@@ -47,7 +47,7 @@ export function getDefaultCompletions(): CompletionItem[] {
 			kind: CompletionItemKind.Keyword,
 			documentation: {
 				kind: MarkupKind.Markdown,
-				value: "Функции и переменные, помеченные этим ключвым словом, не будут включены в итоговую программу, если они нигде не используются."
+				value: Locale.t("Functions and variables marked with this keyword will not be included in the resulting program if they are not used anywhere.")
 			}
 		},
 	);

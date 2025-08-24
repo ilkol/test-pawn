@@ -1,21 +1,20 @@
+import { Locale } from "../Locale";
 import { IDefaultEvent } from "./DefaultCompletions";
 
 export let defaultEvents: IDefaultEvent[] = [
 	{
 		name: "OnGameModeInit",
-		description: "Вызывается при запуске игрового мода"
+		description: Locale.t("Call when server is starting")
 	},
 	{
 		name: "OnGameModeExit",
-		description: "Вызывается при завершении работы игрового мода"
+		description: Locale.t("Call when server is stoping")
 	},
 	{
 		name: "OnPlayerConnect",
-		description: "Вызывается при подключении игрока к серверу",
+		description: Locale.t("Call when player connects to server"),
 		args: "playerid",
-		wiki: "## Возвращаемое значение:\
-		\n- 0 - Останаливает вызовы OnPlayerConnect в других скриптах\
-		\n- 1 - Дает возможность обработку вызовов OnPlayerConnect в других скриптах."
+		wiki: Locale.t("## Return value:\n- 0 - Stops OnPlayerConnect calls in other scripts\n- 1 - Allows OnPlayerConnect calls to be processed in other scripts.")
 	},
 	{
 		name: "OnFilterScriptInit"

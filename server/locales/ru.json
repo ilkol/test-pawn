@@ -89,6 +89,51 @@
 	"for (`expression 1`; `expression 2`; `expression 3`) statement": "for (`выражение №1`; `выражение №2`; `выражение №3`) инструкция",
 	"while (`expression`) statement": "while (`выражение`) инструкция",
 	"forward ": "forward ",
-	"LSP server initialized.": "LSP сервер иниициализирован."
+	"LSP server initialized.": "LSP сервер иниициализирован.",
 
+	"Functions and variables marked with this keyword will not be included in the resulting program if they are not used anywhere.": "Функции и переменные, помеченные этим ключвым словом, не будут включены в итоговую программу, если они нигде не используются.",
+	"Print text to console.": "Выводит текст в консоль.",
+	"Always returns `0`.\n\rAttempt to output text longer than 511 characters may crash the server.": "Всегда возвращает `0`.\n\rПопытка вывести текст длиннее 511 символов может привести к падению сервера.",
+	"String to output.": "Строка для вывода.",
+	"Formats a using the data and prints the result to the console.": "Форматирует строку, используя данные, и выводит результат в консоль.",
+	"The function does not support packed strings, including as data.": "Функция не поддерживает упакованные строки, в том числе и в качестве данных.",
+	"Format string.": "Форматируемая строка.",
+	"Data for substitution.": "Данные для подстановки.",
+	"Size of array `output`": "Размер массива `output`",
+	"Array to write formatted string to.": "Массив для записи сформатированной строки.",
+	"Formats a string by converting data to a string and substituting it for special characters.": "Форматирует строку, преобразовывая данные в строку и подставляет их вместое спецсимволов.",
+	"Always returns `1`.\n\rThe maximum length of the final string is 4095 characters.\n\rThe function does not support packed strings, including as data.": "Всегда возвращает `1`.\n\rМаксимальная длина конечной стоки - 4095 символов.\n\rФункция не поддерживает упакованные строки, в том числе и в качестве данных.",
+	"Send message to player in chat": "Отправляет сообщение игроку в чат.",
+	"ID of the player to whom the message will be sent": "ID игрока, которому будет отправлено сообщение",
+	"HEX message color": "HEX цвет сообщения",
+	"Message test": "Текст сообщения",
+
+	"Sends a message to all players in chat": "Отправляет сообщение всем игрокам в чат на сервере.",
+	"Sends a message to a player in chat on behalf of another player.": "Отправляет сообщение игроку в чат от имени другого игрока.",
+	"ID of the player on whose behalf the message is being sent": "ID игрока, от чьего имени сообщение",
+
+	"Sends a message to all players in the server chat on behalf of another player.": "Отправляет сообщение всем игрокам в чат на сервере от имени другого игрока.",
+
+	"Sends a message about the death of a player.": "Отправляет сообщение о смерти игрока.",
+	"ID player who killed": "ID игрока, совершившего убийство",
+	"ID player who was killed": "ID игрока, который погиб",
+	"Death reason ID": "ID причины смерти",	
+	"Sends a player death message to a specific player.": "Отправляет сообщение о смерти игрока для конкретного игрока.",
+	
+	"Send game text for all players": "Отобразить игровое сообщение всем игрокам",
+	"Message": "Сообщение",
+	"Number of seconds before hiding": "Количество секунд до скрытия",
+	"Message style ID": "ID стиля сообщения",
+	"Send game text for the player": "Отобразить игровое сообщение игроку",
+
+	"Sets a 'timer' to call a function after some time.": "Устаналивает таймер до вызова функции.",
+	"The name of the function that will be called when the timer expires": "Название функции, которая вызовется по окнчанию таймера",
+	"Number of milliseconds until timer expires": "Количество милесекунд до окончания таймера",
+	"True if the timer should repeat": "True, если таймер должен повторится",
+
+	"Call when server is starting": "Вызывается при запуске игрового мода",
+	"Call when server is stoping": "Вызывается при завершении работы игрового мода",
+	
+	"Call when player connects to server": "Вызывается при подключении игрока к серверу",
+	"## Return value:\n- 0 - Stops OnPlayerConnect calls in other scripts\n- 1 - Allows OnPlayerConnect calls to be processed in other scripts.": "## Возвращаемое значение:\n- 0 - Останаливает вызовы OnPlayerConnect в других скриптах\n- 1 - Дает возможность обработку вызовов OnPlayerConnect в других скриптах."
 }

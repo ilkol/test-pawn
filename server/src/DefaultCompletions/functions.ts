@@ -1,3 +1,4 @@
+import { Locale } from "../Locale";
 
 interface Arg
 {
@@ -16,247 +17,247 @@ interface FunctionCompl {
 export const defaultFunctionsCompletions: FunctionCompl[] = [
 	{
 		name: "print",
-		description: "Выводит текст в консоль.",
-		detail: "Всегда возвращает `0`.\n\rПопытка вывести текст длиннее 511 символов может привести к падению сервера.",
+		description: Locale.t("Print text to console."),
+		detail: Locale.t("Always returns `0`.\n\rAttempt to output text longer than 511 characters may crash the server."),
 		args: [
 			{
 				name: "string",
 				string: "const string[]",
-				doc: "Строка для вывода."
+				doc: Locale.t("String to output.")
 			}
 		]
 	},
 	{
 		name: "printf",
-		description: "Форматирует строку, используя данные, и выводит результат в консоль.",
-		detail: "Всегда возвращает `0`.\n\rПопытка вывести текст длиннее 511 символов может привести к падению сервера.\n\rФункция не поддерживает упакованные строки, в том числе и в качестве данных.",
+		description: Locale.t("Formats a using the data and prints the result to the console."),
+		detail: Locale.t("Always returns `0`.\n\rAttempt to output text longer than 511 characters may crash the server.") + "\n\r" + Locale.t("The function does not support packed strings, including as data."),
 		args: [
 			{
 				name: "string",
 				string: "const string[]",
-				doc: "Форматируемая строка."
+				doc: Locale.t("Format string.")
 			},
 			{
 				name: "...",
 				string: "{Float,_}:...",
-				doc: "Данные для подстановки."
+				doc: Locale.t("Data for substitution.")
 			}
 		]
 	},
 	{
 		name: "format",
-		description: "Форматирует строку, преобразовывая данные в строку и подставляет их вместое спецсимволов.",
-		detail: "Всегда возвращает `1`.\n\rМаксимальная длина конечной стоки - 4095 символов.\n\rФункция не поддерживает упакованные строки, в том числе и в качестве данных.",
+		description: Locale.t("Formats a string by converting data to a string and substituting it for special characters."),
+		detail: Locale.t("Always returns `1`.\n\rThe maximum length of the final string is 4095 characters.\n\rThe function does not support packed strings, including as data."),
 		args: [
 			{
 				name: "output",
 				string: "const output[]",
-				doc: "Массив для записи сформатированной строки."
+				doc: Locale.t("Array to write formatted string to.")
 			},
 			{
 				name: "len",
 				string: "len",
-				doc: "Размер массива `output`"
+				doc: Locale.t("Size of array `output`")
 			},
 			{
 				name: "format",
 				string: "const format[]",
-				doc: "Форматная строка."
+				doc: Locale.t("Format string.")
 			},
 			{
 				name: "...",
 				string: "{Float,_}:...",
-				doc: "Форматируемые данные."
+				doc: Locale.t("Data for substitution.")
 			}
 		]
 	},
 	{
 		name: "SendClientMessage",
-		description: "Отправляет сообщение игроку в чат.",
+		description: Locale.t("Send message to player in chat"),
 		args: [
 			{
 				string: "playerid",
 				name: "playerid",
-				doc: "ID игрока, которому будет отправлено сообщение"
+				doc: Locale.t("ID of the player to whom the message will be sent")
 			},
 			{
 				string: "color",
 				name: "color",
-				doc: "HEX цвет сообщения"
+				doc: Locale.t("HEX message color")
 			},
 			{
 				string: "const message[]",
 				name: "message",
-				doc: "Текст сообщения"
+				doc: Locale.t("Message text")
 			}
 		]
 	},
 	{
 		name: "SendClientMessageToAll",
-		description: "Отправляет сообщение всем игрокам в чат на сервере.",
+		description: Locale.t("Send message to all players in chat"),
 		args: [
 			{
 				string: "color",
 				name: "color",
-				doc: "HEX цвет сообщения"
+				doc: Locale.t("HEX message color")
 			},
 			{
 				string: "const message[]",
 				name: "message",
-				doc: "Текст сообщения"
+				doc: Locale.t("Message text")
 			}
 		]
 	},
 	{
 		name: "SendPlayerMessageToPlayer",
-		description: "Отправляет сообщение игроку в чат от имени другого игрока.",
+		description: Locale.t("Sends a message to a player in chat on behalf of another player."),
 		args: [
 			{
 				string: "playerid",
 				name: "playerid",
-				doc: "ID игрока, которому будет отправлено сообщение"
+				doc: Locale.t("ID of the player to whom the message will be sent")
 			},
 			{
 				string: "sender",
 				name: "sender",
-				doc: "ID игрока, от чьего имени сообщение"
+				doc: Locale.t("ID of the player on whose behalf the message is being sent")
 			},
 			{
 				string: "const message[]",
 				name: "message",
-				doc: "Текст сообщения"
+				doc: Locale.t("Message text")
 			}
 		]
 	},
 	{
 		name: "SendPlayerMessageToAll",
-		description: "Отправляет сообщение всем игрокам в чат на сервере от имени другого игрока.",
+		description: Locale.t("Sends a message to all players in the server chat on behalf of another player."),
 		args: [
 			{
 				string: "sender",
 				name: "sender",
-				doc: "ID игрока, от чьего имени сообщение"
+				doc: Locale.t("ID of the player on whose behalf the message is being sent")
 			},
 			{
 				string: "const message[]",
 				name: "message",
-				doc: "Текст сообщения"
+				doc: Locale.t("Message text")
 			}
 		]
 	},
 	{
 		name: "SendDeathMessage",
-		description: "Отправляет сообщение о смерти игрока.",
+		description: Locale.t("Sends a message about the death of a player."),
 		args: [
 			{
 				string: "killer",
 				name: "killer",
-				doc: "ID игрока, совершившего убийство"
+				doc: Locale.t("ID player who killed")
 			},
 			{
 				string: "killee",
 				name: "killee",
-				doc: "ID игрока, который погиб"
+				doc: Locale.t("ID player who was killed")
 			},
 			{
 				string: "weapon",
 				name: "weapon",
-				doc: "ID причины смерти"
+				doc: Locale.t("Death reason ID")
 			}
 		]
 	},
 	{
 		name: "SendDeathMessageToPlayer",
-		description: "Отправляет сообщение о смерти игрока для конкретного игрока.",
+		description: Locale.t("Sends a player death message to a specific player."),
 		args: [
 			{
 				string: "playerid",
 				name: "playerid",
-				doc: "ID игрока, которому необходимо отправить сообщение"
+				doc: Locale.t("ID of the player to whom the message will be sent")
 			},
 			{
 				string: "killer",
 				name: "killer",
-				doc: "ID игрока, совершившего убийство"
+				doc: Locale.t("ID player who killed")
 			},
 			{
 				string: "killee",
 				name: "killee",
-				doc: "ID игрока, который погиб"
+				doc: Locale.t("ID player who was killed")
 			},
 			{
 				string: "weapon",
 				name: "weapon",
-				doc: "ID причины смерти"
+				doc: Locale.t("Death reason ID")
 			}
 		]
 	},
 	{
 		name: "GameTextForAll",
-		description: "Отобразить игровое сообщение всем игрокам",
+		description: Locale.t("Send game text for all players"),
 		args: [
 			{
 				string: "const string[]",
 				name: "string",
-				doc: "Сообщение"
+				doc: Locale.t("Message")
 			},
 			{
 				string: "time",
 				name: "time",
-				doc: "Количество секунд до скрытия"
+				doc: Locale.t("Number of seconds before hiding")
 			},
 			{
 				string: "style",
 				name: "style",
-				doc: "ID стиля сообщения"
+				doc: Locale.t("Message style ID")
 			}
 		]
 	},
 	{
 		name: "GameTextForPlayer",
-		description: "Отобразить игровое сообщение игроку",
+		description: Locale.t("Send game text for the player"),
 		args: [
 			{
 				string: "playerid",
 				name: "playerid",
-				doc: "ID игрока, которому необходимо отобразить сообщение"
+				doc: Locale.t("ID of the player to whom the message will be sent")
 			},
 			{
 				string: "const string[]",
 				name: "string",
-				doc: "Сообщение"
+				doc: Locale.t("Message")
 			},
 			{
 				string: "time",
 				name: "time",
-				doc: "Количество милисекунд до скрытия"
+				doc: Locale.t("Number of seconds before hiding")
 			},
 			{
 				string: "style",
 				name: "style",
-				doc: "ID стиля сообщения"
+				doc: Locale.t("Message style ID")
 			}
 		]
 	},
 	
 	{
 		name: "SetTimer",
-		description: "Устаналивает отложенное выполнение функции.",
+		description: Locale.t("Sets a 'timer' to call a function after some time"),
 		args: [
 			{
 				string: "funcname[]",
 				name: "funcname",
-				doc: "Название функции, которая вызовется по окнчанию таймера"
+				doc: Locale.t("The name of the function that will be called when the timer expires")
 			},
 			{
 				string: "interval",
 				name: "interval",
-				doc: "Количество милесекунд до окончания таймера"
+				doc: Locale.t("Number of milliseconds until timer expires")
 			},
 			{
 				string: "repeating",
 				name: "repeating",
-				doc: "True, если таймер должен повторится"
+				doc: Locale.t("True if the timer should repeat")
 			}
 		]
 	},
