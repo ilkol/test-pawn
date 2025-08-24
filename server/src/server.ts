@@ -1,6 +1,5 @@
 import {
 	createConnection,
-	TextDocuments,
 	ProposedFeatures,
 	InitializeParams,
 	CompletionItem,
@@ -11,9 +10,6 @@ import {
 	type DocumentDiagnosticReport
 } from 'vscode-languageserver/node';
 
-import {
-	TextDocument
-} from 'vscode-languageserver-textdocument';
 import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
 import { Logger } from './Logger/Logger';
 import { Locale } from './Locale';
@@ -24,6 +20,7 @@ import { Parser } from './Parser/Parser';
 import { LSPConnection } from './types';
 import { AbstractOpenFile } from './AbstractOpenFile';
 import { Preprocessor } from './Preprocessor/Preprocessor';
+import { CacheManager } from './cache/CacheManager';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -37,8 +34,8 @@ async function main() {
 
 	Logger.init(connection.console);
 	Locale.init();
-	
 	const fileManager = new FileManager();
+	
 	fileManager.onFileManagerOpenFileListener = async (document) => {
 		await Preprocessor.processFile(document);
 	}
@@ -105,6 +102,7 @@ async function main() {
 	const afterInitializing = async () => {
 		try {
 			await fileManager.findPawnDir();
+			await CacheManager.init(fileManager);
 		} catch(e) {
 			console.log(e instanceof Error);
 			if(e instanceof Error) {

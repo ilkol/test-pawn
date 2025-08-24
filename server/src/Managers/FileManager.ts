@@ -1,7 +1,7 @@
 import { TextDocumentChangeEvent, TextDocuments, URI  } from "vscode-languageserver";
 import { URI as Uri } from "vscode-uri";
 import { AbstractOpenFile } from "../AbstractOpenFile";
-import { join } from "path";
+import { join, relative } from "path";
 import { access, stat } from "fs/promises";
 import { Logger } from "../Logger/Logger";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -10,6 +10,17 @@ import { constants } from "fs";
 import { AntlrOpenedFile } from "../AntrlOpenedFile";
 
 export type OnFileManagerOpenFileListener = (document: AbstractOpenFile) => (Promise<void> | void);
+
+export class FolderNotFound extends Error {
+	constructor(message?: string) {
+		super(message);
+	}
+}
+export class FolderAccessDenied extends Error {
+	constructor(message?: string) {
+		super(message);
+	}
+}
 
 export class FileManager {
 
@@ -102,15 +113,15 @@ export class FileManager {
 	 * @param path путь до директории, который необходимо проверить
 	 * @param errorFileName имя, которое будет отображться в исключениях
 	 */
-	private async checkFolderExists(path: string, errorFileName: string = path) {
+	public async checkFolderExists(path: string, errorFileName: string = path) {
 		try {
 			await access(path, constants.R_OK);	
 		} catch(e) {
 			if (e instanceof Error && 'code' in e && e.code === 'ENOENT') {
-				throw new Error(Locale.t("%s folder was not found", errorFileName))
+				throw new FolderNotFound(Locale.t("%s folder was not found", errorFileName))
 			}
 			Logger.error(`Error accessing pawn include folder: ${e}`);
-			throw new Error(Locale.t("Error accessing folder %s", errorFileName))
+			throw new FolderAccessDenied(Locale.t("Error accessing folder %s", errorFileName))
 		}	
 	}
 
@@ -164,5 +175,19 @@ export class FileManager {
 			this.openedFiles.set(openedFile.path, openedFile);
 		}
 		this._onFileManagerOpenFileListener?.(openedFile);
+	}
+
+	public getRelativePath(path: string): string {
+		if (!this._currentWorkspacePath) {
+			return path;
+		}
+
+		const relPath = relative(this._currentWorkspacePath, path);
+
+		// Если путь начинается с ".." или пустой, файл вне рабочей области
+		if (relPath.startsWith('..') || relPath === '') {
+			return path;
+		}
+		return relPath;
 	}
 }

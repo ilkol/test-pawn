@@ -7,6 +7,8 @@ import { Node } from "./Serialization/Nodes";
  */
 export interface FileCache {
 
+	cacheVersion: number;
+
 	/**
 	 * Путь до файла, который кэшируется.
 	 */
