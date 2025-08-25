@@ -1,4 +1,4 @@
-class LikeCCharStream {
+export class LikeCCharStream {
 	static readonly FILE_END_CHAR = '\0';
 
 	public curIndex: number = 0;
