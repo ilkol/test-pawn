@@ -1,4 +1,4 @@
-import { _, _Connection } from 'vscode-languageserver';
+import { _, _Connection, Position as LSPPosition} from 'vscode-languageserver';
 import { InlineCompletionFeatureShape } from 'vscode-languageserver/lib/common/inlineCompletion.proposed';
 
 export type LSPConnection = _Connection<_, _, _, _, _, _, InlineCompletionFeatureShape, _>;
@@ -8,9 +8,14 @@ export class Position {
 	readonly line: number;
 	readonly character: number;
 
+
 	constructor(line: number, character: number) {
 		this.line = line;
 		this.character = character;
+	}
+
+	static fromLSP(pos: LSPPosition): Position {
+		return new Position(pos.line, pos.character);
 	}
 
 	isBefore(other: Position): boolean {
@@ -63,8 +68,9 @@ export class Range {
 		} else if(startLine instanceof Position && startCharacter instanceof Position) {
 			this.start = startLine;
 			this.end = startCharacter;
-		} 
-		throw new Error()
+		} else {
+			throw new Error()			
+		}
 	}
 
 	get isEmpty(): boolean {

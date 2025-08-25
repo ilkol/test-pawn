@@ -35,14 +35,19 @@ async function main() {
 	Logger.init(connection.console);
 	Locale.init();
 	const fileManager = new FileManager();
+	const preprocessor = new Preprocessor(fileManager);
 	
 	fileManager.onFileManagerOpenFileListener = async (document) => {
-		await Preprocessor.processFile(document);
+		Logger.log(`${document.path} has been opened`);
+		const cache = await CacheManager.getFileCache(document.path);
+		await preprocessor.processFile(document);
 	}
-	Preprocessor.onFileProcessedListener = async (document) => {
+	preprocessor.onFileProcessedListener = async (document) => {
+		Logger.log(`${document.path} has been preprocessed`);
 		await Parser.parseFile(document);
 	}
 	Parser.onFileParsedListener = (document) => {
+		Logger.log(`${document.path} has been parsed`);
 		sendFileDiagnostics(connection, document);
 	}
 	

@@ -8,7 +8,7 @@ import { Scope } from "./antlr/Scopes/Scope";
 import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 import { Define } from "./Prepocessor/Define";
 import { Docs } from "./antlr/AST/Nodes/Docs/Dosc";
-import { Include } from "./Prepocessor/Include";
+// import { Include } from "./Prepocessor/Include";
 import { FileCache } from "./cache/FileCache";
 
 export class FunctionInfo
@@ -215,7 +215,7 @@ export abstract class AbstractOpenFile
 
 	abstract get tokens(): Token[];
 
-	public abstract get includes(): Include[];
+	public abstract get includes(): any[];
 	public abstract findDirectives(): Promise<void>;
 	protected abstract findAllDirectives(): Promise<void>;
 	public abstract getCompletions(): CompletionItem[];

@@ -18,7 +18,7 @@ import { ParserErrorListener } from "./antlr/ParserErrorListener";
 import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
 import { PPParser } from "./Prepocessor/PPParser";
 import path = require("path");
-import { Include } from "./Prepocessor/Include";
+// import { Include } from "./Prepocessor/Include";
 import { PreprocessorDirective } from "./Prepocessor/PreprocessorDirective";
 import { Define } from "./Prepocessor/Define";
 import { Token } from "./Managers/SemanticTokensManager";
@@ -171,12 +171,13 @@ export class AntrlOpenFile extends AbstractOpenFile
 			path: this.file.uri.path,
 			rootAST: this.serializeAST(),
 			texttHash: this.getTextHash(),
-			includes: this.ppParser.includes.map(include => {
-				return {
-					path: include.uri ? include.uri.path : "",
-					range: Serialization.Serialize.range(include.range),
-				};
-			}),
+			includes: []
+			// includes: this.ppParser.includes.map(include => {
+			// 	return {
+			// 		path: include.uri ? include.uri.path : "",
+			// 		range: Serialization.Serialize.range(include.range),
+			// 	};
+			// }),
 		};
 	}
 
@@ -224,7 +225,8 @@ export class AntrlOpenFile extends AbstractOpenFile
 	}
 	public get includes()
 	{
-		return this.ppParser.includes;
+		return []
+		// return this.ppParser.includes;
 	}
 
 	public async parsePreprocessor() {
@@ -353,45 +355,45 @@ export class AntrlOpenFile extends AbstractOpenFile
 
 	}
 
-	private async handleInclude(include: Include): Promise<void> {
-		const uri = include.uri;
-		if(!uri) {return;}
-		if(uri.path.indexOf("YSI") !== -1 || uri.path.indexOf("y_") !== -1) {return;}
-		const file = this.fileManager.getFile(uri.path);
-		if (file) {
+	// private async handleInclude(include: Include): Promise<void> {
+	// 	const uri = include.uri;
+	// 	if(!uri) {return;}
+	// 	if(uri.path.indexOf("YSI") !== -1 || uri.path.indexOf("y_") !== -1) {return;}
+	// 	const file = this.fileManager.getFile(uri.path);
+	// 	if (file) {
 			
-			file.getCompletions().forEach(compl => {
-				if (!compl.detail)
-					{compl.detail = path.parse(path.basename(uri.fsPath)).name;}
-				this.complitions.push(compl);
-			});
-			file.signatures.forEach((value, key) => {
-				this.signatures.set(key, value);
-			});
-			file.functionsInfo.forEach((value, key) => {
-				this.functionsInfo.set(key, value);
-			});
+	// 		file.getCompletions().forEach(compl => {
+	// 			if (!compl.detail)
+	// 				{compl.detail = path.parse(path.basename(uri.fsPath)).name;}
+	// 			this.complitions.push(compl);
+	// 		});
+	// 		file.signatures.forEach((value, key) => {
+	// 			this.signatures.set(key, value);
+	// 		});
+	// 		file.functionsInfo.forEach((value, key) => {
+	// 			this.functionsInfo.set(key, value);
+	// 		});
 	
-			file.scope.variables().forEach((value) => {
-				this.scope.addVar(value);
-				value.importFile = file;
-			});
-			file.scope.functions().forEach((value) => {
-				this.scope.addFunction(value);
-				value.importFile = file;
-			});
-			const directives: Define[] = [];
-			file.exportDirectives.forEach(el => {
-				const directive = el.copy();
-				directive.curStartIndex = include.curStartIndex;
-				directive.curEndIndex = include.curEndIndex;
-				directives.push(directive);
-			});
+	// 		file.scope.variables().forEach((value) => {
+	// 			this.scope.addVar(value);
+	// 			value.importFile = file;
+	// 		});
+	// 		file.scope.functions().forEach((value) => {
+	// 			this.scope.addFunction(value);
+	// 			value.importFile = file;
+	// 		});
+	// 		const directives: Define[] = [];
+	// 		file.exportDirectives.forEach(el => {
+	// 			const directive = el.copy();
+	// 			directive.curStartIndex = include.curStartIndex;
+	// 			directive.curEndIndex = include.curEndIndex;
+	// 			directives.push(directive);
+	// 		});
 
-			await this.processIncludededDirectives(directives);
-			// file.processIncludededDirectives();
-		}
-	}
+	// 		await this.processIncludededDirectives(directives);
+	// 		// file.processIncludededDirectives();
+	// 	}
+	// }
 
 	private tryLex(text: string): pawnLexer
 	{

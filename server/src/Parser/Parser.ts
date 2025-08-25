@@ -20,6 +20,6 @@ export class Parser
 	public static async parseFile(fil: AbstractOpenFile) {
 		// TODO: обработка файла препроцессором
 
-		Parser._onFileParsedListener?.(fil);
+		await Parser._onFileParsedListener?.(fil);
 	}
 }

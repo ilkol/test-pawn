@@ -4,8 +4,8 @@ import { ReplacedCode } from "./ReplacedCode";
 import { Define } from "./Define";
 import { Stack } from "../antlr/Stack/Stack";
 import { Condition } from "./Condition";
-import { Include } from "./Include";
-import { Endinput } from "./Endinput";
+// import { Include } from "./Include";
+// import { Endinput } from "./Endinput";
 import { Endif } from "./Endif";
 import { Else } from "./Else";
 import { SymbolsManager } from "../Managers/SymbolsManager";
@@ -40,7 +40,7 @@ export class PPParser
 	private readonly directives: PreprocessorDirective[] = [];
 	public readonly defines: Map<string, Define[]> = new Map();
 	private readonly replacedCode: ReplacedCode[] = [];
-	readonly includes: Include[] = [];
+	// readonly includes: Include[] = [];
 
 	private readonly ppConditions: Stack<Condition> = new Stack<Condition>();
 
@@ -210,8 +210,8 @@ export class PPParser
 				return new Define(this.file, rest, startIndex, restIndex, endIndex);
 			case "tryinclude":
 			case "include": {
-				const directive = new Include(this.file, rest, startIndex, restIndex, endIndex);
-				return directive;
+				// const directive = new Include(this.file, rest, startIndex, restIndex, endIndex);
+				// return directive;
 			}
 			case "if":
 				return new Condition(this.file, rest, startIndex, restIndex, endIndex);
@@ -237,9 +237,9 @@ export class PPParser
 				
 			case "enscript":
 			case "endinput":
-				return new Endinput(this.file, startIndex, endIndex);
+				// return new Endinput(this.file, startIndex, endIndex);
 			case "endinput":
-				return new Endinput(this.file, startIndex, endIndex);
+				// return new Endinput(this.file, startIndex, endIndex);
 			default:
 				throw new Error(`Неизвестная команда препроцессора "${directive}"`);
 		}
@@ -261,27 +261,27 @@ export class PPParser
 				}
 				this.handleDefine(element);
 			}
-			else if(element instanceof Include) {
-				if(cur && cur.skip) {
-					continue;
-				}
-				this.handleInclude(element);
-			}
+			// else if(element instanceof Include) {
+			// 	if(cur && cur.skip) {
+			// 		continue;
+			// 	}
+			// 	this.handleInclude(element);
+			// }
 			else if(element instanceof Undef)
 			{
 				this.handleUndef(element);
 			}
-			else if(element instanceof Endinput) {
-				if(cur && cur.skip) {
-					continue;
-				}
-				code = code.substring(0, element.curEndIndex);
-				const range = new Range(
-					element.range.end,
-					this.file.positionAt(this.file.getText().length)
-				);
-				this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
-			}
+			// else if(element instanceof Endinput) {
+			// 	if(cur && cur.skip) {
+			// 		continue;
+			// 	}
+			// 	code = code.substring(0, element.curEndIndex);
+			// 	const range = new Range(
+			// 		element.range.end,
+			// 		this.file.positionAt(this.file.getText().length)
+			// 	);
+			// 	this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+			// }
 			else if(element instanceof ElseIf) {
 				if(cur && cur.directive.conditionResult) {
 					cur.skip = true;
@@ -475,10 +475,10 @@ export class PPParser
         }
         this.defines.get(directive.pattern)!.push(directive);	
 	}
-	private handleInclude(directive: Include)
-	{
-		this.includes.push(directive);
-	}
+	// private handleInclude(directive: Include)
+	// {
+	// 	this.includes.push(directive);
+	// }
 	private isDefined(pattern: string, pos: number)
 	{
 		const defineInfo = this.defines.get(pattern);

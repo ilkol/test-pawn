@@ -1,6 +1,9 @@
 import { CompletionItem, Diagnostic, DocumentLink, ParameterInformation, SignatureHelp, SignatureInformation, URI } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { FileManager } from "./Managers/FileManager";
+import { Position } from "./types";
+import { PreprocessorDirective } from "./Preprocessor/Directives/PreprocessorDirective";
+import { Include } from "./Preprocessor/Directives";
 
 export class FunctionInfo
 {
@@ -70,6 +73,10 @@ export abstract class AbstractOpenFile
 		this.path = FileManager.getPathByURI(value.uri);
 	}
 
+	positionAt(offset: number): Position {
+		return Position.fromLSP(this.document.positionAt(offset));
+	}
+
 	get URI(): URI {
 		return this.document.uri;
 	}
@@ -82,6 +89,27 @@ export abstract class AbstractOpenFile
 		this._path = value;
 	}
 
+	private _processedCode: string;
+
+	get processedCode(): string {
+		return this._processedCode;
+	}
+	set processedCode(value: string) {
+		this._processedCode = value;
+	}
+
+	private _directives: PreprocessorDirective[] = [];
+	get directives(): PreprocessorDirective[] {
+		return this._directives;
+	}
+	set directives(value: PreprocessorDirective[]) {
+		this._directives = value;
+	}
+	
+	get text(): string {
+		return this.document.getText();
+	}
+
 	protected _diagnostics: Diagnostic[] = [];
 
 	get diagnostics(): Diagnostic[] {
@@ -90,6 +118,7 @@ export abstract class AbstractOpenFile
 
 	constructor(protected document: TextDocument) {
 		this._path = FileManager.getPathByURI(document.uri);
+		this._processedCode = document.getText();
 	}
 
 	protected _complitions: CompletionItem[] = [];
@@ -98,40 +127,13 @@ export abstract class AbstractOpenFile
 	}
 
 	protected functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
-	// abstract get defines(): Map<string, Define[]>;
-
-	// public scope: IScope = new Scope(this);
 	
 	protected _isParsed = false;
 	public get isParsed(): boolean {
 		return this._isParsed;
 	}
-	
-	// public getHover(word: string): MarkdownString {
-		
-	// 	let someThing;
-	// 	if(someThing = this.functionsInfo.get(word)){
-	// 		const result = new MarkdownString("").appendCodeblock(someThing.label, "pawn");
-	// 		if(someThing.docs) {
-
-	// 			result.appendMarkdown(someThing.docs.text);
-	// 		}
-	// 		return result;
-	// 	}
-	// 	return new MarkdownString();
-	// }
 
 
-	// abstract processIncludededDirectives(array: PreprocessorDirective[]): void;
-	// abstract get exportDirectives(): Define[];
-	
-	
-
-	// abstract get tokens(): Token[];
-
-	// public abstract get includes(): Include[];
-	public abstract findDirectives(): Promise<void>;
-	protected abstract findAllDirectives(): Promise<void>;
 	public addComplition(comp: CompletionItem) {
 		this._complitions.push(comp);
 	}
@@ -174,13 +176,9 @@ export abstract class AbstractOpenFile
 		});
 	}
 
-	public abstract parseCode(): Promise<void>;
-	public abstract walkAST(): Promise<void>;
-	public abstract processDirectives(): Promise<void>;
-	public abstract processIncludes(): Promise<void>;
-	public abstract openFileWithoutPreprocessor(): Promise<void>;
+	public includes: Include[] = [];
+
 	public abstract includeIncludesScopse(includes: AbstractOpenFile[]): void;
-	public abstract processDefines(): Promise<void>;
 
 	// public abstract getCash(): FileCache;
 	// public abstract setCache(cache: FileCache): boolean;

@@ -2,7 +2,7 @@ import { TextDocumentChangeEvent, TextDocuments, URI  } from "vscode-languageser
 import { URI as Uri } from "vscode-uri";
 import { AbstractOpenFile } from "../AbstractOpenFile";
 import { join, relative } from "path";
-import { access, stat } from "fs/promises";
+import { access, readFile, stat } from "fs/promises";
 import { Logger } from "../Logger/Logger";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { Locale } from "../Locale";
@@ -143,38 +143,32 @@ export class FileManager {
 		return Uri.parse(uri).path.slice(1);
 	}
 
-	public async openFile(path: string): Promise<boolean> {
-		const isFileOpen = this.openedFiles.has(path);
-		if(isFileOpen) {
-			return true;
+	public async openFile(path: string): Promise<void> {
+		let openedFile = this.openedFiles.get(path);
+		if(openedFile) {
+			return;
 		}
-		let uri = Uri.file(path).toString();
-		const textDocument = this.textDocuments.get(uri);
-		if(textDocument) {
-			return true;
-		}
-		try {
-			// this.isFileExist();
-			// const doc = await workspace.openTextDocument(uri);
-			return true;
-		} catch (err) {
-			return false;
-		}
+		const textDocument = TextDocument.create(Uri.file(path).toString(), "pawn", 0, await this.readFileContent(path));
+		await this.onDidOpenDocument(textDocument);
 	}
-	
+
+	public async readFileContent(path: string) {
+		return await readFile(path, 'utf-8');
+	}
+
 	getOpenedFile(path: string): AbstractOpenFile | undefined {
 		return this.openedFiles.get(path);
 	}
 
 
-	private onDidOpenDocument(document: TextDocument) {
+	private async onDidOpenDocument(document: TextDocument) {
 		const path = FileManager.getPathByURI(document.uri);
 		let openedFile = this.getOpenedFile(path);
 		if(!openedFile) {
 			openedFile = new AntlrOpenedFile(document);
 			this.openedFiles.set(openedFile.path, openedFile);
+			await this._onFileManagerOpenFileListener?.(openedFile);
 		}
-		this._onFileManagerOpenFileListener?.(openedFile);
 	}
 
 	public getRelativePath(path: string): string {
@@ -189,5 +183,12 @@ export class FileManager {
 			return path;
 		}
 		return relPath;
+	}
+	public getAbsolutePath(path: string): string {
+		if (!this._currentWorkspacePath) {
+			return path;
+		}
+
+		return join(this._currentWorkspacePath, path);
 	}
 }

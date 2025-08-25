@@ -5,7 +5,6 @@ import { AbstractOpenFile } from "../AbstractOpenFile";
 import { Stack } from "../antlr/Stack/Stack";
 import { DefinitionProvider } from "../Providers/DefinitionProvider";
 import { ReferenceProvider } from "../Providers/ReferenceProvider";
-import { Include, IncludeType } from "../Prepocessor/Include";
 import { CacheManager } from "../cache/CacheManager";
 import { Serialization } from "../cache/Serialization";
 import { FileCache } from "../cache/FileCache";
@@ -346,7 +345,7 @@ export class FileManager {
 	
 		for (const includePath of includes) {
 			// Получаем URI инклуда
-			includePath.uri = await this.plungeInclude(includePath, currentPath);
+			// includePath.uri = await this.plungeInclude(includePath, currentPath);
 			if(!includePath.uri) { // Если URI инклуда не найден, пропускаем его
 				openedFile.addDiagnostic(l10n.t("error 100: Cannot read from file: \"{0}\"", includePath.path), DiagnosticSeverity.Error, includePath.range);
 				continue;
@@ -379,19 +378,19 @@ export class FileManager {
 	 * @param currentPath Текущий путь файла, в котором находится инклуд
 	 * @returns URI инклуда, если он найден, иначе undefined
 	 */
-	private async plungeInclude(include: Include, currentPath: Uri): Promise<Uri | undefined> {
-		const path = include.path;
-		if(include.type === IncludeType.default) {
-			let result = await this.plungeFile(path);
-			if(!result) {
-				result = await this.plungeFile(Uri.joinPath(currentPath, path).path);
-			}
-			return result;
-		} else if(this.includePath){
-			return await this.plungeFile(Uri.joinPath(this.includePath, path).path);
-		}
-		return undefined;
-	}
+	// private async plungeInclude(include: Include, currentPath: Uri): Promise<Uri | undefined> {
+	// 	const path = include.path;
+	// 	// if(include.type === IncludeType.default) {
+	// 	// 	let result = await this.plungeFile(path);
+	// 	// 	if(!result) {
+	// 	// 		result = await this.plungeFile(Uri.joinPath(currentPath, path).path);
+	// 	// 	}
+	// 	// 	return result;
+	// 	// } else if(this.includePath){
+	// 	// 	return await this.plungeFile(Uri.joinPath(this.includePath, path).path);
+	// 	// }
+	// 	return undefined;
+	// }
 
 	private async plungeFile(file: string) {
 		const extenisions = ["", ".inc", ".p", ".pawn"];
