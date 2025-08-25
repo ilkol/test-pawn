@@ -140,7 +140,7 @@ export class FileManager {
 	}
 
 	public static getPathByURI(uri: URI): string {
-		return Uri.parse(uri).path.slice(1);
+		return join(Uri.parse(uri).path.slice(1), "");
 	}
 
 	public async openFile(path: string): Promise<void> {

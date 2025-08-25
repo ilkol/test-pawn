@@ -138,5 +138,6 @@
 	"Call when server is stoping": "Вызывается при завершении работы игрового мода",
 	
 	"Call when player connects to server": "Вызывается при подключении игрока к серверу",
-	"## Return value:\n- 0 - Stops OnPlayerConnect calls in other scripts\n- 1 - Allows OnPlayerConnect calls to be processed in other scripts.": "## Возвращаемое значение:\n- 0 - Останаливает вызовы OnPlayerConnect в других скриптах\n- 1 - Дает возможность обработку вызовов OnPlayerConnect в других скриптах."
+	"## Return value:\n- 0 - Stops OnPlayerConnect calls in other scripts\n- 1 - Allows OnPlayerConnect calls to be processed in other scripts.": "## Возвращаемое значение:\n- 0 - Останаливает вызовы OnPlayerConnect в других скриптах\n- 1 - Дает возможность обработку вызовов OnPlayerConnect в других скриптах.",
+	"Finded cycle dependency %s": "Найден цикл зависимостей: %s"
 }
