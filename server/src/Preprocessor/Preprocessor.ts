@@ -6,8 +6,9 @@ import * as Directives from "./Directives"
 import { Condition } from "./Directives/Conditionals";
 import { PreprocessorDirective } from "./Directives/PreprocessorDirective";
 import { DependencyManager } from "../DependencyManager";
-import { LogLevel } from "vscode";
-import { Logger } from "../Logger/Logger";
+import { Locale } from "../Locale";
+import { DiagnosticSeverity, DiagnosticTag } from "vscode-languageserver";
+import { LikeCCharStream } from "./LikeCCharStream";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -89,7 +90,13 @@ export class Preprocessor
 			// Получаем URI инклуда
 			includePath.absolutePath = await this.plungeInclude(includePath, this.fileManager.currentPath);
 			if(!includePath.absolutePath) { // Если путь не найден, то пропускаем
-				// openedFile.addDiagnostic(l10n.t("error 100: Cannot read from file: \"{0}\"", includePath.path), DiagnosticSeverity.Error, includePath.range);
+				openedFile.diagnostics.push({
+					code: 100,
+					message: Locale.t("error 100: Cannot read from file: \"%s\"", includePath.pathText),
+					range: includePath.range,
+					severity: DiagnosticSeverity.Error,
+					source: "pawn",
+				});
 				continue;
 			} 
 			includePath.exist = true;
@@ -165,11 +172,17 @@ export class Preprocessor
 					continue;
 				}
 				code = code.substring(0, element.curEndIndex);
-				// const range = new Range(
-				// 	element.range.end,
-				// 	document.positionAt(document.text.length)
-				// );
-				// this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
+				const range = new Range(
+					element.range.end,
+					document.positionAt(document.text.length)
+				);
+				document.diagnostics.push({
+					message: Locale.t("Non-executable code"),
+					range: range,
+					severity: DiagnosticSeverity.Hint,
+					source: "pawn-lsp",
+					tags: [DiagnosticTag.Unnecessary]
+				});				
 			}
 			else if(element instanceof Directives.Conditionals.ElseIf) {
 				if(cur && cur.directive.conditionResult) {
@@ -192,7 +205,7 @@ export class Preprocessor
 				this.handleElse(element, ifStack);
 			}
 			else {
-				// TODO pragma				
+				// TODO pragma, tryinclude e.t.c.	
 			}
 			
 		}
@@ -265,8 +278,13 @@ export class Preprocessor
 					currentIf.directive.range.end,
 					directive.range.start
 				);
-				// this.diagnosticManager.addDiagnostic(l10n.t("Non-executable code"), DiagnosticSeverity.Hint, this.file.uri.path, range, [DiagnosticTag.Unnecessary]);
-
+				this.currentDocument?.diagnostics.push({
+					message: Locale.t("Non-executable code"),
+					range: range,
+					severity: DiagnosticSeverity.Hint,
+					source: "pawn-lsp",
+					tags: [DiagnosticTag.Unnecessary]
+				});				
 			}
 		}
 		return code;
