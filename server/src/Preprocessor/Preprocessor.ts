@@ -117,7 +117,9 @@ export class Preprocessor
 			// Получаем URI инклуда
 			includePath.absolutePath = await this.plungeInclude(includePath, this.fileManager.currentPath);
 			if(!includePath.absolutePath) { // Если путь не найден, то пропускаем
-				openedFile.diagnostics.push(PawnErrors.report(100, includePath.pathRange, includePath.pathText));
+				if(!includePath.silent) {
+					openedFile.diagnostics.push(PawnErrors.report(100, includePath.pathRange, includePath.pathText));
+				}
 				continue;
 			} 
 			includePath.exist = true;
@@ -496,8 +498,11 @@ export class Preprocessor
 			}
 			case "tryinclude":
 			case "include": {
-				const directive = new Directives.Include(directiveRange, this.matchIncludePath(rest, restIndex), startIndex, endIndex);
-				return directive;
+				const directiveInstance = new Directives.Include(directiveRange, this.matchIncludePath(rest, restIndex), startIndex, endIndex);
+				if(directive.toLowerCase() === "tryinclude") {
+					directiveInstance.silent = true;
+				}
+				return directiveInstance;
 			}
 			case "if":
 				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, restIndex, endIndex);
