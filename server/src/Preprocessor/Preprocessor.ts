@@ -395,7 +395,7 @@ export class Preprocessor
 
 		return {
 			directives,
-			code
+			code: codeWithoutDirectives
 		}
 	}
 
