@@ -5,6 +5,7 @@ import { Position } from "./types";
 import { PreprocessorDirective } from "./Preprocessor/Directives/PreprocessorDirective";
 import { Include } from "./Preprocessor/Directives";
 import { Define } from "./Preprocessor/Directives/Defining";
+import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
 
 export class FunctionInfo
 {
@@ -76,6 +77,15 @@ export abstract class AbstractOpenFile
 
 	positionAt(offset: number): Position {
 		return Position.fromLSP(this.document.positionAt(offset));
+	}
+
+	private _AST?: ASTNode;
+
+	get AST(): ASTNode | undefined {
+		return this._AST;
+	}
+	set AST(value: ASTNode | undefined){
+		this._AST = value;
 	}
 
 	get URI(): URI {

@@ -92,7 +92,7 @@ import { ChainedRelationalOperatorsContext } from "./pawnParser";
  * This interface defines a complete listener for a parse tree produced by
  * `pawnParser`.
  */
-export interface pawnListener extends ParseTreeListener {
+export interface IPawnListener extends ParseTreeListener {
 	/**
 	 * Enter a parse tree produced by `pawnParser.file`.
 	 * @param ctx the parse tree
