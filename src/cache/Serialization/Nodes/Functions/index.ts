@@ -1,1 +1,0 @@
-export { IFunctionCall as Call } from "./Call";
