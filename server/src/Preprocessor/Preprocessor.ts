@@ -244,6 +244,14 @@ export class Preprocessor
 		if(define) {
 			const lastDef = define[define.length - 1];
 			lastDef.undef = directive;
+		} else {
+			this.currentDocument?.diagnostics.push({
+				code: 17,
+				message: Locale.t("error.017", directive.define),
+				range: directive.defineRange,
+				severity: DiagnosticSeverity.Error,
+				source: "pawn",
+			});
 		}
 	}
 	private handleDefine(directive: Directives.Defining.Define, defines:  Map<string, Directives.Defining.Define[]>)
