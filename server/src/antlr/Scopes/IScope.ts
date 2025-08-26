@@ -26,6 +26,6 @@ export interface IScope
 
 	get enums(): Map<string, EnumDeclaration>;
 
-	get returnTag(): Tag|undefined;
-	set returnTag(v: Tag);
+	get currenFunction(): FunctionDeclaration;
+	set currenFunction(value: FunctionDeclaration);
 }

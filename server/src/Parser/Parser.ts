@@ -33,7 +33,7 @@ export class Parser
 
 	}
 
-	public static async parseFile(document: AbstractOpenFile) {
+	public static parseFile(document: AbstractOpenFile) {
 		// TODO: обработка файла препроцессором
 		const code = document.processedCode;
 
@@ -53,7 +53,7 @@ export class Parser
 		let listen = (<PawnListener>listener);
 		document.AST = <Declarations>listen.Root;
 
-		await Parser._onFileParsedListener?.(document);
+		Parser._onFileParsedListener?.(document);
 	}
 
 	public static async walkAST(document: AbstractOpenFile) {
@@ -61,23 +61,18 @@ export class Parser
 			Logger.error("AST is not initialized, cannot walk the tree.");
 			return;
 		}
-		// let analyzer = new Analyzer(
-		// 	document,
-		// 	this.scope,
-		// 	this.tmpDiagnostic,
-		// 	this.tokensManager,
-		// 	this.symbolsManager,
-		// 	this.complitions,
-		// 	this.signatures
-		// );
+		let analyzer = new Analyzer(
+			document,
+			document.scope,
+		);
 	
-		// try {
-		// 	document.AST.accept(analyzer); // Здесь тоже может быть нужен await, если accept асинхронный
-		// }
-		// catch (e) {
-		// 	Logger.error("Error on tree visit");
-		// 	console.error(e);
-		// }
+		try {
+			document.AST.accept(analyzer); // Здесь тоже может быть нужен await, если accept асинхронный
+		}
+		catch (e) {
+			Logger.error("Error on tree visit");
+			console.error(e);
+		}
 	
 		// this.diagnostic(analyzer.diagnostics);
 		// analyzer.functions.forEach((val, key) => {

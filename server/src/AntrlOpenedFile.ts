@@ -1,6 +1,15 @@
 import { AbstractOpenFile } from "./AbstractOpenFile";
+import { IScope } from "./antlr/Scopes/IScope";
+import { Scope } from "./antlr/Scopes/Scope";
 
 export class AntlrOpenedFile extends AbstractOpenFile {
+
+	private _scope: IScope = new Scope(this);
+
+	get scope(): IScope {
+		return this._scope;
+	}
+
 	public findDirectives(): Promise<void> {
 		throw new Error("Method not implemented.");
 	}

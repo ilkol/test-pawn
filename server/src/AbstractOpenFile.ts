@@ -6,6 +6,7 @@ import { PreprocessorDirective } from "./Preprocessor/Directives/PreprocessorDir
 import { Include } from "./Preprocessor/Directives";
 import { Define } from "./Preprocessor/Directives/Defining";
 import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
+import { IScope } from "./antlr/Scopes/IScope";
 
 export class FunctionInfo
 {
@@ -189,8 +190,7 @@ export abstract class AbstractOpenFile
 
 	public includes: Include[] = [];
 	public defines: Map<string, Define[]> = new Map();
-
-	public abstract includeIncludesScopse(includes: AbstractOpenFile[]): void;
+	abstract get scope(): IScope;
 
 	// public abstract getCash(): FileCache;
 	// public abstract setCache(cache: FileCache): boolean;

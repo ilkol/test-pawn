@@ -46,8 +46,12 @@ async function main() {
 		Logger.log(`${document.path} has been preprocessed`);
 		await Parser.parseFile(document);
 	}
-	Parser.onFileParsedListener = (document) => {
+	Parser.onFileParsedListener = async (document) => {
 		Logger.log(`${document.path} has been parsed`);
+		await Parser.walkAST(document);
+	}
+	Parser.onFileWalkedASTListener = (document) => {
+		Logger.log(`${document.path} AST has walked`);
 		sendFileDiagnostics(connection, document);
 	}
 	

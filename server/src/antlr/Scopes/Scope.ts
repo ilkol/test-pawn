@@ -9,18 +9,32 @@ import { EnumMember } from "../AST/Nodes/enum/EnumMember";
 
 export class Scope implements IScope
 {
+	public static currentFunction: FunctionDeclaration;
+
+	/**
+	 * Родительская область видимости
+	 */
 	protected _parent: IScope|undefined;
+	/**
+	 * Список всех идентификатор в области видимости
+	 */
 	protected _ids: Map<string, Declaration> = new Map<string, Declaration>();
+	/**
+	 * Объявленные функции
+	 */
 	protected _functions: Map<string, FunctionDeclaration> = new Map();
+	/**
+	 * Объявленные переменные
+	 */
 	protected _variables: Map<string, VarDeclaration> = new Map();
+	/**
+	 * Объявленные перечисления
+	 */
 	protected _enums: Map<string, EnumDeclaration> = new Map();
-	protected _tag: Tag | undefined;
-	;
 	
 	public constructor(protected _file: AbstractOpenFile, IScope: IScope|undefined = undefined)
 	{
 		this._parent = IScope;
-		this._tag = IScope?.returnTag;
 	}
 	addEnum(variable: EnumDeclaration): void {
 		this.addIdent(variable);
@@ -33,12 +47,6 @@ export class Scope implements IScope
 
 	addEnumMember(variable: EnumMember): void {
 		this.addVar(variable);
-	}
-	get returnTag(): Tag | undefined {
-		return this._tag;
-	}
-	set returnTag(v: Tag) {
-		this._tag = v;
 	}
 	public findVar(id: string): VarDeclaration | undefined {
 		let currentScope: IScope | undefined = this;
@@ -99,5 +107,12 @@ export class Scope implements IScope
 
 	public get parent(): IScope|undefined {
 		return this._parent;
+	}
+
+	get currenFunction(): FunctionDeclaration {
+		return Scope.currentFunction;
+	}
+	set currenFunction(value: FunctionDeclaration) {
+		Scope.currentFunction = value;
 	}
 }
