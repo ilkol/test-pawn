@@ -62,7 +62,7 @@ export class Range {
 	constructor(start: Position, end: Position)
 	constructor(startLine: number, startCharacter: number, endLine: number, endCharacter: number)
 	constructor(startLine: number|Position, startCharacter: number|Position, endLine?: number, endCharacter?: number) {
-		if(typeof startLine == "number" && typeof startCharacter == "number" && endLine && endCharacter) {
+		if(typeof startLine == "number" && typeof startCharacter == "number" && endLine !== undefined && endCharacter !== undefined) {
 			this.start = new Position(startLine, startCharacter);
 			this.end = new Position(endLine, endCharacter);
 		} else if(startLine instanceof Position && startCharacter instanceof Position) {
