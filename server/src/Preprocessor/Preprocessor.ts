@@ -10,6 +10,7 @@ import { Locale } from "../Locale";
 import { DiagnosticSeverity, DiagnosticTag } from "vscode-languageserver";
 import { LikeCCharStream } from "./LikeCCharStream";
 import { CodeMapper } from "./CodeMapper";
+import { PawnErrors } from "../Errors/PawnErrors";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -116,13 +117,7 @@ export class Preprocessor
 			// Получаем URI инклуда
 			includePath.absolutePath = await this.plungeInclude(includePath, this.fileManager.currentPath);
 			if(!includePath.absolutePath) { // Если путь не найден, то пропускаем
-				openedFile.diagnostics.push({
-					code: 100,
-					message: Locale.t("error 100: Cannot read from file: \"%s\"", includePath.pathText),
-					range: includePath.range,
-					severity: DiagnosticSeverity.Error,
-					source: "pawn",
-				});
+				openedFile.diagnostics.push(PawnErrors.report(100, includePath.pathRange, includePath.pathText));
 				continue;
 			} 
 			includePath.exist = true;
@@ -245,13 +240,7 @@ export class Preprocessor
 			const lastDef = define[define.length - 1];
 			lastDef.undef = directive;
 		} else {
-			this.currentDocument?.diagnostics.push({
-				code: 17,
-				message: Locale.t("error.017", directive.define),
-				range: directive.defineRange,
-				severity: DiagnosticSeverity.Error,
-				source: "pawn",
-			});
+			this.currentDocument?.diagnostics.push(PawnErrors.report(17, directive.defineRange, directive.define));
 		}
 	}
 	private handleDefine(directive: Directives.Defining.Define, defines:  Map<string, Directives.Defining.Define[]>)
@@ -290,13 +279,7 @@ export class Preprocessor
 	private handleEndIf(code: string, directive: Directives.Conditionals.Endif, ifStack: ConditionStack): string
 	{
 		if (ifStack.length === 0) {
-			this.currentDocument?.diagnostics.push({
-				code: 26,
-				message: Locale.t("error.026"),
-				range: directive.range,
-				severity: DiagnosticSeverity.Error,
-				source: "pawn",
-			});
+			this.currentDocument?.diagnostics.push(PawnErrors.report(26, directive.range));
 			return code;
 			throw new Error("Unexpected #endif");
 		}
@@ -334,13 +317,7 @@ export class Preprocessor
 	private handleElse(directive: Directives.Conditionals.Else, ifStack: ConditionStack): void
 	{
 		if (ifStack.length === 0) {
-			this.currentDocument?.diagnostics.push({
-				code: 26,
-				message: Locale.t("error.026"),
-				range: directive.range,
-				severity: DiagnosticSeverity.Error,
-				source: "pawn",
-			});
+			this.currentDocument?.diagnostics.push(PawnErrors.report(26, directive.range));
 			return;
 			throw new Error("Unexpected #else");
 		}
@@ -353,13 +330,7 @@ export class Preprocessor
 	private handleElseIf(directive: Directives.Conditionals.ElseIf, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>): void
 	{
 		if (ifStack.length === 0) {
-			this.currentDocument?.diagnostics.push({
-				code: 26,
-				message: Locale.t("error.026"),
-				range: directive.range,
-				severity: DiagnosticSeverity.Error,
-				source: "pawn",
-			});
+			this.currentDocument?.diagnostics.push(PawnErrors.report(26, directive.range));
 			return;
 		}
 	
@@ -554,14 +525,7 @@ export class Preprocessor
 			case "endinput":
 				return new Directives.Endinput(directiveRange, startIndex, endIndex);
 			default:
-				this.currentDocument?.diagnostics.push({
-					code: 31,
-					message: Locale.t("error.031"),
-					range: directiveRange,
-					severity: DiagnosticSeverity.Error,
-					source: "pawn",
-				});
-				// throw new Error(`Неизвестная команда препроцессора "${directive}"`);
+				this.currentDocument?.diagnostics.push(PawnErrors.report(31, directiveRange));
 		}
 	}
 
