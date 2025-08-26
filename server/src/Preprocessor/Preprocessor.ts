@@ -279,9 +279,17 @@ export class Preprocessor
 		return false;
 	}
 
-	private handleEndIf(code: string, directive: Directives.Conditionals.Endif, ifStack: ConditionStack)
+	private handleEndIf(code: string, directive: Directives.Conditionals.Endif, ifStack: ConditionStack): string
 	{
 		if (ifStack.length === 0) {
+			this.currentDocument?.diagnostics.push({
+				code: 26,
+				message: Locale.t("error.026"),
+				range: directive.range,
+				severity: DiagnosticSeverity.Error,
+				source: "pawn",
+			});
+			return code;
 			throw new Error("Unexpected #endif");
 		}
 		let ifBlock = ifStack[ifStack.length - 1];
@@ -315,9 +323,17 @@ export class Preprocessor
 		}
 		return code;
 	}
-	private handleElse(directive: Directives.Conditionals.Else, ifStack: ConditionStack)
+	private handleElse(directive: Directives.Conditionals.Else, ifStack: ConditionStack): void
 	{
 		if (ifStack.length === 0) {
+			this.currentDocument?.diagnostics.push({
+				code: 26,
+				message: Locale.t("error.026"),
+				range: directive.range,
+				severity: DiagnosticSeverity.Error,
+				source: "pawn",
+			});
+			return;
 			throw new Error("Unexpected #else");
 		}
 		const currentIf = ifStack[ifStack.length - 1];
@@ -326,10 +342,17 @@ export class Preprocessor
 
 		currentIf.skip = currentIf.directive.conditionResult;
 	}
-	private handleElseIf(directive: Directives.Conditionals.ElseIf, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>)
+	private handleElseIf(directive: Directives.Conditionals.ElseIf, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>): void
 	{
 		if (ifStack.length === 0) {
-			throw new Error("Unexpected #elseif");
+			this.currentDocument?.diagnostics.push({
+				code: 26,
+				message: Locale.t("error.026"),
+				range: directive.range,
+				severity: DiagnosticSeverity.Error,
+				source: "pawn",
+			});
+			return;
 		}
 	
 		const currentIf = ifStack[ifStack.length - 1];
@@ -354,7 +377,7 @@ export class Preprocessor
 		const code = document.text;
 		const directives: PreprocessorDirective[] = [];
 
-		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef|\w+)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
@@ -523,7 +546,14 @@ export class Preprocessor
 			case "endinput":
 				return new Directives.Endinput(directiveRange, startIndex, endIndex);
 			default:
-				throw new Error(`Неизвестная команда препроцессора "${directive}"`);
+				this.currentDocument?.diagnostics.push({
+					code: 31,
+					message: Locale.t("error.031"),
+					range: directiveRange,
+					severity: DiagnosticSeverity.Error,
+					source: "pawn",
+				});
+				// throw new Error(`Неизвестная команда препроцессора "${directive}"`);
 		}
 	}
 

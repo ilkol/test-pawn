@@ -82,5 +82,9 @@
 	"Error accessing folder %s": "Error accessing folder %s",
 	"Functions and variables marked with this keyword will not be included in the resulting program if they are not used anywhere.": "Functions and variables marked with this keyword will not be included in the resulting program if they are not used anywhere.",
 	"The `if` keyword divides the command execution flow into two cases. If the condition is met, the following code is executed. Otherwise, the code is skipped.": "The `if` keyword divides the command execution flow into two cases. If the condition is met, the following code is executed. Otherwise, the code is skipped.",
-	"Finded cycle dependency %s": "Finded cycle dependency: %s"
+	"Finded cycle dependency %s": "Finded cycle dependency: %s",
+	"error": {
+		"026": "error 026: no matching \"#if...\"",
+		"031": "error 031: unknown directive"
+	}
 }
