@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 import { DiagnosticError } from "../../diagnostic/DiagnosticError";
 import { DiagnosticMessage } from "../../diagnostic/DiagnosticMessage";
 import { BaseVisitor } from "./BaseVisitor";
@@ -18,11 +17,9 @@ import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
 import { IScope } from "../../Scopes/IScope";
 import { Scope } from "../../Scopes/Scope";
-import { IHasID } from "../Nodes/IHasID";
 import { Declaration } from "../Nodes/Declaration";
 import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
-// import { SemanticTokensManager } from "../../../Managers/SemanticTokensManager";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
@@ -31,28 +28,44 @@ import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { Expression } from "../Nodes/Expresion";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 import { Array } from "../Nodes/Variables/Array";
-// import { SemanticTokens, SemanticTokensModifires } from "../../../SemanticTokens";
-// import { SymbolsManager } from "../../../Managers/SymbolsManager";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 import { Tag } from "../Nodes/Tag";
 import { IHasTag } from "../Nodes/IHasTag";
 import { AbstractOpenFile, FunctionInfo, FunctionParameterInfo } from "../../../AbstractOpenFile";
 import { IfStatement } from "../Nodes/Conditions/IfStatement";
 
-// import * as funcDef from "../../../Linking/FunctionDefinition";
-// import * as funcCall from "../../../Linking/FunctionCall";
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 import { DiagnosticHint } from "../../diagnostic/DiagnosticHint";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
-// import { Definition } from "../../../Linking/Definition";
-// import { Reference } from "../../../Linking/Reference";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { Range } from "../../../types";
 import { Locale } from "../../../Locale";
 import { CompletionItem, DiagnosticTag, SignatureHelp, SymbolKind } from "vscode-languageserver";
+import { PawnErrors } from "../../../Errors/PawnErrors";
 
 export class Analyzer extends BaseVisitor
 {
+	constructor(
+		protected file: AbstractOpenFile,
+		scope: IScope,
+		// public readonly diagnostics: DiagnosticMessage[],
+		// public readonly tokens: SemanticTokensManager,
+		// public readonly symbolsManager: SymbolsManager,
+		// public readonly complitions: CompletionItem[],
+		// public readonly signatures: Map<string, SignatureHelp>
+	) {
+		super();
+		this.curScope = scope;
+
+		let varInit = new VariableInit();
+		varInit.id = "cellmin";
+		this.curScope.addVar(varInit);
+		varInit = new VariableInit();
+		varInit.id = "cellmax";
+		this.curScope.addVar(varInit);
+	}
+
+
 	beforeVisitWDohile(node: DoWhileCycle): void {
 
 	}
@@ -290,21 +303,20 @@ export class Analyzer extends BaseVisitor
 				{
 					this.addDiagnostic(new DiagnosticError(Locale.t("Expected %d parameters, but passed %d", func.parameters.length, node.vars.length), node.idPos));
 					func.parameters.forEach(element => {
-						this.compareTag(element, node.vars[param], node.vars[param].pos);
+						this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
 						param++;
 					});
 				}
 				else
 				{
-					let tmpFunc: FunctionDeclaration = func;
 					node.vars.forEach(element => {
-						this.compareTag(tmpFunc.parameters[param], element, node.vars[param].pos);
+						this.checkTagMismatch(func.parameters[param].tag, element.tag, true, element.pos);
 						param++;
 					});
 
-					for(let i = param; i < tmpFunc.parameters.length; i++) {
-						if(tmpFunc.parameters[i].defaultValue) continue;
-						this.addDiagnostic(new DiagnosticError(Locale.t("Expected %d parameters, but passed %d", tmpFunc.parameters.length, node.vars.length), node.idPos));
+					for(let i = param; i < func.parameters.length; i++) {
+						if(func.parameters[i].defaultValue) continue;
+						this.addDiagnostic(new DiagnosticError(Locale.t("Expected %d parameters, but passed %d", func.parameters.length, node.vars.length), node.idPos));
 						break;
 					}
 				}
@@ -312,18 +324,18 @@ export class Analyzer extends BaseVisitor
 			else {
 				if(func.parameters.length <= node.vars.length && func.ellipse) {
 					func.parameters.forEach(element => {
-						this.compareTag(element, node.vars[param], node.vars[param].pos);
+						this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
 						param++;
 					});
 					for(; param < node.vars.length; param++)
 					{
-						this.compareTag(func.ellipse, node.vars[param], node.vars[param].pos);
+						this.checkTagMismatch(func.ellipse.tag, node.vars[param].tag, true, node.vars[param].pos);
 					}
 				}
 				else {
 					if(func.parameters.length === node.vars.length) {
 						func.parameters.forEach(element => {
-							this.compareTag(element, node.vars[param], node.vars[param].pos);
+							this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
 							param++;
 						});
 					}
@@ -391,18 +403,12 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	afterVisitReturn(node: ReturnStatement): void {
+		// TODO: error 78
 		if(!node.value) {
 			return;
 		}
-		if(node.value.tag.tagString !== this.curScope.returnTag?.tagString) {
-			if(node.value.expresion instanceof Variable) {
-				const variable = this.curScope.findVar(node.value.expresion.id);
-				if(variable && this.curScope.returnTag && this.isEqualTag(variable?.tag, this.curScope.returnTag)) {
-					this.addDiagnostic(new DiagnosticError(Locale.t("The return value must be with the tag \"%s\", but the tag \"%s\" was found", this.curScope.returnTag?.id, variable?.tag.tagString), node.value.pos));
-				}
-			}
-			else this.addDiagnostic(new DiagnosticError(Locale.t("The return value must be with the tag \"%s\", but the tag \"%s\" was found", this.curScope.returnTag?.id ? this.curScope.returnTag?.id : "unknown", node.value.tag.tagString), node.value.pos));
-		}
+		const currentFunction = this.curScope.currenFunction;
+		this.checkTagMismatch(currentFunction.tag, node.value.tag, true, node.value.pos);
 	}
 	beforeVisitCodeBlock(node: CodeBlock): void {
 		this.extendScope();
@@ -517,7 +523,7 @@ export class Analyzer extends BaseVisitor
 		// this.symbolsManager.addSymbol(symbol);
 
 		this.extendScope();
-		this.curScope.returnTag = node.tag;
+		this.curScope.currenFunction =node;
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope();
@@ -536,32 +542,12 @@ export class Analyzer extends BaseVisitor
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));		
 		// this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(node.modifires).concat(SemanticTokensModifires.declaration));
 	}
-		
-	constructor(
-		protected file: AbstractOpenFile,
-		scope: IScope,
-		public readonly diagnostics: DiagnosticMessage[],
-		// public readonly tokens: SemanticTokensManager,
-		// public readonly symbolsManager: SymbolsManager,
-		public readonly complitions: CompletionItem[],
-		public readonly signatures: Map<string, SignatureHelp>
-	) {
-		super();
-		this.curScope = scope;
-
-		let varInit = new VariableInit();
-		varInit.id = "cellmin";
-		this.curScope.addVar(varInit);
-		varInit = new VariableInit();
-		varInit.id = "cellmax";
-		this.curScope.addVar(varInit);
-	}
 	
 	private addComplition(compl: CompletionItem) {
-		this.complitions.push(compl);
+		// this.complitions.push(compl);
 	}
 	private addDiagnostic(msg: DiagnosticMessage) {
-		this.diagnostics.push(msg);
+		// this.diagnostics.push(msg);
 	}
 
 	private checkIds(ids: Map<string, Declaration>) {
@@ -719,5 +705,64 @@ export class Analyzer extends BaseVisitor
 		}
 	
 		this.functions.set(func.id, functionInfo);
+	}
+
+	/**
+	 * Выполняет проверку соответствие типов
+	 * @param formalTag необходимый тэг
+	 * @param actualRag проверяемый тэг
+	 * @param allowCoerce разрешено грубое приведение типа
+	 */
+	private checkTagMismatch(formalTag: Tag, actualTag: Tag, allowCoerce: boolean, errorRange: Range) {
+		if(formalTag.tags.length === 1) {
+			this.checkSingleTagMismatch(formalTag.tags[0], actualTag.tags[0], allowCoerce, errorRange);
+			return;
+		}
+		else {
+			this.checkMultyTagMismatch(formalTag.tags, actualTag.tags[0], errorRange);
+		}
+	}
+
+	private checkMultyTagMismatch(formalTags: string[], actualTag: string, range: Range) {
+		if(this.checkAllTags(formalTags, actualTag)) {
+			return;
+		}
+
+		const names = formalTags.map((name) => `"${name}"`);
+		const lastTag = names.pop();
+		const formalTag = names.join(", ");
+		const formalTagsName = formalTag === "" ? `${lastTag},` : `${formalTag} or ${lastTag};`;
+		this.file.diagnostics.push(PawnErrors.report(213, range, formalTags.length === 1 ? Locale.t("tag") : Locale.t("tags"), formalTagsName, actualTag))
+	}	
+
+	private checkAllTags(formalTags: string[], actualTag: string): boolean {
+		for(const formalTag of formalTags) {
+			if(this.simpleCheckTagMismatch(formalTag, actualTag, true)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private checkSingleTagMismatch(formalTag: string, actualTag: string, allowCoerce: boolean, range: Range) {
+		if(this.simpleCheckTagMismatch(formalTag, actualTag, allowCoerce)) {
+			return;
+		}
+		this.file.diagnostics.push(PawnErrors.report(213, range, Locale.t("tag"), formalTag, actualTag))
+	}
+
+	private isDefaultTag(tag: string): boolean {
+		return tag === "_";
+	}
+	private isTagFixed(tag: string): boolean {
+		return tag === "Fixed";
+	}
+
+	private simpleCheckTagMismatch(formalTag: string, actualTag: string, allowCoerce: boolean): boolean {
+		if(formalTag === actualTag) {
+			return true;
+		}
+		// Если необходимый тэг - дефолтный, а проверяемый не Fixed, то проверяемый приводиться к дефолтному
+		return allowCoerce && this.isDefaultTag(formalTag) && this.isTagFixed(actualTag);
 	}
 }

@@ -200,7 +200,7 @@
 		"210": "warning 210: possible use of symbol before initialization: %s",
 		"211": "warning 211: possibly unintended assignment",
 		"212": "warning 212: possibly unintended bitwise operation",
-		"213": "warning 213: tag mismatch",
+		"213": "warning 213: tag mismatch: expected %s %s but found %s",
 		"214": "warning 214: possibly a \"const\" array argument was intended: %s",
 		"215": "warning 215: expression has no effect",
 		"216": "warning 216: nested comment",
@@ -226,5 +226,8 @@
 		"236": "warning 236: unknown parameter in substitution (incorrect #define pattern)",
 		"237": "warning 237: user warning: %s"
 	},
-	"mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)"
+	"mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
+	"tag": "tag",
+	"tags": "tags",
+	"Parameter": "Parameter"
 }
