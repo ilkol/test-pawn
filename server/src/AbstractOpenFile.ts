@@ -4,6 +4,7 @@ import { FileManager } from "./Managers/FileManager";
 import { Position } from "./types";
 import { PreprocessorDirective } from "./Preprocessor/Directives/PreprocessorDirective";
 import { Include } from "./Preprocessor/Directives";
+import { Define } from "./Preprocessor/Directives/Defining";
 
 export class FunctionInfo
 {
@@ -177,6 +178,7 @@ export abstract class AbstractOpenFile
 	}
 
 	public includes: Include[] = [];
+	public defines: Map<string, Define[]> = new Map();
 
 	public abstract includeIncludesScopse(includes: AbstractOpenFile[]): void;
 

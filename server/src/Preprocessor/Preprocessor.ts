@@ -9,6 +9,7 @@ import { DependencyManager } from "../DependencyManager";
 import { Locale } from "../Locale";
 import { DiagnosticSeverity, DiagnosticTag } from "vscode-languageserver";
 import { LikeCCharStream } from "./LikeCCharStream";
+import { CodeMapper } from "./CodeMapper";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -17,10 +18,32 @@ interface ConditionStackElement {
 	skip: boolean;
 }
 
+class FindedDefine {
+	constructor(public readonly start: number, public readonly length: number, public readonly shift: number) {
+
+	}
+}
+
+interface MappingInfo {
+	/**
+	 * Количество символов, найденных в строке
+	 */
+	findedLength: number;
+	/**
+	 * Количество символов, на которые нужно заменить
+	 */
+	replacingLength: number;
+}
+
+interface ReplaceInfo {
+	shift: number;
+}
+
 export type OnFileProcessedListener = (file: AbstractOpenFile) => (Promise<void> | void);
 
 export class Preprocessor
 {
+	private static readonly needSemicolon = true;
 
 	/**
 	 * Фукнция, которая вызывается после окончания обработки препроцессором файла
@@ -47,9 +70,10 @@ export class Preprocessor
 		document.processedCode = code;
 		document.directives = directives;
 
-		const {code: codeAfterProcessingDirectives, includes} = await this.processFileDirectives(document);
+		const {code: codeAfterProcessingDirectives, includes, defines} = await this.processFileDirectives(document);
 		document.processedCode = codeAfterProcessingDirectives;
 		document.includes = includes;
+		document.defines = defines;
 
 		await this.buildDependencyGraph(document);
 
@@ -62,6 +86,8 @@ export class Preprocessor
 			}
 			await this.fileManager.openFile(include);
 		}
+
+		document.processedCode = await this.processDefines(document.processedCode, document.defines);
 
 		await this._onFileProcessedListener?.(document);
 	}
@@ -209,7 +235,7 @@ export class Preprocessor
 			}
 			
 		}
-		return {code, includes};
+		return {code, includes, defines};
 	}
 
 	private handleUndef(directive: Directives.Defining.Undef, defines:  Map<string, Directives.Defining.Define[]>)
@@ -738,5 +764,427 @@ export class Preprocessor
 		}
 
 		return {rest: result, fullLength: stream.curIndex};
+	}
+
+	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>)
+	{
+		for(let definesArray of defines.values()) {
+			for(let findinglocalDefine of definesArray) {
+				const start = findinglocalDefine.endIndex;
+				const stop = findinglocalDefine.undef ?  findinglocalDefine.undef.startIndex : -1;
+				for(let definesArray of defines.values()) {
+					for(let localDefine of definesArray) {
+						let inRange = false;
+						if(localDefine.startIndex > start) {
+							if(stop !== -1) {
+								if(localDefine.startIndex < stop) {
+									inRange = true;
+								}
+							}
+							else {
+								inRange = true;
+							}
+						}
+						if(inRange) {
+							localDefine.replacement = await this.substringrReplacingOnChank(localDefine.replacement, findinglocalDefine, localDefine.startIndex, `${findinglocalDefine.prefix} in ${localDefine.prefix}`);
+						}
+					}
+				}
+			}
+		}
+
+		return code;
+	}
+
+	private codeMapper: CodeMapper = new CodeMapper();
+
+	private async substringrReplacingOnChank(str: string, define: Directives.Defining.Define, preShift: number, title: string = "Processing replacements..."): Promise<string>
+	{
+		const changes: FindedDefine[] = [];
+		const res = this.testPreprocess(str, define, changes);
+		
+		let startPos: number, originalStartPos: number;
+		changes.forEach(change => {
+			startPos = change.start + preShift;
+			originalStartPos = this.codeMapper.getOriginalPos(startPos);
+			this.codeMapper.addChange({
+				originalStartPos: originalStartPos,
+				startIndex: startPos,
+				changeLength: change.shift
+			});
+			// const range = new Range(this.file.positionAt(originalStartPos), this.currentDocument.positionAt(originalStartPos + change.length));
+			// this.tokensManager.addToken(range, SemanticTokens.macro);
+			preShift -= change.shift;
+		});
+		return res;
+		// return await vscode.window.withProgress(
+		// 	{
+		// 		location: vscode.ProgressLocation.Window,	
+		// 		title: title,
+		// 		cancellable: true,
+		// 	},
+		// 	async (progress, token) => {
+		// 		const changes: FindedDefine[] = [];
+		// 		const res = testPreprocess(str, define, changes);
+				
+		// 		let startPos: number, originalStartPos: number;
+		// 		changes.forEach(change => {
+		// 			startPos = change.start + preShift;
+		// 			originalStartPos = this.codeMapper.getOriginalPos(startPos);
+		// 			this.codeMapper.addChange({
+		// 				originalStartPos: originalStartPos,
+		// 				startIndex: startPos,
+		// 				changeLength: change.shift
+		// 			});
+		// 			const range = new Range(this.file.positionAt(originalStartPos), this.file.positionAt(originalStartPos + change.length));
+		// 			this.tokensManager.addToken(range, SemanticTokens.macro);
+		// 			preShift -= change.shift;
+		// 		});
+		// 		return res;
+		// 	}
+		// );
+	}
+
+	private readonly substindex = new Map<string, Directives.Defining.Define[]>();;
+
+	private testPreprocess(code: string, define: Directives.Defining.Define, changes: FindedDefine[]) {
+		try {
+			this.substindex.clear(); // очищаем индекс макросов
+			this.substindex.set(define.prefix[0], [define]); // добавляем в массив макрос с ключом равным первому символу макроса
+		
+			return this.substallpatterns(code, changes);
+		} catch(e) {
+			console.error(e);
+		}
+		return "";
+	}
+
+	private substallpatterns(line: string, changes: FindedDefine[]) {
+		let 
+			start: number,
+			end: number,
+			/**
+			 * Длина префикса макроса, который мы ищем в строке
+			 */
+			prefixlen: number,
+			subst: Directives.Defining.Define|null = null,
+			shift = 0
+		;
+		
+		/**
+		 * Стрим для работы с входной строкой
+		 */
+		let stream = new LikeCCharStream(line);
+		
+
+		// Обход строки до ее конца
+		while(!this.isFileEnd(stream.char)) {
+			// Поиск начала префикса макроса
+			while (!this.isAlphabeticSymbol(stream.char) && !this.isFileEnd(stream.char)) {
+				// Пропуск строк
+				if (this.isStringStrating(stream)) {
+					stream = this.skipstring(stream);
+					if (this.isFileEnd(stream.char)) {
+						break;        /* abort loop on error */
+					}
+				}
+				stream.curIndex++;          /* skip non-alphapetic character (or closing quote of a string) */
+			}
+			if (this.isFileEnd(stream.char)) {
+				break; /* abort loop on error */
+			}
+			/* if matching the operator "defined", skip it plus the symbol behind it */
+			if (stream.compare("defined") && stream.getShiftChar(7) <= ' ') {
+				stream.curIndex += 7; /* skip "defined" */
+				/* skip white space & parantheses */
+				while ((stream.getChar() <= ' ' && !this.isFileEnd(stream.getChar())) || stream.getChar() === '(') {
+					stream.curIndex++;
+				}
+				/* skip the symbol behind it */
+				while (this.alphanum(stream.getChar())) {
+					stream.curIndex++;
+				}
+				/* drop back into the main loop */
+				continue;
+			}
+			/* get the prefix (length), look for a matching definition */
+			prefixlen = 0;
+			while (this.alphanum(stream.getShiftChar(prefixlen))) {
+				prefixlen++;
+			} 
+			if(prefixlen <= 0) {
+				throw new Error("");
+			}
+			
+			subst = this.findSubstr(stream, prefixlen);
+			if (subst !== null) {
+				let replaceData: ReplaceInfo = { shift: 0};
+				const mappingInfo = { findedLength: 0, replacingLength: 0 };
+				/* properly match the pattern and substitute */
+				if (!this.substpattern(stream, subst, replaceData, mappingInfo)) {
+					stream.curIndex += prefixlen;      /* match failed, skip this prefix */
+				}
+				else {
+					changes.push(new FindedDefine(stream.curIndex + shift, prefixlen, mappingInfo.findedLength - mappingInfo.replacingLength));
+					shift += replaceData.shift;
+				}
+				
+				/* match succeeded: do not update "start", because the substitution text
+				* may be matched by other macros
+				*/
+			}
+			else {
+				stream.curIndex += prefixlen;        /* no macro with this prefix, skip this prefix */
+			}
+		}
+
+		return stream.source;
+	}
+
+	private isAlphabeticSymbol(c: string): boolean
+	{
+		return /[a-zA-Z_@]/.test(c);
+	}
+
+	private skipstring(stream: LikeCCharStream)
+	{
+		let 
+			flags: number = 0
+		;
+
+		while (stream.char === '!' || stream.char === '\\') {
+			if (stream.char === '\\') {
+				flags = 1;
+			}
+			stream.curIndex++;
+		}
+
+		let endquote : string = stream.char;
+
+		// Пропускаем открывающую ковычку
+		stream.curIndex++;
+		while (stream.char !== endquote && !this.isFileEnd(stream.char)) {
+			this.litchar(stream, flags);
+		}
+		return stream;
+	}
+	private alphanum(c: string): boolean
+	{	
+		return (this.isAlphabeticSymbol(c) || this.isdigit(c));
+	}
+	private findSubstr(stream: LikeCCharStream, len: number)
+	{
+		let item = this.substindex.get(stream.char);
+		return item ? this.findStringpair(item, stream, len) : null;
+	}
+	private findStringpair(array: Directives.Defining.Define[], stream: LikeCCharStream, matchlength: number): Directives.Defining.Define|null
+	{
+		for(let define of array) {
+			if (matchlength !== define.prefixLen) {
+				continue;
+			}
+			if (stream.compare(define.prefix)) {
+				return define;
+			}
+		};
+		return null;
+	}
+	private substpattern(stream: LikeCCharStream, define: Directives.Defining.Define, replaceData: ReplaceInfo, mappingInfo: MappingInfo)
+	{
+		let instring: number;
+
+		/* pattern prefix matches; match the rest of the pattern, gather
+		* the parameters
+		*/
+		let args = [];
+		let arg = 0;
+		let sourceShift = define.prefixLen;
+		let pattern = new LikeCCharStream(define.postPrefix);
+		let match = 1;         /* so far, pattern matches */
+
+		while (match && !this.isFileEnd(stream.getShiftChar(sourceShift)) && !this.isFileEnd(pattern.char)) {
+			if (pattern.char === '%') { // обработка параметра в паттерне
+				pattern.curIndex++; // получаем следующий символ
+				if (!this.isdigit(pattern.getChar())) { // если символ не число
+					match = 1;
+					continue;
+				}
+				arg = +pattern.getChar(); // получаем номер параметра
+				
+				if(!(arg >= 0 && arg <= 9)) { // если номер параметра не в диапазоне от 0 до 9
+					throw new Error(""); // выбрасываем исключение
+				}
+				pattern.curIndex++;	// берём следующий символ после номера параметра
+				if(this.isFileEnd(pattern.getChar())) {
+					throw new Error("");	// файл закончился, а паттерн не закончился
+				}
+
+				let e = new LikeCCharStream(stream.source); // создаем копию основного стрима
+				e.curIndex = stream.curIndex + sourceShift; // сдвигаем его на позицию, где мы ищем параметр
+				while (e.char !== pattern.char && !this.isFileEnd(e.char) && e.char !== '\n') { // пока символ не совпал с паттерном и это не конец файла или строки
+					if (this.isStringStrating(e)) { // пропуск строки
+						e =this. skipstring(e);
+					}              
+					else if (/\(\{\[/.exec(e.char)) { // пропуск групп
+						
+						e = this.skippgroup(e);
+					}
+					if (!this.isFileEnd(e.char)) {
+						e.curIndex++;      /* skip non-alphapetic character (or closing quote of
+											* a string, or the closing paranthese of a group) */
+					}
+				}
+				/* store the parameter (overrule any earlier) */
+				let len = e.curIndex - stream.curIndex; // длина найденного параметра
+				args[arg] = stream.substr(len - sourceShift, sourceShift); // сохраняем параметр в массив
+				/* character behind the pattern was matched too */
+				if (e.char === pattern.char) { // если символ совпал с паттерном
+					sourceShift = len + 1;
+				}
+				else if (e.char === '\n' && pattern.getChar() === ';' && this.isFileEnd(pattern.getShiftChar(1)) && !Preprocessor.needSemicolon) {
+					sourceShift = len;    /* allow a trailing ; in the pattern match to end of line */
+				}
+				else {
+					match = 0;
+					sourceShift = len;
+				} /* if */
+				pattern.curIndex++;
+			}
+			else if (pattern.char === ';' && this.isFileEnd(pattern.getShiftChar(1)) && !Preprocessor.needSemicolon) {
+				/* source may be ';' or end of the line */
+				while (stream.getShiftChar(sourceShift) <= ' ' && !this.isFileEnd(stream.getShiftChar(sourceShift))) {
+					stream.curIndex++;          /* skip white space */
+				}
+				if (stream.getShiftChar(sourceShift) !== ';' && !this.isFileEnd(stream.getShiftChar(sourceShift))) {
+					match = 0;
+				}
+				pattern.curIndex++;            /* skip the semicolon in the pattern */
+			}
+			else {
+				let ch: number;
+				/* skip whitespace between two non-alphanumeric characters, except
+				* for two identical symbols
+				*/
+				if (!this.alphanum(pattern.char) && pattern.getShiftChar(1) !== pattern.char) {
+					while (stream.getShiftChar(sourceShift) <= ' ' && !this.isFileEnd(stream.getShiftChar(sourceShift))) {
+						sourceShift++;                  /* skip white space */
+					}
+				}
+				ch = this.litchar(pattern, 0);         /* this increments "p" */
+				if (stream.getShiftChar(sourceShift).charCodeAt(0) !== ch) {
+					match = 0;
+				}
+				else {
+					sourceShift++;                    /* this character matches */
+				}
+			} 
+		}
+		mappingInfo.findedLength = sourceShift;
+
+
+		if (match && this.isFileEnd(pattern.char)) {
+			/* if the last character to match is an alphanumeric character, the
+			* current character in the source may not be alphanumeric
+			*/
+			if (this.alphanum(pattern.getShiftChar(-1)) && this.alphanum(stream.getShiftChar(sourceShift))) {
+				match = 0;
+			}
+		}
+
+		if (match) {
+			/* calculate the length of the substituted string */
+			instring = 0;
+			for (let e = new LikeCCharStream(define.replacement), len = 0; !this.isFileEnd(e.char); e.curIndex++) {
+				if (e.getChar() === '%' && this.isdigit(e.getShiftChar(1)) && !instring) {
+					let argNum = +e.getShiftChar(1);
+					let arg = args[argNum];
+					len += arg ? arg.length : 2;
+					e.curIndex++;          /* skip %, digit is skipped later */
+				}
+				else {
+					if (e.getChar() === '"') {
+						instring = instring > 0 ? 0 : 1;
+					}
+					len++;
+				}
+			}
+			/* substitute pattern */
+			instring = 0;
+			stream.strdel(sourceShift);
+			const lengthBeforeReplace = sourceShift;
+			
+			sourceShift = 0;
+			for (let e = new LikeCCharStream(define.replacement); !this.isFileEnd(e.char); e.curIndex++) {
+				if (e.getChar() === '%' && this.isdigit(e.getShiftChar(1)) && !instring) {
+					let argNum = +e.getShiftChar(1);
+					let arg = args.at(argNum);
+					if (arg !== undefined) {
+
+						stream.strIns(arg, sourceShift);
+						sourceShift += arg.length;
+					}
+					else {
+						throw new Error("236"); /* parameter does not exist, incorrect #define pattern */
+						stream.strIns(e.substr(2), sourceShift);
+						sourceShift += 2;
+					} /* if */
+					e.curIndex++;          /* skip %, digit is skipped later */
+				}
+				else {
+					if (e.char === '"') {
+						instring = instring > 0 ? 0 : 1;
+					}
+					stream.strIns(e.substr(1), sourceShift);
+					sourceShift++;
+				}
+			}
+			replaceData.shift = lengthBeforeReplace - sourceShift;
+			mappingInfo.replacingLength = sourceShift;
+		}
+
+		
+
+		return match;
+	}
+	private skippgroup(stream: LikeCCharStream): LikeCCharStream
+	{
+		let nest = 0;
+		let open = stream.char;
+		let close;
+
+		switch (open) {
+		case '(':
+			close = ')';
+			break;
+		case '{':
+			close = '}';
+			break;
+		case '[':
+			close = ']';
+			break;
+		case '<':
+			close = '>';
+			break;
+		default:
+			throw new Error();
+		}/* switch */
+
+		stream.curIndex++;
+		while (stream.char !== close || nest > 0) {
+			if (stream.char === open) {
+				nest++;
+			}
+			else if (stream.char === close) {
+				nest--;
+			}
+			else if (this.isStringStrating(stream)) {
+				stream = this.skipstring(stream);
+			}
+			if (this.isFileEnd(stream.char)) {
+				break;
+			}
+			stream.curIndex++;
+		} /* while */
+		return stream;
 	}
 }
