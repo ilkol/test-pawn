@@ -220,6 +220,14 @@ export class Preprocessor
 					element.message
 				));
 			}
+			else if(element instanceof Directives.FileLineChange) {
+				document.diagnostics.push({
+					message: element.hintMessage,
+					range: element.range,
+					severity: DiagnosticSeverity.Hint,
+					source: "pawn-lsp"
+				});		
+			}
 			else if(element instanceof Directives.Conditionals.ElseIf) {
 				if(cur && cur.directive.conditionResult) {
 					cur.skip = true;
@@ -536,9 +544,7 @@ export class Preprocessor
 			case "endinput":
 				return new Directives.Endinput(directiveRange, startIndex, endIndex);
 			case "emit":
-			case "assert":
-			case "line":
-			case "file": {
+			case "assert":{
 				this.currentDocument?.diagnostics.push({
 					message: Locale.t("This directive is not yet supported by the extension."),
 					range: directiveRange,
@@ -546,6 +552,17 @@ export class Preprocessor
 					source: "pawn-lsp"
 				});
 				return;
+			}
+			case "line":
+			case "file": {
+				return new Directives.FileLineChange(
+					directiveRange, 
+					directiveText === "file" 
+						? Locale.t("Changes the name of the compiling file")
+						: Locale.t("Changes the number of the compiling line"), 
+					startIndex, 
+					endIndex
+				);
 			}
 			case "warning":
 			case "error": {
