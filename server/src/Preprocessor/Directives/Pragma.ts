@@ -7,7 +7,7 @@ export enum PragmaVariations {
 	codepage,	// как я понял позволяет изменить кодировку, то есть прочтение файла | #pragma codepage "path.txt"
 	compress,	// устаналивает флаг сжимать или нет байткод | #pragma compress VALUE
 	ctrlchar,	// устаналивает escape-символ  | #pragma ctrlchar 0x1
-	deprecated,	// удаляет из последующего кода \a...хз зачем  |  #pragma deprecated 
+	deprecated,	// помечает следующую функцию как устаревшую |  #pragma deprecated TEXT
 	dynamic,	// устаналивает размер стека | #pragma dynamic 100 
 	library,	// добавляет библиотеку, хз зачем | #pragma library name|"name"
 	pack,		// устаналивает флаг чтения упакованный строк или нет |  #pragma pack VALUE
