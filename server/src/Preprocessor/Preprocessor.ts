@@ -213,6 +213,13 @@ export class Preprocessor
 					tags: [DiagnosticTag.Unnecessary]
 				});				
 			}
+			else if(element instanceof Directives.Error) {
+				document.diagnostics.push(PawnErrors.report(
+					element.type === Directives.Error.Type.Error ? 111 : 237, 
+					element.range, 
+					element.message
+				));
+			}
 			else if(element instanceof Directives.Conditionals.ElseIf) {
 				if(cur && cur.directive.conditionResult) {
 					cur.skip = true;
@@ -364,7 +371,7 @@ export class Preprocessor
 		const code = document.text;
 		const directives: PreprocessorDirective[] = [];
 
-		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef|\w+)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|warning|file|include|line|pragma|section|tryinclude|undef|\w+)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
@@ -494,38 +501,29 @@ export class Preprocessor
 			file.positionAt(startIndex),
 			file.positionAt(endIndex)
 		);
+		const directiveText = directive.toLowerCase();
 		
-		switch (directive.toLowerCase()) {
-			case "emit":
-			case "error":
-				break;
+		switch (directiveText) {				
 			case "define": {
 				return new Directives.Defining.Define(directiveRange, this.matchDefinePattern(rest, restIndex), startIndex, endIndex);
+			}
+			case "undef": { 
+				return new Directives.Defining.Undef(directiveRange, this.prepareUndefInfo(rest, restIndex), startIndex, endIndex);
 			}
 			case "tryinclude":
 			case "include": {
 				const directiveInstance = new Directives.Include(directiveRange, this.matchIncludePath(rest, restIndex), startIndex, endIndex);
-				if(directive.toLowerCase() === "tryinclude") {
-					directiveInstance.silent = true;
-				}
+				directiveInstance.silent = directiveText === "tryinclude";
 				return directiveInstance;
 			}
-			case "if":
-				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, restIndex, endIndex);
 			case "pragma": {
 				this.parsePragma(rest);
 				return new Directives.Pragma(directiveRange, rest, startIndex, restIndex, endIndex);
 			}
+			case "if":
+				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, restIndex, endIndex);
 			case "endif": {
 				return new Directives.Conditionals.Endif(directiveRange, startIndex,endIndex);
-				// const cond = this.ppConditions.pop();
-				// if(cond) {
-				// 	cond.endIf = direct;
-				// }
-				// return direct;	
-			}
-			case "undef": { 
-				return new Directives.Defining.Undef(directiveRange, this.prepareUndefInfo(rest, restIndex), startIndex, endIndex);
 			}
 			case "elseif": {
 				return new Directives.Conditionals.ElseIf(directiveRange, rest, startIndex, restIndex, endIndex);
@@ -537,10 +535,7 @@ export class Preprocessor
 			case "enscript":
 			case "endinput":
 				return new Directives.Endinput(directiveRange, startIndex, endIndex);
-			case "pragma": {
-
-				return new Directives.Endinput(directiveRange, startIndex, endIndex);
-			}
+			case "emit":
 			case "assert":
 			case "line":
 			case "file": {
@@ -551,6 +546,16 @@ export class Preprocessor
 					source: "pawn-lsp"
 				});
 				return;
+			}
+			case "warning":
+			case "error": {
+				return new Directives.Error(
+					directiveRange, 
+					rest, 
+					directiveText === "error" ? Directives.Error.Type.Error : Directives.Error.Type.Wawrning , 
+					startIndex, 
+					endIndex
+				);
 			}
 			default:
 				this.currentDocument?.diagnostics.push(PawnErrors.report(31, directiveRange));
