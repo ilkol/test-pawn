@@ -512,8 +512,10 @@ export class Preprocessor
 			}
 			case "if":
 				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, restIndex, endIndex);
-			case "pragma":
+			case "pragma": {
+				this.parsePragma(rest);
 				return new Directives.Pragma(directiveRange, rest, startIndex, restIndex, endIndex);
+			}
 			case "endif": {
 				return new Directives.Conditionals.Endif(directiveRange, startIndex,endIndex);
 				// const cond = this.ppConditions.pop();
@@ -553,6 +555,10 @@ export class Preprocessor
 			default:
 				this.currentDocument?.diagnostics.push(PawnErrors.report(31, directiveRange));
 		}
+	}
+
+	private parsePragma(text: string) {
+		console.log(text);
 	}
 
 	/**
