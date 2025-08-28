@@ -54,15 +54,13 @@ async function main() {
 			}
 		}
 
+		CacheManager.setFileCache(cache);
 		await preprocessor.processFile(document);
 
-		CacheManager.setFileCache(cache);
 	}
 	preprocessor.onFileProcessedListener = async (document) => {
 		Logger.log(`${document.path} has been preprocessed`);
 		let cache: FileCache = (await CacheManager.getFileCache(document.path))!;
-		
-		await Parser.parseFile(document); // на всякий await, но по идее async нет
 		
 		if(!document.AST) {
 			return;
@@ -76,6 +74,8 @@ async function main() {
 		}
 
 		CacheManager.setFileCache(cache);
+		await Parser.parseFile(document); // на всякий await, но по идее async нет
+
 	}
 	Parser.onFileParsedListener = async (document) => {
 		Logger.log(`${document.path} has been parsed`);
