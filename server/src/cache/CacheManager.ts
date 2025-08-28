@@ -2,6 +2,7 @@ import { join } from "path";
 import { FileManager, FolderNotFound } from "../Managers/FileManager";
 import { FileCache } from "./FileCache";
 import { mkdir, readFile, unlink, writeFile } from "fs/promises";
+import { createHash } from "crypto";
 
 interface CacheConfig {
 	version: number;
@@ -129,5 +130,9 @@ export class CacheManager {
 		for(const [path] of this.fileCaches) {
 			this.flushFileCache(path)
 		}
+	}
+
+	static hashText(input: string): string {
+		return createHash("md5").update(input).digest("hex");;
 	}
 }

@@ -21,6 +21,9 @@ import { LSPConnection } from './types';
 import { AbstractOpenFile } from './AbstractOpenFile';
 import { Preprocessor } from './Preprocessor/Preprocessor';
 import { CacheManager } from './cache/CacheManager';
+import { Serialization } from './cache/Serialization';
+import { createHash } from 'crypto';
+import { FileCache } from './cache/FileCache';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -39,12 +42,40 @@ async function main() {
 	
 	fileManager.onFileManagerOpenFileListener = async (document) => {
 		Logger.log(`${document.path} has been opened`);
-		const cache = await CacheManager.getFileCache(document.path);
+		let cache = await CacheManager.getFileCache(document.path);
+		const texttHash = CacheManager.hashText(document.text);
+		if(cache && cache.cacheVersion >= CacheManager.VERSION) {
+			cache.texttHash = texttHash
+		} else {
+			cache = {
+				cacheVersion: CacheManager.VERSION,
+				path: document.path,
+				texttHash
+			}
+		}
+
 		await preprocessor.processFile(document);
+
+		CacheManager.setFileCache(cache);
 	}
 	preprocessor.onFileProcessedListener = async (document) => {
 		Logger.log(`${document.path} has been preprocessed`);
-		await Parser.parseFile(document);
+		let cache: FileCache = (await CacheManager.getFileCache(document.path))!;
+		
+		await Parser.parseFile(document); // на всякий await, но по идее async нет
+		
+		if(!document.AST) {
+			return;
+		}
+		try {
+			const code = Serialization.Serialize.toString(document.AST);
+			cache.rootAST = code;
+		} catch(e) {
+			console.error("Ошибка сериализации AST");
+			console.error(e);
+		}
+
+		CacheManager.setFileCache(cache);
 	}
 	Parser.onFileParsedListener = async (document) => {
 		Logger.log(`${document.path} has been parsed`);
