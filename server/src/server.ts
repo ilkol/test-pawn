@@ -18,7 +18,7 @@ import { VSCode } from './VSCode';
 import { sendNotification } from './utils';
 import { Parser } from './Parser/Parser';
 import { LSPConnection } from './types';
-import { AbstractOpenFile } from './AbstractOpenFile';
+import { AbstractOpenFile, ParsingStep } from './AbstractOpenFile';
 import { Preprocessor } from './Preprocessor/Preprocessor';
 import { CacheManager } from './cache/CacheManager';
 import { Serialization } from './cache/Serialization';
@@ -39,13 +39,41 @@ async function main() {
 	Locale.init();
 	const fileManager = new FileManager();
 	const preprocessor = new Preprocessor(fileManager);
+
+	const continueParsing = async (document: AbstractOpenFile): Promise<void> => {
+		switch(document.parsinState) {
+			case ParsingStep.newFile: {
+				return;
+			}
+			case ParsingStep.textHashed: {
+				await preprocessor.processFile(document);
+				return;
+			}
+			case ParsingStep.preprocessed: {
+				await Parser.parseFile(document); // на всякий await, но по идее async нет
+				return;
+			}
+			case ParsingStep.parsed: {
+				await Parser.walkAST(document);
+				return;
+			}
+			case ParsingStep.astWalked: {
+				return;
+			}
+		}
+	}
 	
 	fileManager.onFileManagerOpenFileListener = async (document) => {
 		Logger.log(`${document.path} has been opened`);
+		document.parsinState++;
 		let cache = await CacheManager.getFileCache(document.path);
 		const texttHash = CacheManager.hashText(document.text);
 		if(cache && cache.cacheVersion >= CacheManager.VERSION) {
-			cache.texttHash = texttHash
+			if(cache.texttHash !== texttHash) {
+				cache.texttHash = texttHash
+			} else {
+				document.parsinState++; // пропускаем этап
+			}
 		} else {
 			cache = {
 				cacheVersion: CacheManager.VERSION,
@@ -55,33 +83,38 @@ async function main() {
 		}
 
 		CacheManager.setFileCache(cache);
-		await preprocessor.processFile(document);
-
+		await continueParsing(document);
 	}
 	preprocessor.onFileProcessedListener = async (document) => {
 		Logger.log(`${document.path} has been preprocessed`);
+		document.parsinState++;
 		let cache: FileCache = (await CacheManager.getFileCache(document.path))!;
-		
-		if(!document.AST) {
-			return;
-		}
-		try {
-			const code = Serialization.Serialize.toString(document.AST);
-			cache.rootAST = code;
-		} catch(e) {
-			console.error("Ошибка сериализации AST");
-			console.error(e);
-		}
+
+		console.log(document.includes);
 
 		CacheManager.setFileCache(cache);
-		await Parser.parseFile(document); // на всякий await, но по идее async нет
+		await continueParsing(document);
 
 	}
 	Parser.onFileParsedListener = async (document) => {
 		Logger.log(`${document.path} has been parsed`);
-		await Parser.walkAST(document);
+		
+		document.parsinState++;
+		let cache: FileCache = (await CacheManager.getFileCache(document.path))!;
+		try {
+			if(document.AST) {
+				const code = Serialization.Serialize.toString(document.AST);
+				cache.rootAST = code;
+			}
+		} catch(e) {
+			console.error("Ошибка сериализации AST");
+			console.error(e);
+		}
+		CacheManager.setFileCache(cache);
+		await continueParsing(document);
 	}
 	Parser.onFileWalkedASTListener = (document) => {
+		document.parsinState++;
 		Logger.log(`${document.path} AST has walked`);
 		sendFileDiagnostics(connection, document);
 	}

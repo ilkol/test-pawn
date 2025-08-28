@@ -8,6 +8,33 @@ import { Define } from "./Preprocessor/Directives/Defining";
 import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
 import { IScope } from "./antlr/Scopes/IScope";
 
+export enum ParsingStep {
+	/**
+	 * Файл не был никак обработан
+	 */
+	newFile,
+	/**
+	 * Файл был открыт и хэш его текста был сохранен в кэш
+	 */
+	textHashed,
+
+	/**
+	 * Файл был обработан препроцессором
+	 */
+	preprocessed,
+
+	/**
+	 * Файл был распаршен и создано AST
+	 */
+	parsed,
+
+	/**
+	 * AST было пройдено
+	 */
+	astWalked,
+
+}
+
 export class FunctionInfo
 {
 	private _parameters: FunctionParameterInfo[] = [];
@@ -63,6 +90,8 @@ export class FunctionParameterInfo
  */
 export abstract class AbstractOpenFile
 {
+	public parsinState: ParsingStep = ParsingStep.newFile;
+
 	/**
 	 * Основная инфомрация о файле из LSP API
 	 */

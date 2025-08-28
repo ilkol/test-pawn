@@ -232,5 +232,6 @@
 	"Parameter": "Parameter",
 	"This directive is not yet supported by the extension.": "This directive is not yet supported by the extension.",
 	"Changes the name of the compiling file": "Changes the name of the compiling file",
-	"Changes the number of the compiling line": "Changes the number of the compiling line"
+	"Changes the number of the compiling line": "Changes the number of the compiling line",
+	"Function \"%s\" used before definition": "Function \"%s\" used before definition"
 }
