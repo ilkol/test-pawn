@@ -10,20 +10,15 @@
             "name": "Extension",
             "type": "extensionHost",
             "request": "launch",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceRoot}",
-				 "--inspect-brk"
-			],
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}",
+                "--inspect-brk"
+            ],
 			"outFiles": [
-				"${workspaceRoot}/client/out/**/*.js",
-				"${workspaceRoot}/server/out/**/*.js",
+				"${workspaceFolder}/out/**/*.js"
 			],
-			"autoAttachChildProcesses": true,
-			"preLaunchTask": {
-				"type": "npm",
-				"script": "watch:tsc"
-			}
+			"preLaunchTask": "${defaultBuildTask}",
+			"timeout": 100000,
         }
     ]
 }
