@@ -25,6 +25,12 @@ class FindedDefine {
 	}
 }
 
+interface ParsedFloatInfo {
+	memoryView: number,
+	simulatedFloat: number,
+	parsedFloat: number
+}
+
 interface MappingInfo {
 	/**
 	 * Количество символов, найденных в строке
@@ -117,7 +123,9 @@ export class Preprocessor
 			// Получаем URI инклуда
 			includePath.absolutePath = await this.plungeInclude(includePath, this.fileManager.currentPath);
 			if(!includePath.absolutePath) { // Если путь не найден, то пропускаем
-				openedFile.diagnostics.push(PawnErrors.report(100, includePath.pathRange, includePath.pathText));
+				if(!includePath.silent) {
+					openedFile.diagnostics.push(PawnErrors.report(100, includePath.pathRange, includePath.pathText));
+				}
 				continue;
 			} 
 			includePath.exist = true;
@@ -205,6 +213,21 @@ export class Preprocessor
 					tags: [DiagnosticTag.Unnecessary]
 				});				
 			}
+			else if(element instanceof Directives.Error) {
+				document.diagnostics.push(PawnErrors.report(
+					element.type === Directives.Error.Type.Error ? 111 : 237, 
+					element.range, 
+					element.message
+				));
+			}
+			else if(element instanceof Directives.FileLineChange) {
+				document.diagnostics.push({
+					message: element.hintMessage,
+					range: element.range,
+					severity: DiagnosticSeverity.Hint,
+					source: "pawn-lsp"
+				});		
+			}
 			else if(element instanceof Directives.Conditionals.ElseIf) {
 				if(cur && cur.directive.conditionResult) {
 					cur.skip = true;
@@ -224,9 +247,6 @@ export class Preprocessor
 					continue;
 				}
 				this.handleElse(element, ifStack);
-			}
-			else {
-				// TODO pragma, tryinclude e.t.c.	
 			}
 			
 		}
@@ -356,7 +376,7 @@ export class Preprocessor
 		const code = document.text;
 		const directives: PreprocessorDirective[] = [];
 
-		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|file|include|line|pragma|section|tryinclude|undef|\w+)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|warning|file|include|line|pragma|section|tryinclude|undef|\w+)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
@@ -486,33 +506,29 @@ export class Preprocessor
 			file.positionAt(startIndex),
 			file.positionAt(endIndex)
 		);
+		const directiveText = directive.toLowerCase();
 		
-		switch (directive.toLowerCase()) {
-			case "emit":
-			case "error":
-				break;
+		switch (directiveText) {				
 			case "define": {
 				return new Directives.Defining.Define(directiveRange, this.matchDefinePattern(rest, restIndex), startIndex, endIndex);
 			}
+			case "undef": { 
+				return new Directives.Defining.Undef(directiveRange, this.prepareUndefInfo(rest, restIndex), startIndex, endIndex);
+			}
 			case "tryinclude":
 			case "include": {
-				const directive = new Directives.Include(directiveRange, this.matchIncludePath(rest, restIndex), startIndex, endIndex);
-				return directive;
+				const directiveInstance = new Directives.Include(directiveRange, this.matchIncludePath(rest, restIndex), startIndex, endIndex);
+				directiveInstance.silent = directiveText === "tryinclude";
+				return directiveInstance;
+			}
+			case "pragma": {
+				this.parsePragma(rest);
+				return new Directives.Pragma(directiveRange, rest, startIndex, restIndex, endIndex);
 			}
 			case "if":
 				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, restIndex, endIndex);
-			case "pragma":
-				return new Directives.Pragma(directiveRange, rest, startIndex, restIndex, endIndex);
 			case "endif": {
 				return new Directives.Conditionals.Endif(directiveRange, startIndex,endIndex);
-				// const cond = this.ppConditions.pop();
-				// if(cond) {
-				// 	cond.endIf = direct;
-				// }
-				// return direct;	
-			}
-			case "undef": { 
-				return new Directives.Defining.Undef(directiveRange, this.prepareUndefInfo(rest, restIndex), startIndex, endIndex);
 			}
 			case "elseif": {
 				return new Directives.Conditionals.ElseIf(directiveRange, rest, startIndex, restIndex, endIndex);
@@ -524,8 +540,129 @@ export class Preprocessor
 			case "enscript":
 			case "endinput":
 				return new Directives.Endinput(directiveRange, startIndex, endIndex);
+			case "emit":
+			case "assert":{
+				this.currentDocument?.diagnostics.push({
+					message: Locale.t("This directive is not yet supported by the extension."),
+					range: directiveRange,
+					severity: DiagnosticSeverity.Hint,
+					source: "pawn-lsp"
+				});
+				return;
+			}
+			case "line":
+			case "file": {
+				return new Directives.FileLineChange(
+					directiveRange, 
+					directiveText === "file" 
+						? Locale.t("Changes the name of the compiling file")
+						: Locale.t("Changes the number of the compiling line"), 
+					startIndex, 
+					endIndex
+				);
+			}
+			case "warning":
+			case "error": {
+				return new Directives.Error(
+					directiveRange, 
+					rest, 
+					directiveText === "error" ? Directives.Error.Type.Error : Directives.Error.Type.Wawrning , 
+					startIndex, 
+					endIndex
+				);
+			}
 			default:
 				this.currentDocument?.diagnostics.push(PawnErrors.report(31, directiveRange));
+		}
+	}
+
+	private parsePragma(text: string) {
+		console.log(text);
+	}
+
+	/**
+	 * Переводит строку с константой вещественного числа в 
+	 * вещественное число формата IEE-754
+	 * @param inputString строка с константой
+	 * @param rationaPrecision задананная точность
+	 * @returns информация о распаршенном вещественном числе
+	 */
+	public static floatMemorizing(inputString: string, rationaPrecision: number | undefined): ParsedFloatInfo | undefined {
+		let ptr: number = 0;
+		let fnum: number = 0.0;
+		let ffrac: number = 0.0;
+		let fmult: number = 1.0;
+		let dnum: number = 0;
+		let dbase: number = 1
+
+		for (let i = 0; i < (rationaPrecision ?? 0); i++) {
+			dbase *= 10;
+		}
+
+		if (!Preprocessor.isDigit(inputString[ptr])) {
+			return undefined;
+		}
+
+		while (ptr < inputString.length && (Preprocessor.isDigit(inputString[ptr]) || inputString[ptr] === '_')) {
+			if (inputString[ptr] !== '_') {
+				fnum = fnum * 10.0 + (parseInt(inputString[ptr], 10));
+				dnum = dnum * 10 + parseInt(inputString[ptr], 10) * dbase;
+			}
+			ptr++;
+		}
+
+		if (ptr >= inputString.length || inputString[ptr] !== '.') {
+			return undefined;
+		}
+		ptr++;
+
+		if (ptr >= inputString.length || !Preprocessor.isDigit(inputString[ptr])) {
+			return undefined;
+		}
+
+		let ignore: boolean = dbase ? false : true;
+
+		// Process fractional part
+		for(;ptr < inputString.length && (Preprocessor.isDigit(inputString[ptr]) || inputString[ptr] === '_'); ptr++) {
+			if (inputString[ptr] === '_') {
+				continue;
+			}
+			ffrac = ffrac * 10.0 + parseInt(inputString[ptr], 10);
+			fmult /= 10.0;
+			dbase = Math.floor(dbase / 10);
+			dnum += parseInt(inputString[ptr], 10) * dbase;
+			if (!ignore && dbase === 0 && rationaPrecision) {
+				// this.currentDocument?.diagnostics.push(PawnErrors.report(222))
+				ignore = true;
+			}
+		}
+
+		
+
+		// Combine integer and fractional parts
+		fnum += ffrac * fmult;
+
+		if(rationaPrecision === undefined) {
+			// this.currentDocument?.diagnostics.push(PawnErrors.report(70))
+			return undefined;
+		} else if(!rationaPrecision) {
+			// симуляция потери данных
+			const value: number = fnum;
+			const buffer = new ArrayBuffer(4);
+			const floatViewArray = new Float32Array(buffer);
+			const intView = new Int32Array(buffer);
+			floatViewArray[0] = value;
+			return {
+				memoryView: intView[0],
+				simulatedFloat: floatViewArray[0],
+				parsedFloat: fnum
+			}
+		} else {
+			return {
+				memoryView: dnum,
+				simulatedFloat: dnum / Math.pow(10, rationaPrecision),
+				parsedFloat: fnum
+			}
 		}
 	}
 
@@ -649,7 +786,7 @@ export class Preprocessor
 					cptr.curIndex += 1;
 					c = 0;
 					while (this.ishex(cptr.getChar())) {
-						if (this.isdigit(cptr.getChar())) {
+						if (Preprocessor.isDigit(cptr.getChar())) {
 							c = (c << 4) + (cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0));
 						}
 						else {
@@ -687,7 +824,7 @@ export class Preprocessor
 					c = 10;
 					break;
 				default:
-					if (this.isdigit(cptr.getChar())) {   /* \ddd */
+					if (Preprocessor.isDigit(cptr.getChar())) {   /* \ddd */
 						c = 0;
 						while (cptr.getChar() >= '0' && cptr.getChar() <= '9') {  /* decimal! */
 							c = c * 10 + cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0);
@@ -715,7 +852,7 @@ export class Preprocessor
 		return /[0-9a-fA-F]/.test(c);
 		// return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
 	}
-	private isdigit(c: string): boolean
+	private static isDigit(c: string): boolean
 	{
 		return /\d/.test(c);
 	}
@@ -972,7 +1109,7 @@ export class Preprocessor
 	}
 	private alphanum(c: string): boolean
 	{	
-		return (this.isAlphabeticSymbol(c) || this.isdigit(c));
+		return (this.isAlphabeticSymbol(c) || Preprocessor.isDigit(c));
 	}
 	private findSubstr(stream: LikeCCharStream, len: number)
 	{
@@ -1007,7 +1144,7 @@ export class Preprocessor
 		while (match && !this.isFileEnd(stream.getShiftChar(sourceShift)) && !this.isFileEnd(pattern.char)) {
 			if (pattern.char === '%') { // обработка параметра в паттерне
 				pattern.curIndex++; // получаем следующий символ
-				if (!this.isdigit(pattern.getChar())) { // если символ не число
+				if (!Preprocessor.isDigit(pattern.getChar())) { // если символ не число
 					match = 1;
 					continue;
 				}
@@ -1097,7 +1234,7 @@ export class Preprocessor
 			/* calculate the length of the substituted string */
 			instring = 0;
 			for (let e = new LikeCCharStream(define.replacement), len = 0; !this.isFileEnd(e.char); e.curIndex++) {
-				if (e.getChar() === '%' && this.isdigit(e.getShiftChar(1)) && !instring) {
+				if (e.getChar() === '%' && Preprocessor.isDigit(e.getShiftChar(1)) && !instring) {
 					let argNum = +e.getShiftChar(1);
 					let arg = args[argNum];
 					len += arg ? arg.length : 2;
@@ -1117,7 +1254,7 @@ export class Preprocessor
 			
 			sourceShift = 0;
 			for (let e = new LikeCCharStream(define.replacement); !this.isFileEnd(e.char); e.curIndex++) {
-				if (e.getChar() === '%' && this.isdigit(e.getShiftChar(1)) && !instring) {
+				if (e.getChar() === '%' && Preprocessor.isDigit(e.getShiftChar(1)) && !instring) {
 					let argNum = +e.getShiftChar(1);
 					let arg = args.at(argNum);
 					if (arg !== undefined) {
@@ -1188,5 +1325,17 @@ export class Preprocessor
 			stream.curIndex++;
 		} /* while */
 		return stream;
+	}
+
+	private parsePreprocExpr(input: string) {
+		input = this.substallpatterns(input, []);
+		const val = this.parseConstExpr(input);
+	}
+
+	private parseConstExpr(input: string) {
+		const expr = this.parseExpression(input);
+	}
+	private parseExpression(input: string) {
+
 	}
 }

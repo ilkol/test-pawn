@@ -19,6 +19,7 @@ export class Include extends PreprocessorDirective
 	readonly pathRange: Range;
 	type: IncludeType = IncludeType.default;
 	public exist: boolean = false;
+	public silent: boolean = false;
 
 	constructor(range: Range, pathInfo: IncludePathInfo, startIndex: number, endIndex: number) {
 		super(range, startIndex, endIndex);
