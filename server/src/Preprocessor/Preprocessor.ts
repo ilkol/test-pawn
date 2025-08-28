@@ -248,9 +248,6 @@ export class Preprocessor
 				}
 				this.handleElse(element, ifStack);
 			}
-			else {
-				// TODO pragma, tryinclude e.t.c.	
-			}
 			
 		}
 		return {code, includes, defines};
@@ -1328,5 +1325,17 @@ export class Preprocessor
 			stream.curIndex++;
 		} /* while */
 		return stream;
+	}
+
+	private parsePreprocExpr(input: string) {
+		input = this.substallpatterns(input, []);
+		const val = this.parseConstExpr(input);
+	}
+
+	private parseConstExpr(input: string) {
+		const expr = this.parseExpression(input);
+	}
+	private parseExpression(input: string) {
+
 	}
 }
