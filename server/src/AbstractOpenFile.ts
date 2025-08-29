@@ -7,6 +7,8 @@ import { Include } from "./Preprocessor/Directives";
 import { Define } from "./Preprocessor/Directives/Defining";
 import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
 import { IScope } from "./antlr/Scopes/IScope";
+import { FileCache } from "./cache/FileCache";
+import { CacheManager } from "./cache/CacheManager";
 
 export enum ParsingStep {
 	/**
@@ -17,6 +19,26 @@ export enum ParsingStep {
 	 * Файл был открыт и хэш его текста был сохранен в кэш
 	 */
 	textHashed,
+
+	/**
+	 * Собраны и заменены все директивы препроцессора
+	 */
+	directivesCollected,
+
+	/**
+	 * Выполнены большенство команд препроцессора
+	 */
+	directivesProcessed,
+
+	/**
+	 * Спсиок подключаемых инклудов отсортирован
+	 */
+	buildedDependcyGraph,
+
+	/**
+	 * Подключаемые файлы проаанализированы
+	 */
+	processedIncludes,
 
 	/**
 	 * Файл был обработан препроцессором
@@ -103,6 +125,21 @@ export abstract class AbstractOpenFile
 	set file(value: TextDocument) {
 		this._file = value;
 		this.path = FileManager.getPathByURI(value.uri);
+	}
+
+	private _cache?: FileCache;
+
+	get cache(): FileCache {
+		return this._cache ?? {
+			cacheVersion: CacheManager.VERSION,
+			path: this.path,
+			processCode: this.processedCode,
+			texttHash: CacheManager.hashText(this.text)
+		}
+	}
+
+	set cache(value: FileCache | undefined) {
+		this._cache = value;
 	}
 
 	positionAt(offset: number): Position {

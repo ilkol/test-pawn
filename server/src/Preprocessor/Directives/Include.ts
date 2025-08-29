@@ -45,8 +45,22 @@ export class Include extends PreprocessorDirective
 		instance.absolutePath = cache.absolutePath;
 		instance.exist = cache.exist;
 		instance.silent = cache.silent;
-		
+
 		return instance;
+	}
+
+	toCache(): IncludeCache {
+		return {
+			absolutePath: this.absolutePath,
+			endIndex: this.endIndex,
+			startIndex: this.startIndex,
+			exist: this.exist,
+			silent: this.silent,
+			parsedPathText: this.pathText,
+			type: this.type,
+			range: Serialization.Serialize.range(this.range),
+			pathRange: Serialization.Serialize.range(this.pathRange),
+		}
 	}
 
 }

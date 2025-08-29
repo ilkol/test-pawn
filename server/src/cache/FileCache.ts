@@ -40,4 +40,8 @@ export interface FileCache {
 	sortedIncludes?: string[]
 	
 
+	/**
+	 * Код файла в процессе обработки
+	 */
+	processCode: string;
 }

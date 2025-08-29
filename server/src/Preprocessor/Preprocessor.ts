@@ -12,6 +12,7 @@ import { LikeCCharStream } from "./LikeCCharStream";
 import { CodeMapper } from "./CodeMapper";
 import { PawnErrors } from "../Errors/PawnErrors";
 import { FileCache } from "../cache/FileCache";
+import { CacheManager } from "../cache/CacheManager";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -68,46 +69,60 @@ export class Preprocessor
 
 	private currentDocument?: AbstractOpenFile; 
 
-	public async processFile(document: AbstractOpenFile, cache?: FileCache) {
+	private async nextStep(document: AbstractOpenFile, curentAction: Function) {
+		await curentAction();
+		document.parsinState++;
+		CacheManager.setFileCache(document.cache);
+	}
+
+	public async processFile(document: AbstractOpenFile) {
 		this.currentDocument = document;
 		
 		document.processedCode = document.text;
-		document.directives = [];
 
+		for(const action of [
+			async () => await this.findAndReplaceDirectives(document),
+			async () => await this.processFileDirectives(document),
+			async () => document.sortedIncludes = await this.sortIncludes(document),
+			async () => await this.processIncludes(document),
+			async () => document.processedCode = await this.processDefines(document.processedCode, document.defines)
+		]) {
+			await this.nextStep(document, action);
+		}
+
+		await this._onFileProcessedListener?.(document);
+	}
+
+	private async findAndReplaceDirectives(document: AbstractOpenFile) { 
+		// if(document.cache.directives) {
+		// 	document.processedCode = document.cache.processCode;
+		// 	document.directives = document.cache.directives;
+		// 	return;
+		// }
 		const {code, directives } = await this.findDirectives(document);
 		document.processedCode = code;
 		document.directives = directives;
+		// document.cache.directivs = [];
+	}
 
-		if(!cache || !cache.includes) {
-			const {code: codeAfterProcessingDirectives, includes, defines} = await this.processFileDirectives(document);
-			document.processedCode = codeAfterProcessingDirectives;
-			document.includes = includes;
-			document.defines = defines;
-		} else if(cache.includes) {
-			document.includes = cache.includes.map(include => Directives.Include.fromCache(include));
+	private async sortIncludes(document: AbstractOpenFile) {
+		if(document.cache.sortedIncludes) {
+			return document.cache.sortedIncludes;
 		}
+		await this.buildDependencyGraph(document);
 	
-		if(cache?.sortedIncludes) {
-			document.sortedIncludes = cache.sortedIncludes;
-		} else {
-			await this.buildDependencyGraph(document);
-	
-			const depManager = new DependencyManager();
-			document.sortedIncludes = await depManager.topologicalSort(this.dependencyGraph, document.path);
-		}
+		const depManager = new DependencyManager();
+		return await depManager.topologicalSort(this.dependencyGraph, document.path);
+	}
 
+	private async processIncludes(document: AbstractOpenFile) {
 		for(const include of document.sortedIncludes ) {
 			if(include === document.path) {
 				continue;
 			}
 			await this.fileManager.openFile(include);
 		}
-
-		document.processedCode = await this.processDefines(document.processedCode, document.defines);
-
-		await this._onFileProcessedListener?.(document);
 	}
-
 
 	/**
 	 * Граф зависимостей
@@ -175,7 +190,13 @@ export class Preprocessor
 		return undefined;
 	}
 
-	private async processFileDirectives(document: AbstractOpenFile) {
+	private async processFileDirectives(document: AbstractOpenFile, cache?: FileCache) {
+		if(cache?.includes) {
+			document.processedCode = cache.processCode;
+			document.includes = cache.includes.map(include => Directives.Include.fromCache(include));
+			// document.defines = cache.defines;	
+			return;
+		}
 		let code = document.processedCode;
 
 		const defines: Map<string, Directives.Defining.Define[]> = new Map();
@@ -259,7 +280,14 @@ export class Preprocessor
 			}
 			
 		}
-		return {code, includes, defines};
+
+
+		document.cache.processCode = document.processedCode = code;
+		document.includes = includes;
+		document.defines = defines;
+
+		document.cache.includes = document.includes.map(include => include.toCache()) 
+		// document.cache.defines = document.defines;	
 	}
 
 	private handleUndef(directive: Directives.Defining.Undef, defines:  Map<string, Directives.Defining.Define[]>)
