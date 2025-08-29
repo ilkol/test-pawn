@@ -1,7 +1,8 @@
 import { IncludeType } from "../../Preprocessor/Directives";
 import { Serialization } from "../Serialization";
+import { DirectiveCache } from "./DirectivsCache";
 
-export interface IncludeCache {
+export interface IncludeCache extends DirectiveCache {
 	/**
 	 * Путь к файлу, который был указан в коде.
 	 */
@@ -17,15 +18,6 @@ export interface IncludeCache {
 	absolutePath?: string;
 
 	/**
-	 * Позиция начала текста инклуда в коде
-	 */
-	startIndex: number;
-	/**
-	 * Позиция конца текста инклуда в коде
-	 */
-	endIndex: number;
-
-	/**
 	 * Выбрасывает ли подключенеи файла ошибку (tryinclude или нет)
 	 */
 	silent: boolean;
@@ -34,11 +26,6 @@ export interface IncludeCache {
 	 * Тип инклуда, отражающий откуда должен браться файл
 	 */
 	type: IncludeType
-
-	/**
-	 * Позиция подключения
-	 */
-	range: Serialization.Range;
 
 	/**
 	 * Позиция пути подключаемого пути в коде

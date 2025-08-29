@@ -1,7 +1,9 @@
 import { Range } from "../../types";
+import { v4 as uuid } from "uuid";
 
 export abstract class PreprocessorDirective
 {
+	public readonly id = uuid();
 	public curStartIndex: number;
 	public curEndIndex: number;
 
@@ -15,4 +17,5 @@ export abstract class PreprocessorDirective
 		this.curEndIndex += shift;
 	}
 
+	
 }
