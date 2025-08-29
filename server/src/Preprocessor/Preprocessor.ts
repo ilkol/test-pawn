@@ -84,10 +84,7 @@ export class Preprocessor
 			document.includes = includes;
 			document.defines = defines;
 		} else if(cache.includes) {
-			// document.includes = cache.includes.map(include => {
-			// 	 const instance = new Directives.Include(include.range, {});
-			// });
-		
+			document.includes = cache.includes.map(include => Directives.Include.fromCache(include));
 		}
 	
 		if(cache?.sortedIncludes) {

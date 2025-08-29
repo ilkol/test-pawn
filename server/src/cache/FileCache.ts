@@ -1,4 +1,4 @@
-import { IncludeCache } from "./IncludeCache";
+import { IncludeCache } from "./Preprocessor/IncludeCache";
 import { Node } from "./Serialization/Nodes";
 
 /**

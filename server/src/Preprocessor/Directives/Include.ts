@@ -1,3 +1,5 @@
+import { IncludeCache } from "../../cache/Preprocessor/IncludeCache";
+import { Serialization } from "../../cache/Serialization";
 import { Range } from "../../types";
 import { PreprocessorDirective } from "./PreprocessorDirective";
 
@@ -27,6 +29,24 @@ export class Include extends PreprocessorDirective
 		this.pathText = pathInfo.path;
 		this.pathRange = pathInfo.range;
 		this.type = pathInfo.type;
+	}
+
+	static fromCache(cache: IncludeCache) {
+		const instance = new Include(
+			Serialization.Deserialize.range(cache.range), 
+			{
+				type: cache.type,
+				path: cache.parsedPathText,
+				range: Serialization.Deserialize.range(cache.pathRange)
+			},
+			cache.startIndex,
+			cache.endIndex
+		);
+		instance.absolutePath = cache.absolutePath;
+		instance.exist = cache.exist;
+		instance.silent = cache.silent;
+		
+		return instance;
 	}
 
 }
