@@ -51,15 +51,15 @@ export class Include extends PreprocessorDirective
 
 	toCache(): IncludeCache {
 		return {
-			absolutePath: this.absolutePath,
-			endIndex: this.endIndex,
-			startIndex: this.startIndex,
+			parsedPathText: this.pathText,
+			range: Serialization.Serialize.range(this.range),
 			exist: this.exist,
 			silent: this.silent,
-			parsedPathText: this.pathText,
 			type: this.type,
-			range: Serialization.Serialize.range(this.range),
+			absolutePath: this.absolutePath,
 			pathRange: Serialization.Serialize.range(this.pathRange),
+			endIndex: this.endIndex,
+			startIndex: this.startIndex,
 		}
 	}
 

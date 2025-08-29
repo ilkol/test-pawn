@@ -130,12 +130,15 @@ export abstract class AbstractOpenFile
 	private _cache?: FileCache;
 
 	get cache(): FileCache {
-		return this._cache ?? {
-			cacheVersion: CacheManager.VERSION,
-			path: this.path,
-			processCode: this.processedCode,
-			texttHash: CacheManager.hashText(this.text)
+		if(!this._cache) {
+			this._cache = {
+				cacheVersion: CacheManager.VERSION,
+				path: this.path,
+				texttHash: CacheManager.hashText(this.text),
+				processCode: this.processedCode,
+			};
 		}
+		return this._cache;
 	}
 
 	set cache(value: FileCache | undefined) {

@@ -85,11 +85,8 @@ async function main() {
 		Logger.log(`${document.path} has been preprocessed`);
 		let cache: FileCache = (await CacheManager.getFileCache(document.path))!;
 
-		console.log(document.includes);
-
 		CacheManager.setFileCache(cache);
-		// await continueParsing(document);
-
+		await continueParsing(document);
 	}
 	Parser.onFileParsedListener = async (document) => {
 		Logger.log(`${document.path} has been parsed`);
