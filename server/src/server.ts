@@ -41,12 +41,29 @@ async function main() {
 	const preprocessor = new Preprocessor(fileManager);
 
 	const continueParsing = async (document: AbstractOpenFile): Promise<void> => {
+		let cache = await CacheManager.getFileCache(document.path);
 		switch(document.parsinState) {
 			case ParsingStep.newFile: {
+				document.parsinState++;
+				const texttHash = CacheManager.hashText(document.text);
+				if(cache && cache.cacheVersion >= CacheManager.VERSION) {
+					if(cache.texttHash !== texttHash) {
+						cache.texttHash = texttHash
+					} else {
+						document.parsinState++; // пропускаем этап
+					}
+				} else {
+					cache = {
+						cacheVersion: CacheManager.VERSION,
+						path: document.path,
+						texttHash
+					}
+				}
+				CacheManager.setFileCache(cache);
 				return;
 			}
 			case ParsingStep.textHashed: {
-				await preprocessor.processFile(document);
+				await preprocessor.processFile(document, cache);
 				return;
 			}
 			case ParsingStep.preprocessed: {
@@ -65,24 +82,7 @@ async function main() {
 	
 	fileManager.onFileManagerOpenFileListener = async (document) => {
 		Logger.log(`${document.path} has been opened`);
-		document.parsinState++;
-		let cache = await CacheManager.getFileCache(document.path);
-		const texttHash = CacheManager.hashText(document.text);
-		if(cache && cache.cacheVersion >= CacheManager.VERSION) {
-			if(cache.texttHash !== texttHash) {
-				cache.texttHash = texttHash
-			} else {
-				document.parsinState++; // пропускаем этап
-			}
-		} else {
-			cache = {
-				cacheVersion: CacheManager.VERSION,
-				path: document.path,
-				texttHash
-			}
-		}
-
-		CacheManager.setFileCache(cache);
+		await continueParsing(document);
 		await continueParsing(document);
 	}
 	preprocessor.onFileProcessedListener = async (document) => {

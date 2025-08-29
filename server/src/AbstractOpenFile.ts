@@ -218,6 +218,7 @@ export abstract class AbstractOpenFile
 	}
 
 	public includes: Include[] = [];
+	public sortedIncludes: string[] = [];
 	public defines: Map<string, Define[]> = new Map();
 	abstract get scope(): IScope;
 

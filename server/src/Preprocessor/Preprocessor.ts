@@ -11,6 +11,7 @@ import { DiagnosticSeverity, DiagnosticTag } from "vscode-languageserver";
 import { LikeCCharStream } from "./LikeCCharStream";
 import { CodeMapper } from "./CodeMapper";
 import { PawnErrors } from "../Errors/PawnErrors";
+import { FileCache } from "../cache/FileCache";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -67,7 +68,7 @@ export class Preprocessor
 
 	private currentDocument?: AbstractOpenFile; 
 
-	public async processFile(document: AbstractOpenFile) {
+	public async processFile(document: AbstractOpenFile, cache?: FileCache) {
 		this.currentDocument = document;
 		
 		document.processedCode = document.text;
@@ -77,17 +78,28 @@ export class Preprocessor
 		document.processedCode = code;
 		document.directives = directives;
 
-		const {code: codeAfterProcessingDirectives, includes, defines} = await this.processFileDirectives(document);
-		document.processedCode = codeAfterProcessingDirectives;
-		document.includes = includes;
-		document.defines = defines;
+		if(!cache || !cache.includes) {
+			const {code: codeAfterProcessingDirectives, includes, defines} = await this.processFileDirectives(document);
+			document.processedCode = codeAfterProcessingDirectives;
+			document.includes = includes;
+			document.defines = defines;
+		} else if(cache.includes) {
+			// document.includes = cache.includes.map(include => {
+			// 	 const instance = new Directives.Include(include.range, {});
+			// });
+		
+		}
+	
+		if(cache?.sortedIncludes) {
+			document.sortedIncludes = cache.sortedIncludes;
+		} else {
+			await this.buildDependencyGraph(document);
+	
+			const depManager = new DependencyManager();
+			document.sortedIncludes = await depManager.topologicalSort(this.dependencyGraph, document.path);
+		}
 
-		await this.buildDependencyGraph(document);
-
-		const depManager = new DependencyManager();
-		const sortIncludes = await depManager.topologicalSort(this.dependencyGraph, document.path);
-
-		for(const include of sortIncludes ) {
+		for(const include of document.sortedIncludes ) {
 			if(include === document.path) {
 				continue;
 			}

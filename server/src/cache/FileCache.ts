@@ -33,4 +33,11 @@ export interface FileCache {
 	 */
 	includes?: IncludeCache[];
 
+
+	/**
+	 * Массив путей подключаемых файлов в порядке их анализа
+	 */
+	sortedIncludes?: string[]
+	
+
 }
