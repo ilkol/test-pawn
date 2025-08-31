@@ -64,6 +64,10 @@ export class CacheManager {
 	}
 
 	private static async readCacheFile(path: string): Promise<FileCache | undefined> {
+		if(!this.cacheDir) {
+			return undefined;
+		}
+		path = join(this.cacheDir, path)
 		if(!(await this.fileManager.isFileExist(path))) {
 			return undefined;
 		}
@@ -107,6 +111,7 @@ export class CacheManager {
 		let cache = this.fileCaches.get(path); // Заглушка, нужно заменить на реальную логику
 		if(!cache) {
 			cache = await this.readFileCache(path);
+
 		}
 		return cache;
 	}

@@ -129,6 +129,10 @@ export abstract class AbstractOpenFile
 
 	private _cache?: FileCache;
 
+	set cache(value: FileCache | undefined) {
+		this._cache = value;
+	}
+
 	get cache(): FileCache 
 	{
 		if(!this._cache) {
@@ -142,9 +146,7 @@ export abstract class AbstractOpenFile
 		return this._cache;
 	}
 
-	set cache(value: FileCache | undefined) {
-		this._cache = value;
-	}
+
 
 	positionAt(offset: number): Position {
 		return Position.fromLSP(this.document.positionAt(offset));
