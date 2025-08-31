@@ -256,13 +256,14 @@ export class Analyzer extends BaseVisitor
 				node.tag = variable.tag;
 		}
 		else {	
-			const func = this.curScope.findFunction(node.id);
-			if(func) {
-				// this.tokens.addToken(node.idPos, SemanticTokens.function);
-				this.addDiagnostic(new DiagnosticError(Locale.t("The identifier \"%s\" is a function", node.id), node.idPos));
+			this.file.diagnostics.push(PawnErrors.report(17, node.idPos, {symbolName: node.id}));
+			// const func = this.curScope.findFunction(node.id);
+			// if(func) {
+			// 	// this.tokens.addToken(node.idPos, SemanticTokens.function);
+			// 	this.addDiagnostic(new DiagnosticError(Locale.t("The identifier \"%s\" is a function", node.id), node.idPos));
 		
-			}
-			else this.addDiagnostic(new DiagnosticError(Locale.t("Variable \"%s\" is undefinded", node.id), node.idPos));
+			// }
+			// else this.addDiagnostic(new DiagnosticError(Locale.t("Variable \"%s\" is undefinded", node.id), node.idPos));
 		}
 	}
 	private curScope: IScope;
