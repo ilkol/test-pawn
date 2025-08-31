@@ -24,6 +24,7 @@ import { CacheManager } from './cache/CacheManager';
 import { Serialization } from './cache/Serialization';
 import { createHash } from 'crypto';
 import { FileCache } from './cache/FileCache';
+import { serializeInit } from './cache/Serialization/serializeInit';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -39,6 +40,7 @@ async function main() {
 	Locale.init();
 	const fileManager = new FileManager();
 	const preprocessor = new Preprocessor(fileManager);
+	serializeInit();
 
 	const continueParsing = async (document: AbstractOpenFile): Promise<void> => {
 		switch(document.parsinState) {
