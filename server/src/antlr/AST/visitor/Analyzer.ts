@@ -42,6 +42,7 @@ import { Range } from "../../../types";
 import { Locale } from "../../../Locale";
 import { CompletionItem, DiagnosticTag, SignatureHelp, SymbolKind } from "vscode-languageserver";
 import { PawnErrors } from "../../../Errors/PawnErrors";
+import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
 
 export class Analyzer extends BaseVisitor
 {
@@ -107,7 +108,7 @@ export class Analyzer extends BaseVisitor
 	afterVisitAssigment(node: AssigmentOperator): void {
 		if(node.left?.declaration) {
 			if(node.left?.declaration.isConstant) {
-				this.addDiagnostic(new DiagnosticError(Locale.t("error 022: must be lvalue (non-constant)"), node.left.pos));
+				this.file.diagnostics.push(PawnErrors.report(22, node.left.range));
 			}
 		}
 	}
@@ -280,7 +281,11 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitFunctionCall(node: FunctionCall): void {
+
+		console.log(node.id)
 		let func = this.curScope.findFunction(node.id);
+
+
 		// this.tokens.addToken(node.idPos, SemanticTokens.function);
 
 		// const array = this.functionsCalls.get(node.id);
@@ -302,7 +307,7 @@ export class Analyzer extends BaseVisitor
 			if(func.parameters.length !== node.vars.length && func.ellipse === undefined) {
 				if(func.parameters.length < node.vars.length)
 				{
-					this.addDiagnostic(new DiagnosticError(Locale.t("Expected %d parameters, but passed %d", func.parameters.length, node.vars.length), node.idPos));
+					this.file.diagnostics.push(LSPPawnErrors.reportError(45,45,node.idPos, func.parameters.length, node.vars.length));
 					func.parameters.forEach(element => {
 						this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
 						param++;
@@ -446,7 +451,7 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitDeclarations(declaration: Declarations): void {
-
+		
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
 		this.checkIds(this.curScope.identifires());
@@ -458,6 +463,7 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
+		console.error(node.id);
 		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
 			let id = this.curScope.find(node.id);
 			if (id) {
@@ -479,6 +485,7 @@ export class Analyzer extends BaseVisitor
 				else this.addDiagnostic(new DiagnosticError(Locale.t("Identifire \"%s\" is already taken", node.id), node.idPos));
 			} else {
 				this.curScope.addFunction(node);
+				console.log(this.curScope.functions())
 				const ranges = this.undefindedFunctions.get(node.id);
 				if(ranges) {
 					ranges.forEach(range => {

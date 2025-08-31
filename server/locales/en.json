@@ -224,7 +224,10 @@
 		"234": "warning 234: function is deprecated (symbol \"%s\") %s",
 		"235": "warning 235: public function lacks forward declaration (symbol \"%s\")",
 		"236": "warning 236: unknown parameter in substitution (incorrect #define pattern)",
-		"237": "warning 237: user warning: %s"
+		"237": "warning 237: user warning: %s",
+		"custom": {
+			"45": "error 045: too many function arguments. Expected %d parameters, but passed %d"
+		}
 	},
 	"mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
 	"tag": "tag",
@@ -233,5 +236,6 @@
 	"This directive is not yet supported by the extension.": "This directive is not yet supported by the extension.",
 	"Changes the name of the compiling file": "Changes the name of the compiling file",
 	"Changes the number of the compiling line": "Changes the number of the compiling line",
-	"Function \"%s\" used before definition": "Function \"%s\" used before definition"
+	"Function \"%s\" used before definition": "Function \"%s\" used before definition",
+	"no viable alternative at input 'temain' (functionDecl)": "no viable alternative at input 'temain' (functionDecl)"
 }
