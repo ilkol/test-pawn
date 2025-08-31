@@ -52,7 +52,10 @@ async function main() {
 						document.cache = undefined
 						Logger.log(`File ${document.path} has old (bad) cache. Delete cache.`);
 					} else {
-						Logger.log(`Found valid cache for file ${document.path}.`)
+						Logger.log(`Found valid cache for file ${document.path}.`);
+						if(document.cache.diagnostics.length != 0) {
+							document.cache.diagnostics.forEach(d => document.diagnostics.push(d));
+						}
 					}
 				} else {
 					document.cache = undefined

@@ -80,9 +80,6 @@ export class Preprocessor
 		
 		document.processedCode = document.text;
 
-		if(document.cache.diagnostics.length != 0) {
-			document.cache.diagnostics.forEach(d => document.diagnostics.push(d));
-		}
 		for(const action of [
 			async () => await this.findAndReplaceDirectives(document),
 			async () => await this.processFileDirectives(document),
