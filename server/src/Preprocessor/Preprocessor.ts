@@ -663,7 +663,7 @@ export class Preprocessor
 	}
 
 	private parsePragma(text: string) {
-		console.log(text);
+		console.debug(text);
 	}
 
 	/**

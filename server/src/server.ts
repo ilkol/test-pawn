@@ -188,7 +188,6 @@ async function main() {
 			await fileManager.findPawnDir();
 			await CacheManager.init(fileManager);
 		} catch(e) {
-			console.log(e instanceof Error);
 			if(e instanceof Error) {
 				sendNotification(connection, VSCode.NotificationType.Error, e.message);
 			}
