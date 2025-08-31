@@ -129,7 +129,8 @@ export abstract class AbstractOpenFile
 
 	private _cache?: FileCache;
 
-	get cache(): FileCache {
+	get cache(): FileCache 
+	{
 		if(!this._cache) {
 			this._cache = {
 				cacheVersion: CacheManager.VERSION,

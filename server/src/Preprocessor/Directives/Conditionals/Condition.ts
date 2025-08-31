@@ -83,6 +83,11 @@ export class Condition extends PreprocessorDirective
 		return {
 			...super.toJSON(),
 			rest: this.rest,
+			endRange: this.endRange ? Serialization.Serialize.range(this.endRange) : undefined,
+			elseRange:  this.elseRange ? Serialization.Serialize.range(this.elseRange) : undefined,
+			conditionResult: this.conditionResult,
+			endIf: this.endIf ? this.endIf.id : undefined,
+			else: this.elseBlock ? this.elseBlock.id : undefined,
 		}
 	}
 }

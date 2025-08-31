@@ -1,5 +1,5 @@
-import { IncludeCache } from "./Preprocessor/IncludeCache";
 import { Node } from "./Serialization/Nodes";
+import { DirectiveCache } from "./Serialization/Preprocessor";
 
 /**
  * Интерфейс для кэширования файлов.
@@ -31,7 +31,10 @@ export interface FileCache {
 	/**
 	 * Список инклудов, которые были найдены в файле.
 	 */
-	includes?: IncludeCache[];
+	includes?: string[];
+	defines?: Map<string, string[]>;
+
+	directives?: DirectiveCache[];
 
 
 	/**

@@ -11,8 +11,8 @@ import { DiagnosticSeverity, DiagnosticTag } from "vscode-languageserver";
 import { LikeCCharStream } from "./LikeCCharStream";
 import { CodeMapper } from "./CodeMapper";
 import { PawnErrors } from "../Errors/PawnErrors";
-import { FileCache } from "../cache/FileCache";
 import { CacheManager } from "../cache/CacheManager";
+import { Serialization } from "../cache/Serialization";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -94,15 +94,55 @@ export class Preprocessor
 	}
 
 	private async findAndReplaceDirectives(document: AbstractOpenFile) { 
-		// if(document.cache.directives) {
-		// 	document.processedCode = document.cache.processCode;
-		// 	document.directives = document.cache.directives;
-		// 	return;
-		// }
+		if(document.cache.directives) {
+			document.processedCode = document.cache.processCode;
+
+			const definesRelations: Map<string, Directives.Defining.Define> = new Map();
+			const conditionRelations: Map<{
+				else?: string;
+				endIf?: string;
+			}, Directives.Conditionals.Condition> = new Map();
+
+			document.directives = document.cache.directives.map(d => {
+				const instance = Serialization.Deserialize.object<PreprocessorDirective>(d);
+				console.log(instance);
+				if(instance instanceof Directives.Defining.Define) {
+					const undef = (d as Serialization.Preprocessor.DefineCache).undef;
+					if(undef) {
+						definesRelations.set(undef, instance);
+					}
+				} else if(instance instanceof Directives.Conditionals.Condition) {
+					const elseDir = (d as Serialization.Preprocessor.IfCache).else;
+					const endIf = (d as Serialization.Preprocessor.IfCache).endIf;
+					if(elseDir || endIf) {
+						conditionRelations.set({
+							else: elseDir,
+							endIf: endIf
+						}, instance);
+					}
+				}
+				return instance;
+			}).filter(i => !!i) as PreprocessorDirective[];
+			
+			for(const [undefId, define] of definesRelations) {
+				define.undef = document.directives.find(d => d.id === undefId) as Directives.Defining.Undef;
+			}
+			for(const [relation, condition] of conditionRelations) {
+				if(relation.else) {
+					condition.elseBlock = document.directives.find(d => d.id === relation.else) as Directives.Conditionals.Else | Directives.Conditionals.ElseIf;
+				}
+				if(relation.endIf) {
+					condition.endIf = document.directives.find(d => d.id === relation.endIf) as Directives.Conditionals.Endif;
+				}
+			}
+
+
+			return;
+		}
 		const {code, directives } = await this.findDirectives(document);
 		document.processedCode = code;
 		document.directives = directives;
-		// document.cache.directivs = [];
+		document.cache.directives = directives.map(d => d.toJSON());
 	}
 
 	private async sortIncludes(document: AbstractOpenFile) {
@@ -193,8 +233,11 @@ export class Preprocessor
 	private async processFileDirectives(document: AbstractOpenFile) {
 		if(document.cache.includes) {
 			document.processedCode = document.cache.processCode;
-			document.includes = document.cache.includes.map(include => Directives.Include.fromJSON(include));
-			// document.defines = cache.defines;	
+			document.includes = document.cache.includes.map(include => document.directives.find(d => d instanceof Directives.Include && d.id === include) as Directives.Include).filter(i => !!i) as Directives.Include[];
+			document.defines = new Map();
+			document.cache.defines?.forEach((value, key) => {
+				document.defines!.set(key, value.map(v => document.directives.find(d => d instanceof Directives.Defining.Define && d.id === v) as Directives.Defining.Define).filter(i => !!i) as Directives.Defining.Define[]);
+			});
 			return;
 		}
 		let code = document.processedCode;
@@ -286,8 +329,11 @@ export class Preprocessor
 		document.includes = includes;
 		document.defines = defines;
 
-		document.cache.includes = includes.map(include => include.toJSON());
-		// document.cache.defines = document.defines;	
+		document.cache.includes = includes.map(include => include.id);
+		document.cache.defines = new Map();	
+		document.defines.forEach((value, key) => {
+			document.cache.defines!.set(key, value.map(v => v.id));
+		 });
 	}
 
 	private handleUndef(directive: Directives.Defining.Undef, defines:  Map<string, Directives.Defining.Define[]>)
@@ -560,15 +606,15 @@ export class Preprocessor
 			}
 			case "pragma": {
 				this.parsePragma(rest);
-				return new Directives.Pragma(directiveRange, rest, startIndex, restIndex, endIndex);
+				return new Directives.Pragma(directiveRange, rest, startIndex, endIndex);
 			}
 			case "if":
-				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, restIndex, endIndex);
+				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, endIndex);
 			case "endif": {
 				return new Directives.Conditionals.Endif(directiveRange, startIndex,endIndex);
 			}
 			case "elseif": {
-				return new Directives.Conditionals.ElseIf(directiveRange, rest, startIndex, restIndex, endIndex);
+				return new Directives.Conditionals.ElseIf(directiveRange, rest, startIndex, endIndex);
 			}
 			case "else": {
 				return new Directives.Conditionals.Else(directiveRange, startIndex,endIndex);

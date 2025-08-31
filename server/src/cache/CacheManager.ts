@@ -10,7 +10,7 @@ interface CacheConfig {
 
 export class CacheManager {
 
-	static readonly VERSION = 1;
+	static readonly VERSION = 3;
 
 	/**
 	 * Хранит кэши файлов, ключом является путь к файлу.
