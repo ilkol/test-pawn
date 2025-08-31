@@ -105,7 +105,7 @@ export class Preprocessor
 
 			document.directives = document.cache.directives.map(d => {
 				const instance = Serialization.Deserialize.object<PreprocessorDirective>(d);
-				console.log(instance);
+				instance.id = d.id;
 				if(instance instanceof Directives.Defining.Define) {
 					const undef = (d as Serialization.Preprocessor.DefineCache).undef;
 					if(undef) {
@@ -239,7 +239,6 @@ export class Preprocessor
 				const value = document.cache.defines![key];
 				document.defines!.set(key, value.map(v => document.directives.find(d => d instanceof Directives.Defining.Define && d.id === v) as Directives.Defining.Define).filter(i => !!i) as Directives.Defining.Define[]);
 			}
-			console.log(document.defines);
 			return;
 		}
 		let code = document.processedCode;

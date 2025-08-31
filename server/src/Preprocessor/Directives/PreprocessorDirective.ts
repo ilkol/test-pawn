@@ -4,13 +4,24 @@ import { v4 as uuid } from "uuid";
 
 export abstract class PreprocessorDirective
 {
-	public readonly id = uuid();
+	private _id?: string;
 	public curStartIndex: number;
 	public curEndIndex: number;
 
 	constructor(public readonly range: Range, readonly startIndex: number, readonly endIndex: number) {
 		this.curStartIndex = startIndex;
 		this.curEndIndex = endIndex;
+	}
+
+	set id(value: string) {
+		this._id = value;
+	}
+
+	get id(): string {
+		if(!this._id) {
+			this._id = uuid();
+		}
+		return this._id;
 	}
 
 	move(shift: number) {
