@@ -10,7 +10,7 @@ interface CacheConfig {
 
 export class CacheManager {
 
-	static readonly VERSION = 3;
+	static readonly VERSION = 4;
 
 	/**
 	 * Хранит кэши файлов, ключом является путь к файлу.
@@ -72,6 +72,9 @@ export class CacheManager {
 			return undefined;
 		}
 		const content = await readFile(path, 'utf-8');
+		if(content.length === 0) {
+			return undefined;
+		}
 		return JSON.parse(content);
 	}
 
