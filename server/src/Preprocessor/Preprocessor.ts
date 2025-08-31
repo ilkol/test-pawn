@@ -235,9 +235,11 @@ export class Preprocessor
 			document.processedCode = document.cache.processCode;
 			document.includes = document.cache.includes.map(include => document.directives.find(d => d instanceof Directives.Include && d.id === include) as Directives.Include).filter(i => !!i) as Directives.Include[];
 			document.defines = new Map();
-			document.cache.defines?.forEach((value, key) => {
+			for(const key of Object.keys(document.cache.defines ?? {})) {
+				const value = document.cache.defines![key];
 				document.defines!.set(key, value.map(v => document.directives.find(d => d instanceof Directives.Defining.Define && d.id === v) as Directives.Defining.Define).filter(i => !!i) as Directives.Defining.Define[]);
-			});
+			}
+			console.log(document.defines);
 			return;
 		}
 		let code = document.processedCode;
@@ -330,10 +332,10 @@ export class Preprocessor
 		document.defines = defines;
 
 		document.cache.includes = includes.map(include => include.id);
-		document.cache.defines = new Map();	
+		document.cache.defines = {};	
 		document.defines.forEach((value, key) => {
-			document.cache.defines!.set(key, value.map(v => v.id));
-		 });
+			document.cache.defines![key] = value.map(v => v.id);
+		});
 	}
 
 	private handleUndef(directive: Directives.Defining.Undef, defines:  Map<string, Directives.Defining.Define[]>)

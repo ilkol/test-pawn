@@ -32,7 +32,7 @@ export interface FileCache {
 	 * Список инклудов, которые были найдены в файле.
 	 */
 	includes?: string[];
-	defines?: Map<string, string[]>;
+	defines?: {[key: string]: string[]};
 
 	directives?: DirectiveCache[];
 
