@@ -22,9 +22,9 @@ import { AbstractOpenFile, ParsingStep } from './AbstractOpenFile';
 import { Preprocessor } from './Preprocessor/Preprocessor';
 import { CacheManager } from './cache/CacheManager';
 import { Serialization } from './cache/Serialization';
-import { createHash } from 'crypto';
 import { FileCache } from './cache/FileCache';
 import { serializeInit } from './cache/Serialization/serializeInit';
+import { ASTNode } from './antlr/AST/Nodes/ASTNode';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -50,7 +50,13 @@ async function main() {
 				if(document.cache.cacheVersion >= CacheManager.VERSION) {
 					if(document.cache.texttHash !== texttHash) {
 						document.cache = undefined
+						Logger.log(`File ${document.path} has old (bad) cache. Delete cache.`);
+					} else {
+						Logger.log(`Found valid cache for file ${document.path}.`)
 					}
+				} else {
+					document.cache = undefined
+					Logger.log(`File ${document.path} has old (bad) cache. Delete cache.`);
 				}
 				CacheManager.setFileCache(document.cache);
 				return;
@@ -88,6 +94,13 @@ async function main() {
 		let cache: FileCache = (await CacheManager.getFileCache(document.path))!;
 
 		CacheManager.setFileCache(cache);
+
+		if(cache.rootAST) {
+			document.AST = Serialization.Deserialize.object<ASTNode>(cache.rootAST);
+			document.parsinState++;
+			Logger.log(`${document.path} has been already parsed. Skip parsing.`);
+		}
+
 		await continueParsing(document);
 	}
 	Parser.onFileParsedListener = async (document) => {

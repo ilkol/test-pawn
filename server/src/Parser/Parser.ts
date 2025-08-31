@@ -57,6 +57,7 @@ export class Parser
 	}
 
 	public static async walkAST(document: AbstractOpenFile) {
+		console.log(document.AST);
 		if(!document.AST) {
 			Logger.error("AST is not initialized, cannot walk the tree.");
 			return;
