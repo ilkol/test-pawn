@@ -4,10 +4,6 @@ import { FileCache } from "./FileCache";
 import { mkdir, readFile, unlink, writeFile } from "fs/promises";
 import { createHash } from "crypto";
 
-interface CacheConfig {
-	version: number;
-}
-
 export class CacheManager {
 
 	static readonly VERSION = 5;
