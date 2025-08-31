@@ -52,5 +52,5 @@ export interface FileCache {
 
 	diagnostics: Diagnostic[];
 
-	parseStep: ParsingStep;
+	// parseStep: ParsingStep;
 }

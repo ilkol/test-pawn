@@ -115,7 +115,8 @@ export abstract class AbstractOpenFile
 	public _parsinState: ParsingStep = ParsingStep.newFile;
 
 	set parsinState(value: ParsingStep) {
-		this.cache.parseStep = this._parsinState = value;
+		// this.cache.parseStep = 
+		this._parsinState = value;
 	}
 	get parsinState(): ParsingStep {
 		return this._parsinState;
@@ -149,7 +150,7 @@ export abstract class AbstractOpenFile
 				texttHash: CacheManager.hashText(this.text),
 				processCode: this.processedCode,
 				diagnostics: [],
-				parseStep: this.parsinState
+				// parseStep: this.parsinState
 			};
 		}
 		return this._cache;
