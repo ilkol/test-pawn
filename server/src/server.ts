@@ -101,6 +101,7 @@ async function main() {
 		if(cache.rootAST) {
 			document.AST = Serialization.Deserialize.object<ASTNode>(cache.rootAST);
 			document.parsinState++;
+			document.processedCode = ""; // чтобы не занимал память
 			Logger.log(`${document.path} has been already parsed. Skip parsing.`);
 		}
 
