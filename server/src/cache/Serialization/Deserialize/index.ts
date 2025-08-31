@@ -46,6 +46,7 @@ export namespace Deserialize {
 		}
 		const type = obj.__type;
 		if (!type) {
+			console.error(obj);
 			throw new Error("Missing __type in serialized object");
 		}
 
