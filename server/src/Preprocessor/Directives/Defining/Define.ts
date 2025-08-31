@@ -90,6 +90,7 @@ export class Define extends PreprocessorDirective
 	toJSON(): Serialization.Preprocessor.DefineCache {
 		return {
 			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.Define,
 			prefix: this.prefix,
 			postPrefix: this.postPrefix,
 			pattern: this.pattern,

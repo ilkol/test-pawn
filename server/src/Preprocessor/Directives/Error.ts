@@ -11,6 +11,7 @@ export class Error extends PreprocessorDirective
 	toJSON(): Serialization.Preprocessor.ErrorCache {
 		return {
 			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.Error,
 			message: this.message,
 			type: this.type,
 		}

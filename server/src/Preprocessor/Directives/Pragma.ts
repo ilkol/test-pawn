@@ -42,6 +42,7 @@ export class Pragma extends PreprocessorDirective
 	toJSON(): Serialization.Preprocessor.PragmaCache {
 		return {
 			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.Pragma,
 			rest: this.rest,
 		}
 	}

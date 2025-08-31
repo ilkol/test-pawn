@@ -82,6 +82,7 @@ export class Condition extends PreprocessorDirective
 	toJSON(): Serialization.Preprocessor.IfCache {
 		return {
 			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.If,
 			rest: this.rest,
 			endRange: this.endRange ? Serialization.Serialize.range(this.endRange) : undefined,
 			elseRange:  this.elseRange ? Serialization.Serialize.range(this.elseRange) : undefined,

@@ -22,6 +22,7 @@ export class Else extends PreprocessorDirective
 	toJSON(): Serialization.Preprocessor.ElseCache {
 		return {
 			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.Else,
 		}
 	}
 }

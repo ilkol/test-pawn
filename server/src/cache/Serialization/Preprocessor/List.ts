@@ -1,4 +1,5 @@
 export enum List {
+	AnyDirective = "AnyDirective",
 	Define = "DefineDirective",
 	Include = "IncludeDirective",
 	If = "IfDirective",

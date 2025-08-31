@@ -35,6 +35,7 @@ export class Undef extends PreprocessorDirective
 	toJSON(): Serialization.Preprocessor.UndefCache {
 		return {
 			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.Undef,
 			definePattern: this.define,
 			definePatternRange: Serialization.Serialize.range(this.defineRange),
 		}

@@ -18,6 +18,7 @@ export class Endif extends PreprocessorDirective
 	toJSON(): Serialization.Preprocessor.EndifCache {
 		return {
 			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.Endif,
 		}
 	}
 }

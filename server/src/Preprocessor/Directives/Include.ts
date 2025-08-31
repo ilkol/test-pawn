@@ -51,6 +51,7 @@ export class Include extends PreprocessorDirective
 	toJSON(): Serialization.Preprocessor.IncludeCache {
 		return {
 			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.Include,
 			parsedPathText: this.pathText,
 			exist: this.exist,
 			silent: this.silent,

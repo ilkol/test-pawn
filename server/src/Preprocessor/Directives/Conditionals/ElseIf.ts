@@ -8,6 +8,9 @@ export class ElseIf extends Condition
 	}
 
 	toJSON(): Serialization.Preprocessor.ElseIfCache {
-		return super.toJSON();
+		return {
+			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.ElseIf,
+		};
 	}
 }

@@ -20,6 +20,7 @@ export abstract class PreprocessorDirective
 
 	toJSON(): Serialization.Preprocessor.DirectiveCache {
 		return {
+			__type: Serialization.Preprocessor.List.AnyDirective,
 			id: this.id,
 			startIndex: this.curStartIndex,
 			endIndex: this.curEndIndex,

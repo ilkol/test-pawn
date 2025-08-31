@@ -19,6 +19,7 @@ export class Endinput extends PreprocessorDirective
 	toJSON(): Serialization.Preprocessor.EndInputCache {
 		return {
 			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.Endinput,
 		}
 	}
 }

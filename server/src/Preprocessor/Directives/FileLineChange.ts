@@ -19,6 +19,7 @@ export class FileLineChange extends PreprocessorDirective {
 	toJSON(): Serialization.Preprocessor.FileLineChangeCache {
 		return {
 			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.FileLine,
 			hintMessage: this.hintMessage,
 		}
 	}
