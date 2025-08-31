@@ -1,4 +1,3 @@
-import { IncludeCache } from "../../cache/Preprocessor/IncludeCache";
 import { Serialization } from "../../cache/Serialization";
 import { Range } from "../../types";
 import { PreprocessorDirective } from "./PreprocessorDirective";
@@ -31,7 +30,7 @@ export class Include extends PreprocessorDirective
 		this.type = pathInfo.type;
 	}
 
-	static fromCache(cache: IncludeCache) {
+	static fromJSON(cache: Serialization.Preprocessor.IncludeCache) {
 		const instance = new Include(
 			Serialization.Deserialize.range(cache.range), 
 			{
@@ -49,18 +48,15 @@ export class Include extends PreprocessorDirective
 		return instance;
 	}
 
-	toCache(): IncludeCache {
+	toJSON(): Serialization.Preprocessor.IncludeCache {
 		return {
+			...super.toJSON(),
 			parsedPathText: this.pathText,
-			range: Serialization.Serialize.range(this.range),
 			exist: this.exist,
 			silent: this.silent,
 			type: this.type,
 			absolutePath: this.absolutePath,
 			pathRange: Serialization.Serialize.range(this.pathRange),
-			endIndex: this.endIndex,
-			startIndex: this.startIndex,
 		}
 	}
-
 }

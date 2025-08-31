@@ -1,5 +1,5 @@
-import { IncludeType } from "../../Preprocessor/Directives";
-import { Serialization } from "../Serialization";
+import { Serialization } from "..";
+import { IncludeType } from "../../../Preprocessor/Directives";
 import { DirectiveCache } from "./DirectivsCache";
 
 export interface IncludeCache extends DirectiveCache {

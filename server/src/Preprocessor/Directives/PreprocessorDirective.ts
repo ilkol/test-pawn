@@ -1,3 +1,4 @@
+import { Serialization } from "../../cache/Serialization";
 import { Range } from "../../types";
 import { v4 as uuid } from "uuid";
 
@@ -17,5 +18,13 @@ export abstract class PreprocessorDirective
 		this.curEndIndex += shift;
 	}
 
-	
+	toJSON(): Serialization.Preprocessor.DirectiveCache {
+		return {
+			id: this.id,
+			startIndex: this.curStartIndex,
+			endIndex: this.curEndIndex,
+			range: Serialization.Serialize.range(this.range)
+		}
+	}
+
 }

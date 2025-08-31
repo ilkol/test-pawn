@@ -1,3 +1,4 @@
+import { Serialization } from "../../../cache/Serialization";
 import { Range } from "../../../types";
 import { PreprocessorDirective } from "../PreprocessorDirective";
 import { Undef } from "./Undef";
@@ -64,4 +65,38 @@ export class Define extends PreprocessorDirective
 	// 	define.replacement = this.replacement;
 	// 	return define;
 	// }
+
+	static fromJSON(json: Serialization.Preprocessor.DefineCache): Define {
+		const instance =  new Define(
+			Serialization.Deserialize.range(json.range),
+			{
+				text: json.pattern,
+				replacement: json.replacement,
+				range: Serialization.Deserialize.range(json.patternRange),
+			},
+			json.startIndex,
+			json.endIndex,
+		);	
+		instance.used = json.used;
+		if (json.undef !== undefined) {
+			// instance.undef = Undef.fromJSON({
+			// 	...json,
+			// 	id: json.undef,
+			// } as Serialization.Preprocessor.UndefCache);
+		}	
+		return instance;
+	}
+
+	toJSON(): Serialization.Preprocessor.DefineCache {
+		return {
+			...super.toJSON(),
+			prefix: this.prefix,
+			postPrefix: this.postPrefix,
+			pattern: this.pattern,
+			patternRange: Serialization.Serialize.range(this.patternRange),
+			replacement: this.replacement,
+			undef: this.undef?.id,
+			used: this.used,
+		}
+	}
 }

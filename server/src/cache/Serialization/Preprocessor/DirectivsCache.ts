@@ -1,6 +1,7 @@
-import { Serialization } from "../Serialization";
+import { Serialization } from "..";
 
 export interface DirectiveCache {
+	id: string;
 	/**
 	 * Позиция начала текста директивы в коде
 	 */

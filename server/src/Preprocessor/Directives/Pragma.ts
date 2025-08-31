@@ -1,3 +1,4 @@
+import { Serialization } from "../../cache/Serialization";
 import { Range } from "../../types";
 import { PreprocessorDirective } from "./PreprocessorDirective";
 
@@ -25,11 +26,23 @@ export enum PragmaVariations {
 
 export class Pragma extends PreprocessorDirective
 {
-
-	
-	constructor(range: Range, readonly rest: string, startIndex: number, restIndex: number, endIndex: number) {
+	constructor(range: Range, readonly rest: string, startIndex: number, endIndex: number) {
 		super(range, startIndex, endIndex);
+	}
 
-		
+	static fromJSON(json: Serialization.Preprocessor.PragmaCache): Pragma {
+		return new Pragma(
+			Serialization.Deserialize.range(json.range),
+			json.rest,
+			json.startIndex,
+			json.endIndex,
+		);
+	}
+
+	toJSON(): Serialization.Preprocessor.PragmaCache {
+		return {
+			...super.toJSON(),
+			rest: this.rest,
+		}
 	}
 }

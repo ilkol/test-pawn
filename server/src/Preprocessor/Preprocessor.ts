@@ -193,7 +193,7 @@ export class Preprocessor
 	private async processFileDirectives(document: AbstractOpenFile) {
 		if(document.cache.includes) {
 			document.processedCode = document.cache.processCode;
-			document.includes = document.cache.includes.map(include => Directives.Include.fromCache(include));
+			document.includes = document.cache.includes.map(include => Directives.Include.fromJSON(include));
 			// document.defines = cache.defines;	
 			return;
 		}
@@ -286,7 +286,7 @@ export class Preprocessor
 		document.includes = includes;
 		document.defines = defines;
 
-		document.cache.includes = includes.map(include => include.toCache());
+		document.cache.includes = includes.map(include => include.toJSON());
 		// document.cache.defines = document.defines;	
 	}
 

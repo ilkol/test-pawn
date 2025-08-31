@@ -1,4 +1,4 @@
-import { Serialization } from "../Serialization";
+import { Serialization } from "..";
 import { DirectiveCache } from "./DirectivsCache";
 import { UndefCache } from "./UndefCache";
 
@@ -8,6 +8,6 @@ export interface DefineCache extends DirectiveCache {
 	pattern: string;
 	patternRange: Serialization.Range;
 	replacement: string;
-	undef?: UndefCache;
+	undef?: string;
 	used: boolean;
 }
