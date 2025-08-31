@@ -112,7 +112,14 @@ export class FunctionParameterInfo
  */
 export abstract class AbstractOpenFile
 {
-	public parsinState: ParsingStep = ParsingStep.newFile;
+	public _parsinState: ParsingStep = ParsingStep.newFile;
+
+	set parsinState(value: ParsingStep) {
+		this.cache.parseStep = this._parsinState = value;
+	}
+	get parsinState(): ParsingStep {
+		return this._parsinState;
+	}
 
 	/**
 	 * Основная инфомрация о файле из LSP API
@@ -142,6 +149,7 @@ export abstract class AbstractOpenFile
 				texttHash: CacheManager.hashText(this.text),
 				processCode: this.processedCode,
 				diagnostics: [],
+				parseStep: this.parsinState
 			};
 		}
 		return this._cache;

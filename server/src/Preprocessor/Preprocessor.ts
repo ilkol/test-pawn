@@ -89,9 +89,6 @@ export class Preprocessor
 		]) {
 			await this.nextStep(document, action);
 		}
-
-		document.cache.diagnostics = document.diagnostics;
-
 		await this._onFileProcessedListener?.(document);
 	}
 

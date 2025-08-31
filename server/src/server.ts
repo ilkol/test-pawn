@@ -43,6 +43,10 @@ async function main() {
 	serializeInit();
 
 	const continueParsing = async (document: AbstractOpenFile): Promise<void> => {
+		if(document.parsinState !== ParsingStep.newFile) {
+			document.cache.diagnostics = document.diagnostics;
+		}
+
 		switch(document.parsinState) {
 			case ParsingStep.newFile: {
 				document.parsinState++;

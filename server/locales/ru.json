@@ -267,5 +267,10 @@
 	"tag": "тэг",
 	"tags": "один из тэгов",
 	"Parameter": "Parameter",
-	"Function \"%s\" used before definition": "Function \"%s\" used before definition"
+	"Function \"%s\" used before definition": "Function \"%s\" used before definition",
+	"The `if` keyword divides the command execution flow into two cases. If the condition is met, the following code is executed. Otherwise, the code is skipped.": "The `if` keyword divides the command execution flow into two cases. If the condition is met, the following code is executed. Otherwise, the code is skipped.",
+	"The `else` keyword must follow the `if` statement. The code after `else` is executed if the condition in `if` is equal logically \"true\". When `if` statements are nested and `else` clauses are present, a given `else` is associated with the closest preceding if statement in the same block.": "The `else` keyword must follow the `if` statement. The code after `else` is executed if the condition in `if` is equal logically \"true\". When `if` statements are nested and `else` clauses are present, a given `else` is associated with the closest preceding if statement in the same block.",
+	"Constant equal 1, but tagged as bool": "Constant equal 1, but tagged as bool:",
+	"Constant equal 0, but tagged as bool": "Constant equal 0, but tagged as bool:",
+	"no viable alternative at input 'b=' (functionDecl)": "no viable alternative at input 'b=' (functionDecl)"
 }

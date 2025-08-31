@@ -1,6 +1,7 @@
 import { Diagnostic } from "vscode-languageserver";
 import { Node } from "./Serialization/Nodes";
 import { DirectiveCache } from "./Serialization/Preprocessor";
+import { ParsingStep } from "../AbstractOpenFile";
 
 /**
  * Интерфейс для кэширования файлов.
@@ -50,4 +51,6 @@ export interface FileCache {
 	processCode: string;
 
 	diagnostics: Diagnostic[];
+
+	parseStep: ParsingStep;
 }
