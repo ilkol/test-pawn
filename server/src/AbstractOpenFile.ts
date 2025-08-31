@@ -141,6 +141,7 @@ export abstract class AbstractOpenFile
 				path: this.path,
 				texttHash: CacheManager.hashText(this.text),
 				processCode: this.processedCode,
+				diagnostics: [],
 			};
 		}
 		return this._cache;

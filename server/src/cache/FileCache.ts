@@ -1,3 +1,4 @@
+import { Diagnostic } from "vscode-languageserver";
 import { Node } from "./Serialization/Nodes";
 import { DirectiveCache } from "./Serialization/Preprocessor";
 
@@ -47,4 +48,6 @@ export interface FileCache {
 	 * Код файла в процессе обработки
 	 */
 	processCode: string;
+
+	diagnostics: Diagnostic[];
 }
