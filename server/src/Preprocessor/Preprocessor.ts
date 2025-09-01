@@ -212,7 +212,6 @@ export class Preprocessor
 				}
 				continue;
 			} 
-			includePath.absolutePath = this.fileManager.getAbsolutePath(includePath.absolutePath);
 			includePath.exist = true;
 			dependencies.add(includePath.absolutePath);
 		}
@@ -235,7 +234,7 @@ export class Preprocessor
 			if(!result) {
 				result = await this.plungeFile(join(currentPath, path));
 			}
-			return result;
+			return result ? this.fileManager.getAbsolutePath(result) : result;
 		} 
 		if(this.fileManager.includePath){
 			return await this.plungeFile(join(this.fileManager.includePath, path));
