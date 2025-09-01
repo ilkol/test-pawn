@@ -165,21 +165,19 @@ export class Preprocessor
 			if(!include) {
 				continue;
 			}
-			// this.mergeDefines(document.defines, include.defines);
+			const inc = document.includes.find(i => i.absolutePath === includePath)!;
+			this.mergeDefines(inc, document.defines, include.defines);
 		}
 	}
 
 	private mergeDefines(include: Directives.Include, main: Map<string, Directives.Defining.Define[]>, added: Map<string, Directives.Defining.Define[]>) {
-		for(const [key, value] of added) {
-			const list = added.get(key)!;
+		for(const [key, list] of added) {
 			const last = list[list.length - 1];
 			if(main.has(key)) {
 				
 			} else {
-				const newDir = last.copy();
-				// newDir.startIndex = include.startIndex;
-				
-				main.set(key, [newDir]);
+				last.includeToFile(this.currentDocument!.path, include.curEndIndex);
+				main.set(key, [last]);
 			}
 		}
 	}
@@ -212,6 +210,7 @@ export class Preprocessor
 				}
 				continue;
 			} 
+			includePath.absolutePath = this.fileManager.getAbsolutePath(includePath.absolutePath);
 			includePath.exist = true;
 			dependencies.add(includePath.absolutePath);
 		}
@@ -1051,13 +1050,14 @@ export class Preprocessor
 
 	private async processDefine(code: string, define: Directives.Defining.Define)
 	{
+		const fileStartPos = define.getFilePos(this.currentDocument!.path);
 		let lastindex = undefined;
 		if(define.undef) {
 			lastindex = define.undef.curStartIndex;
 		}
-		const startPos = define.curEndIndex;
+		const startPos = fileStartPos ?? define.curEndIndex;
 		let stoptPos: number;
-		if(lastindex) {
+		if(lastindex && fileStartPos === undefined) {
 			stoptPos = lastindex;
 		}
 		else {

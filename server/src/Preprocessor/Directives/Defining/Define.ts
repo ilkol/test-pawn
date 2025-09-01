@@ -56,24 +56,16 @@ export class Define extends PreprocessorDirective
 	// {
 	// 	return new MarkdownString("").appendCodeblock(`#define ${this.pattern} ${this.replacement}`, "pawn");
 	// }
+
+	private includingPos: Map<string, number> = new Map();
+
+	getFilePos(filePath: string): number | undefined {
+		return this.includingPos.get(filePath);
+	}
 	
-	copy(): Define
+	includeToFile(filePath: string, includePos: number)
 	{
-		const copy = new Define(
-			this.range,
-			{
-				text: this.pattern,
-				replacement: this.replacement,
-				range: this.patternRange,
-			},
-			this.startIndex,
-			this.endIndex,
-		);
-		copy.used = this.used;
-		if(this.undef) {
-			copy.undef = this.undef;
-		}
-		return copy;
+		this.includingPos.set(filePath, includePos);
 	}
 
 	static fromJSON(json: Serialization.Preprocessor.DefineCache): Define {
