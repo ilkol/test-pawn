@@ -40,7 +40,7 @@ import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { Range } from "../../../types";
 import { Locale } from "../../../Locale";
-import { CompletionItem, DiagnosticTag, SignatureHelp, SymbolKind } from "vscode-languageserver";
+import { CompletionItem, DiagnosticSeverity, DiagnosticTag, SignatureHelp, SymbolKind } from "vscode-languageserver";
 import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
 
@@ -132,7 +132,7 @@ export class Analyzer extends BaseVisitor
 					const variable = this.curScope.findVar(el.expresion.id);
 					if(variable) {
 						if(!(variable instanceof EnumDeclaration)) {
-							this.addDiagnostic(new DiagnosticError(Locale.t("Expecting an integer constant or enumeration, but found \"%s\"", el.expresion.name), el.pos));
+							this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expecting an integer constant or enumeration, but found \"%s\"", el.expresion.name), DiagnosticSeverity.Error, el.pos));
 						}
 						else {
 							variable.used = true;
@@ -141,8 +141,6 @@ export class Analyzer extends BaseVisitor
 						}
 					}
 				}
-				// else
-				// 	this.addDiagnostic(new DiagnosticError("Ожидается целочисленная константа, а найдено пустое вырожение", el.pos));
 			}
 			return el;
 		});
@@ -185,7 +183,7 @@ export class Analyzer extends BaseVisitor
 				}
 				else {
 					if(variable.indexes.length !== node.indexes.length) {
-						this.addDiagnostic(new DiagnosticError(Locale.t("Array dimension mismatch"), node.pos));
+						this.file.diagnostics.push(LSPPawnErrors.reportError(48, 48, node.idPos, {original: variable.indexes.length, passed: node.indexes.length}));
 					}
 					else {
 						let iter = -1;
@@ -194,14 +192,14 @@ export class Analyzer extends BaseVisitor
 							if(el.expresion instanceof IntLiteral) {
 								const size = variable.size[iter];
 								if(!size)
-									this.addDiagnostic(new DiagnosticError(Locale.t("Constant expected"), el.pos));
+									this.file.diagnostics.push(PawnErrors.report(8, el.pos));
 								else {
 									const val = el.expresion.value;
 									if(val < 0) {
-										this.addDiagnostic(new DiagnosticError(Locale.t("Index cannot be negative"), el.pos));
+										this.file.diagnostics.push(PawnErrors.report(9, el.pos));
 									}
 									else if(val >= size) {
-										this.addDiagnostic(new DiagnosticError(Locale.t("Out of bounds of the array. Maximum index is %d", size-1), el.pos));
+										this.file.diagnostics.push(LSPPawnErrors.reportError(32, 32, el.pos, node.id,  size-1));
 									}
 								}
 								return el.expresion;
@@ -213,16 +211,15 @@ export class Analyzer extends BaseVisitor
 									variable.used = true;
 								} else {
 									if(checkVar instanceof EnumMember) {
-										if(enumer !== checkVar.parent)
-											this.addDiagnostic(new DiagnosticError(Locale.t("Expected enum member from \"%s\"", enumer.id), el.pos)); 
+										if(enumer !== checkVar.parent) {
+											this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\", but found from \"%s\"", enumer.id, checkVar.parent!.id), DiagnosticSeverity.Error, el.pos));
+										}
 									}
 									else {
-										this.addDiagnostic(new DiagnosticError(Locale.t("Expected enum member from \"%s\"", enumer.id), el.pos));
+										this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\"", enumer.id), DiagnosticSeverity.Error, el.pos));
 									}
 								}
 							}
-							// else
-							// 	this.addDiagnostic(new DiagnosticError("Ожидается целочисленная константа, а найдено пустое вырожение", el.pos));
 							return el;
 						});
 					}
@@ -233,7 +230,7 @@ export class Analyzer extends BaseVisitor
 					if(variable instanceof FunctionDeclarationParameter){
 						let checkvar = variable.variable;
 						if(!(checkvar instanceof Array)) {
-							this.addDiagnostic(new DiagnosticError(Locale.t("The identifier \"%s\" is not an array",  node.id), node.idPos));
+							this.file.diagnostics.push(LSPPawnErrors.reportError("28.notArray",28,  node.idPos, node.id, node.idPos));
 						}
 					}
 				}
@@ -320,7 +317,7 @@ export class Analyzer extends BaseVisitor
 
 					for(let i = param; i < func.parameters.length; i++) {
 						if(func.parameters[i].defaultValue) continue;
-						this.addDiagnostic(new DiagnosticError(Locale.t("Expected %d parameters, but passed %d", func.parameters.length, node.vars.length), node.idPos));
+						this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
 						break;
 					}
 				}
@@ -343,7 +340,9 @@ export class Analyzer extends BaseVisitor
 							param++;
 						});
 					}
-					else this.addDiagnostic(new DiagnosticError(Locale.t("Expected %d parameters, but passed %d", func.parameters.length, node.vars.length), node.idPos));
+					else {
+						this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
+					}
 				}
 			}
 		}
@@ -455,7 +454,8 @@ export class Analyzer extends BaseVisitor
 		this.checkIds(this.curScope.identifires());
 		this.undefindedFunctions.forEach((ranges, id) => {
 			ranges.forEach(range => {
-				this.addDiagnostic(new DiagnosticError(Locale.t("Function \"%s\" not found", id), range));
+				this.file.diagnostics.push(LSPPawnErrors.reportError(17, 17, range, {symbolName: id}));
+				// this.file.diagnostics.push(LSPPawnErrors.reportError("17.function", 17, range, {symbolName: id}));
 			});
 		});
 	}
@@ -468,26 +468,28 @@ export class Analyzer extends BaseVisitor
 				if(id instanceof FunctionDeclaration) {
 					if(!id.code) {
 						if(!node.code) {
-							this.addDiagnostic(new DiagnosticError("Повтороное определение заголовка функции", node.idPos));
+							this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("duplicating function head"), DiagnosticSeverity.Warning, node.idPos));
 						}
-						// хз зачем оно было, но может надо будет вернуть костыль
-						// else {
-						// 	id.code = node.code;
-						// }
 					}else {
 						if((id.modifire !== FunctionModifire.forward && node.modifire !== FunctionModifire.public) && (id.modifire !== FunctionModifire.public && node.modifire !== FunctionModifire.forward)) {
-							this.addDiagnostic(new DiagnosticError(Locale.t("Identifire \"%s\" is already taken", node.id), node.idPos));
+							this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
 						}
 					}
 				}
-				else this.addDiagnostic(new DiagnosticError(Locale.t("Identifire \"%s\" is already taken", node.id), node.idPos));
+				else {
+					this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
+				}
 			} else {
 				this.curScope.addFunction(node);
 				console.log(this.curScope.functions())
 				const ranges = this.undefindedFunctions.get(node.id);
 				if(ranges) {
 					ranges.forEach(range => {
-						this.addDiagnostic(new DiagnosticHint(Locale.t("Function \"%s\" used before definition", node.id), range));
+						if(this.isDefaultTag(node.tag.id)) {
+							this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Function \"%s\" used before definition", node.id), DiagnosticSeverity.Hint, range));
+						} else {
+							this.file.diagnostics.push(PawnErrors.report(208, range, node.id));
+						}
 					});
 					this.undefindedFunctions.delete(node.id);
 					node.used = true;
@@ -507,15 +509,15 @@ export class Analyzer extends BaseVisitor
 		}
 
 		if(node.assigmentFunctionID) {
-			if(!node.native) {
-				this.addDiagnostic(new DiagnosticError(Locale.t("Assignment is only possible to a native function"), node.idPos));
-				return;
-			}
+			// if(!node.native) {
+			// 	this.addDiagnostic(new DiagnosticError(Locale.t("Assignment is only possible to a native function"), node.idPos));
+			// 	return;
+			// }
 			
-			let id = this.curScope.find(node.assigmentFunctionID);
-			if (!id) {
-				this.addDiagnostic(new DiagnosticError(Locale.t("Identifire \"%s\" not found", node.assigmentFunctionID), node.pos));
-			}
+			// let id = this.curScope.find(node.assigmentFunctionID);
+			// if (!id) {
+			// 	this.addDiagnostic(new DiagnosticError(Locale.t("Identifire \"%s\" not found", node.assigmentFunctionID), node.pos));
+			// }
 
 		}
 
@@ -548,55 +550,49 @@ export class Analyzer extends BaseVisitor
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));		
 		// this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(node.modifires).concat(SemanticTokensModifires.declaration));
 	}
-	
-	private addComplition(compl: CompletionItem) {
-		// this.complitions.push(compl);
-	}
-	private addDiagnostic(msg: DiagnosticMessage) {
-		// this.diagnostics.push(msg);
-	}
 
 	private checkIds(ids: Map<string, Declaration>) {
 		ids.forEach((element, key) => {
 			if(element.importFileName !== this.file.path) return;
 			if(key === "cellmin" || key === "cellmax") return;
 			if(!element.used && !element.native) {
-				let diagnostic: DiagnosticMessage, diagnosticMsg: string;
-				let stock = element.stock;
-				if(element instanceof FunctionDeclaration) {
-					diagnosticMsg = Locale.t("Function");
-					if(element.modifire !== FunctionModifire.none)
-						stock = true;
-				}
-				else if(element instanceof EnumDeclaration){
-					stock = true;
-					diagnosticMsg = Locale.t("Enum identifire");
-				}
-				else if(element instanceof EnumMember){
-					stock = true;
-					diagnosticMsg = Locale.t("Enum member");
-				}
-				else if(element instanceof FunctionDeclarationParameter){
-					diagnosticMsg = Locale.t("Parameter");
-				}
-				else {
-					if((<VarDeclaration>element).isConstant) {
-						diagnosticMsg = Locale.t("Constant");
-						stock = true;
-					}
-					else {
-						diagnosticMsg = Locale.t("Variable");
-						stock = (<VarDeclaration>element).modifires.indexOf(VariableModifire.public) !== -1;
-					}
-				}				
+				this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
+				// let diagnostic: DiagnosticMessage, diagnosticMsg: string;
+				// let stock = element.stock;
+				// if(element instanceof FunctionDeclaration) {
+				// 	diagnosticMsg = Locale.t("Function");
+				// 	if(element.modifire !== FunctionModifire.none)
+				// 		stock = true;
+				// }
+				// else if(element instanceof EnumDeclaration){
+				// 	stock = true;
+				// 	diagnosticMsg = Locale.t("Enum identifire");
+				// }
+				// else if(element instanceof EnumMember){
+				// 	stock = true;
+				// 	diagnosticMsg = Locale.t("Enum member");
+				// }
+				// else if(element instanceof FunctionDeclarationParameter){
+				// 	diagnosticMsg = Locale.t("Parameter");
+				// }
+				// else {
+				// 	if((<VarDeclaration>element).isConstant) {
+				// 		diagnosticMsg = Locale.t("Constant");
+				// 		stock = true;
+				// 	}
+				// 	else {
+				// 		diagnosticMsg = Locale.t("Variable");
+				// 		stock = (<VarDeclaration>element).modifires.indexOf(VariableModifire.public) !== -1;
+				// 	}
+				// }				
 				
-				if(!stock) {
-					diagnostic = new DiagnosticWarning(Locale.t("%s \"%s\" is never used", diagnosticMsg, key), element.idPos);
-					diagnostic.tags = [DiagnosticTag.Unnecessary];
-				}
-				else
-					diagnostic = new DiagnosticUnused("warning 203: " + Locale.t("%s \"%s\" is never used", diagnosticMsg, key), element.idPos);
-				this.addDiagnostic(diagnostic);
+				// if(!stock) {
+				// 	diagnostic = new DiagnosticWarning(Locale.t("%s \"%s\" is never used", diagnosticMsg, key), element.idPos);
+				// 	diagnostic.tags = [DiagnosticTag.Unnecessary];
+				// }
+				// else
+				// 	diagnostic = new DiagnosticUnused("warning 203: " + Locale.t("%s \"%s\" is never used", diagnosticMsg, key), element.idPos);
+				// this.addDiagnostic(diagnostic);
 			}
 		});
 	}
@@ -604,7 +600,7 @@ export class Analyzer extends BaseVisitor
 	private checkUsed<T extends Declaration>(node: T, callback: (variable: T) => void) {
 		let id = this.curScope.find(node.id);
 		if (id) {
-			this.addDiagnostic(new DiagnosticError(Locale.t("Identifire \"%s\" is already taken", node.id), node.idPos));
+			this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
 		} else {
 			callback(node);
 		}
@@ -686,7 +682,7 @@ export class Analyzer extends BaseVisitor
 
 	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
 		if(!this.isEqualTag(a.tag, b.tag)) {
-			this.addDiagnostic(new DiagnosticWarning("warning 213: " + Locale.t("Tag mismatch") + ` (${a.tag.tagString}, ${b.tag.tagString}))`, errorRange));
+			this.file.diagnostics.push(PawnErrors.report(213, errorRange, Locale.t("Tag"), a.tag.tagString, b.tag.tagString));
 			return false;
 		}
 		return true;

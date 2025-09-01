@@ -6,6 +6,14 @@ export namespace LSPPawnErrors {
 
 	export var onlyPawnErrorMode: boolean = false;
 
+	export function reportCustom(text: string, severity: DiagnosticSeverity, range: Range): Diagnostic {
+		return {
+			message: text,
+			range,
+			severity,
+			source: "pawn-lsp",
+		};
+	}
 
 	export function extraReport(code: string|number, severity: DiagnosticSeverity, range: Range, ...args: any[]): Diagnostic {
 		return {

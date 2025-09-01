@@ -226,6 +226,12 @@
 		"236": "warning 236: unknown parameter in substitution (incorrect #define pattern)",
 		"237": "warning 237: user warning: %s",
 		"custom": {
+			"17": "error 017: undefined symbol \"{{symbolName}}\"",
+			"28": {
+				"notArray": "error 028: The identifier \"%s\" is not an array"
+			},
+			"32": "error 032: array index out of bounds (variable \"%s\"). Maximum index is %d",
+			"48": "error 048: array dimensions do not match. Dimensions expected {{original}}, but found {{passed}}",
 			"202": "warning 202: number of arguments does not match definition. Expected %d parameters, but passed %d"
 		}
 	},
@@ -237,5 +243,15 @@
 	"Changes the name of the compiling file": "Changes the name of the compiling file",
 	"Changes the number of the compiling line": "Changes the number of the compiling line",
 	"Function \"%s\" used before definition": "Function \"%s\" used before definition",
-	"no viable alternative at input 'temain' (functionDecl)": "no viable alternative at input 'temain' (functionDecl)"
+	"no viable alternative at input 'temain' (functionDecl)": "no viable alternative at input 'temain' (functionDecl)",
+	"mismatched input 'file' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (functionDeclarationParams)": "mismatched input 'file' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (functionDeclarationParams)"
+			}
+		}
+	},
+	"no viable alternative at input 'File": "file' (functionDeclarationParams)",
+	"mismatched input 'file' expecting IDENTIFIER (functionDecl)": "mismatched input 'file' expecting IDENTIFIER (functionDecl)",
+	"duplicating function head": "duplicating function head"
 }
