@@ -461,7 +461,6 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		console.error(node.id);
 		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
 			let id = this.curScope.find(node.id);
 			if (id) {
@@ -481,7 +480,6 @@ export class Analyzer extends BaseVisitor
 				}
 			} else {
 				this.curScope.addFunction(node);
-				console.log(this.curScope.functions())
 				const ranges = this.undefindedFunctions.get(node.id);
 				if(ranges) {
 					ranges.forEach(range => {

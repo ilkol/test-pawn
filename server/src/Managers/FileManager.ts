@@ -88,7 +88,10 @@ export class FileManager {
 	private textDocuments: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
 	constructor() {
-		this.documents.onDidOpen(e => this.onDidOpenDocument(e.document))
+	}
+
+	init() {
+		this.documents.onDidOpen(e => this.onDidOpenDocument(e.document));
 	}
 
 	/**

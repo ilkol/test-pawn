@@ -61,7 +61,6 @@ export class Scope implements IScope
 	public findFunction(id: string): FunctionDeclaration | undefined {
 		let currentScope: IScope | undefined = this;
         while (currentScope !== undefined) {
-			console.log(currentScope.functions())
             if (currentScope.functions().has(id)) {
                 return currentScope.functions().get(id)!;
             }
