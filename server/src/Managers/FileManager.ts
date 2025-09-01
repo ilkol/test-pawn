@@ -82,7 +82,7 @@ export class FileManager {
 	 * URI корня текущей рабочей области
 	 */
 	set currentUri(value: URI) {
-		this._currentWorkspacePath = FileManager.getPathByURI(value);
+		this._currentWorkspacePath = FileManager.getPathFromURI(value);
 	}
 
 	private textDocuments: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -142,8 +142,12 @@ export class FileManager {
 		}
 	}
 
-	public static getPathByURI(uri: URI): string {
+	public static getPathFromURI(uri: URI): string {
 		return join(Uri.parse(uri).path.slice(1), "");
+	}
+
+	public static getUriFromPath(path: string): URI {
+		return Uri.file(path).toString();
 	}
 
 	public async openFile(path: string): Promise<void> {
@@ -151,7 +155,7 @@ export class FileManager {
 		if(openedFile) {
 			return;
 		}
-		const textDocument = TextDocument.create(Uri.file(path).toString(), "pawn", 0, await this.readFileContent(path));
+		const textDocument = TextDocument.create(FileManager.getUriFromPath(path), "pawn", 0, await this.readFileContent(path));
 		await this.onDidOpenDocument(textDocument);
 	}
 
@@ -165,7 +169,7 @@ export class FileManager {
 
 
 	private async onDidOpenDocument(document: TextDocument) {
-		const path = FileManager.getPathByURI(document.uri);
+		const path = FileManager.getPathFromURI(document.uri);
 		let openedFile = this.getOpenedFile(path);
 		if(!openedFile) {
 			openedFile = new AntlrOpenedFile(document);
