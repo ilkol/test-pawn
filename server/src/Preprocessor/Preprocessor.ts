@@ -76,6 +76,7 @@ export class Preprocessor
 	}
 
 	public async processFile(document: AbstractOpenFile) {
+		const tmp = this.currentDocument;
 		this.currentDocument = document;
 		
 		document.processedCode = document.text;
@@ -90,6 +91,7 @@ export class Preprocessor
 			await this.nextStep(document, action);
 		}
 
+		this.currentDocument = tmp;
 		await this._onFileProcessedListener?.(document);
 	}
 
@@ -1078,6 +1080,8 @@ export class Preprocessor
 		const res = this.testPreprocess(str, define, changes);
 		
 		let startPos: number, originalStartPos: number;
+		define.used = changes.length > 0;
+		const referenaces: Range[] = [];
 		changes.forEach(change => {
 			startPos = change.start + preShift;
 			originalStartPos = this.codeMapper.getOriginalPos(startPos);
@@ -1086,10 +1090,15 @@ export class Preprocessor
 				startIndex: startPos,
 				changeLength: change.shift
 			});
-			// const range = new Range(this.file.positionAt(originalStartPos), this.currentDocument.positionAt(originalStartPos + change.length));
+			const startPosition = this.currentDocument?.positionAt(originalStartPos);
+			const endPosition = this.currentDocument?.positionAt(originalStartPos + change.length);
+			if(startPosition && endPosition) {
+				referenaces.push(new Range(startPosition, endPosition));
+			}
 			// this.tokensManager.addToken(range, SemanticTokens.macro);
 			preShift -= change.shift;
 		});
+		define.setFileReferences(this.currentDocument!.path, referenaces);
 		return res;
 		// return await vscode.window.withProgress(
 		// 	{

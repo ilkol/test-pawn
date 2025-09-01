@@ -32,7 +32,16 @@ export class Define extends PreprocessorDirective
 	replacement: string;
 	undef?: Undef;
 	used: boolean = false;
-	
+
+	private _references: Map<string, Range[]> = new Map();
+	getFileReferences(filePath: string): Range[] {
+		return this._references.get(filePath) ?? [];
+	}
+	setFileReferences(filePath: string, referenaces: Range[]) {
+		this._references.set(filePath, referenaces);
+	}
+
+
 	constructor(range: Range, patternInfo: PatternInfo, startIndex: number, endIndex: number) {
 		super(range, startIndex, endIndex);
 
@@ -80,12 +89,16 @@ export class Define extends PreprocessorDirective
 			json.endIndex,
 		);	
 		instance.used = json.used;
-		if (json.undef !== undefined) {
-			// instance.undef = Undef.fromJSON({
-			// 	...json,
-			// 	id: json.undef,
-			// } as Serialization.Preprocessor.UndefCache);
-		}	
+		if(json.references) {
+			for(const key of Object.keys(json.references)) {
+				instance._references.set(key, json.references[key].map(r => Serialization.Deserialize.range(r)));
+			}
+		}
+		if(json.includingPos) {
+			for(const key of Object.keys(json.includingPos)) {
+				instance.includingPos.set(key, json.includingPos[key]);
+			}
+		}
 		return instance;
 	}
 
@@ -100,6 +113,9 @@ export class Define extends PreprocessorDirective
 			replacement: this.replacement,
 			undef: this.undef?.id,
 			used: this.used,
+
+			references: Object.fromEntries([...this._references.entries()].map(([key, value]) => [key, value.map(v => Serialization.Serialize.range(v))])),
+			includingPos: Object.fromEntries(this.includingPos.entries()),
 		}
 	}
 }

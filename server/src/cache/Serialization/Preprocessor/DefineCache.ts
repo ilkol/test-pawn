@@ -1,6 +1,5 @@
 import { Serialization } from "..";
 import { DirectiveCache } from "./DirectivsCache";
-import { UndefCache } from "./UndefCache";
 
 export interface DefineCache extends DirectiveCache {
 	prefix: string;
@@ -10,4 +9,7 @@ export interface DefineCache extends DirectiveCache {
 	replacement: string;
 	undef?: string;
 	used: boolean;
+
+	references?: {[key: string]: Serialization.Range[]};
+	includingPos?: {[key: string]: number};
 }
