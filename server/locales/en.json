@@ -190,7 +190,7 @@
 		"200": "warning 200: symbol \"%s\" is truncated to 31 characters",
 		"201": "warning 201: redefinition of constant/macro (symbol \"%s\")",
 		"202": "warning 202: number of arguments does not match definition",
-		"203": "warning 203: symbol is never used: \"%\"",
+		"203": "warning 203: symbol is never used: \"%s\"",
 		"204": "warning 204: symbol is assigned a value that is never used: \"%s\"",
 		"205": "warning 205: redundant code: constant expression is zero",
 		"206": "warning 206: redundant test: constant expression is non-zero",
