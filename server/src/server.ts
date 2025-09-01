@@ -191,6 +191,7 @@ async function main() {
 		try {
 			await fileManager.findPawnDir();
 			await CacheManager.init(fileManager);
+			fileManager.init();
 		} catch(e) {
 			if(e instanceof Error) {
 				sendNotification(connection, VSCode.NotificationType.Error, e.message);
@@ -235,11 +236,6 @@ async function main() {
 	connection.onDidChangeWatchedFiles(_change => {
 
 	});
-
-	// documents.onDidOpen(e => {
-		
-	// 	console.log(e.document.uri);
-	// });
 
 	connection.onCompletion(
 		(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
