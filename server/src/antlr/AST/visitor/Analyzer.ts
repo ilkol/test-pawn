@@ -282,9 +282,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionCall(node: FunctionCall): void {
 
-		console.log(node.id)
 		let func = this.curScope.findFunction(node.id);
-
 
 		// this.tokens.addToken(node.idPos, SemanticTokens.function);
 
@@ -307,7 +305,7 @@ export class Analyzer extends BaseVisitor
 			if(func.parameters.length !== node.vars.length && func.ellipse === undefined) {
 				if(func.parameters.length < node.vars.length)
 				{
-					this.file.diagnostics.push(LSPPawnErrors.reportError(45,45,node.idPos, func.parameters.length, node.vars.length));
+					this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
 					func.parameters.forEach(element => {
 						this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
 						param++;

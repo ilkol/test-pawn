@@ -226,7 +226,7 @@
 		"236": "warning 236: unknown parameter in substitution (incorrect #define pattern)",
 		"237": "warning 237: user warning: %s",
 		"custom": {
-			"45": "error 045: too many function arguments. Expected %d parameters, but passed %d"
+			"202": "warning 202: number of arguments does not match definition. Expected %d parameters, but passed %d"
 		}
 	},
 	"mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
