@@ -38,6 +38,9 @@ import { VariableInit } from "../../antlr/AST/Nodes/VariableInit";
 import { Array } from "../../antlr/AST/Nodes/Variables/Array";
 import { ArrayDeclaration } from "../../antlr/AST/Nodes/Variables/ArrayDeclaration";
 import { VarDeclaration } from "../../antlr/AST/Nodes/Variables/VarDeclaration";
+import { Endinput, Error, FileLineChange, Include, Pragma } from "../../Preprocessor/Directives";
+import { Condition, Else, ElseIf, Endif } from "../../Preprocessor/Directives/Conditionals";
+import { Define, Undef } from "../../Preprocessor/Directives/Defining";
 
 
 export function serializeInit(): void {
@@ -80,4 +83,16 @@ export function serializeInit(): void {
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayInit, ArrayInit);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Docs, Docs);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.BoolLiteral, BoolLiteral);
+
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Define, Define);
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Else, Else);
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.ElseIf, ElseIf);
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Endif, Endif);
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Endinput, Endinput);
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Error, Error);
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.FileLine, FileLineChange);
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.If, Condition);
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Include, Include);
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Pragma, Pragma);
+	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Undef, Undef);
 }

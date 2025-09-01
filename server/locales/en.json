@@ -84,7 +84,6 @@
 	"The `if` keyword divides the command execution flow into two cases. If the condition is met, the following code is executed. Otherwise, the code is skipped.": "The `if` keyword divides the command execution flow into two cases. If the condition is met, the following code is executed. Otherwise, the code is skipped.",
 	"Finded cycle dependency %s": "Finded cycle dependency: %s",
 	"error": {
-		"0": "error 010: invalid function or declaration",
 		"1": "error 001: expected token: \"%s\", but found \"%s\"",
 		"2": "error 002: only a single statement (or expression) can follow each \"case\"",
 		"3": "error 003: declaration of a local variable must appear in a compound block",
@@ -94,13 +93,14 @@
 		"7": "error 007: operator cannot be redefined",
 		"8": "error 008: must be a constant expression; assumed zero",
 		"9": "error 009: invalid array size (negative or zero)",
+		"10": "error 010: invalid function or declaration",
 		"11": "error 011: invalid outside functions",
 		"12": "error 012: invalid function call, not a valid address",
 		"13": "error 013: no entry point (no public functions)",
 		"14": "error 014: invalid statement; not in switch",
 		"15": "error 015: \"default\" case must be the last case in switch statement",
 		"16": "error 016: multiple defaults in \"switch\"",
-		"17": "error 017: undefined symbol \"%s\"",
+		"17": "error 017: undefined symbol \"{{symbolName}}\"",
 		"18": "error 018: initialization data exceeds declared size",
 		"19": "error 019: not a label: \"%s\"",
 		"20": "error 020: invalid symbol name \"%s\"",
@@ -224,7 +224,16 @@
 		"234": "warning 234: function is deprecated (symbol \"%s\") %s",
 		"235": "warning 235: public function lacks forward declaration (symbol \"%s\")",
 		"236": "warning 236: unknown parameter in substitution (incorrect #define pattern)",
-		"237": "warning 237: user warning: %s"
+		"237": "warning 237: user warning: %s",
+		"custom": {
+			"17": "error 017: undefined symbol \"{{symbolName}}\"",
+			"28": {
+				"notArray": "error 028: The identifier \"%s\" is not an array"
+			},
+			"32": "error 032: array index out of bounds (variable \"%s\"). Maximum index is %d",
+			"48": "error 048: array dimensions do not match. Dimensions expected {{original}}, but found {{passed}}",
+			"202": "warning 202: number of arguments does not match definition. Expected %d parameters, but passed %d"
+		}
 	},
 	"mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
 	"tag": "tag",
@@ -232,5 +241,17 @@
 	"Parameter": "Parameter",
 	"This directive is not yet supported by the extension.": "This directive is not yet supported by the extension.",
 	"Changes the name of the compiling file": "Changes the name of the compiling file",
-	"Changes the number of the compiling line": "Changes the number of the compiling line"
+	"Changes the number of the compiling line": "Changes the number of the compiling line",
+	"Function \"%s\" used before definition": "Function \"%s\" used before definition",
+	"no viable alternative at input 'temain' (functionDecl)": "no viable alternative at input 'temain' (functionDecl)",
+	"mismatched input 'file' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (functionDeclarationParams)": "mismatched input 'file' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (functionDeclarationParams)"
+			}
+		}
+	},
+	"no viable alternative at input 'File": "file' (functionDeclarationParams)",
+	"mismatched input 'file' expecting IDENTIFIER (functionDecl)": "mismatched input 'file' expecting IDENTIFIER (functionDecl)",
+	"duplicating function head": "duplicating function head"
 }

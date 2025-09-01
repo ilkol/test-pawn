@@ -7,6 +7,55 @@ import { Include } from "./Preprocessor/Directives";
 import { Define } from "./Preprocessor/Directives/Defining";
 import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
 import { IScope } from "./antlr/Scopes/IScope";
+import { FileCache } from "./cache/FileCache";
+import { CacheManager } from "./cache/CacheManager";
+
+export enum ParsingStep {
+	/**
+	 * Файл не был никак обработан
+	 */
+	newFile,
+	/**
+	 * Файл был открыт и хэш его текста был сохранен в кэш
+	 */
+	textHashed,
+
+	/**
+	 * Собраны и заменены все директивы препроцессора
+	 */
+	directivesCollected,
+
+	/**
+	 * Выполнены большенство команд препроцессора
+	 */
+	directivesProcessed,
+
+	/**
+	 * Спсиок подключаемых инклудов отсортирован
+	 */
+	buildedDependcyGraph,
+
+	/**
+	 * Подключаемые файлы проаанализированы
+	 */
+	processedIncludes,
+
+	/**
+	 * Файл был обработан препроцессором
+	 */
+	preprocessed,
+
+	/**
+	 * Файл был распаршен и создано AST
+	 */
+	parsed,
+
+	/**
+	 * AST было пройдено
+	 */
+	astWalked,
+
+}
 
 export class FunctionInfo
 {
@@ -63,6 +112,16 @@ export class FunctionParameterInfo
  */
 export abstract class AbstractOpenFile
 {
+	public _parsinState: ParsingStep = ParsingStep.newFile;
+
+	set parsinState(value: ParsingStep) {
+		// this.cache.parseStep = 
+		this._parsinState = value;
+	}
+	get parsinState(): ParsingStep {
+		return this._parsinState;
+	}
+
 	/**
 	 * Основная инфомрация о файле из LSP API
 	 */
@@ -75,6 +134,29 @@ export abstract class AbstractOpenFile
 		this._file = value;
 		this.path = FileManager.getPathByURI(value.uri);
 	}
+
+	private _cache?: FileCache;
+
+	set cache(value: FileCache | undefined) {
+		this._cache = value;
+	}
+
+	get cache(): FileCache 
+	{
+		if(!this._cache) {
+			this._cache = {
+				cacheVersion: CacheManager.VERSION,
+				path: this.path,
+				texttHash: CacheManager.hashText(this.text),
+				processCode: this.processedCode,
+				diagnostics: [],
+				// parseStep: this.parsinState
+			};
+		}
+		return this._cache;
+	}
+
+
 
 	positionAt(offset: number): Position {
 		return Position.fromLSP(this.document.positionAt(offset));
@@ -189,6 +271,7 @@ export abstract class AbstractOpenFile
 	}
 
 	public includes: Include[] = [];
+	public sortedIncludes: string[] = [];
 	public defines: Map<string, Define[]> = new Map();
 	abstract get scope(): IScope;
 

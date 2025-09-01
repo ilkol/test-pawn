@@ -11,6 +11,8 @@ import { DiagnosticSeverity, DiagnosticTag } from "vscode-languageserver";
 import { LikeCCharStream } from "./LikeCCharStream";
 import { CodeMapper } from "./CodeMapper";
 import { PawnErrors } from "../Errors/PawnErrors";
+import { CacheManager } from "../cache/CacheManager";
+import { Serialization } from "../cache/Serialization";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -67,38 +69,99 @@ export class Preprocessor
 
 	private currentDocument?: AbstractOpenFile; 
 
+	private async nextStep(document: AbstractOpenFile, curentAction: Function) {
+		await curentAction();
+		document.parsinState++;
+		CacheManager.setFileCache(document.cache);
+	}
+
 	public async processFile(document: AbstractOpenFile) {
 		this.currentDocument = document;
 		
 		document.processedCode = document.text;
-		document.directives = [];
 
+		for(const action of [
+			async () => await this.findAndReplaceDirectives(document),
+			async () => await this.processFileDirectives(document),
+			async () => document.sortedIncludes = await this.sortIncludes(document),
+			async () => await this.processIncludes(document),
+			async () => document.processedCode = await this.processDefines(document.processedCode, document.defines)
+		]) {
+			await this.nextStep(document, action);
+		}
+		await this._onFileProcessedListener?.(document);
+	}
+
+	private async findAndReplaceDirectives(document: AbstractOpenFile) { 
+		if(document.cache.directives) {
+			document.processedCode = document.cache.processCode;
+
+			const definesRelations: Map<string, Directives.Defining.Define> = new Map();
+			const conditionRelations: Map<{
+				else?: string;
+				endIf?: string;
+			}, Directives.Conditionals.Condition> = new Map();
+
+			document.directives = document.cache.directives.map(d => {
+				const instance = Serialization.Deserialize.object<PreprocessorDirective>(d);
+				instance.id = d.id;
+				if(instance instanceof Directives.Defining.Define) {
+					const undef = (d as Serialization.Preprocessor.DefineCache).undef;
+					if(undef) {
+						definesRelations.set(undef, instance);
+					}
+				} else if(instance instanceof Directives.Conditionals.Condition) {
+					const elseDir = (d as Serialization.Preprocessor.IfCache).else;
+					const endIf = (d as Serialization.Preprocessor.IfCache).endIf;
+					if(elseDir || endIf) {
+						conditionRelations.set({
+							else: elseDir,
+							endIf: endIf
+						}, instance);
+					}
+				}
+				return instance;
+			}).filter(i => !!i) as PreprocessorDirective[];
+			
+			for(const [undefId, define] of definesRelations) {
+				define.undef = document.directives.find(d => d.id === undefId) as Directives.Defining.Undef;
+			}
+			for(const [relation, condition] of conditionRelations) {
+				if(relation.else) {
+					condition.elseBlock = document.directives.find(d => d.id === relation.else) as Directives.Conditionals.Else | Directives.Conditionals.ElseIf;
+				}
+				if(relation.endIf) {
+					condition.endIf = document.directives.find(d => d.id === relation.endIf) as Directives.Conditionals.Endif;
+				}
+			}
+
+
+			return;
+		}
 		const {code, directives } = await this.findDirectives(document);
 		document.processedCode = code;
 		document.directives = directives;
+		document.cache.directives = directives.map(d => d.toJSON());
+	}
 
-		const {code: codeAfterProcessingDirectives, includes, defines} = await this.processFileDirectives(document);
-		document.processedCode = codeAfterProcessingDirectives;
-		document.includes = includes;
-		document.defines = defines;
-
+	private async sortIncludes(document: AbstractOpenFile) {
+		if(document.cache.sortedIncludes) {
+			return document.cache.sortedIncludes;
+		}
 		await this.buildDependencyGraph(document);
-
+	
 		const depManager = new DependencyManager();
-		const sortIncludes = await depManager.topologicalSort(this.dependencyGraph, document.path);
+		return await depManager.topologicalSort(this.dependencyGraph, document.path);
+	}
 
-		for(const include of sortIncludes ) {
+	private async processIncludes(document: AbstractOpenFile) {
+		for(const include of document.sortedIncludes ) {
 			if(include === document.path) {
 				continue;
 			}
 			await this.fileManager.openFile(include);
 		}
-
-		document.processedCode = await this.processDefines(document.processedCode, document.defines);
-
-		await this._onFileProcessedListener?.(document);
 	}
-
 
 	/**
 	 * Граф зависимостей
@@ -167,6 +230,16 @@ export class Preprocessor
 	}
 
 	private async processFileDirectives(document: AbstractOpenFile) {
+		if(document.cache.includes) {
+			document.processedCode = document.cache.processCode;
+			document.includes = document.cache.includes.map(include => document.directives.find(d => d instanceof Directives.Include && d.id === include) as Directives.Include).filter(i => !!i) as Directives.Include[];
+			document.defines = new Map();
+			for(const key of Object.keys(document.cache.defines ?? {})) {
+				const value = document.cache.defines![key];
+				document.defines!.set(key, value.map(v => document.directives.find(d => d instanceof Directives.Defining.Define && d.id === v) as Directives.Defining.Define).filter(i => !!i) as Directives.Defining.Define[]);
+			}
+			return;
+		}
 		let code = document.processedCode;
 
 		const defines: Map<string, Directives.Defining.Define[]> = new Map();
@@ -250,7 +323,17 @@ export class Preprocessor
 			}
 			
 		}
-		return {code, includes, defines};
+
+
+		document.cache.processCode = document.processedCode = code;
+		document.includes = includes;
+		document.defines = defines;
+
+		document.cache.includes = includes.map(include => include.id);
+		document.cache.defines = {};	
+		document.defines.forEach((value, key) => {
+			document.cache.defines![key] = value.map(v => v.id);
+		});
 	}
 
 	private handleUndef(directive: Directives.Defining.Undef, defines:  Map<string, Directives.Defining.Define[]>)
@@ -523,15 +606,15 @@ export class Preprocessor
 			}
 			case "pragma": {
 				this.parsePragma(rest);
-				return new Directives.Pragma(directiveRange, rest, startIndex, restIndex, endIndex);
+				return new Directives.Pragma(directiveRange, rest, startIndex, endIndex);
 			}
 			case "if":
-				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, restIndex, endIndex);
+				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, endIndex);
 			case "endif": {
 				return new Directives.Conditionals.Endif(directiveRange, startIndex,endIndex);
 			}
 			case "elseif": {
-				return new Directives.Conditionals.ElseIf(directiveRange, rest, startIndex, restIndex, endIndex);
+				return new Directives.Conditionals.ElseIf(directiveRange, rest, startIndex, endIndex);
 			}
 			case "else": {
 				return new Directives.Conditionals.Else(directiveRange, startIndex,endIndex);
@@ -577,7 +660,7 @@ export class Preprocessor
 	}
 
 	private parsePragma(text: string) {
-		console.log(text);
+		console.debug(text);
 	}
 
 	/**

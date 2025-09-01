@@ -2,14 +2,11 @@ import { join } from "path";
 import { FileManager, FolderNotFound } from "../Managers/FileManager";
 import { FileCache } from "./FileCache";
 import { mkdir, readFile, unlink, writeFile } from "fs/promises";
-
-interface CacheConfig {
-	version: number;
-}
+import { createHash } from "crypto";
 
 export class CacheManager {
 
-	static readonly VERSION = 1;
+	static readonly VERSION = 5;
 
 	/**
 	 * Хранит кэши файлов, ключом является путь к файлу.
@@ -63,10 +60,17 @@ export class CacheManager {
 	}
 
 	private static async readCacheFile(path: string): Promise<FileCache | undefined> {
+		if(!this.cacheDir) {
+			return undefined;
+		}
+		path = join(this.cacheDir, path)
 		if(!(await this.fileManager.isFileExist(path))) {
 			return undefined;
 		}
 		const content = await readFile(path, 'utf-8');
+		if(content.length === 0) {
+			return undefined;
+		}
 		return JSON.parse(content);
 	}
 
@@ -106,6 +110,7 @@ export class CacheManager {
 		let cache = this.fileCaches.get(path); // Заглушка, нужно заменить на реальную логику
 		if(!cache) {
 			cache = await this.readFileCache(path);
+
 		}
 		return cache;
 	}
@@ -129,5 +134,9 @@ export class CacheManager {
 		for(const [path] of this.fileCaches) {
 			this.flushFileCache(path)
 		}
+	}
+
+	static hashText(input: string): string {
+		return createHash("md5").update(input).digest("hex");;
 	}
 }

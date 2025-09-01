@@ -1,3 +1,4 @@
+import { Serialization } from "../../../cache/Serialization";
 import { Range } from "../../../types";
 import { Define } from "../Defining";
 import { PreprocessorDirective } from "../PreprocessorDirective";
@@ -18,7 +19,7 @@ export class Condition extends PreprocessorDirective
 	public elseRange?: Range;
 	public conditionResult: boolean = false;
 
-	constructor(range: Range, private rest: string, startIndex: number, private readonly restIndex: number, endIndex: number)
+	constructor(range: Range, private rest: string, startIndex: number, endIndex: number)
 	{
 		super(range, startIndex, endIndex);
 
@@ -65,5 +66,29 @@ export class Condition extends PreprocessorDirective
 		// 	console.error(`Error evaluating condition: ${condition}`, error);
 		// }
 		// return false;
+	}
+
+	static fromJSON(json: Serialization.Preprocessor.IfCache): Condition {
+		const instance = new Condition(
+			Serialization.Deserialize.range(json.range),
+			json.rest,
+			json.startIndex,
+			json.endIndex
+		);	
+
+		return instance;
+	}
+
+	toJSON(): Serialization.Preprocessor.IfCache {
+		return {
+			...super.toJSON(),
+			__type: Serialization.Preprocessor.List.If,
+			rest: this.rest,
+			endRange: this.endRange ? Serialization.Serialize.range(this.endRange) : undefined,
+			elseRange:  this.elseRange ? Serialization.Serialize.range(this.elseRange) : undefined,
+			conditionResult: this.conditionResult,
+			endIf: this.endIf ? this.endIf.id : undefined,
+			else: this.elseBlock ? this.elseBlock.id : undefined,
+		}
 	}
 }

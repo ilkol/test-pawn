@@ -18,9 +18,13 @@ import { VSCode } from './VSCode';
 import { sendNotification } from './utils';
 import { Parser } from './Parser/Parser';
 import { LSPConnection } from './types';
-import { AbstractOpenFile } from './AbstractOpenFile';
+import { AbstractOpenFile, ParsingStep } from './AbstractOpenFile';
 import { Preprocessor } from './Preprocessor/Preprocessor';
 import { CacheManager } from './cache/CacheManager';
+import { Serialization } from './cache/Serialization';
+import { FileCache } from './cache/FileCache';
+import { serializeInit } from './cache/Serialization/serializeInit';
+import { ASTNode } from './antlr/AST/Nodes/ASTNode';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -36,21 +40,96 @@ async function main() {
 	Locale.init();
 	const fileManager = new FileManager();
 	const preprocessor = new Preprocessor(fileManager);
+	serializeInit();
+
+	const continueParsing = async (document: AbstractOpenFile): Promise<void> => {
+		if(document.parsinState !== ParsingStep.newFile) {
+			document.cache.diagnostics = document.diagnostics;
+		}
+
+		switch(document.parsinState) {
+			case ParsingStep.newFile: {
+				document.parsinState++;
+				const texttHash = CacheManager.hashText(document.text);
+				if(document.cache.cacheVersion >= CacheManager.VERSION) {
+					if(document.cache.texttHash !== texttHash) {
+						document.cache = undefined
+						Logger.log(`File ${document.path} has old (bad) cache. Delete cache.`);
+					} else {
+						Logger.log(`Found valid cache for file ${document.path}.`);
+						if(document.cache.diagnostics.length != 0) {
+							document.cache.diagnostics.forEach(d => document.diagnostics.push(d));
+						}
+					}
+				} else {
+					document.cache = undefined
+					Logger.log(`File ${document.path} has old (bad) cache. Delete cache.`);
+				}
+				CacheManager.setFileCache(document.cache);
+				return;
+			}
+			case ParsingStep.textHashed: 
+			case ParsingStep.directivesCollected:
+			case ParsingStep.directivesProcessed:
+			case ParsingStep.buildedDependcyGraph:
+			case ParsingStep.processedIncludes: {
+				await preprocessor.processFile(document);
+				return;
+			}
+			case ParsingStep.preprocessed: {
+				await Parser.parseFile(document); // на всякий await, но по идее async нет
+				return;
+			}
+			case ParsingStep.parsed: {
+				await Parser.walkAST(document);
+				return;
+			}
+			case ParsingStep.astWalked: {
+				return;
+			}
+		}
+	}
 	
 	fileManager.onFileManagerOpenFileListener = async (document) => {
 		Logger.log(`${document.path} has been opened`);
-		const cache = await CacheManager.getFileCache(document.path);
-		await preprocessor.processFile(document);
+		document.cache = await CacheManager.getFileCache(document.path);
+		await continueParsing(document);
+		await continueParsing(document);
 	}
 	preprocessor.onFileProcessedListener = async (document) => {
 		Logger.log(`${document.path} has been preprocessed`);
-		await Parser.parseFile(document);
+		let cache: FileCache = (await CacheManager.getFileCache(document.path))!;
+
+		CacheManager.setFileCache(cache);
+
+		if(cache.rootAST) {
+			document.AST = Serialization.Deserialize.object<ASTNode>(cache.rootAST);
+			document.parsinState++;
+			document.processedCode = ""; // чтобы не занимал память
+			Logger.log(`${document.path} has been already parsed. Skip parsing.`);
+		}
+
+		await continueParsing(document);
 	}
 	Parser.onFileParsedListener = async (document) => {
 		Logger.log(`${document.path} has been parsed`);
-		await Parser.walkAST(document);
+		
+		document.parsinState++;
+		let cache: FileCache = (await CacheManager.getFileCache(document.path))!;
+		try {
+			if(document.AST) {
+				const code = Serialization.Serialize.toString(document.AST);
+				cache.rootAST = code;
+			}
+		} catch(e) {
+			console.error("Ошибка сериализации AST");
+			console.error(e);
+		}
+		CacheManager.setFileCache(cache);
+		await continueParsing(document);
 	}
 	Parser.onFileWalkedASTListener = (document) => {
+		document.parsinState++;
 		Logger.log(`${document.path} AST has walked`);
 		sendFileDiagnostics(connection, document);
 	}
@@ -113,7 +192,6 @@ async function main() {
 			await fileManager.findPawnDir();
 			await CacheManager.init(fileManager);
 		} catch(e) {
-			console.log(e instanceof Error);
 			if(e instanceof Error) {
 				sendNotification(connection, VSCode.NotificationType.Error, e.message);
 			}
