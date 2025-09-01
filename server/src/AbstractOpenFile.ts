@@ -132,7 +132,7 @@ export abstract class AbstractOpenFile
 	}
 	set file(value: TextDocument) {
 		this._file = value;
-		this.path = FileManager.getPathByURI(value.uri);
+		this.path = FileManager.getPathFromURI(value.uri);
 	}
 
 	private _cache?: FileCache;
@@ -211,7 +211,7 @@ export abstract class AbstractOpenFile
 	}
 
 	constructor(protected document: TextDocument) {
-		this._path = FileManager.getPathByURI(document.uri);
+		this._path = FileManager.getPathFromURI(document.uri);
 		this._processedCode = document.getText();
 	}
 
