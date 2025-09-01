@@ -7,7 +7,11 @@ import {
 	TextDocumentSyncKind,
 	InitializeResult,
 	DocumentDiagnosticReportKind,
-	type DocumentDiagnosticReport
+	type DocumentDiagnosticReport,
+	DocumentSymbol,
+	DocumentLink,
+	SymbolKind,
+	SemanticTokensBuilder
 } from 'vscode-languageserver/node';
 
 import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
@@ -132,6 +136,7 @@ async function main() {
 		document.parsinState++;
 		Logger.log(`${document.path} AST has walked`);
 		sendFileDiagnostics(connection, document);
+		document.completeAnalysis();
 	}
 	
 
@@ -174,7 +179,16 @@ async function main() {
 				diagnosticProvider: {
 					interFileDependencies: false,
 					workspaceDiagnostics: false
-				}
+				},
+				documentLinkProvider: {
+					workDoneProgress: true,
+				},
+				documentSymbolProvider: {
+					workDoneProgress: true
+				},
+				// semanticTokensProvider: {
+					
+				// }
 			}
 		};
 		if (hasWorkspaceFolderCapability) {
@@ -186,6 +200,10 @@ async function main() {
 		}
 		return result;
 	});
+
+	// connection.languages.semanticTokens.on(async (params, token, _, _) => {
+	// 	return tokens: SemanticTokensBuilder = ;
+	// });
 
 	const afterInitializing = async () => {
 		try {
@@ -242,6 +260,67 @@ async function main() {
 			return getDefaultCompletions();
 		}
 	);
+
+	connection.onDocumentLinks(async (params, token, workDoneProgress, resultProgress) => {
+		Logger.log("клиент запросил список ссылок")
+		const links: DocumentLink[] = [];
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+
+		if(!document) {
+			return links;
+		}
+		workDoneProgress.report("Waiting for file parsing");
+		await document.waitForAnalysis();
+		document.includes.forEach(include => {
+			links.push({
+				range: include.pathRange,
+				target: FileManager.getUriFromPath(include.absolutePath ?? include.pathText)
+			});
+		});
+		workDoneProgress.done();
+
+		return links;
+	})
+
+	
+
+	connection.onDocumentSymbol(async(params, token, wokrDoneProgress, resultProgress) => {
+		Logger.log("клиент запросил список символов")
+		const symbols: DocumentSymbol[] = [];
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		if(!document) {
+			return symbols;
+
+		}
+		await document.waitForAnalysis();
+		
+		document.defines.forEach((defines, pattern) => {
+			defines.forEach(define => {
+				const refs: DocumentSymbol[] = [];
+				define.getFileReferences(document.path).forEach(ref => {
+					refs.push({
+						name: pattern,
+						kind: SymbolKind.Constant,
+						range: ref,
+						selectionRange: ref
+					})
+				});
+				symbols.push(...refs);
+				symbols.push({
+					name: pattern,
+					kind: SymbolKind.Constant,
+					range: define.patternRange,
+					selectionRange: define.patternRange,
+					children: refs
+				})
+			})
+		});
+		
+		console.log(symbols);
+		return symbols;
+	})
 
 	connection.onCompletionResolve(
 		(item: CompletionItem): CompletionItem => {

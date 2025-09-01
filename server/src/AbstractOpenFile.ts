@@ -277,4 +277,38 @@ export abstract class AbstractOpenFile
 
 	// public abstract getCash(): FileCache;
 	// public abstract setCache(cache: FileCache): boolean;
+
+
+
+	public isAnalysisComplete: boolean = false;
+    private analysisPromise: Promise<void> | null = null;
+    private resolveAnalysis: (() => void) | null = null;
+    
+    public waitForAnalysis(): Promise<void> {
+        if (this.isAnalysisComplete) {
+            return Promise.resolve();
+        }
+        
+        if (!this.analysisPromise) {
+            this.analysisPromise = new Promise((resolve) => {
+                this.resolveAnalysis = resolve;
+            });
+        }
+        
+        return this.analysisPromise;
+    }
+    
+    private markAnalysisComplete(): void {
+        this.isAnalysisComplete = true;
+        if (this.resolveAnalysis) {
+            this.resolveAnalysis();
+            this.resolveAnalysis = null;
+            this.analysisPromise = null;
+        }
+    }
+    
+    // Вызывайте этот метод когда анализ завершен
+    public completeAnalysis(): void {
+        this.markAnalysisComplete();
+    }
 }
