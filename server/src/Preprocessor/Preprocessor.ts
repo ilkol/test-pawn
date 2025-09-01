@@ -207,13 +207,15 @@ export class Preprocessor
 	 */
 	private async plungeInclude(include: Directives.Include, currentPath: string): Promise<string | undefined> {
 		const path = include.pathText;
+		
 		if(include.type === Directives.IncludeType.default) {
 			let result = await this.plungeFile(path);
 			if(!result) {
 				result = await this.plungeFile(join(currentPath, path));
 			}
 			return result;
-		} else if(this.fileManager.includePath){
+		} 
+		if(this.fileManager.includePath){
 			return await this.plungeFile(join(this.fileManager.includePath, path));
 		}
 		return undefined;
@@ -222,8 +224,8 @@ export class Preprocessor
 	private async plungeFile(path: string) {
 		const extenisions = ["", ".inc", ".p", ".pawn"];
 		for (const ext of extenisions) {
-			if(await this.fileManager.isFileExist(path)) {
-				return path;
+			if(await this.fileManager.isFileExist(path + ext)) {
+				return path + ext;
 			}
 		}
 		return undefined;
