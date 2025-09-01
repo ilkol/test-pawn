@@ -89,6 +89,7 @@ export class Preprocessor
 		]) {
 			await this.nextStep(document, action);
 		}
+
 		await this._onFileProcessedListener?.(document);
 	}
 
@@ -155,11 +156,31 @@ export class Preprocessor
 	}
 
 	private async processIncludes(document: AbstractOpenFile) {
-		for(const include of document.sortedIncludes ) {
-			if(include === document.path) {
+		for(const includePath of document.sortedIncludes ) {
+			if(includePath === document.path) {
 				continue;
 			}
-			await this.fileManager.openFile(include);
+			await this.fileManager.openFile(includePath);
+			const include = this.fileManager.getOpenedFile(includePath);
+			if(!include) {
+				continue;
+			}
+			// this.mergeDefines(document.defines, include.defines);
+		}
+	}
+
+	private mergeDefines(include: Directives.Include, main: Map<string, Directives.Defining.Define[]>, added: Map<string, Directives.Defining.Define[]>) {
+		for(const [key, value] of added) {
+			const list = added.get(key)!;
+			const last = list[list.length - 1];
+			if(main.has(key)) {
+				
+			} else {
+				const newDir = last.copy();
+				// newDir.startIndex = include.startIndex;
+				
+				main.set(key, [newDir]);
+			}
 		}
 	}
 
@@ -1017,7 +1038,36 @@ export class Preprocessor
 			}
 		}
 
+		for(let definesArray of defines.values()) {
+			for(let localDefine of definesArray) {
+				// const count = this.replacedCode.length;
+				code = await this.processDefine(code, localDefine);
+				// localDefine.used = count  < this.replacedCode.length;
+			}
+		}
+
 		return code;
+	}
+
+	private async processDefine(code: string, define: Directives.Defining.Define)
+	{
+		let lastindex = undefined;
+		if(define.undef) {
+			lastindex = define.undef.curStartIndex;
+		}
+		const startPos = define.curEndIndex;
+		let stoptPos: number;
+		if(lastindex) {
+			stoptPos = lastindex;
+		}
+		else {
+			stoptPos =  code.length;
+		}
+	
+		let preCode = code.substring(0, startPos);
+		let postCode = code.substring(stoptPos);
+		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, startPos, `Process ${define.prefix} in ${this.currentDocument?.path}`) + postCode;
+		
 	}
 
 	private codeMapper: CodeMapper = new CodeMapper();

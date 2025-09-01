@@ -57,14 +57,24 @@ export class Define extends PreprocessorDirective
 	// 	return new MarkdownString("").appendCodeblock(`#define ${this.pattern} ${this.replacement}`, "pawn");
 	// }
 	
-	// copy(): Define
-	// {
-	// 	const define = new Define(this.file, this.rest, this.startIndex, this.restIndex, this.endIndex);
-	// 	define.curEndIndex = this.curEndIndex;
-	// 	define.curStartIndex = this.curStartIndex;
-	// 	define.replacement = this.replacement;
-	// 	return define;
-	// }
+	copy(): Define
+	{
+		const copy = new Define(
+			this.range,
+			{
+				text: this.pattern,
+				replacement: this.replacement,
+				range: this.patternRange,
+			},
+			this.startIndex,
+			this.endIndex,
+		);
+		copy.used = this.used;
+		if(this.undef) {
+			copy.undef = this.undef;
+		}
+		return copy;
+	}
 
 	static fromJSON(json: Serialization.Preprocessor.DefineCache): Define {
 		const instance =  new Define(
