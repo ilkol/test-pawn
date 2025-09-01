@@ -36,7 +36,12 @@ export class CacheManager {
 	private static async readFileCache(path: string): Promise<FileCache | undefined> {
 		const relPath = this.fileManager.getRelativePath(path);
 		const fileName = relPath.replace(/[\/\\]/g, '_') + '.json';
-		return await this.readCacheFile(fileName);
+		try {
+			return await this.readCacheFile(fileName);
+		} catch(e) {
+			console.error(e);
+			return undefined;
+		}
 	}
 
 	private static async writeCacheFile(fileName: string, data: FileCache) {
