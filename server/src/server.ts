@@ -350,22 +350,19 @@ async function main() {
 		
 		document.defines.forEach((defines, pattern) => {
 			defines.forEach(define => {
-				const refs: DocumentSymbol[] = [];
 				define.getFileReferences(document.path).forEach(ref => {
-					refs.push({
+					symbols.push({
 						name: pattern,
 						kind: SymbolKind.Constant,
 						range: ref,
 						selectionRange: ref
 					})
 				});
-				symbols.push(...refs);
 				symbols.push({
 					name: pattern,
 					kind: SymbolKind.Constant,
-					range: define.patternRange,
+					range: define.range,
 					selectionRange: define.patternRange,
-					children: refs
 				})
 			})
 		});
