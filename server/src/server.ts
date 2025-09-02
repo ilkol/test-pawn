@@ -29,7 +29,7 @@ import { Serialization } from './cache/Serialization';
 import { FileCache } from './cache/FileCache';
 import { serializeInit } from './cache/Serialization/serializeInit';
 import { ASTNode } from './antlr/AST/Nodes/ASTNode';
-import { SemanticTokens, SemanticTokensModifiers } from './SemanticTokens';
+import { SemanticTokens, SemanticTokensLegendManager, SemanticTokensModifiers } from './SymbolSystem';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -40,6 +40,30 @@ function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFi
 
 async function main() {
 	const connection = createConnection(ProposedFeatures.all);
+
+	[
+		SemanticTokens.type,
+		SemanticTokens.enum,
+		SemanticTokens.parameter,
+		SemanticTokens.enumMember,
+		SemanticTokens.macro,
+		SemanticTokens.comment,
+		SemanticTokens.string,
+		SemanticTokens.keyword,
+		SemanticTokens.number,
+		SemanticTokens.operator,
+		SemanticTokens.function,
+		SemanticTokens.variable
+	].forEach(SemanticTokensLegendManager.registerTokenType);
+	[
+		SemanticTokensModifiers.declaration,
+		SemanticTokensModifiers.const,
+		SemanticTokensModifiers.static,
+		SemanticTokensModifiers.deprecated,
+		SemanticTokensModifiers.doc,
+		SemanticTokensModifiers.modification,
+		SemanticTokensModifiers.default
+	].forEach(SemanticTokensLegendManager.registerTokenModifier);
 
 	Logger.init(connection.console);
 	Locale.init();
@@ -189,31 +213,7 @@ async function main() {
 				},
 				semanticTokensProvider: {
 					full: true,
-					legend: {
-						tokenTypes: [
-							SemanticTokens.type,
-							SemanticTokens.enum,
-							SemanticTokens.parameter,
-							SemanticTokens.enumMember,
-							SemanticTokens.macro,
-							SemanticTokens.comment,
-							SemanticTokens.string,
-							SemanticTokens.keyword,
-							SemanticTokens.number,
-							SemanticTokens.operator,
-							SemanticTokens.function,
-							SemanticTokens.variable
-						],
-						tokenModifiers: [
-							SemanticTokensModifiers.declaration,
-							SemanticTokensModifiers.const,
-							SemanticTokensModifiers.static,
-							SemanticTokensModifiers.deprecated,
-							SemanticTokensModifiers.doc,
-							SemanticTokensModifiers.modification,
-							SemanticTokensModifiers.default
-						]
-					},
+					legend: SemanticTokensLegendManager.getLegend(),
 					workDoneProgress: true
 				}
 			}
