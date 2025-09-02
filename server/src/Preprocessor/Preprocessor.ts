@@ -495,16 +495,16 @@ export class Preprocessor
 		const code = document.text;
 		const directives: PreprocessorDirective[] = [];
 
-		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|warning|file|include|line|pragma|section|tryinclude|undef|\w+)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|warning|file|include|line|pragma|section|tryinclude|undef|\w+)( +)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
 		while ((match = reg.exec(code)) !== null) {
-			let [fullMatch, leadingWhitespace, leadingWhitespaceAfterSharp, directive, rest] = match;
+			let [fullMatch, leadingWhitespace, leadingWhitespaceAfterSharp, directive, whiteSpacesBeforeRest, rest] = match;
 			// Координата начала директивы (#)
   			const directiveIndex = match.index + leadingWhitespace.length;
 			let endIndex = match.index + fullMatch.length;
-			const restIndex = rest ? match.index + fullMatch.indexOf(rest) : endIndex;
+			const restIndex = whiteSpacesBeforeRest.length + rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
 			
 			if(directive !== "include") {
