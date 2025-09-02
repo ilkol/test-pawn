@@ -35,15 +35,14 @@ import { AbstractOpenFile, FunctionInfo, FunctionParameterInfo } from "../../../
 import { IfStatement } from "../Nodes/Conditions/IfStatement";
 
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
-import { DiagnosticHint } from "../../diagnostic/DiagnosticHint";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { Range } from "../../../types";
 import { Locale } from "../../../Locale";
-import { CompletionItem, DiagnosticSeverity, DiagnosticTag, SignatureHelp, SymbolKind } from "vscode-languageserver";
+import { DiagnosticSeverity, SemanticTokenModifiers} from "vscode-languageserver";
 import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
-import { SemanticTokensModifiers, SymbolManager } from "../../../SymbolSystem";
+import { SymbolManager } from "../../../SymbolSystem";
 import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
 
 export class Analyzer extends BaseVisitor
@@ -541,9 +540,9 @@ export class Analyzer extends BaseVisitor
 		this.restrictScope();
 
 		node.parameters.forEach(parameter => {
-			const modifires: SemanticTokensModifiers[] = [parameter.defaultValue ? SemanticTokensModifiers.definition : SemanticTokensModifiers.declaration];
+			const modifires: SemanticTokenModifiers[] = [parameter.defaultValue ? SemanticTokenModifiers.definition : SemanticTokenModifiers.declaration];
 			if(parameter.const) {
-				modifires.push(SemanticTokensModifiers.const);
+				modifires.push(SemanticTokenModifiers.readonly);
 			}
 			const symbol = SymbolsFactory.createParameter(parameter.id, this.file.path, parameter.range, parameter.idPos, modifires);
 			this.symbolManager.add(this.file.path, symbol);

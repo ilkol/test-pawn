@@ -13,7 +13,9 @@ import {
 	SymbolKind,
 	SemanticTokensBuilder,
 	Location,
-	WorkspaceEdit
+	WorkspaceEdit,
+	SemanticTokenTypes,
+	SemanticTokenModifiers
 } from 'vscode-languageserver/node';
 
 import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
@@ -31,7 +33,7 @@ import { Serialization } from './cache/Serialization';
 import { FileCache } from './cache/FileCache';
 import { serializeInit } from './cache/Serialization/serializeInit';
 import { ASTNode } from './antlr/AST/Nodes/ASTNode';
-import { SemanticTokens, SemanticTokensLegendManager, SemanticTokensModifiers, SymbolManager } from './SymbolSystem';
+import { SemanticTokensLegendManager, SymbolManager } from './SymbolSystem';
 import { DocumentUri, TextEdit } from 'vscode-languageserver-textdocument';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
@@ -45,27 +47,27 @@ async function main() {
 	const connection = createConnection(ProposedFeatures.all);
 
 	[
-		SemanticTokens.type,
-		SemanticTokens.enum,
-		SemanticTokens.parameter,
-		SemanticTokens.enumMember,
-		SemanticTokens.macro,
-		SemanticTokens.comment,
-		SemanticTokens.string,
-		SemanticTokens.keyword,
-		SemanticTokens.number,
-		SemanticTokens.operator,
-		SemanticTokens.function,
-		SemanticTokens.variable
+		SemanticTokenTypes.type,
+		SemanticTokenTypes.enum,
+		SemanticTokenTypes.parameter,
+		SemanticTokenTypes.enumMember,
+		SemanticTokenTypes.macro,
+		SemanticTokenTypes.comment,
+		SemanticTokenTypes.string,
+		SemanticTokenTypes.keyword,
+		SemanticTokenTypes.number,
+		SemanticTokenTypes.operator,
+		SemanticTokenTypes.function,
+		SemanticTokenTypes.variable
 	].forEach(SemanticTokensLegendManager.registerTokenType);
 	[
-		SemanticTokensModifiers.declaration,
-		SemanticTokensModifiers.const,
-		SemanticTokensModifiers.static,
-		SemanticTokensModifiers.deprecated,
-		SemanticTokensModifiers.doc,
-		SemanticTokensModifiers.modification,
-		SemanticTokensModifiers.default
+		SemanticTokenModifiers.declaration,
+		SemanticTokenModifiers.readonly,
+		SemanticTokenModifiers.static,
+		SemanticTokenModifiers.deprecated,
+		SemanticTokenModifiers.documentation,
+		SemanticTokenModifiers.modification,
+		SemanticTokenModifiers.defaultLibrary,
 	].forEach(SemanticTokensLegendManager.registerTokenModifier);
 
 	Logger.init(connection.console);

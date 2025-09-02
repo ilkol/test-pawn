@@ -1,6 +1,5 @@
-import { SymbolKind } from "vscode-languageserver";
+import { SemanticTokenModifiers, SemanticTokenTypes, SymbolKind } from "vscode-languageserver";
 import { Range } from "../../types";
-import { SemanticTokens, SemanticTokensModifiers } from "../SemanticTokens";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
@@ -11,13 +10,13 @@ export class Macro extends AbstractSymbol {
 			id, 
 			name, 
 			SymbolKind.Constant, 
-			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokens.macro),
+			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokenTypes.macro),
 			new SymbolReferance(
 				definitionFilePath, 
 				range, 
 				tokenRange, [
-					SemanticTokensLegendManager.getTokenModifierIndex(SemanticTokensModifiers.const),
-					SemanticTokensLegendManager.getTokenModifierIndex(SemanticTokensModifiers.definition)
+					SemanticTokensLegendManager.getTokenModifierIndex(SemanticTokenModifiers.readonly),
+					SemanticTokensLegendManager.getTokenModifierIndex(SemanticTokenModifiers.definition)
 				]
 			)
 		);

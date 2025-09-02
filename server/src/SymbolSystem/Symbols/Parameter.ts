@@ -1,17 +1,16 @@
-import { SemanticTokenModifiers, SymbolKind } from "vscode-languageserver";
+import { SemanticTokenModifiers, SemanticTokenTypes, SymbolKind } from "vscode-languageserver";
 import { Range } from "../../types";
-import { SemanticTokens, SemanticTokensModifiers } from "../SemanticTokens";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
 
 export class Parameter extends AbstractSymbol {
-	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokensModifiers[]) {
+	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[]) {
 		super(
 			id, 
 			name, 
 			SymbolKind.Variable, 
-			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokens.parameter),
+			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokenTypes.parameter),
 			new SymbolReferance(
 				definitionFilePath, 
 				range, 
