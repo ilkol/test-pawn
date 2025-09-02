@@ -22,7 +22,7 @@ export abstract class AbstractSymbol {
 
 	private referances: SymbolReferance[] = [];
 
-	private readonly defenition: SymbolReferance;
+	public readonly defenition: SymbolReferance;
 
 	constructor(id: number, name: string, symbolKind: SymbolKind, semanticKind: number, defenition: SymbolReferance) {
 		this.id = id;

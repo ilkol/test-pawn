@@ -221,6 +221,9 @@ async function main() {
 				},
 				referencesProvider: {
 					workDoneProgress: true
+				},
+				definitionProvider: {
+					workDoneProgress: true
 				}
 			}
 		};
@@ -242,7 +245,7 @@ async function main() {
 		if(!document) {
 			return references;
 		}
-		// params.context.includeDeclaration
+		
 		await document.waitForAnalysis();
 
 		const position = params.position;
@@ -270,6 +273,39 @@ async function main() {
 		}
 		
 		return references;
+	});
+
+	connection.onDefinition(async (params, _, __, ___) => {
+		Logger.log("Request semantik tokens")
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		if(!document) {
+			return null;
+		}
+		
+		await document.waitForAnalysis();
+		const position = params.position;
+		const fileSymbols = symbolManager.getFileSymbols(document.path);
+		const symbol = fileSymbols.find(symbol => {
+            const references = symbol.getFileReferances(document.path);
+			for(const ref of references) {
+				const res = position.line === ref.tokenRange.start.line &&
+				position.character >= ref.tokenRange.start.character &&
+				position.character <= ref.tokenRange.end.character;
+				if(res) {
+					return true;
+				}
+			}
+			return false;
+        });
+		if(!symbol) {
+			return null;
+		}
+		
+		return {
+			range: symbol.defenition.tokenRange,
+			uri: FileManager.getUriFromPath(symbol.defenition.filePath)
+		};
 	});
 
 	connection.languages.semanticTokens.on(async (params, token) => {
