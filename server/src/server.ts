@@ -260,7 +260,8 @@ async function main() {
 			return false;
         });
 		if(symbol) {
-			symbol.getReferences().forEach(ref => {
+			const symbols = symbol.getReferences().slice(params.context.includeDeclaration ? 0 : 1);
+			symbols.forEach(ref => {
 				references.push({
 					range: ref.tokenRange,
 					uri: FileManager.getUriFromPath(ref.filePath)
