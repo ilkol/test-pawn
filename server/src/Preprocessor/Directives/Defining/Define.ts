@@ -1,4 +1,5 @@
 import { Serialization } from "../../../cache/Serialization";
+import { Macro } from "../../../SymbolSystem/Symbols";
 import { Range } from "../../../types";
 import { PreprocessorDirective } from "../PreprocessorDirective";
 import { Undef } from "./Undef";
@@ -32,6 +33,8 @@ export class Define extends PreprocessorDirective
 	replacement: string;
 	undef?: Undef;
 	used: boolean = false;
+
+	symbol?: Macro;
 
 	private _references: Map<string, Range[]> = new Map();
 	getFileReferences(filePath: string): Range[] {

@@ -1,5 +1,6 @@
 import { DocumentSymbol, SymbolKind } from "vscode-languageserver";
 import { Position, Range } from "../../types";
+import { SymbolReferance } from "./SymbolReferance";
 
 export abstract class AbstractSymbol {
 	/**
@@ -31,6 +32,8 @@ export abstract class AbstractSymbol {
 	 */
 	public readonly modifiers: number[];
 
+	private referances: SymbolReferance[] = [];
+
 
 	constructor(id: number, name: string, symbolKind: SymbolKind, semanticKind: number, range: Range, tokenRange: Range, modifiers: number[] = []) {
 		this.id = id;
@@ -49,5 +52,25 @@ export abstract class AbstractSymbol {
 			range: this.range,
 			selectionRange: this.tokenRange,
 		}
+	}
+
+	addReferance(referance: SymbolReferance) {
+		this.referances.push(referance);
+	}
+
+	getFileReferances(filePath: string) {
+		return this.referances.filter((ref) => ref.filePath === filePath);
+	}
+
+	getFileSymbolReferancesInfo(filePath: string): DocumentSymbol[] {
+		const referances = this.getFileReferances(filePath);
+		return referances.map(ref => {
+			return {
+				name: this.name,
+				kind: this.symbolKind,
+				range: ref.range,
+				selectionRange: ref.tokenRange,
+			}
+		})
 	}
 }
