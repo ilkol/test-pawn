@@ -11,7 +11,8 @@ import {
 	DocumentSymbol,
 	DocumentLink,
 	SymbolKind,
-	SemanticTokensBuilder
+	SemanticTokensBuilder,
+	Location
 } from 'vscode-languageserver/node';
 
 import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
@@ -217,6 +218,9 @@ async function main() {
 					full: true,
 					legend: SemanticTokensLegendManager.getLegend(),
 					workDoneProgress: true
+				},
+				referencesProvider: {
+					workDoneProgress: true
 				}
 			}
 		};
@@ -228,6 +232,43 @@ async function main() {
 			};
 		}
 		return result;
+	});
+
+	connection.onReferences(async (params, _, __, ___) => {
+		Logger.log("Request semantik tokens")
+		const references: Location[] = [];	
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		if(!document) {
+			return references;
+		}
+		// params.context.includeDeclaration
+		await document.waitForAnalysis();
+
+		const position = params.position;
+		const fileSymbols = symbolManager.getFileSymbols(document.path);
+		const symbol = fileSymbols.find(symbol => {
+            const references = symbol.getFileReferances(document.path);
+			for(const ref of references) {
+				const res = position.line === ref.tokenRange.start.line &&
+				position.character >= ref.tokenRange.start.character &&
+				position.character <= ref.tokenRange.end.character;
+				if(res) {
+					return true;
+				}
+			}
+			return false;
+        });
+		if(symbol) {
+			symbol.getReferences().forEach(ref => {
+				references.push({
+					range: ref.tokenRange,
+					uri: FileManager.getUriFromPath(ref.filePath)
+				})
+			})
+		}
+		
+		return references;
 	});
 
 	connection.languages.semanticTokens.on(async (params, token) => {
