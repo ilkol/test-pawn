@@ -41,6 +41,9 @@ export abstract class ASTNode implements Serialization.Serializable {
 	public set range(range: Range) {
 		this._pos = range;
 	}
+	public get range(): Range {
+		return this._pos;
+	}
 	
 	public abstract accept(visitor: IVisitor): void;
 
