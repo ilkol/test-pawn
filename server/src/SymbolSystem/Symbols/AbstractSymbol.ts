@@ -53,4 +53,17 @@ export abstract class AbstractSymbol {
 			}
 		})
 	}
+
+	getFileSemanticTokens(filePath: string): {line: number, char: number, length: number, tokenType: number, tokenModifiers: number}[] {
+		const referances = this.getFileReferances(filePath);
+		return referances.map(ref => {
+			return {
+				line: ref.tokenRange.start.line,
+				char: ref.tokenRange.start.character,
+				length: this.name.length,
+				tokenType: this.kind,
+				tokenModifiers: ref.modifiers[0],
+			}
+		})
+	}
 }

@@ -240,21 +240,13 @@ async function main() {
 
 		}
 		await document.waitForAnalysis();
-		Logger.log("Collecting semantik tokens")
-		
-		document.defines.forEach((defines, pattern) => {
-			const length = pattern.length;
-			defines.forEach(define => {
-				define.getFileReferences(document.path).forEach(ref => {
-					builder.push(ref.start.line, ref.start.character, length, 4, 1)
-				});
-				builder.push(define.patternRange.start.line, define.patternRange.start.character, length, 4, 1)
-		
+
+		symbolManager.getFileSymbols(document.path).forEach((symbol) => {
+			symbol.getFileSemanticTokens(document.path).forEach(info => {
+				builder.push(info.line, info.char, info.length, info.tokenType, info.tokenModifiers)
 			})
 		});
-		
-		Logger.log("Sending semantik tokens");
-		console.log(builder.build());
+
 		return builder.build();
 		
 	});
