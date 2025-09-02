@@ -187,9 +187,7 @@ export class FileManager {
 		const path = FileManager.getPathFromURI(document.uri);
 		let openedFile = this.getOpenedFile(path);
 		if(!openedFile) {
-			openedFile = new AntlrOpenedFile(document);
-			this.openedFiles.set(openedFile.path, openedFile);
-			await this._onFileManagerOpenFileListener?.(openedFile);
+			this.createOpenedFile(document);
 		}
 	}
 
