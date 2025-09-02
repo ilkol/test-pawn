@@ -350,17 +350,12 @@ async function main() {
 		}
 		await document.waitForAnalysis();
 		
-		console.log(symbolManager.getFileSymbols(document.path));
-
 		symbolManager.getFileSymbols(document.path).forEach((symbol) => {
 			symbols.push(
 				...symbol.getFileSymbolReferancesInfo(document.path),
 			);
-			console.error(symbol.getFileReferances(document.path));
 		});
 
-		console.log(symbols);
-		
 		return symbols;
 	});
 
