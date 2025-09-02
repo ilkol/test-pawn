@@ -1,4 +1,5 @@
 import { Range } from "../../types";
+import { AbstractSymbol } from "./AbstractSymbol";
 
 export class SymbolReferance {
 	public readonly filePath: string;
@@ -14,6 +15,10 @@ export class SymbolReferance {
 	 * Семантические модификаторы токена символа
 	 */
 	public readonly modifiers: number[];
+
+	public readonly childrens: SymbolReferance[] = [];
+
+	public parent?: AbstractSymbol;
 
 	constructor(filePath: string, range: Range, tokenRange: Range, modifiers: number[] = []) {
 		this.filePath = filePath;

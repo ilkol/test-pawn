@@ -43,12 +43,15 @@ import { Locale } from "../../../Locale";
 import { CompletionItem, DiagnosticSeverity, DiagnosticTag, SignatureHelp, SymbolKind } from "vscode-languageserver";
 import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
+import { SymbolManager } from "../../../SymbolSystem";
+import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
 
 export class Analyzer extends BaseVisitor
 {
 	constructor(
 		protected file: AbstractOpenFile,
 		scope: IScope,
+		private symbolManager: SymbolManager,
 		// public readonly diagnostics: DiagnosticMessage[],
 		// public readonly tokens: SemanticTokensManager,
 		// public readonly symbolsManager: SymbolsManager,
@@ -461,6 +464,9 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
+		const symbol = SymbolsFactory.createFunction(node.id, this.file.path, node.range, node.idPos);
+		this.symbolManager.add(this.file.path, symbol);
+		node.symbol = symbol;
 		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
 			let id = this.curScope.find(node.id);
 			if (id) {
@@ -533,6 +539,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope();
+		
 		// const modif = [SemanticTokensModifires.declaration];
 		// if(node.code !== undefined)
 		// 	modif.push(SemanticTokensModifires.declaration);

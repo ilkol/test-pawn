@@ -10,6 +10,7 @@ import { ParseTreeWalker } from 'antlr4ts/tree/ParseTreeWalker';
 import { Declarations } from "../antlr/AST/Nodes/Declarations";
 import { Logger } from "../Logger/Logger";
 import { Analyzer } from "../antlr/AST/visitor/Analyzer";
+import { SymbolManager } from "../SymbolSystem";
 
 export type OnFileParsedListener = (file: AbstractOpenFile) => (Promise<void> | void);
 export type OnFileWalkedASTListener = (file: AbstractOpenFile) => (Promise<void> | void);
@@ -56,7 +57,7 @@ export class Parser
 		Parser._onFileParsedListener?.(document);
 	}
 
-	public static async walkAST(document: AbstractOpenFile) {
+	public static async walkAST(document: AbstractOpenFile, symbolManager: SymbolManager) {
 		if(!document.AST) {
 			Logger.error("AST is not initialized, cannot walk the tree.");
 			return;
@@ -64,6 +65,7 @@ export class Parser
 		let analyzer = new Analyzer(
 			document,
 			document.scope,
+			symbolManager
 		);
 	
 		try {

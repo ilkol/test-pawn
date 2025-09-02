@@ -53,7 +53,16 @@ export abstract class AbstractSymbol {
 				kind: this.symbolKind,
 				range: ref.range,
 				selectionRange: ref.tokenRange,
-			}
+				tags: [],
+				children: ref.childrens.map(child => {
+					return {
+						name: child.parent?.name ?? "Error",
+						kind: child.parent?.symbolKind ?? SymbolKind.Variable,
+						range: child.range,
+						selectionRange: child.tokenRange,
+					} as DocumentSymbol
+				})
+			} satisfies DocumentSymbol
 		})
 	}
 

@@ -1,4 +1,5 @@
 import { Range } from "../types";
+import { Function } from "./Symbols/Function";
 import { Macro } from "./Symbols/Macro";
 
 export abstract class SymbolsFactory {
@@ -12,4 +13,13 @@ export abstract class SymbolsFactory {
     ): Macro {
         return new Macro(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange);
     }
+
+	static createFunction(
+		name: string,
+		definitionFilePath: string,
+        range: Range,
+		tokenRange: Range
+	): Function {
+		return new Function(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange);
+	}
 }

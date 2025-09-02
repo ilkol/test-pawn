@@ -115,7 +115,7 @@ async function main() {
 				return;
 			}
 			case ParsingStep.parsed: {
-				await Parser.walkAST(document);
+				await Parser.walkAST(document, symbolManager);
 				return;
 			}
 			case ParsingStep.astWalked: {
@@ -494,6 +494,8 @@ async function main() {
 				...symbol.getFileSymbolReferancesInfo(document.path),
 			);
 		});
+
+		console.log(symbols);
 
 		return symbols;
 	});
