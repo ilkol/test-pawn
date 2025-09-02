@@ -35,6 +35,7 @@ export abstract class AbstractSymbol {
 
 
 	addReferance(referance: SymbolReferance) {
+		referance.parent = this;
 		this.referances.push(referance);
 	}
 
@@ -48,21 +49,7 @@ export abstract class AbstractSymbol {
 	getFileSymbolReferancesInfo(filePath: string): DocumentSymbol[] {
 		const referances = this.getFileReferances(filePath);
 		return referances.map(ref => {
-			return {
-				name: this.name,
-				kind: this.symbolKind,
-				range: ref.range,
-				selectionRange: ref.tokenRange,
-				tags: [],
-				children: ref.childrens.map(child => {
-					return {
-						name: child.parent?.name ?? "Error",
-						kind: child.parent?.symbolKind ?? SymbolKind.Variable,
-						range: child.range,
-						selectionRange: child.tokenRange,
-					} as DocumentSymbol
-				})
-			} satisfies DocumentSymbol
+			return ref.getSymbolInfo();
 		})
 	}
 

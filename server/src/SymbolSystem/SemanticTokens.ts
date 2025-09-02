@@ -1,5 +1,5 @@
 export enum SemanticTokens {
-    variable = "variable",
+    variable = "variable" , 
     function = 'function', 
     enumMember = 'enumMember', 
     type = 'type', 

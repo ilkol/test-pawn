@@ -43,7 +43,7 @@ import { Locale } from "../../../Locale";
 import { CompletionItem, DiagnosticSeverity, DiagnosticTag, SignatureHelp, SymbolKind } from "vscode-languageserver";
 import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
-import { SymbolManager } from "../../../SymbolSystem";
+import { SemanticTokensModifiers, SymbolManager } from "../../../SymbolSystem";
 import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
 
 export class Analyzer extends BaseVisitor
@@ -466,7 +466,7 @@ export class Analyzer extends BaseVisitor
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		const symbol = SymbolsFactory.createFunction(node.id, this.file.path, node.range, node.idPos);
 		this.symbolManager.add(this.file.path, symbol);
-		node.symbol = symbol;
+		node.symbol = symbol.defenition;
 		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
 			let id = this.curScope.find(node.id);
 			if (id) {
@@ -539,10 +539,25 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope();
+
+		node.parameters.forEach(parameter => {
+			const modifires: SemanticTokensModifiers[] = [parameter.defaultValue ? SemanticTokensModifiers.definition : SemanticTokensModifiers.declaration];
+			if(parameter.const) {
+				modifires.push(SemanticTokensModifiers.const);
+			}
+			const symbol = SymbolsFactory.createParameter(parameter.id, this.file.path, parameter.range, parameter.idPos, modifires);
+			this.symbolManager.add(this.file.path, symbol);
+			parameter.symbol = symbol;
+			console.log(symbol);
+			node.symbol?.childrens.push(symbol.defenition);
+		})
+		
 		
 		// const modif = [SemanticTokensModifires.declaration];
-		// if(node.code !== undefined)
-		// 	modif.push(SemanticTokensModifires.declaration);
+		if(node.code !== undefined) {
+			node.symbol?.modifiers;
+		}
+			
 
 		// this.tokens.addToken(node.idPos, SemanticTokens.function, modif);		
 		this.addFunctionSignature(node);	

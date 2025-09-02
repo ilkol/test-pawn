@@ -4,11 +4,13 @@ import { RightValue } from "../RightValue";
 import { VariableModifire } from "../Operators/OperatorNew";
 import { VarDeclaration } from "../Variables/VarDeclaration";
 import { Serialization } from "../../../../cache/Serialization";
+import { Parameter } from "../../../../SymbolSystem/Symbols/Parameter";
 
 export class FunctionDeclarationParameter extends VarDeclaration
 {
 	name = "параметр объявляемой функции";
 
+	public symbol?: Parameter;
 	private _var: Variable|undefined = undefined;
 	private _value: RightValue|undefined = undefined;
 	private isRef: boolean = false;
