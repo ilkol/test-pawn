@@ -102,7 +102,7 @@ export class Preprocessor
 	private registerSymbols(documnt: AbstractOpenFile, symbolManager: SymbolManager) {
 		documnt.defines.forEach((defines, pattern) => {
 			defines.forEach(define => {
-				define.symbol = SymbolsFactory.createMacro(pattern, define.range, define.patternRange);
+				define.symbol = SymbolsFactory.createMacro(pattern, documnt.path, define.range, define.patternRange);
 				symbolManager.add(documnt.path, define.symbol);
 			});
 		});
@@ -1097,7 +1097,6 @@ export class Preprocessor
 			define.used = true;
 			symbolManager.addFileSymbol(filePath, define.symbol!);
 		}
-		
 		changes.forEach(change => {
 			startPos = change.start + preShift;
 			originalStartPos = this.codeMapper.getOriginalPos(startPos);
@@ -1115,6 +1114,7 @@ export class Preprocessor
 			// this.tokensManager.addToken(range, SemanticTokens.macro);
 			preShift -= change.shift;
 		});
+		
 		// define.setFileReferences(this.currentDocument!.path, referenaces);
 		return res;
 		// return await vscode.window.withProgress(

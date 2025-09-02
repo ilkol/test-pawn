@@ -19,40 +19,20 @@ export abstract class AbstractSymbol {
 	 * Тип токена символа
 	 */
 	public readonly kind: number;
-	/**
-	 * Полная область, где расположен символ
-	 */
-	public readonly range: Range;
-	/**
-	 * Область, где расположен токен символа (например имя функции), который должен выделяться
-	 */
-	public readonly tokenRange: Range;
-	/**
-	 * Семантические модификаторы токена символа
-	 */
-	public readonly modifiers: number[];
 
 	private referances: SymbolReferance[] = [];
 
+	private readonly defenition: SymbolReferance;
 
-	constructor(id: number, name: string, symbolKind: SymbolKind, semanticKind: number, range: Range, tokenRange: Range, modifiers: number[] = []) {
+	constructor(id: number, name: string, symbolKind: SymbolKind, semanticKind: number, defenition: SymbolReferance) {
 		this.id = id;
 		this.name = name;
 		this.symbolKind = symbolKind;
 		this.kind = semanticKind;
-		this.range = range;
-		this.tokenRange = tokenRange;
-		this.modifiers = modifiers;
+		this.defenition = defenition;
+		this.addReferance(defenition);
 	}
 
-	getSymbolInfo(): DocumentSymbol {
-		return {
-			name: this.name,
-			kind: this.symbolKind,
-			range: this.range,
-			selectionRange: this.tokenRange,
-		}
-	}
 
 	addReferance(referance: SymbolReferance) {
 		this.referances.push(referance);

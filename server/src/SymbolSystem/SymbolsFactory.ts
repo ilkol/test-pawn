@@ -6,9 +6,10 @@ export abstract class SymbolsFactory {
 
     static createMacro(
         name: string,
+		definitionFilePath: string,
         range: Range,
 		tokenRange: Range
     ): Macro {
-        return new Macro(SymbolsFactory.symbolCount++, name, range, tokenRange);
+        return new Macro(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange);
     }
 }

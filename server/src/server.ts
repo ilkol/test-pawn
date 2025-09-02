@@ -354,9 +354,9 @@ async function main() {
 
 		symbolManager.getFileSymbols(document.path).forEach((symbol) => {
 			symbols.push(
-				symbol.getSymbolInfo(),
 				...symbol.getFileSymbolReferancesInfo(document.path),
 			);
+			console.error(symbol.getFileReferances(document.path));
 		});
 
 		console.log(symbols);
