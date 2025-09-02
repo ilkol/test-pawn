@@ -29,6 +29,7 @@ import { Serialization } from './cache/Serialization';
 import { FileCache } from './cache/FileCache';
 import { serializeInit } from './cache/Serialization/serializeInit';
 import { ASTNode } from './antlr/AST/Nodes/ASTNode';
+import { SemanticTokens, SemanticTokensModifiers } from './SemanticTokens';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -186,9 +187,35 @@ async function main() {
 				documentSymbolProvider: {
 					workDoneProgress: true
 				},
-				// semanticTokensProvider: {
-					
-				// }
+				semanticTokensProvider: {
+					full: true,
+					legend: {
+						tokenTypes: [
+							SemanticTokens.type,
+							SemanticTokens.enum,
+							SemanticTokens.parameter,
+							SemanticTokens.enumMember,
+							SemanticTokens.macro,
+							SemanticTokens.comment,
+							SemanticTokens.string,
+							SemanticTokens.keyword,
+							SemanticTokens.number,
+							SemanticTokens.operator,
+							SemanticTokens.function,
+							SemanticTokens.variable
+						],
+						tokenModifiers: [
+							SemanticTokensModifiers.declaration,
+							SemanticTokensModifiers.const,
+							SemanticTokensModifiers.static,
+							SemanticTokensModifiers.deprecated,
+							SemanticTokensModifiers.doc,
+							SemanticTokensModifiers.modification,
+							SemanticTokensModifiers.default
+						]
+					},
+					workDoneProgress: true
+				}
 			}
 		};
 		if (hasWorkspaceFolderCapability) {
@@ -201,9 +228,34 @@ async function main() {
 		return result;
 	});
 
-	// connection.languages.semanticTokens.on(async (params, token, _, _) => {
-	// 	return tokens: SemanticTokensBuilder = ;
-	// });
+	connection.languages.semanticTokens.on(async (params, token) => {
+		Logger.log("Request semantik tokens")
+		const builder = new SemanticTokensBuilder();	
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		if(!document) {
+			return builder.build();
+
+		}
+		await document.waitForAnalysis();
+		Logger.log("Collecting semantik tokens")
+		
+		document.defines.forEach((defines, pattern) => {
+			const length = pattern.length;
+			defines.forEach(define => {
+				define.getFileReferences(document.path).forEach(ref => {
+					builder.push(ref.start.line, ref.start.character, length, 4, 1)
+				});
+				builder.push(define.patternRange.start.line, define.patternRange.start.character, length, 4, 1)
+		
+			})
+		});
+		
+		Logger.log("Sending semantik tokens");
+		console.log(builder.build());
+		return builder.build();
+		
+	});
 
 	const afterInitializing = async () => {
 		try {
@@ -317,8 +369,6 @@ async function main() {
 				})
 			})
 		});
-		
-		console.log(symbols);
 		return symbols;
 	})
 
