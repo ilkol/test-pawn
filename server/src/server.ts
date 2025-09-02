@@ -12,7 +12,8 @@ import {
 	DocumentLink,
 	SymbolKind,
 	SemanticTokensBuilder,
-	Location
+	Location,
+	WorkspaceEdit
 } from 'vscode-languageserver/node';
 
 import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
@@ -22,7 +23,7 @@ import { FileManager } from './Managers/FileManager';
 import { VSCode } from './VSCode';
 import { sendNotification } from './utils';
 import { Parser } from './Parser/Parser';
-import { LSPConnection } from './types';
+import { LSPConnection, Position } from './types';
 import { AbstractOpenFile, ParsingStep } from './AbstractOpenFile';
 import { Preprocessor } from './Preprocessor/Preprocessor';
 import { CacheManager } from './cache/CacheManager';
@@ -31,6 +32,7 @@ import { FileCache } from './cache/FileCache';
 import { serializeInit } from './cache/Serialization/serializeInit';
 import { ASTNode } from './antlr/AST/Nodes/ASTNode';
 import { SemanticTokens, SemanticTokensLegendManager, SemanticTokensModifiers, SymbolManager } from './SymbolSystem';
+import { DocumentUri, TextEdit } from 'vscode-languageserver-textdocument';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -224,6 +226,10 @@ async function main() {
 				},
 				definitionProvider: {
 					workDoneProgress: true
+				},
+				renameProvider: {
+					prepareProvider: true,
+					workDoneProgress: true
 				}
 			}
 		};
@@ -235,6 +241,69 @@ async function main() {
 			};
 		}
 		return result;
+	});
+
+	connection.onPrepareRename(async (params) => {
+
+		Logger.log("Request prepare rename")
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		if(!document) {
+			return null;
+		}
+		
+		await document.waitForAnalysis();
+
+		const position = Position.fromLSP(params.position);
+		const {symbol, ref} = symbolManager.getSymbolOnPosition(document.path, position) ?? {};
+	
+		if(!symbol || !ref) {
+			return null;
+		}
+		
+		return {
+			range: ref.tokenRange,
+			placeholder: symbol.name
+		};
+	})
+
+	connection.onRenameRequest(async (params, _, __, ___) => {
+		Logger.log("Request rename")
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		if(!document) {
+			return null;
+		}
+		
+		await document.waitForAnalysis();
+
+		const position = Position.fromLSP(params.position);
+		const {symbol} = symbolManager.getSymbolOnPosition(document.path, position) ?? {};
+	
+		if(!symbol) {
+			return null;
+		}
+		
+		const changes: {
+			[uri: DocumentUri]: TextEdit[]
+		} = {};
+		
+		const newName = params.newName;
+
+		symbol.getReferences().forEach(ref => {
+			const uri = FileManager.getUriFromPath(ref.filePath);
+			if (!changes[uri]) {
+				changes[uri] = [];
+			}
+			changes[uri].push({
+				range: ref.tokenRange,
+				newText: newName,
+			} satisfies TextEdit);
+		});
+		
+		return {
+			changes
+		} satisfies WorkspaceEdit;
 	});
 
 	connection.onReferences(async (params, _, __, ___) => {
