@@ -29,7 +29,7 @@ import { Serialization } from './cache/Serialization';
 import { FileCache } from './cache/FileCache';
 import { serializeInit } from './cache/Serialization/serializeInit';
 import { ASTNode } from './antlr/AST/Nodes/ASTNode';
-import { SemanticTokens, SemanticTokensLegendManager, SemanticTokensModifiers } from './SymbolSystem';
+import { SemanticTokens, SemanticTokensLegendManager, SemanticTokensModifiers, SymbolManager } from './SymbolSystem';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -71,6 +71,8 @@ async function main() {
 	const preprocessor = new Preprocessor(fileManager);
 	serializeInit();
 
+	const symbolManager = new SymbolManager();
+
 	const continueParsing = async (document: AbstractOpenFile): Promise<void> => {
 		if(document.parsinState !== ParsingStep.newFile) {
 			document.cache.diagnostics = document.diagnostics;
@@ -102,7 +104,7 @@ async function main() {
 			case ParsingStep.directivesProcessed:
 			case ParsingStep.buildedDependcyGraph:
 			case ParsingStep.processedIncludes: {
-				await preprocessor.processFile(document);
+				await preprocessor.processFile(document, symbolManager);
 				return;
 			}
 			case ParsingStep.preprocessed: {
@@ -348,26 +350,18 @@ async function main() {
 		}
 		await document.waitForAnalysis();
 		
-		document.defines.forEach((defines, pattern) => {
-			defines.forEach(define => {
-				define.getFileReferences(document.path).forEach(ref => {
-					symbols.push({
-						name: pattern,
-						kind: SymbolKind.Constant,
-						range: ref,
-						selectionRange: ref
-					})
-				});
-				symbols.push({
-					name: pattern,
-					kind: SymbolKind.Constant,
-					range: define.range,
-					selectionRange: define.patternRange,
-				})
-			})
+		console.log(symbolManager.getFileSymbols(document.path));
+
+		symbolManager.getFileSymbols(document.path).forEach((symbol) => {
+			symbols.push(
+				symbol.getSymbolInfo()
+			);
 		});
+
+		console.log(symbols);
+		
 		return symbols;
-	})
+	});
 
 	connection.onCompletionResolve(
 		(item: CompletionItem): CompletionItem => {

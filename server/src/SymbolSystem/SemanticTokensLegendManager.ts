@@ -5,37 +5,37 @@ export abstract class SemanticTokensLegendManager {
 	private static tokenModifierMap: Map<string, number> = new Map();
 
 	static registerTokenType(type: string): number {
-		if (!this.tokenTypeMap.has(type)) {
-			const index = this.tokenTypes.length;
-			this.tokenTypes.push(type);
-			this.tokenTypeMap.set(type, index);
+		if (!SemanticTokensLegendManager.tokenTypeMap.has(type)) {
+			const index = SemanticTokensLegendManager.tokenTypes.length;
+			SemanticTokensLegendManager.tokenTypes.push(type);
+			SemanticTokensLegendManager.tokenTypeMap.set(type, index);
 			return index;
 		}
-		return this.tokenTypeMap.get(type)!;
+		return SemanticTokensLegendManager.tokenTypeMap.get(type)!;
 	}
 
 	static registerTokenModifier(modifier: string): number {
-		if (!this.tokenModifierMap.has(modifier)) {
-			const index = this.tokenModifiers.length;
-			this.tokenModifiers.push(modifier);
-			this.tokenModifierMap.set(modifier, index);
+		if (!SemanticTokensLegendManager.tokenModifierMap.has(modifier)) {
+			const index = SemanticTokensLegendManager.tokenModifiers.length;
+			SemanticTokensLegendManager.tokenModifiers.push(modifier);
+			SemanticTokensLegendManager.tokenModifierMap.set(modifier, index);
 			return index;
 		}
-		return this.tokenModifierMap.get(modifier)!;
+		return SemanticTokensLegendManager.tokenModifierMap.get(modifier)!;
 	}
 
 	static getTokenTypeIndex(type: string): number {
-		return this.tokenTypeMap.get(type) ?? -1;
+		return SemanticTokensLegendManager.tokenTypeMap.get(type) ?? -1;
 	}
 
 	static getTokenModifierIndex(modifier: string): number {
-		return this.tokenModifierMap.get(modifier) ?? -1;
+		return SemanticTokensLegendManager.tokenModifierMap.get(modifier) ?? -1;
 	}
 
 	static getLegend() {
 		return {
-			tokenTypes: this.tokenTypes,
-			tokenModifiers: this.tokenModifiers
+			tokenTypes: SemanticTokensLegendManager.tokenTypes,
+			tokenModifiers: SemanticTokensLegendManager.tokenModifiers
 		};
 	}
 }

@@ -13,6 +13,8 @@ import { CodeMapper } from "./CodeMapper";
 import { PawnErrors } from "../Errors/PawnErrors";
 import { CacheManager } from "../cache/CacheManager";
 import { Serialization } from "../cache/Serialization";
+import { SymbolManager } from "../SymbolSystem";
+import { SymbolsFactory } from "../SymbolSystem/SymbolsFactory";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -75,7 +77,7 @@ export class Preprocessor
 		CacheManager.setFileCache(document.cache);
 	}
 
-	public async processFile(document: AbstractOpenFile) {
+	public async processFile(document: AbstractOpenFile, symbolManager: SymbolManager) {
 		const tmp = this.currentDocument;
 		this.currentDocument = document;
 		
@@ -84,6 +86,7 @@ export class Preprocessor
 		for(const action of [
 			async () => await this.findAndReplaceDirectives(document),
 			async () => await this.processFileDirectives(document),
+			async () => this.registerSymbols(document, symbolManager),
 			async () => document.sortedIncludes = await this.sortIncludes(document),
 			async () => await this.processIncludes(document),
 			async () => document.processedCode = await this.processDefines(document.processedCode, document.defines)
@@ -94,6 +97,14 @@ export class Preprocessor
 		this.currentDocument = tmp;
 		await this._onFileProcessedListener?.(document);
 	}
+
+	private registerSymbols(documnt: AbstractOpenFile, symbolManager: SymbolManager) {
+		documnt.defines.forEach((defines, pattern) => {
+			defines.forEach(define => {
+				symbolManager.add(documnt.path, SymbolsFactory.createMacro(pattern, define.range, define.patternRange))
+			});
+		});
+	} 
 
 	private async findAndReplaceDirectives(document: AbstractOpenFile) { 
 		if(document.cache.directives) {
