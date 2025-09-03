@@ -506,7 +506,7 @@ async function main() {
 		}
 		await document.waitForAnalysis();
 		
-		symbolManager.getFileSymbols(document.path).forEach((symbol) => {
+		symbolManager.getFileGlobalSymbols(document.path).forEach((symbol) => {
 			symbols.push(
 				...symbol.getFileSymbolReferancesInfo(document.path),
 			);

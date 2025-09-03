@@ -4,21 +4,34 @@ import { SymbolReferance } from "./Symbols/SymbolReferance";
 
 export class SymbolManager {
 	private symbols: Map<number, AbstractSymbol> = new Map();
+	private fileGlobalSymbols: Map<string, Map<number, AbstractSymbol>> = new Map();
 	private fileSymbols: Map<string, Map<number, AbstractSymbol>> = new Map();
 
-	add(filePath: string, symbol: AbstractSymbol) {
+	add(filePath: string, symbol: AbstractSymbol, global: boolean = false) {
 		this.symbols.set(symbol.id, symbol);
 		
-		this.addFileSymbol(filePath, symbol);
+		if(global) {
+			this.addGlobalSymbolToFile(filePath, symbol);
+			return;
+		}
+		this.addSymbolToFile(filePath, symbol);
 	}
 
-	public addFileSymbol(filePath: string, symbol: AbstractSymbol) {
-		const fileSymbols = this.fileSymbols.get(filePath) || new Map();
+	private addSymbolToMap(map: Map<string, Map<number, AbstractSymbol>>, filePath: string, symbol: AbstractSymbol) {
+		const fileSymbols = map.get(filePath) || new Map();
 		if(fileSymbols.has(symbol.id)) {
 			return;
 		}
         fileSymbols.set(symbol.id, symbol);
-        this.fileSymbols.set(filePath, fileSymbols);
+        map.set(filePath, fileSymbols);
+	}
+
+	public addGlobalSymbolToFile(filePath: string, symbol: AbstractSymbol) {
+		this.addSymbolToMap(this.fileGlobalSymbols, filePath, symbol);
+		this.addSymbolToFile(filePath, symbol);
+	}
+	public addSymbolToFile(filePath: string, symbol: AbstractSymbol) {
+		this.addSymbolToMap(this.fileSymbols, filePath, symbol);
 	}
 
 	getByID(id: number): AbstractSymbol | undefined {
@@ -48,6 +61,9 @@ export class SymbolManager {
 	getFileSymbols(filePath: string): AbstractSymbol[] {
         return Array.from(this.fileSymbols.get(filePath)?.values() || []);
     }
+	getFileGlobalSymbols(filePath: string): AbstractSymbol[] {
+		return Array.from(this.fileGlobalSymbols.get(filePath)?.values() || []);
+	}
 	addSymbolReferances(symbolDefinitionFilePath: string, name: string, referance: SymbolReferance[]) {
 		// new SymbolReferance(filePath, range, tokenRange, modifiers)
 		const fileSymbols = this.getFileSymbols(symbolDefinitionFilePath);
@@ -56,7 +72,7 @@ export class SymbolManager {
 			return;
 		}
 		referance.forEach(ref => {
-			this.addFileSymbol(symbolDefinitionFilePath, symbol);
+			this.addSymbolToFile(symbolDefinitionFilePath, symbol);
 			symbol.addReferance(ref);
 		});
 	}

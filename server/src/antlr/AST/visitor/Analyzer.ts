@@ -434,7 +434,7 @@ export class Analyzer extends BaseVisitor
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
 		if(node.id) {
 			const symbol = SymbolsFactory.createEnum(node.id, this.file.path, node.range, node.idPos, true);	
-			this.symbolManager.add(this.file.path, symbol);	
+			this.symbolManager.add(this.file.path, symbol, true);	
 			node.symbol = symbol.defenition;
 		}
 	}
@@ -471,7 +471,7 @@ export class Analyzer extends BaseVisitor
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		const symbol = SymbolsFactory.createFunction(node.id, this.file.path, node.range, node.idPos);
-		this.symbolManager.add(this.file.path, symbol);
+		this.symbolManager.add(this.file.path, symbol, true);
 		node.symbol = symbol.defenition;
 		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
 			let id = this.curScope.find(node.id);

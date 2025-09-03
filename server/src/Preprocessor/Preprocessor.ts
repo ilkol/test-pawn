@@ -103,7 +103,7 @@ export class Preprocessor
 		documnt.defines.forEach((defines, pattern) => {
 			defines.forEach(define => {
 				define.symbol = SymbolsFactory.createMacro(pattern, documnt.path, define.range, define.patternRange);
-				symbolManager.add(documnt.path, define.symbol);
+				symbolManager.add(documnt.path, define.symbol, true);
 			});
 		});
 	} 
@@ -1095,7 +1095,7 @@ export class Preprocessor
 		const filePath = this.currentDocument!.path;
 		if(changes.length > 0) {
 			define.used = true;
-			symbolManager.addFileSymbol(filePath, define.symbol!);
+			symbolManager.addSymbolToFile(filePath, define.symbol!);
 		}
 		changes.forEach(change => {
 			startPos = change.start + preShift;
