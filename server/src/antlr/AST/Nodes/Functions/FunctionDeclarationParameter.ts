@@ -10,7 +10,7 @@ export class FunctionDeclarationParameter extends VarDeclaration
 {
 	name = "параметр объявляемой функции";
 
-	public symbol?: Parameter;
+	public symbol: Parameter | undefined = undefined;
 	private _var: Variable|undefined = undefined;
 	private _value: RightValue|undefined = undefined;
 	private isRef: boolean = false;

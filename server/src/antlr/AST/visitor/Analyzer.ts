@@ -7,7 +7,7 @@ import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
 import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { UnarOperator } from "../Nodes/Operators/UnarOperator";
-import { OperatorNew } from "../Nodes/Operators/OperatorNew";
+import { OperatorNew, VariableModifire } from "../Nodes/Operators/OperatorNew";
 import { FunctionDeclaration, FunctionModifire } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
@@ -154,10 +154,19 @@ export class Analyzer extends BaseVisitor
 
 	}
 	beforeVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
-		
+		const modifires: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
+		if(node.const) {
+			modifires.push(SemanticTokenModifiers.readonly);
+		}
+
+		const symbol = SymbolsFactory.createParameter(node.id, this.file.path, node.range, node.idPos, modifires);
+		this.symbolManager.add(this.file.path, symbol);
+		node.symbol = symbol;
+		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
 		this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
+
 		// this.tokens.addToken(node.idPos, SemanticTokens.parameter, this.checkVarModifires(node.modifires).concat([SemanticTokensModifires.declaration]));
 	}
 	beforeVisitVariable(node: Variable): void {
@@ -166,6 +175,10 @@ export class Analyzer extends BaseVisitor
 	afterVisitVariable(node: Variable): void {
 		const variable = this.curScope.findVar(node.id);
 		if(variable) {
+			const symbol = new SymbolReferance(this.file.path, node.range, node.idPos, []);
+			variable.symbol?.addReferance(symbol);
+			this.curScope.currentSymbol?.childrens.push(symbol);
+
 			variable.used = true;
 			if(variable instanceof ArrayDeclaration) {
 				if(!(node instanceof Array)) {
@@ -270,18 +283,6 @@ export class Analyzer extends BaseVisitor
 	afterVisitFunctionCall(node: FunctionCall): void {
 
 		let func = this.curScope.findFunction(node.id);
-
-		// this.tokens.addToken(node.idPos, SemanticTokens.function);
-
-		// const array = this.functionsCalls.get(node.id);
-		// const el = new funcCall.FunctionCall(node, this.file.URI);
-		// if(array)
-		// {
-		// 	array.push(el);
-		// }
-		// else {
-		// 	this.functionsCalls.set(node.id, [el]);
-		// }
 
 		if(func) {
 			const symbol = new SymbolReferance(this.file.path, node.range, node.idPos, []);
@@ -415,7 +416,7 @@ export class Analyzer extends BaseVisitor
 	}
 	beforeVisitEnumMember(node: EnumMember): void {
 		const symbol = SymbolsFactory.createEnumMember(node.id, this.file.path, node.range, node.idPos, true);
-		node.symbol = symbol.defenition;
+		node.symbol = symbol;
 		this.symbolManager.add(this.file.path, symbol);
 		node.parent?.symbol?.childrens.push(symbol.defenition);
 	}
@@ -534,10 +535,6 @@ export class Analyzer extends BaseVisitor
 			if(parameter.const) {
 				modifires.push(SemanticTokenModifiers.readonly);
 			}
-			const symbol = SymbolsFactory.createParameter(parameter.id, this.file.path, parameter.range, parameter.idPos, modifires);
-			this.symbolManager.add(this.file.path, symbol);
-			parameter.symbol = symbol;
-			node.symbol?.childrens.push(symbol.defenition);
 		})
 		
 		
@@ -552,7 +549,14 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
-
+		const modifiers: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
+		if(node.modifires.indexOf(VariableModifire.const) !== -1) {
+			modifiers.push(SemanticTokenModifiers.readonly);
+		}
+		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
+		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
+		node.symbol = symbol;
+		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));		

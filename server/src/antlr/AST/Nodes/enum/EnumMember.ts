@@ -9,7 +9,7 @@ export class EnumMember extends VarDeclaration
 {
 	name = "член перечисления";
 
-	public symbol: SymbolSystem.Symbols.SymbolReferance | undefined;
+	public symbol: SymbolSystem.Symbols.EnumMember | undefined = undefined;
 
 	private _value: number = 0;
 	private _parent: EnumDeclaration | undefined;
