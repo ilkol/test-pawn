@@ -563,10 +563,27 @@ export class Analyzer extends BaseVisitor
 
 	private checkIds(ids: Map<string, Declaration>) {
 		ids.forEach((element, key) => {
-			if(element.importFileName !== this.file.path) return;
-			if(key === "cellmin" || key === "cellmax") return;
+			if(element.id === "cellmin" || element.id === "cellmax") {
+				return;
+			}
+
+			if(element instanceof FunctionDeclaration) {
+				if(!element.used && !element.native && !element.stock && element.modifire !== FunctionModifire.public && element.modifire !== FunctionModifire.forward && element.id !== "main")
+				{
+					this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
+				}
+			} else if(element instanceof EnumDeclaration || element instanceof EnumMember) {
+				if(!element.used)
+				{
+					// this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
+				}
+			} else if(element instanceof VarDeclaration){
+				if(!element.used && !element.stock && element.modifires.indexOf(VariableModifire.public) === -1) {
+					this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
+				} 
+			}
+
 			if(!element.used && !element.native) {
-				this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
 				// let diagnostic: DiagnosticMessage, diagnosticMsg: string;
 				// let stock = element.stock;
 				// if(element instanceof FunctionDeclaration) {
