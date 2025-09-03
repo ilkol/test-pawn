@@ -445,8 +445,6 @@ export class Analyzer extends BaseVisitor
 		// 	this.functionsDeclarations.set(node.id, [el]);
 		// }
 			
-		
-		// this.tokens.addToken(node.idPos, SemanticTokens.enum, [SemanticTokensModifires.declaration]);
 	}
 	
 	beforeVisitDeclarations(declaration: Declarations): void {
