@@ -173,7 +173,7 @@ export class FileManager {
 		const path = FileManager.getPathFromURI(document.uri);
 		let openedFile = this.getOpenedFile(path);
 		if(!openedFile || (CacheManager.hashText(document.getText()) !== openedFile.cache.texttHash)) {
-			this.createOpenedFile(document);
+			await this.createOpenedFile(document);
 		} 
 	}
 
@@ -187,7 +187,7 @@ export class FileManager {
 		const path = FileManager.getPathFromURI(document.uri);
 		let openedFile = this.getOpenedFile(path);
 		if(!openedFile) {
-			this.createOpenedFile(document);
+			await this.createOpenedFile(document);
 		}
 	}
 
