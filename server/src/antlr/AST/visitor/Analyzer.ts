@@ -424,7 +424,7 @@ export class Analyzer extends BaseVisitor
 	beforeVisitEnumMember(node: EnumMember): void {
 		const symbol = SymbolsFactory.createEnumMember(node.id, this.file.path, node.range, node.idPos, true);
 		node.symbol = symbol.defenition;
-		console.log(node.parent);
+		this.symbolManager.add(this.file.path, symbol);
 		node.parent?.symbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
@@ -552,7 +552,7 @@ export class Analyzer extends BaseVisitor
 				modifires.push(SemanticTokenModifiers.readonly);
 			}
 			const symbol = SymbolsFactory.createParameter(parameter.id, this.file.path, parameter.range, parameter.idPos, modifires);
-			// this.symbolManager.add(this.file.path, symbol);
+			this.symbolManager.add(this.file.path, symbol);
 			parameter.symbol = symbol;
 			node.symbol?.childrens.push(symbol.defenition);
 		})

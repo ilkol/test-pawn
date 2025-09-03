@@ -12,7 +12,6 @@ export class SymbolManager {
 		
 		if(global) {
 			this.addGlobalSymbolToFile(filePath, symbol);
-			return;
 		}
 		this.addSymbolToFile(filePath, symbol);
 	}
