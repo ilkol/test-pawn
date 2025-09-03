@@ -508,7 +508,7 @@ async function main() {
 		
 		symbolManager.getFileGlobalSymbols(document.path).forEach((symbol) => {
 			symbols.push(
-				...symbol.getFileSymbolReferancesInfo(document.path),
+				symbol.defenition.getSymbolInfo(),
 			);
 		});
 
