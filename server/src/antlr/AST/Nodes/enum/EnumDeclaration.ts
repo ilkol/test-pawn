@@ -62,7 +62,9 @@ export class EnumDeclaration extends Declaration implements IContainsVars<EnumMe
 		super.prepareFromJSON(json);
 		this.lastIndex = json.lastIndex;
 		json.members.forEach(member => {
-			this._variables.push(Serialization.Deserialize.object<EnumMember>(member));
+			const instance = Serialization.Deserialize.object<EnumMember>(member);
+			this._variables.push(instance);
+			instance.parent = this;
 		});
 	}
 }

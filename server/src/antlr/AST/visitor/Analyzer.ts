@@ -422,23 +422,25 @@ export class Analyzer extends BaseVisitor
 		this.restrictScope();
 	}
 	beforeVisitEnumMember(node: EnumMember): void {
-
+		const symbol = SymbolsFactory.createEnumMember(node.id, this.file.path, node.range, node.idPos, true);
+		node.symbol = symbol.defenition;
+		console.log(node.parent);
+		node.parent?.symbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
 		this.checkUsed(node, (variable: EnumMember) => this.curScope.addEnumMember(variable));
-		const symbol = SymbolsFactory.createEnumMember(node.id, this.file.path, node.range, node.idPos, true);
-		this.symbolManager.add(this.file.path, symbol);
-		node.symbol = symbol.defenition;
+		
 	}
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
-		
+		if(node.id) {
+			const symbol = SymbolsFactory.createEnum(node.id, this.file.path, node.range, node.idPos, true);	
+			this.symbolManager.add(this.file.path, symbol);	
+			node.symbol = symbol.defenition;
+		}
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
 		if(node.id) {
 			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addEnum(variable));
-			const symbol = SymbolsFactory.createEnum(node.id, this.file.path, node.range, node.idPos, true);	
-			this.symbolManager.add(this.file.path, symbol);	
-			node.symbol = symbol.defenition;
 		}
 		// const array = this.functionsDeclarations.get(node.id);
 		// const el = new Definition<EnumDeclaration>(node, this.file.URI);
@@ -550,7 +552,7 @@ export class Analyzer extends BaseVisitor
 				modifires.push(SemanticTokenModifiers.readonly);
 			}
 			const symbol = SymbolsFactory.createParameter(parameter.id, this.file.path, parameter.range, parameter.idPos, modifires);
-			this.symbolManager.add(this.file.path, symbol);
+			// this.symbolManager.add(this.file.path, symbol);
 			parameter.symbol = symbol;
 			node.symbol?.childrens.push(symbol.defenition);
 		})
