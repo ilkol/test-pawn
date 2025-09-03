@@ -40,6 +40,7 @@ import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
 import { SymbolManager } from "../../../SymbolSystem";
 import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
+import { SymbolReferance } from "../../../SymbolSystem/Symbols";
 
 export class Analyzer extends BaseVisitor
 {
@@ -47,11 +48,6 @@ export class Analyzer extends BaseVisitor
 		protected file: AbstractOpenFile,
 		scope: IScope,
 		private symbolManager: SymbolManager,
-		// public readonly diagnostics: DiagnosticMessage[],
-		// public readonly tokens: SemanticTokensManager,
-		// public readonly symbolsManager: SymbolsManager,
-		// public readonly complitions: CompletionItem[],
-		// public readonly signatures: Map<string, SignatureHelp>
 	) {
 		super();
 		this.curScope = scope;
@@ -89,10 +85,6 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitBoolLiteral(node: BoolLiteral): void {
 	}
-
-
-	// public readonly functionsDeclarations: Map<string, Definition<Declaration>[]> = new Map();
-	// public readonly functionsCalls: Map<string, Reference<IHasID>[]> = new Map<string, funcCall.FunctionCall[]>();
 
 	beforeVisitIfStatemnt(node: IfStatement): void {
 	
@@ -292,6 +284,10 @@ export class Analyzer extends BaseVisitor
 		// }
 
 		if(func) {
+			const symbol = new SymbolReferance(this.file.path, node.range, node.idPos, []);
+			func.symbol?.parent?.addReferance(symbol);
+			this.curScope.currenFunction?.symbol?.childrens.push(symbol);
+
 			func.used = true;
 			if(!node.isTaged)
 				node.tag = func.tag;
