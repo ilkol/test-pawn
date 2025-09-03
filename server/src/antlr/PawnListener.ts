@@ -737,7 +737,9 @@ export class PawnListener implements IPawnListener
 	exitDeclParams(ctx: DeclParamsContext):void {
 		const node = <FunctionDeclarationParameter>this.nodes.pop();
 		if(ctx.stop) {
+			console.log(ctx.stop.charPositionInLine);
 			node.setPos(ctx.start, ctx.stop);
+			
 			if(ctx.CONST())
 				node.const = true;
 			if(ctx.reference())

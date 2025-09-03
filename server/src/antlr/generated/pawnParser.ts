@@ -1,4 +1,4 @@
-// Generated from .\src\antlr\generated\pawn.g4 by ANTLR 4.9.0-SNAPSHOT
+// Generated from ./server/src/antlr/generated/pawn.g4 by ANTLR 4.9.0-SNAPSHOT
 
 
 import { ATN } from "antlr4ts/atn/ATN";
@@ -23,7 +23,7 @@ import { VocabularyImpl } from "antlr4ts/VocabularyImpl";
 
 import * as Utils from "antlr4ts/misc/Utils";
 
-import { IPawnListener } from "./pawnListener";
+import { pawnListener } from "./pawnListener";
 import { pawnVisitor } from "./pawnVisitor";
 
 
@@ -4606,13 +4606,13 @@ export class FileContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_file; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterFile) {
 			listener.enterFile(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitFile) {
 			listener.exitFile(this);
 		}
@@ -4637,13 +4637,13 @@ export class ProcessorLabelContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_processorLabel; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterProcessorLabel) {
 			listener.enterProcessorLabel(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitProcessorLabel) {
 			listener.exitProcessorLabel(this);
 		}
@@ -4688,13 +4688,13 @@ export class DeclarationContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_declaration; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterDeclaration) {
 			listener.enterDeclaration(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitDeclaration) {
 			listener.exitDeclaration(this);
 		}
@@ -4743,13 +4743,13 @@ export class EnumContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_enum; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterEnum) {
 			listener.enterEnum(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitEnum) {
 			listener.exitEnum(this);
 		}
@@ -4779,13 +4779,13 @@ export class EnumMemberContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_enumMember; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterEnumMember) {
 			listener.enterEnumMember(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitEnumMember) {
 			listener.exitEnumMember(this);
 		}
@@ -4814,13 +4814,13 @@ export class EnumIteratorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_enumIterator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterEnumIterator) {
 			listener.enterEnumIterator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitEnumIterator) {
 			listener.exitEnumIterator(this);
 		}
@@ -4880,13 +4880,13 @@ export class VarDeclarationContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_varDeclaration; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterVarDeclaration) {
 			listener.enterVarDeclaration(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitVarDeclaration) {
 			listener.exitVarDeclaration(this);
 		}
@@ -4919,13 +4919,13 @@ export class VarInitContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_varInit; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterVarInit) {
 			listener.enterVarInit(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitVarInit) {
 			listener.exitVarInit(this);
 		}
@@ -4958,13 +4958,13 @@ export class FunctionDeclContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_functionDecl; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterFunctionDecl) {
 			listener.enterFunctionDecl(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitFunctionDecl) {
 			listener.exitFunctionDecl(this);
 		}
@@ -5000,13 +5000,13 @@ export class OperatorOverloadContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_operatorOverload; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterOperatorOverload) {
 			listener.enterOperatorOverload(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitOperatorOverload) {
 			listener.exitOperatorOverload(this);
 		}
@@ -5059,13 +5059,13 @@ export class FunctionDeclarationParamsContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_functionDeclarationParams; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterFunctionDeclarationParams) {
 			listener.enterFunctionDeclarationParams(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitFunctionDeclarationParams) {
 			listener.exitFunctionDeclarationParams(this);
 		}
@@ -5091,13 +5091,13 @@ export class NativeAssigmentContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_nativeAssigment; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterNativeAssigment) {
 			listener.enterNativeAssigment(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitNativeAssigment) {
 			listener.exitNativeAssigment(this);
 		}
@@ -5141,13 +5141,13 @@ export class TagContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_tag; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterTag) {
 			listener.enterTag(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitTag) {
 			listener.exitTag(this);
 		}
@@ -5183,13 +5183,13 @@ export class VariableContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_variable; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterVariable) {
 			listener.enterVariable(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitVariable) {
 			listener.exitVariable(this);
 		}
@@ -5220,13 +5220,13 @@ export class ArrayIndexContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_arrayIndex; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterArrayIndex) {
 			listener.enterArrayIndex(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitArrayIndex) {
 			listener.exitArrayIndex(this);
 		}
@@ -5254,13 +5254,13 @@ export class FuncDeclModifContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_funcDeclModif; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterFuncDeclModif) {
 			listener.enterFuncDeclModif(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitFuncDeclModif) {
 			listener.exitFuncDeclModif(this);
 		}
@@ -5285,13 +5285,13 @@ export class FuncModifContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_funcModif; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterFuncModif) {
 			listener.enterFuncModif(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitFuncModif) {
 			listener.exitFuncModif(this);
 		}
@@ -5355,13 +5355,13 @@ export class StatementContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_statement; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterStatement) {
 			listener.enterStatement(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitStatement) {
 			listener.exitStatement(this);
 		}
@@ -5395,13 +5395,13 @@ export class CompoundStatmentContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_compoundStatment; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterCompoundStatment) {
 			listener.enterCompoundStatment(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitCompoundStatment) {
 			listener.exitCompoundStatment(this);
 		}
@@ -5428,13 +5428,13 @@ export class AssertContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_assert; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterAssert) {
 			listener.enterAssert(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitAssert) {
 			listener.exitAssert(this);
 		}
@@ -5461,13 +5461,13 @@ export class ExitContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_exit; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterExit) {
 			listener.enterExit(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitExit) {
 			listener.exitExit(this);
 		}
@@ -5494,13 +5494,13 @@ export class GotoContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_goto; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterGoto) {
 			listener.enterGoto(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitGoto) {
 			listener.exitGoto(this);
 		}
@@ -5527,13 +5527,13 @@ export class SleepContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_sleep; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterSleep) {
 			listener.enterSleep(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitSleep) {
 			listener.exitSleep(this);
 		}
@@ -5570,13 +5570,13 @@ export class IfStatementContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_ifStatement; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterIfStatement) {
 			listener.enterIfStatement(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitIfStatement) {
 			listener.exitIfStatement(this);
 		}
@@ -5603,13 +5603,13 @@ export class ElseStatementContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_elseStatement; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterElseStatement) {
 			listener.enterElseStatement(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitElseStatement) {
 			listener.exitElseStatement(this);
 		}
@@ -5636,13 +5636,13 @@ export class ReturnContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_return; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterReturn) {
 			listener.enterReturn(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitReturn) {
 			listener.exitReturn(this);
 		}
@@ -5670,13 +5670,13 @@ export class ConditionContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_condition; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterCondition) {
 			listener.enterCondition(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitCondition) {
 			listener.exitCondition(this);
 		}
@@ -5717,13 +5717,13 @@ export class SwitchContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_switch; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterSwitch) {
 			listener.enterSwitch(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitSwitch) {
 			listener.exitSwitch(this);
 		}
@@ -5769,13 +5769,13 @@ export class CaseContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_case; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterCase) {
 			listener.enterCase(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitCase) {
 			listener.exitCase(this);
 		}
@@ -5803,13 +5803,13 @@ export class DefaultContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_default; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterDefault) {
 			listener.enterDefault(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitDefault) {
 			listener.exitDefault(this);
 		}
@@ -5838,13 +5838,13 @@ export class Case_listContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_case_list; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterCase_list) {
 			listener.enterCase_list(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitCase_list) {
 			listener.exitCase_list(this);
 		}
@@ -5871,13 +5871,13 @@ export class RangeContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_range; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterRange) {
 			listener.enterRange(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitRange) {
 			listener.exitRange(this);
 		}
@@ -5920,13 +5920,13 @@ export class ArrayInitContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_arrayInit; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterArrayInit) {
 			listener.enterArrayInit(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitArrayInit) {
 			listener.exitArrayInit(this);
 		}
@@ -5963,13 +5963,13 @@ export class ArrayInitMemberContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_arrayInitMember; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterArrayInitMember) {
 			listener.enterArrayInitMember(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitArrayInitMember) {
 			listener.exitArrayInitMember(this);
 		}
@@ -6004,13 +6004,13 @@ export class AssigmentsContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_assigments; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterAssigments) {
 			listener.enterAssigments(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitAssigments) {
 			listener.exitAssigments(this);
 		}
@@ -6047,13 +6047,13 @@ export class DeclParamsContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_declParams; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterDeclParams) {
 			listener.enterDeclParams(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitDeclParams) {
 			listener.exitDeclParams(this);
 		}
@@ -6081,13 +6081,13 @@ export class EllipseContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_ellipse; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterEllipse) {
 			listener.enterEllipse(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitEllipse) {
 			listener.exitEllipse(this);
 		}
@@ -6111,13 +6111,13 @@ export class ReferenceContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_reference; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterReference) {
 			listener.enterReference(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitReference) {
 			listener.exitReference(this);
 		}
@@ -6144,13 +6144,13 @@ export class VarModifiresContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_varModifires; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterVarModifires) {
 			listener.enterVarModifires(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitVarModifires) {
 			listener.exitVarModifires(this);
 		}
@@ -6188,13 +6188,13 @@ export class NumberContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_number; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterNumber) {
 			listener.enterNumber(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitNumber) {
 			listener.exitNumber(this);
 		}
@@ -6218,13 +6218,13 @@ export class FloatContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_float; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterFloat) {
 			listener.enterFloat(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitFloat) {
 			listener.exitFloat(this);
 		}
@@ -6248,13 +6248,13 @@ export class IntegerContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_integer; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterInteger) {
 			listener.enterInteger(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitInteger) {
 			listener.exitInteger(this);
 		}
@@ -6278,13 +6278,13 @@ export class HexContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_hex; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterHex) {
 			listener.enterHex(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitHex) {
 			listener.exitHex(this);
 		}
@@ -6308,13 +6308,13 @@ export class RationalContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_rational; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterRational) {
 			listener.enterRational(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitRational) {
 			listener.exitRational(this);
 		}
@@ -6338,13 +6338,13 @@ export class BinaryContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_binary; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterBinary) {
 			listener.enterBinary(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitBinary) {
 			listener.exitBinary(this);
 		}
@@ -6374,13 +6374,13 @@ export class CanBeOverloadedContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_canBeOverloaded; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterCanBeOverloaded) {
 			listener.enterCanBeOverloaded(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitCanBeOverloaded) {
 			listener.exitCanBeOverloaded(this);
 		}
@@ -6410,13 +6410,13 @@ export class ArefmeticOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_arefmeticOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterArefmeticOperator) {
 			listener.enterArefmeticOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitArefmeticOperator) {
 			listener.exitArefmeticOperator(this);
 		}
@@ -6446,13 +6446,13 @@ export class CompareOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_compareOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterCompareOperator) {
 			listener.enterCompareOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitCompareOperator) {
 			listener.exitCompareOperator(this);
 		}
@@ -6484,13 +6484,13 @@ export class CyclesContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_cycles; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterCycles) {
 			listener.enterCycles(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitCycles) {
 			listener.exitCycles(this);
 		}
@@ -6521,13 +6521,13 @@ export class DoContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_do; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterDo) {
 			listener.enterDo(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitDo) {
 			listener.exitDo(this);
 		}
@@ -6557,13 +6557,13 @@ export class WhileContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_while; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterWhile) {
 			listener.enterWhile(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitWhile) {
 			listener.exitWhile(this);
 		}
@@ -6616,13 +6616,13 @@ export class ForContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_for; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterFor) {
 			listener.enterFor(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitFor) {
 			listener.exitFor(this);
 		}
@@ -6651,13 +6651,13 @@ export class ForFirstExpContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_forFirstExp; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterForFirstExp) {
 			listener.enterForFirstExp(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitForFirstExp) {
 			listener.exitForFirstExp(this);
 		}
@@ -6682,13 +6682,13 @@ export class CycleKeywordsContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_cycleKeywords; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterCycleKeywords) {
 			listener.enterCycleKeywords(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitCycleKeywords) {
 			listener.exitCycleKeywords(this);
 		}
@@ -6723,13 +6723,13 @@ export class LiteralContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_literal; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterLiteral) {
 			listener.enterLiteral(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitLiteral) {
 			listener.exitLiteral(this);
 		}
@@ -6754,13 +6754,13 @@ export class Bool_constContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_bool_const; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterBool_const) {
 			listener.enterBool_const(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitBool_const) {
 			listener.exitBool_const(this);
 		}
@@ -6793,13 +6793,13 @@ export class PredefinedConstantsContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_predefinedConstants; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterPredefinedConstants) {
 			listener.enterPredefinedConstants(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitPredefinedConstants) {
 			listener.exitPredefinedConstants(this);
 		}
@@ -6834,13 +6834,13 @@ export class StringContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_string; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterString) {
 			listener.enterString(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitString) {
 			listener.exitString(this);
 		}
@@ -6866,13 +6866,13 @@ export class DocsContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_docs; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterDocs) {
 			listener.enterDocs(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitDocs) {
 			listener.exitDocs(this);
 		}
@@ -6896,13 +6896,13 @@ export class DocBlockContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_docBlock; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterDocBlock) {
 			listener.enterDocBlock(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitDocBlock) {
 			listener.exitDocBlock(this);
 		}
@@ -6938,13 +6938,13 @@ export class ExpresionContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_expresion; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterExpresion) {
 			listener.enterExpresion(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitExpresion) {
 			listener.exitExpresion(this);
 		}
@@ -6987,13 +6987,13 @@ export class TagableExpressionContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_tagableExpression; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterTagableExpression) {
 			listener.enterTagableExpression(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitTagableExpression) {
 			listener.exitTagableExpression(this);
 		}
@@ -7027,13 +7027,13 @@ export class TernarOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_ternarOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterTernarOperator) {
 			listener.enterTernarOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitTernarOperator) {
 			listener.exitTernarOperator(this);
 		}
@@ -7074,13 +7074,13 @@ export class ChainedRelationalOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_chainedRelationalOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterChainedRelationalOperator) {
 			listener.enterChainedRelationalOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitChainedRelationalOperator) {
 			listener.exitChainedRelationalOperator(this);
 		}
@@ -7111,13 +7111,13 @@ export class BinarExpressionOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_binarExpressionOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterBinarExpressionOperator) {
 			listener.enterBinarExpressionOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitBinarExpressionOperator) {
 			listener.exitBinarExpressionOperator(this);
 		}
@@ -7164,13 +7164,13 @@ export class UnarOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_unarOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterUnarOperator) {
 			listener.enterUnarOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitUnarOperator) {
 			listener.exitUnarOperator(this);
 		}
@@ -7197,13 +7197,13 @@ export class PreExpresionOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_preExpresionOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterPreExpresionOperator) {
 			listener.enterPreExpresionOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitPreExpresionOperator) {
 			listener.exitPreExpresionOperator(this);
 		}
@@ -7229,13 +7229,13 @@ export class PreSymbolOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_preSymbolOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterPreSymbolOperator) {
 			listener.enterPreSymbolOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitPreSymbolOperator) {
 			listener.exitPreSymbolOperator(this);
 		}
@@ -7267,13 +7267,13 @@ export class BinarOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_binarOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterBinarOperator) {
 			listener.enterBinarOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitBinarOperator) {
 			listener.exitBinarOperator(this);
 		}
@@ -7317,13 +7317,13 @@ export class ArrayIndexOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_arrayIndexOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterArrayIndexOperator) {
 			listener.enterArrayIndexOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitArrayIndexOperator) {
 			listener.exitArrayIndexOperator(this);
 		}
@@ -7374,13 +7374,13 @@ export class BinarExpressionOperatorsContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_binarExpressionOperators; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterBinarExpressionOperators) {
 			listener.enterBinarExpressionOperators(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitBinarExpressionOperators) {
 			listener.exitBinarExpressionOperators(this);
 		}
@@ -7410,13 +7410,13 @@ export class AssigmentOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_assigmentOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterAssigmentOperator) {
 			listener.enterAssigmentOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitAssigmentOperator) {
 			listener.exitAssigmentOperator(this);
 		}
@@ -7444,13 +7444,13 @@ export class ArrayOperatorIndexContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_arrayOperatorIndex; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterArrayOperatorIndex) {
 			listener.enterArrayOperatorIndex(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitArrayOperatorIndex) {
 			listener.exitArrayOperatorIndex(this);
 		}
@@ -7478,13 +7478,13 @@ export class ArrayOperatorCharContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_arrayOperatorChar; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterArrayOperatorChar) {
 			listener.enterArrayOperatorChar(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitArrayOperatorChar) {
 			listener.exitArrayOperatorChar(this);
 		}
@@ -7528,13 +7528,13 @@ export class FunctionCallOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_functionCallOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterFunctionCallOperator) {
 			listener.enterFunctionCallOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitFunctionCallOperator) {
 			listener.exitFunctionCallOperator(this);
 		}
@@ -7563,13 +7563,13 @@ export class TagOperatorContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_tagOperator; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterTagOperator) {
 			listener.enterTagOperator(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitTagOperator) {
 			listener.exitTagOperator(this);
 		}
@@ -7593,13 +7593,13 @@ export class SymbolContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_symbol; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterSymbol) {
 			listener.enterSymbol(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitSymbol) {
 			listener.exitSymbol(this);
 		}
@@ -7628,13 +7628,13 @@ export class LvalueContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_lvalue; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterLvalue) {
 			listener.enterLvalue(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitLvalue) {
 			listener.exitLvalue(this);
 		}
@@ -7661,13 +7661,13 @@ export class PostIncrementContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_postIncrement; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterPostIncrement) {
 			listener.enterPostIncrement(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitPostIncrement) {
 			listener.exitPostIncrement(this);
 		}
@@ -7694,13 +7694,13 @@ export class PreIncrementContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_preIncrement; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterPreIncrement) {
 			listener.enterPreIncrement(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitPreIncrement) {
 			listener.exitPreIncrement(this);
 		}
@@ -7727,13 +7727,13 @@ export class PostDecrementContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_postDecrement; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterPostDecrement) {
 			listener.enterPostDecrement(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitPostDecrement) {
 			listener.exitPostDecrement(this);
 		}
@@ -7760,13 +7760,13 @@ export class PreDecrementContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_preDecrement; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterPreDecrement) {
 			listener.enterPreDecrement(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitPreDecrement) {
 			listener.exitPreDecrement(this);
 		}
@@ -7793,13 +7793,13 @@ export class ChainedRelationalOperatorsContext extends ParserRuleContext {
 	// @Override
 	public get ruleIndex(): number { return pawnParser.RULE_chainedRelationalOperators; }
 	// @Override
-	public enterRule(listener: IPawnListener): void {
+	public enterRule(listener: pawnListener): void {
 		if (listener.enterChainedRelationalOperators) {
 			listener.enterChainedRelationalOperators(this);
 		}
 	}
 	// @Override
-	public exitRule(listener: IPawnListener): void {
+	public exitRule(listener: pawnListener): void {
 		if (listener.exitChainedRelationalOperators) {
 			listener.exitChainedRelationalOperators(this);
 		}
