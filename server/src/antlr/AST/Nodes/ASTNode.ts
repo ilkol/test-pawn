@@ -2,6 +2,7 @@ import { Token } from "antlr4ts";
 import { IVisitor } from "../visitor/IVisitor";
 import { Serialization } from "../../../cache/Serialization";
 import { Position, Range } from "../../../types";
+import { Interval } from "antlr4ts/misc/Interval";
 
 export abstract class ASTNode implements Serialization.Serializable {
 	/**
@@ -36,7 +37,7 @@ export abstract class ASTNode implements Serialization.Serializable {
 		let endLine = end.line;
 		let endCharacter = end.charPositionInLine;
 
-		const stopText = end.text || '';
+		const stopText = end.inputStream?.getText(new Interval(end.startIndex, end.stopIndex)) || "";
 		if (stopText.includes('\n')) {
 			const lines = stopText.split('\n');
 			const lineCount = lines.length;
