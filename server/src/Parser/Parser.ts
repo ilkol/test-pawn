@@ -5,7 +5,7 @@ import { LexerErrorListener } from "../antlr/LexerErrorListener";
 import { pawnParser } from "../antlr/generated/pawnParser";
 import { ParserErrorListener } from "../antlr/ParserErrorListener";
 import { PawnListener } from "../antlr/PawnListener";
-import { IPawnListener } from "../antlr/generated/pawnListener";
+import { pawnListener as IPawnListener } from "../antlr/generated/pawnListener";
 import { ParseTreeWalker } from 'antlr4ts/tree/ParseTreeWalker';
 import { Declarations } from "../antlr/AST/Nodes/Declarations";
 import { Logger } from "../Logger/Logger";

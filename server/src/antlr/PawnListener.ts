@@ -3,8 +3,8 @@
 import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
-import { IPawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { pawnListener as IPawnListener } from "./generated/pawnListener";
+import { ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
@@ -737,7 +737,6 @@ export class PawnListener implements IPawnListener
 	exitDeclParams(ctx: DeclParamsContext):void {
 		const node = <FunctionDeclarationParameter>this.nodes.pop();
 		if(ctx.stop) {
-			console.log(ctx.stop.charPositionInLine);
 			node.setPos(ctx.start, ctx.stop);
 			
 			if(ctx.CONST())
