@@ -1,4 +1,4 @@
-import { Diagnostic, DiagnosticSeverity } from "vscode-languageserver";
+import { Diagnostic, DiagnosticSeverity, DiagnosticTag } from "vscode-languageserver";
 import { Locale } from "../Locale";
 import { Range } from "../types";
 
@@ -6,12 +6,13 @@ export namespace LSPPawnErrors {
 
 	export var onlyPawnErrorMode: boolean = false;
 
-	export function reportCustom(text: string, severity: DiagnosticSeverity, range: Range): Diagnostic {
+	export function reportCustom(text: string, severity: DiagnosticSeverity, range: Range, tags: DiagnosticTag[] = []): Diagnostic {
 		return {
 			message: text,
 			range,
 			severity,
 			source: "pawn-lsp",
+			tags
 		};
 	}
 

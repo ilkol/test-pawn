@@ -35,12 +35,14 @@ import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { Range } from "../../../types";
 import { Locale } from "../../../Locale";
-import { DiagnosticSeverity, SemanticTokenModifiers} from "vscode-languageserver";
+import { DiagnosticSeverity, DiagnosticTag, SemanticTokenModifiers} from "vscode-languageserver";
 import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
 import { SymbolManager } from "../../../SymbolSystem";
 import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
 import { SymbolReferance } from "../../../SymbolSystem/Symbols";
+import { DefaultTag } from "../Nodes/DefaultTag";
+import { Constexpr } from "../Nodes/Variables/Constexpr";
 
 export class Analyzer extends BaseVisitor
 {
@@ -52,11 +54,32 @@ export class Analyzer extends BaseVisitor
 		super();
 		this.curScope = scope;
 
-		let varInit = new VariableInit();
-		varInit.id = "cellmin";
-		this.curScope.addVar(varInit);
-		varInit = new VariableInit();
-		varInit.id = "cellmax";
+		this.addBuildinConstants();
+	}
+
+	private addBuildinConstants() {
+		const boolTag = new Tag(["bool"]);
+		this.addBuildinConstant("true", 1, boolTag);
+		this.addBuildinConstant("false", 0, boolTag);
+
+		const defaultTag = new DefaultTag;
+		this.addBuildinConstant("EOS", 0, defaultTag);
+		this.addBuildinConstant("cellbits", 32, defaultTag);
+		this.addBuildinConstant("cellmax", 2147483647, defaultTag);
+		this.addBuildinConstant("cellmin", -2147483647 - 1, defaultTag);
+		this.addBuildinConstant("charbits", 8, defaultTag);
+		this.addBuildinConstant("charmin", 0, defaultTag);
+		this.addBuildinConstant("charmax", 254, defaultTag); // ~((Ucell)-1 << sCHARBITS) - 1
+		this.addBuildinConstant("ucharmax", 16777215, defaultTag); // (1 << (sizeof(Cell)-1)*8)-1
+		
+		this.addBuildinConstant("__Pawn", 778, defaultTag); // Версия Pawn
+		this.addBuildinConstant("__PawnBuild", 10, defaultTag);
+		this.addBuildinConstant("__line", 0, defaultTag); // Текущая строка
+
+	}
+
+	private addBuildinConstant(name: string, value: number, tag: Tag) {
+		let varInit = new Constexpr(name, value, tag);
 		this.curScope.addVar(varInit);
 	}
 
@@ -572,14 +595,20 @@ export class Analyzer extends BaseVisitor
 				{
 					this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
 				}
+			} else if(element instanceof Constexpr) {
+				return;
 			} else if(element instanceof EnumDeclaration || element instanceof EnumMember) {
 				if(!element.used)
 				{
 					// this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
 				}
 			} else if(element instanceof VarDeclaration){
-				if(!element.used && !element.stock && element.modifires.indexOf(VariableModifire.public) === -1) {
-					this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
+				if(!element.used) {
+					if(element.isConstant) {
+						this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Constant is never used"), DiagnosticSeverity.Hint, element.idPos, [DiagnosticTag.Unnecessary]));
+					} else if(!element.stock && element.modifires.indexOf(VariableModifire.public) === -1){
+						this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
+					}
 				} 
 			}
 
