@@ -165,10 +165,13 @@ async function main() {
 		CacheManager.setFileCache(cache);
 		await continueParsing(document);
 	}
-	Parser.onFileWalkedASTListener = (document) => {
+	Parser.onFileWalkedASTListener = async (document) => {
 		document.parsinState++;
 		Logger.log(`${document.path} AST has walked`);
 		sendFileDiagnostics(connection, document);
+		let cache: FileCache = (await CacheManager.getFileCache(document.path))!;
+		cache.processCode = "";
+		CacheManager.writeFileCache(cache);
 		document.completeAnalysis();
 	}
 	

@@ -261,5 +261,78 @@
 	"Tag": "Tag",
 	"mismatched input '#endinput' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#endinput' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
 	"no viable alternative at input 'ativeprint' (file)": "no viable alternative at input 'ativeprint' (file)",
-	"Constant is never used": "Constant is never used"
+	"Constant is never used": "Constant is never used",
+	"no viable alternative at input ',\"OnDialogChangepassword\",!\"����� ������\",!\"\"WHITE' (expresion)": "no viable alternative at input ',\"OnDialogChangepassword\",!\"����� ������\",!\"\"WHITE' (expresion)",
+	"no viable alternative at input ',!\"\"WHITE' (expresion)": "no viable alternative at input ',!\"\"WHITE' (expresion)",
+	"no viable alternative at input 'WHITE' (expresion)": "no viable alternative at input 'WHITE' (expresion)",
+	"no viable alternative at input ')' (expresion)": "no viable alternative at input ')' (expresion)",
+	"no viable alternative at input ',\"OnDialogChangepasswordNewPass\",!\"����� ������\",!\"\"WHITE' (expresion)": "no viable alternative at input ',\"OnDialogChangepasswordNewPass\",!\"����� ������\",!\"\"WHITE' (expresion)",
+	"no viable alternative at input ',\"��� ����� ������": " \"SERVER' (expresion)",
+	"no viable alternative at input 'SERVER' (expresion)": "no viable alternative at input 'SERVER' (expresion)",
+	"no viable alternative at input '{' (expresion)": "no viable alternative at input '{' (expresion)",
+	"no viable alternative at input ',\"OnDialogPromoMenu\",!\"���������\",\"\"MENU_ITEM' (expresion)": "no viable alternative at input ',\"OnDialogPromoMenu\",!\"���������\",\"\"MENU_ITEM' (expresion)",
+	"no viable alternative at input ',\"\"MENU_ITEM' (expresion)": "no viable alternative at input ',\"\"MENU_ITEM' (expresion)",
+	"no viable alternative at input 'MENU_ITEM' (expresion)": "no viable alternative at input 'MENU_ITEM' (expresion)",
+	"no viable alternative at input '": "' (expresion)",
+	"no viable alternative at input ',\"OnDialogCreatePromoName\",!\"�������� ���������\",\"\"WHITE' (expresion)": "no viable alternative at input ',\"OnDialogCreatePromoName\",!\"�������� ���������\",\"\"WHITE' (expresion)",
+	"no viable alternative at input ',\"\"WHITE' (expresion)": "no viable alternative at input ',\"\"WHITE' (expresion)",
+	"no viable alternative at input 'DONATE_COLOR' (expresion)": "no viable alternative at input 'DONATE_COLOR' (expresion)",
+	"no viable alternative at input 'DONATE_NAME' (expresion)": "no viable alternative at input 'DONATE_NAME' (expresion)",
+	"no viable alternative at input 'RED' (expresion)": "no viable alternative at input 'RED' (expresion)",
+	"no viable alternative at input ',sizeof(str),\"\"SERVER' (expresion)": "no viable alternative at input ',sizeof(str),\"\"SERVER' (expresion)",
+	"no viable alternative at input ',\"\"SERVER' (expresion)": "no viable alternative at input ',\"\"SERVER' (expresion)",
+	"no viable alternative at input ',sizeof(str),\"%s\\n\\\\r\\n\\t\"MENU_ITEM' (expresion)": "no viable alternative at input ',sizeof(str),\"%s\\n\\\\r\\n\\t\"MENU_ITEM' (expresion)",
+	"no viable alternative at input ',\"%s\\n\\\\r\\n\\t\"MENU_ITEM' (expresion)": "no viable alternative at input ',\"%s\\n\\\\r\\n\\t\"MENU_ITEM' (expresion)",
+	"no viable alternative at input 'GREEN' (expresion)": "no viable alternative at input 'GREEN' (expresion)",
+	"no viable alternative at input ',PlayerPromo[playerid][prRefMoney],PlayerPromo[playerid][prUses])' (expresion)": "no viable alternative at input ',PlayerPromo[playerid][prRefMoney],PlayerPromo[playerid][prUses])' (expresion)",
+	"no viable alternative at input ',\"OnDialogEditPromoName\",!\"������� ���������\",\"\"WHITE' (expresion)": "no viable alternative at input ',\"OnDialogEditPromoName\",!\"������� ���������\",\"\"WHITE' (expresion)",
+	"no viable alternative at input ',sizeof(str),\"%s\\n%s%d �������\\t�����": " %d \"DONATE_NAME' (expresion)",
+	"no viable alternative at input ',\"%s\\n%s%d �������\\t�����": " %d \"DONATE_NAME' (expresion)",
+	"extraneous input 'else' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input 'else' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input ',\"OnDialogWithdrawRefMoney\",!\"������� ���": {
+		" ����� � \"DONATE_NAME' (expresion)": "no viable alternative at input ',\"OnDialogWithdrawRefMoney\",!\"������� ���. ����� � \"DONATE_NAME' (expresion)"
+	},
+	"no viable alternative at input ',\"�� ������� �������� %d ����������� ����� � %d \"DONATE_NAME' (expresion)": "no viable alternative at input ',\"�� ������� �������� %d ����������� ����� � %d \"DONATE_NAME' (expresion)",
+	"no viable alternative at input ',\"OnDialogUsePromo\",!\"��������\",!\"\"WHITE' (expresion)": "no viable alternative at input ',\"OnDialogUsePromo\",!\"��������\",!\"\"WHITE' (expresion)",
+	"no viable alternative at input ',\"�� ������� ����� �������� \\\"%s\\\" � �������� %d \"DONATE_NAME' (expresion)": "no viable alternative at input ',\"�� ������� ����� �������� \\\"%s\\\" � �������� %d \"DONATE_NAME' (expresion)",
+	"extraneous input '\"/pc\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/pc\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"no viable alternative at input 'if' (expresion)": "no viable alternative at input 'if' (expresion)",
+	"extraneous input '\"/prem\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/prem\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"no viable alternative at input ',\"OnDialogPremiumMenu\",\"������ Premium\",!\"\\\\r\\n\\t\"MENU_ITEM' (expresion)": "no viable alternative at input ',\"OnDialogPremiumMenu\",\"������ Premium\",!\"\\\\r\\n\\t\"MENU_ITEM' (expresion)",
+	"no viable alternative at input ',!\"�����\")' (expresion)": "no viable alternative at input ',!\"�����\")' (expresion)",
+	"no viable alternative at input ',1024,\"\"WHITE' (expresion)": "no viable alternative at input ',1024,\"\"WHITE' (expresion)",
+	"no viable alternative at input ',!\"�� ��� �������� �� �������! ����������� ������� \"SERVER' (expresion)": "no viable alternative at input ',!\"�� ��� �������� �� �������! ����������� ������� \"SERVER' (expresion)",
+	"no viable alternative at input ',\"OnDialogPremiumStatus\",!\"���� ����������\",!\"\"SERVER' (expresion)": "no viable alternative at input ',\"OnDialogPremiumStatus\",!\"���� ����������\",!\"\"SERVER' (expresion)",
+	"no viable alternative at input ',!\"\"SERVER' (expresion)": "no viable alternative at input ',!\"\"SERVER' (expresion)",
+	"extraneous input 'return' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'return' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"extraneous input '": "' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"extraneous input '\"/dj\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/dj\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"no viable alternative at input ',#DJMenu, !\"������ ���������� DJ": {
+		"\",!\"\"MENU_ITEM' (expresion)": "no viable alternative at input ',#DJMenu, !\"������ ���������� DJ.\",!\"\"MENU_ITEM' (expresion)"
+	},
+	"no viable alternative at input ',#DJURL, !\"���� �������\",!\"\"WHITE' (expresion)": "no viable alternative at input ',#DJURL, !\"���� �������\",!\"\"WHITE' (expresion)",
+	"no viable alternative at input ',#DJ, !\"������ DJ\",!\"\"WHITE' (expresion)": "no viable alternative at input ',#DJ, !\"������ DJ\",!\"\"WHITE' (expresion)",
+	"no viable alternative at input ',btnExit)' (expresion)": "no viable alternative at input ',btnExit)' (expresion)",
+	"no viable alternative at input ',128,\"\"WHITE' (expresion)": "no viable alternative at input ',128,\"\"WHITE' (expresion)",
+	"no viable alternative at input ',\"OnDialogChangepassword\",!\"Смена пароля\",!\"\"WHITE' (expresion)": "no viable alternative at input ',\"OnDialogChangepassword\",!\"Смена пароля\",!\"\"WHITE' (expresion)",
+	"no viable alternative at input ',\"OnDialogChangepasswordNewPass\",!\"Смена пароля\",!\"\"WHITE' (expresion)": "no viable alternative at input ',\"OnDialogChangepasswordNewPass\",!\"Смена пароля\",!\"\"WHITE' (expresion)",
+	"no viable alternative at input ',\"Ваш новый пароль": " \"SERVER' (expresion)"
 }
