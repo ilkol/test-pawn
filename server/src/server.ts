@@ -11,7 +11,6 @@ import {
 	DocumentSymbol,
 	DocumentLink,
 	SymbolKind,
-	SemanticTokensBuilder,
 	Location,
 	WorkspaceEdit,
 	SemanticTokenTypes,
@@ -35,6 +34,7 @@ import { serializeInit } from './cache/Serialization/serializeInit';
 import { ASTNode } from './antlr/AST/Nodes/ASTNode';
 import { SemanticTokensLegendManager, SymbolManager } from './SymbolSystem';
 import { DocumentUri, TextEdit } from 'vscode-languageserver-textdocument';
+import { SemanticTokensBuilder } from './SymbolSystem/SemanticTokensBuilder';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -62,6 +62,7 @@ async function main() {
 	].forEach(SemanticTokensLegendManager.registerTokenType);
 	[
 		SemanticTokenModifiers.declaration,
+		SemanticTokenModifiers.definition,
 		SemanticTokenModifiers.readonly,
 		SemanticTokenModifiers.static,
 		SemanticTokenModifiers.deprecated,
@@ -380,7 +381,7 @@ async function main() {
 	});
 
 	connection.languages.semanticTokens.on(async (params, token) => {
-		Logger.log("Request semantik tokens")
+		Logger.log("Request semantic tokens")
 		const builder = new SemanticTokensBuilder();	
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
@@ -390,10 +391,24 @@ async function main() {
 		}
 		await document.waitForAnalysis();
 
+		const tokens: {
+			line: number;
+			char: number;
+			length: number;
+			tokenType: number;
+			tokenModifiers: number[];
+		}[] = [];
 		symbolManager.getFileSymbols(document.path).forEach((symbol) => {
-			symbol.getFileSemanticTokens(document.path).forEach(info => {
-				builder.push(info.line, info.char, info.length, info.tokenType, info.tokenModifiers)
-			})
+			symbol.getFileSemanticTokens(document.path).forEach(info => tokens.push(info))
+		});		
+
+		tokens.sort((a, b) => {
+			if (a.line !== b.line) return a.line - b.line;
+			return a.char - b.char;
+		});
+
+		tokens.forEach(info => {
+			builder.push(info)
 		});
 
 		return builder.build();
@@ -496,8 +511,6 @@ async function main() {
 				...symbol.getFileSymbolReferancesInfo(document.path),
 			);
 		});
-
-		console.log(symbols);
 
 		return symbols;
 	});

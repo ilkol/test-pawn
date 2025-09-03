@@ -547,7 +547,6 @@ export class Analyzer extends BaseVisitor
 			const symbol = SymbolsFactory.createParameter(parameter.id, this.file.path, parameter.range, parameter.idPos, modifires);
 			this.symbolManager.add(this.file.path, symbol);
 			parameter.symbol = symbol;
-			console.log(symbol);
 			node.symbol?.childrens.push(symbol.defenition);
 		})
 		

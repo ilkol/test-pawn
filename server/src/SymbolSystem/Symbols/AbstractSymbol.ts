@@ -1,6 +1,7 @@
 import { DocumentSymbol, SymbolKind } from "vscode-languageserver";
 import { Position, Range } from "../../types";
 import { SymbolReferance } from "./SymbolReferance";
+import { SemanticToken } from "../SemanticToken";
 
 export abstract class AbstractSymbol {
 	/**
@@ -53,7 +54,7 @@ export abstract class AbstractSymbol {
 		})
 	}
 
-	getFileSemanticTokens(filePath: string): {line: number, char: number, length: number, tokenType: number, tokenModifiers: number}[] {
+	getFileSemanticTokens(filePath: string): SemanticToken[] {
 		const referances = this.getFileReferances(filePath);
 		return referances.map(ref => {
 			return {
@@ -61,8 +62,8 @@ export abstract class AbstractSymbol {
 				char: ref.tokenRange.start.character,
 				length: this.name.length,
 				tokenType: this.kind,
-				tokenModifiers: ref.modifiers[0],
-			}
+				tokenModifiers: ref.modifiers,
+			} as SemanticToken
 		})
 	}
 }
