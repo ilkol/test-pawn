@@ -6,6 +6,7 @@ import { Tag } from "../AST/Nodes/Tag";
 import { AbstractOpenFile } from "../../AbstractOpenFile";
 import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../AST/Nodes/enum/EnumMember";
+import { SymbolReferance } from "../../SymbolSystem/Symbols";
 
 export class Scope implements IScope
 {
@@ -36,6 +37,7 @@ export class Scope implements IScope
 	{
 		this._parent = IScope;
 	}
+	currentSymbol: SymbolReferance | undefined;
 	addEnum(variable: EnumDeclaration): void {
 		this.addIdent(variable);
 		this._enums.set(variable.id, variable);
@@ -88,8 +90,10 @@ export class Scope implements IScope
         return undefined;
 	}
 
-	public extend(): IScope {
-		return new Scope(this._file, this);
+	public extend(newSymbol?: SymbolReferance | undefined): IScope {
+		const scope =  new Scope(this._file, this);
+		scope.currentSymbol = newSymbol ?? this.currentSymbol;
+		return scope;
 	}
 
 	private addIdent(id: Declaration) {

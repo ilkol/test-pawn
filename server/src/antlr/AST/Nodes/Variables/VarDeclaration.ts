@@ -1,4 +1,5 @@
 import { Serialization } from "../../../../cache/Serialization";
+import { Variable as VariableSymbol } from "../../../../SymbolSystem/Symbols";
 import { IVisitor } from "../../visitor/IVisitor";
 import { ASTNode } from "../ASTNode";
 import { VariableModifire } from "../Operators/OperatorNew";
@@ -12,6 +13,8 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 	protected _modifires: VariableModifire[] = [];
 
 	public references: Variable[] = [];
+
+	public symbol: VariableSymbol | undefined = undefined;
 
 	constructor(instance: VarDeclaration | undefined = undefined) {
 		super(instance);

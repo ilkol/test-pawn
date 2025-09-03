@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { SemanticTokens, SemanticTokensModifires as SemanticTokensModifiers } from './SemanticTokens';
 
 
 export async function activate(context: vscode.ExtensionContext) {

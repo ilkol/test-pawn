@@ -11,7 +11,10 @@ import {
 	DocumentSymbol,
 	DocumentLink,
 	SymbolKind,
-	SemanticTokensBuilder
+	Location,
+	WorkspaceEdit,
+	SemanticTokenTypes,
+	SemanticTokenModifiers
 } from 'vscode-languageserver/node';
 
 import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
@@ -21,7 +24,7 @@ import { FileManager } from './Managers/FileManager';
 import { VSCode } from './VSCode';
 import { sendNotification } from './utils';
 import { Parser } from './Parser/Parser';
-import { LSPConnection } from './types';
+import { LSPConnection, Position } from './types';
 import { AbstractOpenFile, ParsingStep } from './AbstractOpenFile';
 import { Preprocessor } from './Preprocessor/Preprocessor';
 import { CacheManager } from './cache/CacheManager';
@@ -29,7 +32,9 @@ import { Serialization } from './cache/Serialization';
 import { FileCache } from './cache/FileCache';
 import { serializeInit } from './cache/Serialization/serializeInit';
 import { ASTNode } from './antlr/AST/Nodes/ASTNode';
-import { SemanticTokens, SemanticTokensModifiers } from './SemanticTokens';
+import { SemanticTokensLegendManager, SymbolManager } from './SymbolSystem';
+import { DocumentUri, TextEdit } from 'vscode-languageserver-textdocument';
+import { SemanticTokensBuilder } from './SymbolSystem/SemanticTokensBuilder';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -41,11 +46,38 @@ function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFi
 async function main() {
 	const connection = createConnection(ProposedFeatures.all);
 
+	[
+		SemanticTokenTypes.type,
+		SemanticTokenTypes.enum,
+		SemanticTokenTypes.parameter,
+		SemanticTokenTypes.enumMember,
+		SemanticTokenTypes.macro,
+		SemanticTokenTypes.comment,
+		SemanticTokenTypes.string,
+		SemanticTokenTypes.keyword,
+		SemanticTokenTypes.number,
+		SemanticTokenTypes.operator,
+		SemanticTokenTypes.function,
+		SemanticTokenTypes.variable
+	].forEach(SemanticTokensLegendManager.registerTokenType);
+	[
+		SemanticTokenModifiers.declaration,
+		SemanticTokenModifiers.definition,
+		SemanticTokenModifiers.readonly,
+		SemanticTokenModifiers.static,
+		SemanticTokenModifiers.deprecated,
+		SemanticTokenModifiers.documentation,
+		SemanticTokenModifiers.modification,
+		SemanticTokenModifiers.defaultLibrary,
+	].forEach(SemanticTokensLegendManager.registerTokenModifier);
+
 	Logger.init(connection.console);
 	Locale.init();
 	const fileManager = new FileManager();
 	const preprocessor = new Preprocessor(fileManager);
 	serializeInit();
+
+	const symbolManager = new SymbolManager();
 
 	const continueParsing = async (document: AbstractOpenFile): Promise<void> => {
 		if(document.parsinState !== ParsingStep.newFile) {
@@ -78,7 +110,7 @@ async function main() {
 			case ParsingStep.directivesProcessed:
 			case ParsingStep.buildedDependcyGraph:
 			case ParsingStep.processedIncludes: {
-				await preprocessor.processFile(document);
+				await preprocessor.processFile(document, symbolManager);
 				return;
 			}
 			case ParsingStep.preprocessed: {
@@ -86,7 +118,7 @@ async function main() {
 				return;
 			}
 			case ParsingStep.parsed: {
-				await Parser.walkAST(document);
+				await Parser.walkAST(document, symbolManager);
 				return;
 			}
 			case ParsingStep.astWalked: {
@@ -189,31 +221,17 @@ async function main() {
 				},
 				semanticTokensProvider: {
 					full: true,
-					legend: {
-						tokenTypes: [
-							SemanticTokens.type,
-							SemanticTokens.enum,
-							SemanticTokens.parameter,
-							SemanticTokens.enumMember,
-							SemanticTokens.macro,
-							SemanticTokens.comment,
-							SemanticTokens.string,
-							SemanticTokens.keyword,
-							SemanticTokens.number,
-							SemanticTokens.operator,
-							SemanticTokens.function,
-							SemanticTokens.variable
-						],
-						tokenModifiers: [
-							SemanticTokensModifiers.declaration,
-							SemanticTokensModifiers.const,
-							SemanticTokensModifiers.static,
-							SemanticTokensModifiers.deprecated,
-							SemanticTokensModifiers.doc,
-							SemanticTokensModifiers.modification,
-							SemanticTokensModifiers.default
-						]
-					},
+					legend: SemanticTokensLegendManager.getLegend(),
+					workDoneProgress: true
+				},
+				referencesProvider: {
+					workDoneProgress: true
+				},
+				definitionProvider: {
+					workDoneProgress: true
+				},
+				renameProvider: {
+					prepareProvider: true,
 					workDoneProgress: true
 				}
 			}
@@ -228,8 +246,142 @@ async function main() {
 		return result;
 	});
 
-	connection.languages.semanticTokens.on(async (params, token) => {
+	connection.onPrepareRename(async (params) => {
+
+		Logger.log("Request prepare rename")
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		if(!document) {
+			return null;
+		}
+		
+		await document.waitForAnalysis();
+
+		const position = Position.fromLSP(params.position);
+		const {symbol, ref} = symbolManager.getSymbolOnPosition(document.path, position) ?? {};
+	
+		if(!symbol || !ref) {
+			return null;
+		}
+		
+		return {
+			range: ref.tokenRange,
+			placeholder: symbol.name
+		};
+	})
+
+	connection.onRenameRequest(async (params, _, __, ___) => {
+		Logger.log("Request rename")
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		if(!document) {
+			return null;
+		}
+		
+		await document.waitForAnalysis();
+
+		const position = Position.fromLSP(params.position);
+		const {symbol} = symbolManager.getSymbolOnPosition(document.path, position) ?? {};
+	
+		if(!symbol) {
+			return null;
+		}
+		
+		const changes: {
+			[uri: DocumentUri]: TextEdit[]
+		} = {};
+		
+		const newName = params.newName;
+
+		symbol.getReferences().forEach(ref => {
+			const uri = FileManager.getUriFromPath(ref.filePath);
+			if (!changes[uri]) {
+				changes[uri] = [];
+			}
+			changes[uri].push({
+				range: ref.tokenRange,
+				newText: newName,
+			} satisfies TextEdit);
+		});
+		
+		return {
+			changes
+		} satisfies WorkspaceEdit;
+	});
+
+	connection.onReferences(async (params, _, __, ___) => {
 		Logger.log("Request semantik tokens")
+		const references: Location[] = [];	
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		if(!document) {
+			return references;
+		}
+		
+		await document.waitForAnalysis();
+
+		const position = params.position;
+		const fileSymbols = symbolManager.getFileSymbols(document.path);
+		const symbol = fileSymbols.find(symbol => {
+            const references = symbol.getFileReferances(document.path);
+			for(const ref of references) {
+				const res = position.line === ref.tokenRange.start.line &&
+				position.character >= ref.tokenRange.start.character &&
+				position.character <= ref.tokenRange.end.character;
+				if(res) {
+					return true;
+				}
+			}
+			return false;
+        });
+		if(symbol) {
+			const symbols = symbol.getReferences().slice(params.context.includeDeclaration ? 0 : 1);
+			symbols.forEach(ref => {
+				references.push({
+					range: ref.tokenRange,
+					uri: FileManager.getUriFromPath(ref.filePath)
+				})
+			})
+		}
+		
+		return references;
+	});
+
+	connection.onDefinition(async (params, _, __, ___) => {
+		Logger.log("Request semantik tokens")
+		const uri = params.textDocument.uri;
+		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		if(!document) {
+			return null;
+		}
+		
+		await document.waitForAnalysis();
+		const position = params.position;
+		const fileSymbols = symbolManager.getFileSymbols(document.path);
+		const symbol = fileSymbols.find(symbol => {
+            const references = symbol.getFileReferances(document.path);
+			for(const ref of references) {
+				const res = position.line === ref.tokenRange.start.line &&
+				position.character >= ref.tokenRange.start.character &&
+				position.character <= ref.tokenRange.end.character;
+				if(res) {
+					return true;
+				}
+			}
+			return false;
+        });
+		if(!symbol) {
+			return null;
+		}
+		
+		return {
+			range: symbol.defenition.tokenRange,
+			uri: FileManager.getUriFromPath(symbol.defenition.filePath)
+		};
+	});
+
+	connection.languages.semanticTokens.on(async (params, token) => {
+		Logger.log("Request semantic tokens")
 		const builder = new SemanticTokensBuilder();	
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
@@ -238,21 +390,27 @@ async function main() {
 
 		}
 		await document.waitForAnalysis();
-		Logger.log("Collecting semantik tokens")
-		
-		document.defines.forEach((defines, pattern) => {
-			const length = pattern.length;
-			defines.forEach(define => {
-				define.getFileReferences(document.path).forEach(ref => {
-					builder.push(ref.start.line, ref.start.character, length, 4, 1)
-				});
-				builder.push(define.patternRange.start.line, define.patternRange.start.character, length, 4, 1)
-		
-			})
+
+		const tokens: {
+			line: number;
+			char: number;
+			length: number;
+			tokenType: number;
+			tokenModifiers: number[];
+		}[] = [];
+		symbolManager.getFileSymbols(document.path).forEach((symbol) => {
+			symbol.getFileSemanticTokens(document.path).forEach(info => tokens.push(info))
+		});		
+
+		tokens.sort((a, b) => {
+			if (a.line !== b.line) return a.line - b.line;
+			return a.char - b.char;
 		});
-		
-		Logger.log("Sending semantik tokens");
-		console.log(builder.build());
+
+		tokens.forEach(info => {
+			builder.push(info)
+		});
+
 		return builder.build();
 		
 	});
@@ -348,29 +506,14 @@ async function main() {
 		}
 		await document.waitForAnalysis();
 		
-		document.defines.forEach((defines, pattern) => {
-			defines.forEach(define => {
-				const refs: DocumentSymbol[] = [];
-				define.getFileReferences(document.path).forEach(ref => {
-					refs.push({
-						name: pattern,
-						kind: SymbolKind.Constant,
-						range: ref,
-						selectionRange: ref
-					})
-				});
-				symbols.push(...refs);
-				symbols.push({
-					name: pattern,
-					kind: SymbolKind.Constant,
-					range: define.patternRange,
-					selectionRange: define.patternRange,
-					children: refs
-				})
-			})
+		symbolManager.getFileGlobalSymbols(document.path).forEach((symbol) => {
+			symbols.push(
+				symbol.defenition.getSymbolInfo(),
+			);
 		});
+
 		return symbols;
-	})
+	});
 
 	connection.onCompletionResolve(
 		(item: CompletionItem): CompletionItem => {

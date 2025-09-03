@@ -253,5 +253,10 @@
 	},
 	"no viable alternative at input 'File": "file' (functionDeclarationParams)",
 	"mismatched input 'file' expecting IDENTIFIER (functionDecl)": "mismatched input 'file' expecting IDENTIFIER (functionDecl)",
-	"duplicating function head": "duplicating function head"
+	"duplicating function head": "duplicating function head",
+	"extraneous input ')' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input ')' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input '{}' (declParams)": "no viable alternative at input '{}' (declParams)",
+	"extraneous input '}' expecting IDENTIFIER (unknown rule)": "extraneous input '}' expecting IDENTIFIER (unknown rule)",
+	"mismatched input '(' expecting {'}', ','} (tag)": "mismatched input '(' expecting {'}', ','} (tag)",
+	"Tag": "Tag"
 }

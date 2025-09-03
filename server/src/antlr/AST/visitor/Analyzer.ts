@@ -1,8 +1,5 @@
-import { DiagnosticError } from "../../diagnostic/DiagnosticError";
-import { DiagnosticMessage } from "../../diagnostic/DiagnosticMessage";
 import { BaseVisitor } from "./BaseVisitor";
 import { Declarations } from "../Nodes/Declarations";
-import { DiagnosticWarning } from "../../diagnostic/DiagnosticWarning";
 import { EnumDeclaration } from "../Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../Nodes/enum/EnumMember";
 import { CodeBlock } from "../Nodes/CodeBlock";
@@ -11,7 +8,6 @@ import { BinarOperator } from "../Nodes/Operators/BinarOperator";
 import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { UnarOperator } from "../Nodes/Operators/UnarOperator";
 import { OperatorNew, VariableModifire } from "../Nodes/Operators/OperatorNew";
-import { DiagnosticUnused } from "../../diagnostic/DiagnosticUnused";
 import { FunctionDeclaration, FunctionModifire } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
@@ -35,25 +31,23 @@ import { AbstractOpenFile, FunctionInfo, FunctionParameterInfo } from "../../../
 import { IfStatement } from "../Nodes/Conditions/IfStatement";
 
 import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
-import { DiagnosticHint } from "../../diagnostic/DiagnosticHint";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { Range } from "../../../types";
 import { Locale } from "../../../Locale";
-import { CompletionItem, DiagnosticSeverity, DiagnosticTag, SignatureHelp, SymbolKind } from "vscode-languageserver";
+import { DiagnosticSeverity, SemanticTokenModifiers} from "vscode-languageserver";
 import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
+import { SymbolManager } from "../../../SymbolSystem";
+import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
+import { SymbolReferance } from "../../../SymbolSystem/Symbols";
 
 export class Analyzer extends BaseVisitor
 {
 	constructor(
 		protected file: AbstractOpenFile,
 		scope: IScope,
-		// public readonly diagnostics: DiagnosticMessage[],
-		// public readonly tokens: SemanticTokensManager,
-		// public readonly symbolsManager: SymbolsManager,
-		// public readonly complitions: CompletionItem[],
-		// public readonly signatures: Map<string, SignatureHelp>
+		private symbolManager: SymbolManager,
 	) {
 		super();
 		this.curScope = scope;
@@ -91,10 +85,6 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitBoolLiteral(node: BoolLiteral): void {
 	}
-
-
-	// public readonly functionsDeclarations: Map<string, Definition<Declaration>[]> = new Map();
-	// public readonly functionsCalls: Map<string, Reference<IHasID>[]> = new Map<string, funcCall.FunctionCall[]>();
 
 	beforeVisitIfStatemnt(node: IfStatement): void {
 	
@@ -164,10 +154,19 @@ export class Analyzer extends BaseVisitor
 
 	}
 	beforeVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
-		
+		const modifires: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
+		if(node.const) {
+			modifires.push(SemanticTokenModifiers.readonly);
+		}
+
+		const symbol = SymbolsFactory.createParameter(node.id, this.file.path, node.range, node.idPos, modifires);
+		this.symbolManager.add(this.file.path, symbol);
+		node.symbol = symbol;
+		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
 		this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
+
 		// this.tokens.addToken(node.idPos, SemanticTokens.parameter, this.checkVarModifires(node.modifires).concat([SemanticTokensModifires.declaration]));
 	}
 	beforeVisitVariable(node: Variable): void {
@@ -176,6 +175,10 @@ export class Analyzer extends BaseVisitor
 	afterVisitVariable(node: Variable): void {
 		const variable = this.curScope.findVar(node.id);
 		if(variable) {
+			const symbol = new SymbolReferance(this.file.path, node.range, node.idPos, []);
+			variable.symbol?.addReferance(symbol);
+			this.curScope.currentSymbol?.childrens.push(symbol);
+
 			variable.used = true;
 			if(variable instanceof ArrayDeclaration) {
 				if(!(node instanceof Array)) {
@@ -281,19 +284,11 @@ export class Analyzer extends BaseVisitor
 
 		let func = this.curScope.findFunction(node.id);
 
-		// this.tokens.addToken(node.idPos, SemanticTokens.function);
-
-		// const array = this.functionsCalls.get(node.id);
-		// const el = new funcCall.FunctionCall(node, this.file.URI);
-		// if(array)
-		// {
-		// 	array.push(el);
-		// }
-		// else {
-		// 	this.functionsCalls.set(node.id, [el]);
-		// }
-
 		if(func) {
+			const symbol = new SymbolReferance(this.file.path, node.range, node.idPos, []);
+			func.symbol?.parent?.addReferance(symbol);
+			this.curScope.currentSymbol?.childrens.push(symbol);
+
 			func.used = true;
 			if(!node.isTaged)
 				node.tag = func.tag;
@@ -420,18 +415,25 @@ export class Analyzer extends BaseVisitor
 		this.restrictScope();
 	}
 	beforeVisitEnumMember(node: EnumMember): void {
-
+		const symbol = SymbolsFactory.createEnumMember(node.id, this.file.path, node.range, node.idPos, true);
+		node.symbol = symbol;
+		this.symbolManager.add(this.file.path, symbol);
+		node.parent?.symbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
 		this.checkUsed(node, (variable: EnumMember) => this.curScope.addEnumMember(variable));
-		// this.tokens.addToken(node.idPos, SemanticTokens.enumMember, [SemanticTokensModifires.const, SemanticTokensModifires.declaration]);
+		
 	}
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
-		
+		if(node.id) {
+			const symbol = SymbolsFactory.createEnum(node.id, this.file.path, node.range, node.idPos, true);	
+			this.symbolManager.add(this.file.path, symbol, true);	
+			node.symbol = symbol.defenition;
+		}
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
 		if(node.id) {
-			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addEnum(variable));		
+			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addEnum(variable));
 		}
 		// const array = this.functionsDeclarations.get(node.id);
 		// const el = new Definition<EnumDeclaration>(node, this.file.URI);
@@ -443,8 +445,6 @@ export class Analyzer extends BaseVisitor
 		// 	this.functionsDeclarations.set(node.id, [el]);
 		// }
 			
-		
-		// this.tokens.addToken(node.idPos, SemanticTokens.enum, [SemanticTokensModifires.declaration]);
 	}
 	
 	beforeVisitDeclarations(declaration: Declarations): void {
@@ -461,6 +461,9 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
+		const symbol = SymbolsFactory.createFunction(node.id, this.file.path, node.range, node.idPos);
+		this.symbolManager.add(this.file.path, symbol, true);
+		node.symbol = symbol.defenition;
 		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
 			let id = this.curScope.find(node.id);
 			if (id) {
@@ -519,30 +522,39 @@ export class Analyzer extends BaseVisitor
 
 		}
 
-		let symbolRange:Range = node.idPos;
-		let selectRange = node.idPos;
-		if(node.code) {
-			symbolRange = new Range(symbolRange.start, node.code.pos.end);
-			selectRange = node.code.pos;
-		}
-		// const symbol = new DocumentSymbol(node.id, "function", SymbolKind.Function, symbolRange, selectRange);
-		// this.symbolsManager.addSymbol(symbol);
-
-		this.extendScope();
+		this.extendScope(symbol.defenition);
 		this.curScope.currenFunction =node;
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope();
+
+		node.parameters.forEach(parameter => {
+			const modifires: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
+			if(parameter.const) {
+				modifires.push(SemanticTokenModifiers.readonly);
+			}
+		})
+		
+		
 		// const modif = [SemanticTokensModifires.declaration];
-		// if(node.code !== undefined)
-		// 	modif.push(SemanticTokensModifires.declaration);
+		if(node.code !== undefined) {
+			node.symbol?.modifiers;
+		}
+			
 
 		// this.tokens.addToken(node.idPos, SemanticTokens.function, modif);		
 		this.addFunctionSignature(node);	
 	}
 	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
-
+		const modifiers: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
+		if(node.modifires.indexOf(VariableModifire.const) !== -1) {
+			modifiers.push(SemanticTokenModifiers.readonly);
+		}
+		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
+		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
+		node.symbol = symbol;
+		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
 		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));		
@@ -623,8 +635,8 @@ export class Analyzer extends BaseVisitor
 	// 	return tokens;
 	// }
 
-	private extendScope() {
-		this.curScope = new Scope(this.file, this.curScope);
+	private extendScope(newSymbol?: SymbolReferance | undefined) {
+		this.curScope = this.curScope.extend(newSymbol);
 	}
 	private restrictScope() {
 		this.checkIds(this.curScope.variables());
