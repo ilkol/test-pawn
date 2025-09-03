@@ -286,7 +286,7 @@ export class Analyzer extends BaseVisitor
 		if(func) {
 			const symbol = new SymbolReferance(this.file.path, node.range, node.idPos, []);
 			func.symbol?.parent?.addReferance(symbol);
-			this.curScope.currenFunction?.symbol?.childrens.push(symbol);
+			this.curScope.currentSymbol?.childrens.push(symbol);
 
 			func.used = true;
 			if(!node.isTaged)
@@ -523,16 +523,7 @@ export class Analyzer extends BaseVisitor
 
 		}
 
-		let symbolRange:Range = node.idPos;
-		let selectRange = node.idPos;
-		if(node.code) {
-			symbolRange = new Range(symbolRange.start, node.code.pos.end);
-			selectRange = node.code.pos;
-		}
-		// const symbol = new DocumentSymbol(node.id, "function", SymbolKind.Function, symbolRange, selectRange);
-		// this.symbolsManager.addSymbol(symbol);
-
-		this.extendScope();
+		this.extendScope(symbol.defenition);
 		this.curScope.currenFunction =node;
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
@@ -642,8 +633,8 @@ export class Analyzer extends BaseVisitor
 	// 	return tokens;
 	// }
 
-	private extendScope() {
-		this.curScope = new Scope(this.file, this.curScope);
+	private extendScope(newSymbol?: SymbolReferance | undefined) {
+		this.curScope = this.curScope.extend(newSymbol);
 	}
 	private restrictScope() {
 		this.checkIds(this.curScope.variables());
