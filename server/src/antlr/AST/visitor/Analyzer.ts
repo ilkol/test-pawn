@@ -433,7 +433,10 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
 		if(node.id) {
-			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addEnum(variable));		
+			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addEnum(variable));
+			const symbol = SymbolsFactory.createEnum(node.id, this.file.path, node.range, node.idPos, true);	
+			this.symbolManager.add(this.file.path, symbol);	
+			node.symbol = symbol.defenition;
 		}
 		// const array = this.functionsDeclarations.get(node.id);
 		// const el = new Definition<EnumDeclaration>(node, this.file.URI);
@@ -540,7 +543,7 @@ export class Analyzer extends BaseVisitor
 		this.restrictScope();
 
 		node.parameters.forEach(parameter => {
-			const modifires: SemanticTokenModifiers[] = [parameter.defaultValue ? SemanticTokenModifiers.definition : SemanticTokenModifiers.declaration];
+			const modifires: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
 			if(parameter.const) {
 				modifires.push(SemanticTokenModifiers.readonly);
 			}
