@@ -1,8 +1,5 @@
-import { DiagnosticError } from "../../diagnostic/DiagnosticError";
-import { DiagnosticMessage } from "../../diagnostic/DiagnosticMessage";
 import { BaseVisitor } from "./BaseVisitor";
 import { Declarations } from "../Nodes/Declarations";
-import { DiagnosticWarning } from "../../diagnostic/DiagnosticWarning";
 import { EnumDeclaration } from "../Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../Nodes/enum/EnumMember";
 import { CodeBlock } from "../Nodes/CodeBlock";
@@ -10,8 +7,7 @@ import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
 import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { UnarOperator } from "../Nodes/Operators/UnarOperator";
-import { OperatorNew, VariableModifire } from "../Nodes/Operators/OperatorNew";
-import { DiagnosticUnused } from "../../diagnostic/DiagnosticUnused";
+import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { FunctionDeclaration, FunctionModifire } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
