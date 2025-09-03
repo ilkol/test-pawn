@@ -1,9 +1,6 @@
 import { SemanticTokenModifiers, SemanticTokenTypes } from "vscode-languageserver";
 import { Range } from "../types";
-import { Function } from "./Symbols/Function";
-import { Macro } from "./Symbols/Macro";
-import { Parameter } from "./Symbols/Parameter";
-import { Enum } from "./Symbols/Enum";
+import { Enum, EnumMember, Function, Macro, Parameter } from "./Symbols";
 
 export abstract class SymbolsFactory {
 	private static symbolCount = 0;
@@ -31,7 +28,7 @@ export abstract class SymbolsFactory {
         range: Range,
 		tokenRange: Range,
 		modifires: SemanticTokenModifiers[]
-	): Function {
+	): Parameter {
 		return new Parameter(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, modifires);
 	}
 
@@ -42,11 +39,25 @@ export abstract class SymbolsFactory {
         range: Range,
 		tokenRange: Range,
 		definition: boolean
-	): Function {
+	): Enum {
 		const modifiers = [];
 		if(definition) {
 			modifiers.push(SemanticTokenModifiers.definition);
 		}
 		return new Enum(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, modifiers);
+	}
+
+	static createEnumMember(
+		name: string,
+		definitionFilePath: string,
+		range: Range,
+		tokenRange: Range,
+		definition: boolean
+	): EnumMember {
+		const modifiers = [SemanticTokenModifiers.readonly];
+		if(definition) {
+			modifiers.push(SemanticTokenModifiers.definition);
+		}
+		return new EnumMember(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, modifiers);
 	}
 }

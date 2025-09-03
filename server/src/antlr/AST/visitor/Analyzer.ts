@@ -426,7 +426,9 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
 		this.checkUsed(node, (variable: EnumMember) => this.curScope.addEnumMember(variable));
-		// this.tokens.addToken(node.idPos, SemanticTokens.enumMember, [SemanticTokensModifires.const, SemanticTokensModifires.declaration]);
+		const symbol = SymbolsFactory.createEnumMember(node.id, this.file.path, node.range, node.idPos, true);
+		this.symbolManager.add(this.file.path, symbol);
+		node.symbol = symbol.defenition;
 	}
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
 		
