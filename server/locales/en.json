@@ -259,5 +259,6 @@
 	"extraneous input '}' expecting IDENTIFIER (unknown rule)": "extraneous input '}' expecting IDENTIFIER (unknown rule)",
 	"mismatched input '(' expecting {'}', ','} (tag)": "mismatched input '(' expecting {'}', ','} (tag)",
 	"Tag": "Tag",
-	"mismatched input '#endinput' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#endinput' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)"
+	"mismatched input '#endinput' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#endinput' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
+	"no viable alternative at input 'ativeprint' (file)": "no viable alternative at input 'ativeprint' (file)"
 }
