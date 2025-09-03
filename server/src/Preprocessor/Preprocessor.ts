@@ -497,7 +497,7 @@ export class Preprocessor
 		const code = document.text;
 		const directives: PreprocessorDirective[] = [];
 
-		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|warning|file|include|line|pragma|section|tryinclude|undef|\w+)( +)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|warning|file|include|line|pragma|section|tryinclude|undef|\w+)(?:( +)(.*?))?[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
@@ -506,10 +506,10 @@ export class Preprocessor
 			// Координата начала директивы (#)
   			const directiveIndex = match.index + leadingWhitespace.length;
 			let endIndex = match.index + fullMatch.length;
-			const restIndex = whiteSpacesBeforeRest.length + rest ? match.index + fullMatch.indexOf(rest) : endIndex;
+			const restIndex = (whiteSpacesBeforeRest === undefined ? 0 : whiteSpacesBeforeRest.length) + rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
 			
-			if(directive !== "include") {
+			if(directive === "define") {
 				let res = this.findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
 				rest = res.rest;
 				endIndex = restIndex + res.fullLength;
@@ -698,7 +698,7 @@ export class Preprocessor
 	}
 
 	private parsePragma(text: string) {
-		console.debug(text);
+		// console.debug(text);
 	}
 
 	/**
