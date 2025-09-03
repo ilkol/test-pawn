@@ -9,6 +9,8 @@ export interface IScope
 {
 	currentSymbol: SymbolReferance | undefined;
 
+	includedScopes: IScope[];
+
 	extend(newSymbol?: SymbolReferance | undefined): IScope;
 	
 	addVar(variable: Declaration): void;

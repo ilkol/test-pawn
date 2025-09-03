@@ -16,6 +16,7 @@ import { Serialization } from "../cache/Serialization";
 import { SymbolManager } from "../SymbolSystem";
 import { SymbolsFactory } from "../SymbolSystem/SymbolsFactory";
 import { SymbolReferance } from "../SymbolSystem/Symbols/SymbolReferance";
+import { IScope } from "../antlr/Scopes/IScope";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -182,6 +183,7 @@ export class Preprocessor
 			}
 			const inc = document.includes.find(i => i.absolutePath === includePath)!;
 			this.mergeDefines(inc, document.defines, include.defines);
+			document.scope.includedScopes.push(include.scope);
 		}
 	}
 
