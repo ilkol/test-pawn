@@ -32,7 +32,6 @@ export class Expression extends AbstractStatement implements IHasTag {
 
 	public accept(visitor: IVisitor): void {
 		if(this.exp) {
-			// console.log(this.exp);
 			this.exp?.accept(visitor);
 			this.range = this.exp.pos;
 		}

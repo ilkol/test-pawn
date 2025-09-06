@@ -1,6 +1,6 @@
 import { TextDocumentChangeEvent, TextDocuments, URI  } from "vscode-languageserver";
 import { URI as Uri } from "vscode-uri";
-import { AbstractOpenFile } from "../AbstractOpenFile";
+import { AbstractOpenFile, ParsingStep } from "../AbstractOpenFile";
 import { join, relative } from "path";
 import { access, readFile, stat } from "fs/promises";
 import { Logger } from "../Logger/Logger";
@@ -8,6 +8,7 @@ import { TextDocument } from "vscode-languageserver-textdocument";
 import { Locale } from "../Locale";
 import { constants } from "fs";
 import { AntlrOpenedFile } from "../AntrlOpenedFile";
+import { CacheManager } from "../cache/CacheManager";
 
 export type OnFileManagerOpenFileListener = (document: AbstractOpenFile) => (Promise<void> | void);
 
@@ -92,6 +93,7 @@ export class FileManager {
 
 	init() {
 		this.documents.onDidOpen(e => this.onDidOpenDocument(e.document));
+		this.documents.onDidSave(e => this.onDidSaveDocument(e.document));
 	}
 
 	/**
@@ -167,14 +169,25 @@ export class FileManager {
 		return this.openedFiles.get(path);
 	}
 
+	private async onDidSaveDocument(document: TextDocument) {
+		const path = FileManager.getPathFromURI(document.uri);
+		let openedFile = this.getOpenedFile(path);
+		if(!openedFile || (CacheManager.hashText(document.getText()) !== openedFile.cache.texttHash)) {
+			await this.createOpenedFile(document);
+		} 
+	}
+
+	private async createOpenedFile(document: TextDocument) {
+		const openedFile = new AntlrOpenedFile(document);
+		this.openedFiles.set(openedFile.path, openedFile);
+		await this._onFileManagerOpenFileListener?.(openedFile);
+	}
 
 	private async onDidOpenDocument(document: TextDocument) {
 		const path = FileManager.getPathFromURI(document.uri);
 		let openedFile = this.getOpenedFile(path);
 		if(!openedFile) {
-			openedFile = new AntlrOpenedFile(document);
-			this.openedFiles.set(openedFile.path, openedFile);
-			await this._onFileManagerOpenFileListener?.(openedFile);
+			await this.createOpenedFile(document);
 		}
 	}
 

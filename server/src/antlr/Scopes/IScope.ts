@@ -1,13 +1,17 @@
+import { AbstractSymbol, SymbolReferance } from "../../SymbolSystem/Symbols";
 import { Declaration } from "../AST/Nodes/Declaration";
 import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../AST/Nodes/enum/EnumMember";
 import { FunctionDeclaration } from "../AST/Nodes/Functions/FunctionDeclaration";
-import { Tag } from "../AST/Nodes/Tag";
 import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
 
 export interface IScope
 {
-	extend(): IScope;
+	currentSymbol: SymbolReferance | undefined;
+
+	includedScopes: IScope[];
+
+	extend(newSymbol?: SymbolReferance | undefined): IScope;
 	
 	addVar(variable: Declaration): void;
 	addEnum(variable: EnumDeclaration): void;

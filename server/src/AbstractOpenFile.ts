@@ -30,6 +30,8 @@ export enum ParsingStep {
 	 */
 	directivesProcessed,
 
+	registeredPreprocessorSymbols,
+
 	/**
 	 * Спсиок подключаемых инклудов отсортирован
 	 */

@@ -3,10 +3,13 @@ import { IVisitor } from "../../visitor/IVisitor";
 import { EnumDeclaration } from "./EnumDeclaration";
 import { VariableModifire } from "../Operators/OperatorNew";
 import { Serialization } from "../../../../cache/Serialization";
+import * as SymbolSystem from "../../../../SymbolSystem";
 
 export class EnumMember extends VarDeclaration
 {
 	name = "член перечисления";
+
+	public symbol: SymbolSystem.Symbols.EnumMember | undefined = undefined;
 
 	private _value: number = 0;
 	private _parent: EnumDeclaration | undefined;

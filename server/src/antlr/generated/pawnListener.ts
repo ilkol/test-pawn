@@ -1,4 +1,4 @@
-// Generated from .\src\antlr\generated\pawn.g4 by ANTLR 4.9.0-SNAPSHOT
+// Generated from ./server/src/antlr/generated/pawn.g4 by ANTLR 4.9.0-SNAPSHOT
 
 
 import { ParseTreeListener } from "antlr4ts/tree/ParseTreeListener";
@@ -92,7 +92,7 @@ import { ChainedRelationalOperatorsContext } from "./pawnParser";
  * This interface defines a complete listener for a parse tree produced by
  * `pawnParser`.
  */
-export interface IPawnListener extends ParseTreeListener {
+export interface pawnListener extends ParseTreeListener {
 	/**
 	 * Enter a parse tree produced by `pawnParser.file`.
 	 * @param ctx the parse tree

@@ -6,6 +6,7 @@ import { Tag } from "../AST/Nodes/Tag";
 import { AbstractOpenFile } from "../../AbstractOpenFile";
 import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../AST/Nodes/enum/EnumMember";
+import { SymbolReferance } from "../../SymbolSystem/Symbols";
 
 export class Scope implements IScope
 {
@@ -36,6 +37,8 @@ export class Scope implements IScope
 	{
 		this._parent = IScope;
 	}
+	includedScopes: IScope[] = [];
+	currentSymbol: SymbolReferance | undefined;
 	addEnum(variable: EnumDeclaration): void {
 		this.addIdent(variable);
 		this._enums.set(variable.id, variable);
@@ -56,16 +59,33 @@ export class Scope implements IScope
             }
             currentScope = currentScope.parent;
         }
+		for(const scope of this.includedScopes) {
+			let res = scope.findVar(id);
+			if(res) {
+				return res;
+			}
+		}
         return undefined;
 	}
 	public findFunction(id: string): FunctionDeclaration | undefined {
 		let currentScope: IScope | undefined = this;
+		let globalScope: IScope | undefined = undefined;
+		
         while (currentScope !== undefined) {
             if (currentScope.functions().has(id)) {
                 return currentScope.functions().get(id)!;
             }
+			globalScope = currentScope;
             currentScope = currentScope.parent;
         }
+		
+		globalScope ??= this;
+        for(const scope of globalScope.includedScopes) {
+			let res = scope.findFunction(id);
+			if(res) {
+				return res;
+			}
+		}
         return undefined;
 	}
 	public identifires(): Map<string, Declaration> {
@@ -85,11 +105,19 @@ export class Scope implements IScope
             }
             currentScope = currentScope.parent;
         }
+		for(const scope of this.includedScopes) {
+			let res = scope.find(id);
+			if(res) {
+				return res;
+			}
+		}
         return undefined;
 	}
 
-	public extend(): IScope {
-		return new Scope(this._file, this);
+	public extend(newSymbol?: SymbolReferance | undefined): IScope {
+		const scope =  new Scope(this._file, this);
+		scope.currentSymbol = newSymbol ?? this.currentSymbol;
+		return scope;
 	}
 
 	private addIdent(id: Declaration) {

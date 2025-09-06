@@ -28,7 +28,7 @@ export class CacheManager {
 		
 	}
 
-	private static async writeFileCache(data: FileCache) {
+	public static async writeFileCache(data: FileCache) {
 		const relPath = this.fileManager.getRelativePath(data.path);
 		const fileName = relPath.replace(/[\/\\]/g, '_') + '.json';
 		this.writeCacheFile(fileName, data);
@@ -127,7 +127,6 @@ export class CacheManager {
 	 * */
 	static setFileCache(fileCache: FileCache): void {
 		this.fileCaches.set(fileCache.path, fileCache);
-		this.writeFileCache(fileCache);
 	}
 
 	static flushFileCache(path: string): void {

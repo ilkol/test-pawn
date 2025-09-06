@@ -13,6 +13,10 @@ import { CodeMapper } from "./CodeMapper";
 import { PawnErrors } from "../Errors/PawnErrors";
 import { CacheManager } from "../cache/CacheManager";
 import { Serialization } from "../cache/Serialization";
+import { SymbolManager } from "../SymbolSystem";
+import { SymbolsFactory } from "../SymbolSystem/SymbolsFactory";
+import { SymbolReferance } from "../SymbolSystem/Symbols/SymbolReferance";
+import { IScope } from "../antlr/Scopes/IScope";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -75,7 +79,7 @@ export class Preprocessor
 		CacheManager.setFileCache(document.cache);
 	}
 
-	public async processFile(document: AbstractOpenFile) {
+	public async processFile(document: AbstractOpenFile, symbolManager: SymbolManager) {
 		const tmp = this.currentDocument;
 		this.currentDocument = document;
 		
@@ -84,9 +88,10 @@ export class Preprocessor
 		for(const action of [
 			async () => await this.findAndReplaceDirectives(document),
 			async () => await this.processFileDirectives(document),
+			async () => this.registerSymbols(document, symbolManager),
 			async () => document.sortedIncludes = await this.sortIncludes(document),
 			async () => await this.processIncludes(document),
-			async () => document.processedCode = await this.processDefines(document.processedCode, document.defines)
+			async () => document.processedCode = await this.processDefines(document.processedCode, document.defines, symbolManager)
 		]) {
 			await this.nextStep(document, action);
 		}
@@ -94,6 +99,15 @@ export class Preprocessor
 		this.currentDocument = tmp;
 		await this._onFileProcessedListener?.(document);
 	}
+
+	private registerSymbols(documnt: AbstractOpenFile, symbolManager: SymbolManager) {
+		documnt.defines.forEach((defines, pattern) => {
+			defines.forEach(define => {
+				define.symbol = SymbolsFactory.createMacro(pattern, documnt.path, define.range, define.patternRange);
+				symbolManager.add(documnt.path, define.symbol, true);
+			});
+		});
+	} 
 
 	private async findAndReplaceDirectives(document: AbstractOpenFile) { 
 		if(document.cache.directives) {
@@ -169,6 +183,7 @@ export class Preprocessor
 			}
 			const inc = document.includes.find(i => i.absolutePath === includePath)!;
 			this.mergeDefines(inc, document.defines, include.defines);
+			document.scope.includedScopes.push(include.scope);
 		}
 	}
 
@@ -482,19 +497,19 @@ export class Preprocessor
 		const code = document.text;
 		const directives: PreprocessorDirective[] = [];
 
-		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|warning|file|include|line|pragma|section|tryinclude|undef|\w+)(.*?)[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|warning|file|include|line|pragma|section|tryinclude|undef|\w+)(?:( +)(.*?))?[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
 		while ((match = reg.exec(code)) !== null) {
-			let [fullMatch, leadingWhitespace, leadingWhitespaceAfterSharp, directive, rest] = match;
+			let [fullMatch, leadingWhitespace, leadingWhitespaceAfterSharp, directive, whiteSpacesBeforeRest, rest] = match;
 			// Координата начала директивы (#)
   			const directiveIndex = match.index + leadingWhitespace.length;
 			let endIndex = match.index + fullMatch.length;
-			const restIndex = rest ? match.index + fullMatch.indexOf(rest) : endIndex;
+			const restIndex = (whiteSpacesBeforeRest === undefined ? 0 : whiteSpacesBeforeRest.length) + rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
 			
-			if(directive !== "include") {
+			if(directive === "define") {
 				let res = this.findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
 				rest = res.rest;
 				endIndex = restIndex + res.fullLength;
@@ -683,7 +698,7 @@ export class Preprocessor
 	}
 
 	private parsePragma(text: string) {
-		console.debug(text);
+		// console.debug(text);
 	}
 
 	/**
@@ -1011,7 +1026,7 @@ export class Preprocessor
 		return {rest: result, fullLength: stream.curIndex};
 	}
 
-	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>)
+	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager)
 	{
 		for(let definesArray of defines.values()) {
 			for(let findinglocalDefine of definesArray) {
@@ -1031,7 +1046,7 @@ export class Preprocessor
 							}
 						}
 						if(inRange) {
-							localDefine.replacement = await this.substringrReplacingOnChank(localDefine.replacement, findinglocalDefine, localDefine.startIndex, `${findinglocalDefine.prefix} in ${localDefine.prefix}`);
+							localDefine.replacement = await this.substringrReplacingOnChank(localDefine.replacement, findinglocalDefine, localDefine.startIndex, `${findinglocalDefine.prefix} in ${localDefine.prefix}`, symbolManager);
 						}
 					}
 				}
@@ -1041,7 +1056,7 @@ export class Preprocessor
 		for(let definesArray of defines.values()) {
 			for(let localDefine of definesArray) {
 				// const count = this.replacedCode.length;
-				code = await this.processDefine(code, localDefine);
+				code = await this.processDefine(code, localDefine, symbolManager);
 				// localDefine.used = count  < this.replacedCode.length;
 			}
 		}
@@ -1049,7 +1064,7 @@ export class Preprocessor
 		return code;
 	}
 
-	private async processDefine(code: string, define: Directives.Defining.Define)
+	private async processDefine(code: string, define: Directives.Defining.Define, symbolManager: SymbolManager)
 	{
 		const fileStartPos = define.getFilePos(this.currentDocument!.path);
 		let lastindex = undefined;
@@ -1067,20 +1082,23 @@ export class Preprocessor
 	
 		let preCode = code.substring(0, startPos);
 		let postCode = code.substring(stoptPos);
-		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, startPos, `Process ${define.prefix} in ${this.currentDocument?.path}`) + postCode;
+		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, startPos, `Process ${define.prefix} in ${this.currentDocument?.path}`, symbolManager) + postCode;
 		
 	}
 
 	private codeMapper: CodeMapper = new CodeMapper();
 
-	private async substringrReplacingOnChank(str: string, define: Directives.Defining.Define, preShift: number, title: string = "Processing replacements..."): Promise<string>
+	private async substringrReplacingOnChank(str: string, define: Directives.Defining.Define, preShift: number, title: string = "Processing replacements...", symbolManager: SymbolManager): Promise<string>
 	{
 		const changes: FindedDefine[] = [];
 		const res = this.testPreprocess(str, define, changes);
 		
 		let startPos: number, originalStartPos: number;
-		define.used = changes.length > 0;
-		const referenaces: Range[] = [];
+		const filePath = this.currentDocument!.path;
+		if(changes.length > 0) {
+			define.used = true;
+			symbolManager.addSymbolToFile(filePath, define.symbol!);
+		}
 		changes.forEach(change => {
 			startPos = change.start + preShift;
 			originalStartPos = this.codeMapper.getOriginalPos(startPos);
@@ -1090,14 +1108,16 @@ export class Preprocessor
 				changeLength: change.shift
 			});
 			const startPosition = this.currentDocument?.positionAt(originalStartPos);
+			const endTokenPosition = this.currentDocument?.positionAt(originalStartPos + define.pattern.length);
 			const endPosition = this.currentDocument?.positionAt(originalStartPos + change.length);
-			if(startPosition && endPosition) {
-				referenaces.push(new Range(startPosition, endPosition));
+			if(startPosition && endPosition && endTokenPosition) {
+				define.symbol?.addReferance(new SymbolReferance(filePath, new Range(startPosition, endPosition), new Range(startPosition, endTokenPosition)));
 			}
 			// this.tokensManager.addToken(range, SemanticTokens.macro);
 			preShift -= change.shift;
 		});
-		define.setFileReferences(this.currentDocument!.path, referenaces);
+		
+		// define.setFileReferences(this.currentDocument!.path, referenaces);
 		return res;
 		// return await vscode.window.withProgress(
 		// 	{
