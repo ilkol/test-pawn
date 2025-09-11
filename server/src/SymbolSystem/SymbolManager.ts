@@ -63,6 +63,19 @@ export class SymbolManager {
 	getFileGlobalSymbols(filePath: string): AbstractSymbol[] {
 		return Array.from(this.fileGlobalSymbols.get(filePath)?.values() || []);
 	}
+
+	resetFileGlobalSymbols(filePath: string): void {
+		this.fileGlobalSymbols.delete(filePath);
+	}
+	resetFileSymbols(filePath: string): void {
+		this.fileSymbols.delete(filePath);
+	}
+	resetAllFileSymbols(filePath: string): void {
+		this.resetFileGlobalSymbols(filePath);
+		this.resetFileSymbols(filePath);
+	}
+
+
 	addSymbolReferances(symbolDefinitionFilePath: string, name: string, referance: SymbolReferance[]) {
 		// new SymbolReferance(filePath, range, tokenRange, modifiers)
 		const fileSymbols = this.getFileSymbols(symbolDefinitionFilePath);

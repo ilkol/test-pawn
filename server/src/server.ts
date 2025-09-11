@@ -110,6 +110,7 @@ async function main() {
 			case ParsingStep.directivesProcessed:
 			case ParsingStep.buildedDependcyGraph:
 			case ParsingStep.processedIncludes: {
+				symbolManager.resetAllFileSymbols(document.path);
 				await preprocessor.processFile(document, symbolManager);
 				return;
 			}
@@ -514,6 +515,8 @@ async function main() {
 				symbol.defenition.getSymbolInfo(),
 			);
 		});
+
+		console.log(symbols);
 
 		return symbols;
 	});
