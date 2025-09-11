@@ -282,5 +282,6 @@
 	"Constant equal 1, but tagged as bool": "Constant equal 1, but tagged as bool:",
 	"Constant equal 0, but tagged as bool": "Constant equal 0, but tagged as bool:",
 	"no viable alternative at input 'b=' (functionDecl)": "no viable alternative at input 'b=' (functionDecl)",
-	"no viable alternative at input 'temain' (functionDecl)": "no viable alternative at input 'temain' (functionDecl)"
+	"no viable alternative at input 'temain' (functionDecl)": "no viable alternative at input 'temain' (functionDecl)",
+	"Constant is never used": "Constant is never used"
 }

@@ -516,8 +516,6 @@ async function main() {
 			);
 		});
 
-		console.log(symbols);
-
 		return symbols;
 	});
 
