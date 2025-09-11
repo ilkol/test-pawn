@@ -497,7 +497,7 @@ export class Preprocessor
 		const code = document.text;
 		const directives: PreprocessorDirective[] = [];
 
-		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|warning|file|include|line|pragma|section|tryinclude|undef|\w+)(?:( +)(.*?))?[\t ]*(?=\/\/|\r?\n|$)/gim;
+		const reg = /^([\t ]*)#([\t ]*)(define|if|elseif|else|emit|endif|endinput|endscript|error|warning|file|include|line|pragma|section|tryinclude|undef|\w+)(?:([\t ]+)(.*?))?[\t ]*(?=\/\/|\r?\n|$)/gim;
 		const changes: { start: number; end: number; replacement: string }[] = [];
 
 		let match;
