@@ -360,5 +360,10 @@
 	"no viable alternative at input 'maxtext=sizeoftext)' (tagableExpression)": "no viable alternative at input 'maxtext=sizeoftext)' (tagableExpression)",
 	"extraneous input 'const' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input 'const' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
 	"no viable alternative at input 'nativeSTREAMER_TAG_3D_TEXT_LABELCreateDynamic3DTextLabelEx' (declaration)": "no viable alternative at input 'nativeSTREAMER_TAG_3D_TEXT_LABELCreateDynamic3DTextLabelEx' (declaration)",
-	"Empty expresion": "Empty expresion"
+	"Empty expresion": "Empty expresion",
+	"no viable alternative at input '(gPlayerObserving[playerid]>=0&&)' (ifStatement)": "no viable alternative at input '(gPlayerObserving[playerid]>=0&&)' (ifStatement)",
+	"no viable alternative at input ';' (expresion)": "no viable alternative at input ';' (expresion)",
+	"extraneous input '}' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input '}' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"no viable alternative at input '}' (expresion)": "no viable alternative at input '}' (expresion)",
+	"mismatched input 'include' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input 'include' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)"
 }

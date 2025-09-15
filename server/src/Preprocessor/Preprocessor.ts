@@ -85,6 +85,7 @@ export class Preprocessor
 		
 		document.processedCode = document.text;
 
+
 		for(const action of [
 			async () => await this.findAndReplaceDirectives(document),
 			async () => await this.processFileDirectives(document),
@@ -110,8 +111,12 @@ export class Preprocessor
 	} 
 
 	private async findAndReplaceDirectives(document: AbstractOpenFile) { 
+		if(this.currentDocument!.path === "d:\\SA-MP 0.3.7 Windows Server\\gamemodes\\barron.pwn") {
+			console.log(document.processedCode);
+		}
+		
 		if(document.cache.directives) {
-			document.processedCode = document.cache.processCode;
+			// document.processedCode = document.cache.processCode;
 
 			const definesRelations: Map<string, Directives.Defining.Define> = new Map();
 			const conditionRelations: Map<{
@@ -181,22 +186,34 @@ export class Preprocessor
 			if(!include) {
 				continue;
 			}
-			const inc = document.includes.find(i => i.absolutePath === includePath)!;
-			this.mergeDefines(inc, document.defines, include.defines);
-			document.scope.includedScopes.push(include.scope);
+			const inc = document.includes.find(i => i.absolutePath === includePath);
+			if(!inc) {
+			} else {
+				this.mergeDefines(inc, document.defines, include.defines);
+				document.scope.includedScopes.push(include.scope);
+			}
 		}
 	}
 
 	private mergeDefines(include: Directives.Include, main: Map<string, Directives.Defining.Define[]>, added: Map<string, Directives.Defining.Define[]>) {
 		for(const [key, list] of added) {
 			const last = list[list.length - 1];
-			if(main.has(key)) {
-				
-			} else {
-				last.includeToFile(this.currentDocument!.path, include.curEndIndex);
-				main.set(key, [last]);
+			const defines = main.get(key) ?? [];
+			if(!main.has(key)) {
+				main.set(key, defines);
+				const lastDefine = defines[defines.length - 1];
+				if(lastDefine) {
+					if(lastDefine.curEndIndex < include.curEndIndex) {
+						
+					}
+				}
 			}
+			defines.push(last)
+			last.includeToFile(this.currentDocument!.path, include.curEndIndex);
+			
 		}
+		console.error(this.currentDocument?.path);
+		console.log(main.has("KEY_FIRE"));
 	}
 
 	/**
@@ -269,7 +286,7 @@ export class Preprocessor
 
 	private async processFileDirectives(document: AbstractOpenFile) {
 		if(document.cache.includes) {
-			document.processedCode = document.cache.processCode;
+			// document.processedCode = document.cache.processCode;
 			document.includes = document.cache.includes.map(include => document.directives.find(d => d instanceof Directives.Include && d.id === include) as Directives.Include).filter(i => !!i) as Directives.Include[];
 			document.defines = new Map();
 			for(const key of Object.keys(document.cache.defines ?? {})) {
@@ -1028,6 +1045,8 @@ export class Preprocessor
 
 	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager)
 	{
+		console.log(this.currentDocument?.diagnostics.length, this.currentDocument?.diagnostics);
+
 		for(let definesArray of defines.values()) {
 			for(let findinglocalDefine of definesArray) {
 				const start = findinglocalDefine.endIndex;
@@ -1056,6 +1075,8 @@ export class Preprocessor
 		for(let definesArray of defines.values()) {
 			for(let localDefine of definesArray) {
 				// const count = this.replacedCode.length;
+				// console.log(code);
+				// console.log(localDefine.pattern);
 				code = await this.processDefine(code, localDefine, symbolManager);
 				// localDefine.used = count  < this.replacedCode.length;
 			}
@@ -1082,6 +1103,7 @@ export class Preprocessor
 	
 		let preCode = code.substring(0, startPos);
 		let postCode = code.substring(stoptPos);
+
 		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, startPos, `Process ${define.prefix} in ${this.currentDocument?.path}`, symbolManager) + postCode;
 		
 	}
@@ -1177,7 +1199,6 @@ export class Preprocessor
 		 * Стрим для работы с входной строкой
 		 */
 		let stream = new LikeCCharStream(line);
-		
 
 		// Обход строки до ее конца
 		while(!this.isFileEnd(stream.char)) {
