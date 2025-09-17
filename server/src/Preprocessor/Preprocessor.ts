@@ -802,6 +802,46 @@ export class Preprocessor
 	private isFileEnd(char: string): boolean {
 		return char === LikeCCharStream.FILE_END_CHAR;
 	}
+
+	private isCommentStarting(stream: LikeCCharStream): boolean {
+		let c = stream.char;
+		if(c !== '/') {
+			return false;
+		}
+		c = stream.getShiftChar(1)
+		return c === "/" || c === "*";
+	}
+	private skipCommit(stream: LikeCCharStream) {
+		if(!this.isCommentStarting(stream)) {
+			return;
+		}
+		stream.curIndex++;
+		const isMultyLine = stream.char === '*' ? true : false;
+		stream.curIndex++;
+		while(!this.isFileEnd(stream.char)) {
+			if(isMultyLine) {
+				while(stream.char !== '*') {
+					stream.curIndex++;
+				}
+				let ch = stream.getShiftChar(1);
+				if(ch === '/') {
+					stream.curIndex++;
+					return;
+				} 
+				stream.curIndex++;
+			} else {
+				while(stream.char !== '\r' && stream.char !== '\n') {
+					stream.curIndex++;
+					if(this.isFileEnd(stream.char)) {
+						return;
+					}
+				}
+				return;
+
+			}
+		}
+	}
+
 	private isStringStrating(stream: LikeCCharStream): boolean
 	{
 		let c = stream.char;
@@ -1185,6 +1225,12 @@ export class Preprocessor
 			this.substindex.clear(); // очищаем индекс макросов
 			this.substindex.set(define.prefix[0], [define]); // добавляем в массив макрос с ключом равным первому символу макроса
 		
+			if(this.currentDocument?.path === "d:\\SA-MP 0.3.7 Windows Server\\gamemodes\\test.pwn" && define.pattern === "KEY_FIRE" && code.length > 10) {
+				console.log(code);
+				console.log(1);
+				
+			}
+			
 			return this.substallpatterns(code, changes);
 		} catch(e) {
 			console.error(e);
@@ -1220,11 +1266,16 @@ export class Preprocessor
 						break;        /* abort loop on error */
 					}
 				}
+				this.skipCommit(stream)
+				if (this.isFileEnd(stream.char)) {
+					break;        /* abort loop on error */
+				}
 				stream.curIndex++;          /* skip non-alphapetic character (or closing quote of a string) */
 			}
 			if (this.isFileEnd(stream.char)) {
 				break; /* abort loop on error */
 			}
+			
 			/* if matching the operator "defined", skip it plus the symbol behind it */
 			if (stream.compare("defined") && stream.getShiftChar(7) <= ' ') {
 				stream.curIndex += 7; /* skip "defined" */
