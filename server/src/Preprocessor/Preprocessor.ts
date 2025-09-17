@@ -111,9 +111,6 @@ export class Preprocessor
 	} 
 
 	private async findAndReplaceDirectives(document: AbstractOpenFile) { 
-		if(this.currentDocument!.path === "d:\\SA-MP 0.3.7 Windows Server\\gamemodes\\barron.pwn") {
-			console.log(document.processedCode);
-		}
 		
 		if(document.cache.directives) {
 			// document.processedCode = document.cache.processCode;
@@ -212,8 +209,6 @@ export class Preprocessor
 			last.includeToFile(this.currentDocument!.path, include.curEndIndex);
 			
 		}
-		console.error(this.currentDocument?.path);
-		console.log(main.has("KEY_FIRE"));
 	}
 
 	/**
@@ -864,60 +859,72 @@ export class Preprocessor
 		stream.curIndex++;
 		while (stream.char !== endquote && !this.isFileEnd(stream.char)) {
 			result += stream.char;
-			this.litchar(stream, flags);
+			const charCode = this.litchar(stream, flags);
+			result += charCode.str;
 
 		}
 		return result;
 	}
 
-	private litchar(lptr: LikeCCharStream, flags: number): number
+	private litchar(lptr: LikeCCharStream, flags: number): {charCode: number, str: string}
 	{
 		let c = 0;
+		let str = "";
 		let cptr: LikeCCharStream = new LikeCCharStream(lptr.source);
 		cptr.curIndex = lptr.curIndex;
 
 		if ((flags & 1) !== 0 || cptr.char !== '\\') {  /* no escape character */
 				c = cptr.char.charCodeAt(0);
+				str += cptr.char;
 				cptr.curIndex += 1;
 		}
 		else {
 			cptr.curIndex += 1;
 			if (cptr.char === "\\") {
 				c = cptr.char.charCodeAt(0);          /* \\ == \ (the escape character itself) */
+				str += cptr.char;
 				cptr.curIndex += 1;
 			}
 			else {
 				switch (cptr.getChar()) {
 				case 'a':         /* \a == audible alarm */
 					c = 7;
+					str += cptr.char;
 					cptr.curIndex += 1;
 					break;
 				case 'b':         /* \b == backspace */
 					c = 8;
+					str += cptr.char;
 					cptr.curIndex += 1;
 					break;
 				case 'e':         /* \e == escape */
 					c = 27;
+					str += cptr.char;
 					cptr.curIndex += 1;
 					break;
 				case 'f':         /* \f == form feed */
 					c = 12;
+					str += cptr.char;
 					cptr.curIndex += 1;
 					break;
 				case 'n':         /* \n == NewLine character */
 					c = 10;
+					str += cptr.char;
 					cptr.curIndex += 1;
 					break;
 				case 'r':         /* \r == carriage return */
 					c = 13;
+					str += cptr.char;
 					cptr.curIndex += 1;
 					break;
 				case 't':         /* \t == horizontal TAB */
 					c = 9;
+					str += cptr.char;
 					cptr.curIndex += 1;
 					break;
 				case 'v':         /* \v == vertical TAB */
 					c = 11;
+					str += cptr.char;
 					cptr.curIndex += 1;
 					break;
 				case 'x':
@@ -930,9 +937,11 @@ export class Preprocessor
 						else {
 							c = (c << 4) + (cptr.getChar().toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0) + 10);
 						}
+						str += cptr.char;
 						cptr.curIndex++;
 					}
 					if (cptr.getChar() === ';') {
+						str += cptr.char;
 						cptr.curIndex++;       /* swallow a trailing ';' */
 					}
 					break;
@@ -940,6 +949,7 @@ export class Preprocessor
 				case '"':         /* \" == " (single quote) */
 				case '%':         /* \% == % (percent) */
 					c = cptr.getChar().charCodeAt(0);
+					str += cptr.char;
 					cptr.curIndex += 1;
 					break;
 				case '#':
@@ -949,6 +959,7 @@ export class Preprocessor
 				case '}':
 					if (flags & 4) {
 						c = cptr.getChar().charCodeAt(0);
+						str += cptr.char;
 						cptr.curIndex += 1;
 					}
 					else {
@@ -957,18 +968,22 @@ export class Preprocessor
 					break;
 				case '\r':
 					c = 13;
+					str += cptr.char;
 					break;
 				case '\n':
 					c = 10;
+					str += cptr.char;
 					break;
 				default:
 					if (Preprocessor.isDigit(cptr.getChar())) {   /* \ddd */
 						c = 0;
 						while (cptr.getChar() >= '0' && cptr.getChar() <= '9') {  /* decimal! */
 							c = c * 10 + cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0);
+							str += cptr.char;
 							cptr.curIndex++;
 						}
 						if (cptr.getChar() === ';') {
+							str += cptr.char;
 							cptr.curIndex++; /* swallow a trailing ';' */
 						}
 					}
@@ -982,7 +997,7 @@ export class Preprocessor
 		if(!(c >= 0)) {
 			throw new Error("");
 		}
-		return c;
+		return {charCode: c, str};
 	}
 
 	private ishex(c: string): boolean
@@ -1045,8 +1060,6 @@ export class Preprocessor
 
 	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager)
 	{
-		console.log(this.currentDocument?.diagnostics.length, this.currentDocument?.diagnostics);
-
 		for(let definesArray of defines.values()) {
 			for(let findinglocalDefine of definesArray) {
 				const start = findinglocalDefine.endIndex;
@@ -1074,11 +1087,7 @@ export class Preprocessor
 
 		for(let definesArray of defines.values()) {
 			for(let localDefine of definesArray) {
-				// const count = this.replacedCode.length;
-				// console.log(code);
-				// console.log(localDefine.pattern);
 				code = await this.processDefine(code, localDefine, symbolManager);
-				// localDefine.used = count  < this.replacedCode.length;
 			}
 		}
 
@@ -1384,7 +1393,6 @@ export class Preprocessor
 				pattern.curIndex++;            /* skip the semicolon in the pattern */
 			}
 			else {
-				let ch: number;
 				/* skip whitespace between two non-alphanumeric characters, except
 				* for two identical symbols
 				*/
@@ -1393,7 +1401,7 @@ export class Preprocessor
 						sourceShift++;                  /* skip white space */
 					}
 				}
-				ch = this.litchar(pattern, 0);         /* this increments "p" */
+				const {charCode: ch} = this.litchar(pattern, 0);         /* this increments "p" */
 				if (stream.getShiftChar(sourceShift).charCodeAt(0) !== ch) {
 					match = 0;
 				}
