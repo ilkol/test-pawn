@@ -49,7 +49,7 @@ condition: OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
 switch:				SWITCH condition CURLY_OPEN_BRACKET (case)* default? CURLY_CLOSE_BRACKET;
 case:				CASE case_list (COMA case_list)* COLON statement;
 default:            DEFAULT COLON statement;
-case_list:			literal range?;
+case_list:			(literal|IDENTIFIER) range?;
 range:				PERIOD literal;
 
 arrayInit:		CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* CURLY_CLOSE_BRACKET;
