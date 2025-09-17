@@ -53,13 +53,16 @@ export class Scope implements IScope
 	}
 	public findVar(id: string): VarDeclaration | undefined {
 		let currentScope: IScope | undefined = this;
+		let globalScope: IScope = this;
+
         while (currentScope !== undefined) {
             if (currentScope.variables().has(id)) {
                 return currentScope.variables().get(id)!;
             }
+			globalScope = currentScope;
             currentScope = currentScope.parent;
         }
-		for(const scope of this.includedScopes) {
+		for(const scope of globalScope.includedScopes) {
 			let res = scope.findVar(id);
 			if(res) {
 				return res;
@@ -69,7 +72,7 @@ export class Scope implements IScope
 	}
 	public findFunction(id: string): FunctionDeclaration | undefined {
 		let currentScope: IScope | undefined = this;
-		let globalScope: IScope | undefined = undefined;
+		let globalScope: IScope = this;
 		
         while (currentScope !== undefined) {
             if (currentScope.functions().has(id)) {
@@ -79,7 +82,6 @@ export class Scope implements IScope
             currentScope = currentScope.parent;
         }
 		
-		globalScope ??= this;
         for(const scope of globalScope.includedScopes) {
 			let res = scope.findFunction(id);
 			if(res) {
@@ -99,13 +101,17 @@ export class Scope implements IScope
 	}
 	public find(id: string): Declaration | undefined {
 		let currentScope: IScope | undefined = this;
+		let globalScope: IScope = this;
+
         while (currentScope !== undefined) {
             if (currentScope.identifires().has(id)) {
                 return currentScope.identifires().get(id)!;
             }
+			globalScope = currentScope;
             currentScope = currentScope.parent;
         }
-		for(const scope of this.includedScopes) {
+
+		for(const scope of globalScope.includedScopes) {
 			let res = scope.find(id);
 			if(res) {
 				return res;
