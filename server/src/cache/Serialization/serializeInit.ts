@@ -4,6 +4,8 @@ import { IfStatement } from "../../antlr/AST/Nodes/Conditions/IfStatement";
 import { CaseStatement } from "../../antlr/AST/Nodes/Conditions/switch/CaseStatement";
 import { DefaultStatement } from "../../antlr/AST/Nodes/Conditions/switch/DefaultStatement";
 import { SwitchStatement } from "../../antlr/AST/Nodes/Conditions/switch/SwitchStatement";
+import { Break } from "../../antlr/AST/Nodes/Cycles/Break";
+import { Continue } from "../../antlr/AST/Nodes/Cycles/Continue";
 import { DoWhileCycle } from "../../antlr/AST/Nodes/Cycles/DoWhileCycle";
 import { ForCycle } from "../../antlr/AST/Nodes/Cycles/ForCycle";
 import { WhileCycle } from "../../antlr/AST/Nodes/Cycles/WhileCycle";
@@ -83,6 +85,8 @@ export function serializeInit(): void {
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayInit, ArrayInit);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Docs, Docs);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.BoolLiteral, BoolLiteral);
+	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Break, Break);
+	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Continue, Continue);
 
 	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Define, Define);
 	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Else, Else);
@@ -95,4 +99,5 @@ export function serializeInit(): void {
 	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Include, Include);
 	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Pragma, Pragma);
 	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Undef, Undef);
+
 }
