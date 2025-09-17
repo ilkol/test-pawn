@@ -299,8 +299,9 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVarInit(node: VariableInit): void {
 		this.checkUsed(node, (variable: VariableInit) => this.curScope.addVar(variable));
-		if(node.rightValue)
-			this.compareTag(node, node.rightValue, node.rightValue.pos);
+		if(node.rightValue) {
+			this.checkTagMismatch(node.tag, node.rightValue.tag, true, node.idPos);
+		}			
 	}
 	beforeVisitFunctionCall(node: FunctionCall): void {
 
