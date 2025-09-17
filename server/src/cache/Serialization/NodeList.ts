@@ -40,4 +40,7 @@ export enum NodeList {
 	Case = "CaseStatement",
 	Default = "DefaultStatement",
 	ArrayInit = "ArrayInit",
+
+	Continue = "Continue",
+	Break = "Break",
 }
