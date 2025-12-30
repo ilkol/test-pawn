@@ -393,7 +393,8 @@ export class Preprocessor
 			const lastDef = define[define.length - 1];
 			lastDef.undef = directive;
 		} else {
-			this.currentDocument?.diagnostics.push(PawnErrors.report(17, directive.defineRange, directive.define));
+			console.log(directive.define);
+			this.currentDocument?.diagnostics.push(PawnErrors.report(17, directive.defineRange, {symbolName: directive.define}));
 		}
 	}
 	private handleDefine(directive: Directives.Defining.Define, defines:  Map<string, Directives.Defining.Define[]>)

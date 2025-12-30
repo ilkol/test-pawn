@@ -407,9 +407,9 @@ export class Analyzer extends BaseVisitor
 		}
 
 		if(node.left && node.right) {
-			if(this.compareTag(node.left, node.right, node.pos)) {
-				if(!node.isTaged)
-					node.tag = node.left.tag;
+			this.checkTagMismatch(node.left.tag, node.right.tag, true, node.pos);
+			if(!node.isTaged && node.tag.tags.indexOf("bool") === -1) {
+				node.tag = node.left.tag;
 			}
 		}
 

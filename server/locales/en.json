@@ -366,5 +366,1766 @@
 	"extraneous input '}' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input '}' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
 	"no viable alternative at input '}' (expresion)": "no viable alternative at input '}' (expresion)",
 	"mismatched input 'include' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input 'include' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
-	"extraneous input 'case' expecting {'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input 'case' expecting {'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)"
+	"extraneous input 'case' expecting {'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input 'case' expecting {'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input '{!' (arrayInitMember)": "no viable alternative at input '{!' (arrayInitMember)",
+	"mismatched input '!' expecting IDENTIFIER (tag)": "mismatched input '!' expecting IDENTIFIER (tag)",
+	"mismatched input '[' expecting '(' (functionDeclarationParams)": "mismatched input '[' expecting '(' (functionDeclarationParams)",
+	"mismatched input '87' expecting IDENTIFIER (tag)": "mismatched input '87' expecting IDENTIFIER (tag)",
+	"missing '(' at '{' (unknown rule)": "missing '(' at '{' (unknown rule)",
+	"extraneous input '[' expecting {'}', ','} (unknown rule)": "extraneous input '[' expecting {'}', ','} (unknown rule)",
+	"mismatched input '+' expecting {',', '": "'} (case)",
+	"extraneous input 'case' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input 'case' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input ',\\' (expresion)": "no viable alternative at input ',\\' (expresion)",
+	"extraneous input '\\' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '\\' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input '{\\' (statement)": "no viable alternative at input '{\\' (statement)",
+	"extraneous input 'SendClientMessage' expecting {'}', 'case', 'default'} (unknown rule)": "extraneous input 'SendClientMessage' expecting {'}', 'case', 'default'} (unknown rule)",
+	"extraneous input 'case' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'case' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"missing '(' at ',' (unknown rule)": "missing '(' at ',' (unknown rule)",
+	"mismatched input '1' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',0' (functionDeclarationParams)": "no viable alternative at input ',0' (functionDeclarationParams)",
+	"extraneous input '41' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '41' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input ')' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input ')' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input '{case' (statement)": "no viable alternative at input '{case' (statement)",
+	"mismatched input 'case' expecting IDENTIFIER (tag)": "mismatched input 'case' expecting IDENTIFIER (tag)",
+	"no viable alternative at input ',0x33AA33FF' (functionDeclarationParams)": "no viable alternative at input ',0x33AA33FF' (functionDeclarationParams)",
+	"no viable alternative at input ',294' (functionDeclarationParams)": "no viable alternative at input ',294' (functionDeclarationParams)",
+	"extraneous input '31' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '31' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '[' expecting {'}', ','} (tag)": "mismatched input '[' expecting {'}', ','} (tag)",
+	"mismatched input ']' expecting '(' (functionDeclarationParams)": "mismatched input ']' expecting '(' (functionDeclarationParams)",
+	"mismatched input 'switch' expecting IDENTIFIER (tag)": "mismatched input 'switch' expecting IDENTIFIER (tag)",
+	"missing '(' at ')' (unknown rule)": "missing '(' at ')' (unknown rule)",
+	"mismatched input 'if' expecting IDENTIFIER (tag)": "mismatched input 'if' expecting IDENTIFIER (tag)",
+	"no viable alternative at input ',\"Вам требуется 2 лвл\"' (functionDeclarationParams)": "no viable alternative at input ',\"Вам требуется 2 лвл\"' (functionDeclarationParams)",
+	"no viable alternative at input ',0x6495EDFF' (functionDeclarationParams)": "no viable alternative at input ',0x6495EDFF' (functionDeclarationParams)",
+	"extraneous input 'if' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'if' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"no viable alternative at input ',\"Вам требуется 3 лвл\"' (functionDeclarationParams)": "no viable alternative at input ',\"Вам требуется 3 лвл\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"Вам требуется 5 лвл\"' (functionDeclarationParams)": "no viable alternative at input ',\"Вам требуется 5 лвл\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"Вам требуется 6 лвл\"' (functionDeclarationParams)": "no viable alternative at input ',\"Вам требуется 6 лвл\"' (functionDeclarationParams)",
+	"no viable alternative at input 'PTEMP[' (functionDecl)": "no viable alternative at input 'PTEMP[' (functionDecl)",
+	"no viable alternative at input ',\"Fraction_Duty\"' (functionDeclarationParams)": "no viable alternative at input ',\"Fraction_Duty\"' (functionDeclarationParams)",
+	"no viable alternative at input ',0xFFFFFF00' (functionDeclarationParams)": "no viable alternative at input ',0xFFFFFF00' (functionDeclarationParams)",
+	"no viable alternative at input ',sizeof' (functionDeclarationParams)": "no viable alternative at input ',sizeof' (functionDeclarationParams)",
+	"no viable alternative at input ',\"Этот человек здоров!\"' (functionDeclarationParams)": "no viable alternative at input ',\"Этот человек здоров!\"' (functionDeclarationParams)",
+	"no viable alternative at input ',0xAFAFAFAA' (functionDeclarationParams)": "no viable alternative at input ',0xAFAFAFAA' (functionDeclarationParams)",
+	"no viable alternative at input ',1150' (functionDeclarationParams)": "no viable alternative at input ',1150' (functionDeclarationParams)",
+	"no viable alternative at input ',64' (functionDeclarationParams)": "no viable alternative at input ',64' (functionDeclarationParams)",
+	"no viable alternative at input ',5000' (functionDeclarationParams)": "no viable alternative at input ',5000' (functionDeclarationParams)",
+	"no viable alternative at input ',100' (functionDeclarationParams)": "no viable alternative at input ',100' (functionDeclarationParams)",
+	"extraneous input 'new' expecting IDENTIFIER (unknown rule)": "extraneous input 'new' expecting IDENTIFIER (unknown rule)",
+	"extraneous input '[' expecting '(' (unknown rule)": "extraneous input '[' expecting '(' (unknown rule)",
+	"extraneous input '24' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '24' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input ']' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input ']' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input ',144' (functionDeclarationParams)": "no viable alternative at input ',144' (functionDeclarationParams)",
+	"no viable alternative at input ',1553": {
+		"4962' (functionDeclarationParams)": "no viable alternative at input ',1553.4962' (functionDeclarationParams)"
+	},
+	"no viable alternative at input ',95": {
+		"0636' (functionDeclarationParams)": "no viable alternative at input ',95.0636' (functionDeclarationParams)"
+	},
+	"no viable alternative at input ',32' (functionDeclarationParams)": "no viable alternative at input ',32' (functionDeclarationParams)",
+	"no viable alternative at input 'PEfir[' (functionDecl)": "no viable alternative at input 'PEfir[' (functionDecl)",
+	"no viable alternative at input ',13' (functionDeclarationParams)": "no viable alternative at input ',13' (functionDeclarationParams)",
+	"extraneous input 'else' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'else' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"mismatched input '[' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, '\\', DocBlock} (statement)": "mismatched input '[' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, '\\', DocBlock} (statement)",
+	"extraneous input '\"-\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"-\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input ',' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input ',' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input ',2625' (functionDeclarationParams)": "no viable alternative at input ',2625' (functionDeclarationParams)",
+	"no viable alternative at input ',\"Licenses\"' (functionDeclarationParams)": "no viable alternative at input ',\"Licenses\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"MoneyLicenses\"' (functionDeclarationParams)": "no viable alternative at input ',\"MoneyLicenses\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"PlayerSell\"' (functionDeclarationParams)": "no viable alternative at input ',\"PlayerSell\"' (functionDeclarationParams)",
+	"no viable alternative at input 'GetPVarInt(' (functionDeclarationParams)": "no viable alternative at input 'GetPVarInt(' (functionDeclarationParams)",
+	"no viable alternative at input 'st<' (functionDecl)": "no viable alternative at input 'st<' (functionDecl)",
+	"extraneous input 'switch' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'switch' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"mismatched input 'case' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input 'case' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"mismatched input 'if' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input 'if' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"mismatched input '[' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input '[' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"no viable alternative at input ',0xBC2C2CFF' (functionDeclarationParams)": "no viable alternative at input ',0xBC2C2CFF' (functionDeclarationParams)",
+	"no viable alternative at input ',9955' (functionDeclarationParams)": "no viable alternative at input ',9955' (functionDeclarationParams)",
+	"mismatched input '0xFFFF00FF' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '0xFFFF00FF' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"extraneous input 'for' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'for' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"extraneous input '||' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '||' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input ',\"AFK_Time\"' (functionDeclarationParams)": "no viable alternative at input ',\"AFK_Time\"' (functionDeclarationParams)",
+	"no viable alternative at input ',256' (functionDeclarationParams)": "no viable alternative at input ',256' (functionDeclarationParams)",
+	"extraneous input '0xBC2C2CFF' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '0xBC2C2CFF' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '0x33AA33FF' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '0x33AA33FF' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '\"Администрация сервера выдала всем бонусную прокрутку подробнее {F5F5F5}'/gift' {33AA33}или {F5F5F5}'/mm » [11] Подарочное вращение'\"' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '\"Администрация сервера выдала всем бонусную прокрутку подробнее {F5F5F5}'/gift' {33AA33}или {F5F5F5}'/mm » [11] Подарочное вращение'\"' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',48' (functionDeclarationParams)": "no viable alternative at input ',48' (functionDeclarationParams)",
+	"mismatched input '0xF10DEB10AA' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '0xF10DEB10AA' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"extraneous input '0xFF6347AA' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '0xFF6347AA' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '0' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '0' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"no viable alternative at input 'i<=' (functionDecl)": "no viable alternative at input 'i<=' (functionDecl)",
+	"extraneous input '1' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '1' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '3' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '3' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '4' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '4' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '5' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '5' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '6' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '6' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '7' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '7' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '8' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '8' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '9' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '9' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"no viable alternative at input ',0xFF6347AA' (functionDeclarationParams)": "no viable alternative at input ',0xFF6347AA' (functionDeclarationParams)",
+	"no viable alternative at input ',0xC2A2DAAA' (functionDeclarationParams)": "no viable alternative at input ',0xC2A2DAAA' (functionDeclarationParams)",
+	"mismatched input 'case' expecting {'{', '[', ',', ';'} (variable)": "mismatched input 'case' expecting {'{', '[', ',', ';'} (variable)",
+	"mismatched input 'if' expecting {'{', '[', ',', ';'} (variable)": "mismatched input 'if' expecting {'{', '[', ',', ';'} (variable)",
+	"mismatched input '[' expecting {'{', '[', ',', ';'} (variable)": "mismatched input '[' expecting {'{', '[', ',', ';'} (variable)",
+	"no viable alternative at input ',\"У данного игрока уже есть вод": {
+		" права!\"' (functionDeclarationParams)": "no viable alternative at input ',\"У данного игрока уже есть вод. права!\"' (functionDeclarationParams)"
+	},
+	"no viable alternative at input ',9500' (functionDeclarationParams)": "no viable alternative at input ',9500' (functionDeclarationParams)",
+	"no viable alternative at input ',\"У данного игрока уже есть эта лицензия!\"' (functionDeclarationParams)": "no viable alternative at input ',\"У данного игрока уже есть эта лицензия!\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"Вы уже начинали с этим игроком урок!\"' (functionDeclarationParams)": "no viable alternative at input ',\"Вы уже начинали с этим игроком урок!\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"Вы не начинали урок с этим игроком!\"' (functionDeclarationParams)": "no viable alternative at input ',\"Вы не начинали урок с этим игроком!\"' (functionDeclarationParams)",
+	"mismatched input 'return' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, '\\', DocBlock} (statement)": "mismatched input 'return' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, '\\', DocBlock} (statement)",
+	"mismatched input 'if' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, '\\', DocBlock} (statement)": "mismatched input 'if' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, '\\', DocBlock} (statement)",
+	"no viable alternative at input ',\"TaxiDuty\"' (functionDeclarationParams)": "no viable alternative at input ',\"TaxiDuty\"' (functionDeclarationParams)",
+	"mismatched input '0xAFAFAFAA' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '0xAFAFAFAA' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '190' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '190' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',190' (functionDeclarationParams)": "no viable alternative at input ',190' (functionDeclarationParams)",
+	"no viable alternative at input ',9957' (functionDeclarationParams)": "no viable alternative at input ',9957' (functionDeclarationParams)",
+	"mismatched input '9958' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '9958' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '9959' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '9959' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '9960' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '9960' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',0xF10DEB10AA' (functionDeclarationParams)": "no viable alternative at input ',0xF10DEB10AA' (functionDeclarationParams)",
+	"no viable alternative at input ',0xF999DEB9AA' (functionDeclarationParams)": "no viable alternative at input ',0xF999DEB9AA' (functionDeclarationParams)",
+	"mismatched input '0' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '0' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',2278": {
+		"3853' (functionDeclarationParams)": "no viable alternative at input ',2278.3853' (functionDeclarationParams)"
+	},
+	"no viable alternative at input ',357": {
+		"9236' (functionDeclarationParams)": "no viable alternative at input ',357.9236' (functionDeclarationParams)"
+	},
+	"no viable alternative at input ',2294": {
+		"0447' (functionDeclarationParams)": "no viable alternative at input ',2294.0447' (functionDeclarationParams)"
+	},
+	"no viable alternative at input ',90": {
+		"8629' (functionDeclarationParams)": "no viable alternative at input ',90.8629' (functionDeclarationParams)"
+	},
+	"no viable alternative at input ',2013' (functionDeclarationParams)": "no viable alternative at input ',2013' (functionDeclarationParams)",
+	"mismatched input '<=' expecting '(' (functionDeclarationParams)": "mismatched input '<=' expecting '(' (functionDeclarationParams)",
+	"no viable alternative at input ',\"На складе нет материалов!\"' (functionDeclarationParams)": "no viable alternative at input ',\"На складе нет материалов!\"' (functionDeclarationParams)",
+	"no viable alternative at input ',ammo*' (functionDeclarationParams)": "no viable alternative at input ',ammo*' (functionDeclarationParams)",
+	"extraneous input '20": {
+		"0' expecting {')', '{', ',', '&', '": {
+			"": {
+				"": {
+					"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '20.0' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',2014' (functionDeclarationParams)": "no viable alternative at input ',2014' (functionDeclarationParams)",
+	"no viable alternative at input ',2015' (functionDeclarationParams)": "no viable alternative at input ',2015' (functionDeclarationParams)",
+	"mismatched input '<=' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input '<=' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"no viable alternative at input ',0x6BB3FFAA' (functionDeclarationParams)": "no viable alternative at input ',0x6BB3FFAA' (functionDeclarationParams)",
+	"no viable alternative at input ',8002' (functionDeclarationParams)": "no viable alternative at input ',8002' (functionDeclarationParams)",
+	"mismatched input '8005' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '8005' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '=' expecting '(' (functionDeclarationParams)": "mismatched input '=' expecting '(' (functionDeclarationParams)",
+	"no viable alternative at input 'h<=' (functionDecl)": "no viable alternative at input 'h<=' (functionDecl)",
+	"mismatched input 'sizeof' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input 'sizeof' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input 'count++' (functionDecl)": "no viable alternative at input 'count++' (functionDecl)",
+	"extraneous input '>' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '>' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input ',8006' (functionDeclarationParams)": "no viable alternative at input ',8006' (functionDeclarationParams)",
+	"mismatched input '8007' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '8007' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',\"[0] Мэрия\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[0] Мэрия\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[1] Автошкола\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[1] Автошкола\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[2] Медики [LS]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[2] Медики [LS]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[3] Медики [SF]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[3] Медики [SF]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[4] Медики [LV]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[4] Медики [LV]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[5] Полиция [LS]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[5] Полиция [LS]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[6] Полиция [SF]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[6] Полиция [SF]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[7] Полиция [LV]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[7] Полиция [LV]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[8] ФБР\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[8] ФБР\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[9] Военная база [Авианосец]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[9] Военная база [Авианосец]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[10] Военная база [Зона 51]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[10] Военная база [Зона 51]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[11] Новости [LS]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[11] Новости [LS]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[12] Новости [SF]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[12] Новости [SF]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[13] Новости [LV]\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[13] Новости [LV]\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[14] Особняк Yakuza\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[14] Особняк Yakuza\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[15] Особняк Русской мафии\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[15] Особняк Русской мафии\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[16] Особняк La Coca Nostra\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[16] Особняк La Coca Nostra\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[17] Район Grove Street\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[17] Район Grove Street\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[18] Район Vagos\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[18] Район Vagos\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[19] Район Ballas\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[19] Район Ballas\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[20] Район Rifa\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[20] Район Rifa\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"[21] Район Aztecas\\n\"' (functionDeclarationParams)": "no viable alternative at input ',\"[21] Район Aztecas\\n\"' (functionDeclarationParams)",
+	"no viable alternative at input ',8028' (functionDeclarationParams)": "no viable alternative at input ',8028' (functionDeclarationParams)",
+	"mismatched input '8029' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '8029' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '8031' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '8031' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '8030' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '8030' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '8032' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '8032' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',1' (functionDeclarationParams)": "no viable alternative at input ',1' (functionDeclarationParams)",
+	"no viable alternative at input ',0xFFFFFFAA' (functionDeclarationParams)": "no viable alternative at input ',0xFFFFFFAA' (functionDeclarationParams)",
+	"no viable alternative at input ',8904' (functionDeclarationParams)": "no viable alternative at input ',8904' (functionDeclarationParams)",
+	"no viable alternative at input ',8905' (functionDeclarationParams)": "no viable alternative at input ',8905' (functionDeclarationParams)",
+	"mismatched input '168' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '168' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',8900' (functionDeclarationParams)": "no viable alternative at input ',8900' (functionDeclarationParams)",
+	"no viable alternative at input ',512' (functionDeclarationParams)": "no viable alternative at input ',512' (functionDeclarationParams)",
+	"no viable alternative at input ',9521' (functionDeclarationParams)": "no viable alternative at input ',9521' (functionDeclarationParams)",
+	"no viable alternative at input ',\"Bankmoney\"' (functionDeclarationParams)": "no viable alternative at input ',\"Bankmoney\"' (functionDeclarationParams)",
+	"no viable alternative at input ',15' (functionDeclarationParams)": "no viable alternative at input ',15' (functionDeclarationParams)",
+	"no viable alternative at input ',1000' (functionDeclarationParams)": "no viable alternative at input ',1000' (functionDeclarationParams)",
+	"no viable alternative at input ',1052' (functionDeclarationParams)": "no viable alternative at input ',1052' (functionDeclarationParams)",
+	"no viable alternative at input ',\"Housemoney\"' (functionDeclarationParams)": "no viable alternative at input ',\"Housemoney\"' (functionDeclarationParams)",
+	"extraneous input '*' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '*' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"mismatched input '=' expecting {'}', ','} (tag)": "mismatched input '=' expecting {'}', ','} (tag)",
+	"no viable alternative at input 'h<' (functionDecl)": "no viable alternative at input 'h<' (functionDecl)",
+	"no viable alternative at input ',\"None\"' (functionDeclarationParams)": "no viable alternative at input ',\"None\"' (functionDeclarationParams)",
+	"extraneous input '\"None\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"None\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"no viable alternative at input ',40' (functionDeclarationParams)": "no viable alternative at input ',40' (functionDeclarationParams)",
+	"no viable alternative at input 'Prorab[' (functionDecl)": "no viable alternative at input 'Prorab[' (functionDecl)",
+	"no viable alternative at input ',\"Вы не начинали рабочий день\"' (functionDeclarationParams)": "no viable alternative at input ',\"Вы не начинали рабочий день\"' (functionDeclarationParams)",
+	"no viable alternative at input 'PicCP[' (functionDecl)": "no viable alternative at input 'PicCP[' (functionDecl)",
+	"no viable alternative at input ',\"Вы не брали работу\"' (functionDeclarationParams)": "no viable alternative at input ',\"Вы не брали работу\"' (functionDeclarationParams)",
+	"no viable alternative at input ',0xFFFF00FF' (functionDeclarationParams)": "no viable alternative at input ',0xFFFF00FF' (functionDeclarationParams)",
+	"no viable alternative at input ',181": {
+		"6046' (functionDeclarationParams)": "no viable alternative at input ',181.6046' (functionDeclarationParams)"
+	},
+	"no viable alternative at input ',338": {
+		"6618' (functionDeclarationParams)": "no viable alternative at input ',338.6618' (functionDeclarationParams)"
+	},
+	"mismatched input '170": {
+		"0947' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '170.0947' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',-' (functionDeclarationParams)": "no viable alternative at input ',-' (functionDeclarationParams)",
+	"mismatched input '115": {
+		"7203' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '115.7203' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',121": {
+		"2786' (functionDeclarationParams)": "no viable alternative at input ',121.2786' (functionDeclarationParams)"
+	},
+	"mismatched input '319": {
+		"3263' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '319.3263' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',277": {
+		"4582' (functionDeclarationParams)": "no viable alternative at input ',277.4582' (functionDeclarationParams)"
+	},
+	"mismatched input 'for' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input 'for' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"mismatched input '=' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input '=' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"mismatched input 'for' expecting IDENTIFIER (tag)": "mismatched input 'for' expecting IDENTIFIER (tag)",
+	"no viable alternative at input 'BizzInfo[' (functionDecl)": "no viable alternative at input 'BizzInfo[' (functionDecl)",
+	"no viable alternative at input ',90' (functionDeclarationParams)": "no viable alternative at input ',90' (functionDeclarationParams)",
+	"mismatched input '2725' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '2725' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '15624' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '15624' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',2726' (functionDeclarationParams)": "no viable alternative at input ',2726' (functionDeclarationParams)",
+	"no viable alternative at input ',2727' (functionDeclarationParams)": "no viable alternative at input ',2727' (functionDeclarationParams)",
+	"no viable alternative at input ',2728' (functionDeclarationParams)": "no viable alternative at input ',2728' (functionDeclarationParams)",
+	"no viable alternative at input ',2729' (functionDeclarationParams)": "no viable alternative at input ',2729' (functionDeclarationParams)",
+	"no viable alternative at input ',2730' (functionDeclarationParams)": "no viable alternative at input ',2730' (functionDeclarationParams)",
+	"no viable alternative at input ',2731' (functionDeclarationParams)": "no viable alternative at input ',2731' (functionDeclarationParams)",
+	"no viable alternative at input ',2732' (functionDeclarationParams)": "no viable alternative at input ',2732' (functionDeclarationParams)",
+	"no viable alternative at input ',2733' (functionDeclarationParams)": "no viable alternative at input ',2733' (functionDeclarationParams)",
+	"no viable alternative at input ',2734' (functionDeclarationParams)": "no viable alternative at input ',2734' (functionDeclarationParams)",
+	"no viable alternative at input ',2735' (functionDeclarationParams)": "no viable alternative at input ',2735' (functionDeclarationParams)",
+	"no viable alternative at input ',2736' (functionDeclarationParams)": "no viable alternative at input ',2736' (functionDeclarationParams)",
+	"no viable alternative at input ',2737' (functionDeclarationParams)": "no viable alternative at input ',2737' (functionDeclarationParams)",
+	"no viable alternative at input ',2738' (functionDeclarationParams)": "no viable alternative at input ',2738' (functionDeclarationParams)",
+	"no viable alternative at input ',2739' (functionDeclarationParams)": "no viable alternative at input ',2739' (functionDeclarationParams)",
+	"no viable alternative at input ',2740' (functionDeclarationParams)": "no viable alternative at input ',2740' (functionDeclarationParams)",
+	"no viable alternative at input ',2741' (functionDeclarationParams)": "no viable alternative at input ',2741' (functionDeclarationParams)",
+	"no viable alternative at input ',2742' (functionDeclarationParams)": "no viable alternative at input ',2742' (functionDeclarationParams)",
+	"no viable alternative at input ',2743' (functionDeclarationParams)": "no viable alternative at input ',2743' (functionDeclarationParams)",
+	"no viable alternative at input ',2744' (functionDeclarationParams)": "no viable alternative at input ',2744' (functionDeclarationParams)",
+	"no viable alternative at input ',2745' (functionDeclarationParams)": "no viable alternative at input ',2745' (functionDeclarationParams)",
+	"no viable alternative at input ',2746' (functionDeclarationParams)": "no viable alternative at input ',2746' (functionDeclarationParams)",
+	"no viable alternative at input 'HouseInfo[' (functionDecl)": "no viable alternative at input 'HouseInfo[' (functionDecl)",
+	"no viable alternative at input ',\"VENDING\"' (functionDeclarationParams)": "no viable alternative at input ',\"VENDING\"' (functionDeclarationParams)",
+	"no viable alternative at input ',!' (functionDeclarationParams)": "no viable alternative at input ',!' (functionDeclarationParams)",
+	"no viable alternative at input ',\"FOOD\"' (functionDeclarationParams)": "no viable alternative at input ',\"FOOD\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"GANGS\"' (functionDeclarationParams)": "no viable alternative at input ',\"GANGS\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"OTB\"' (functionDeclarationParams)": "no viable alternative at input ',\"OTB\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"COP_AMBIENT\"' (functionDeclarationParams)": "no viable alternative at input ',\"COP_AMBIENT\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"CRACK\"' (functionDeclarationParams)": "no viable alternative at input ',\"CRACK\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"DAM_JUMP\"' (functionDeclarationParams)": "no viable alternative at input ',\"DAM_JUMP\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"DEALER\"' (functionDeclarationParams)": "no viable alternative at input ',\"DEALER\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"TATTOOS\"' (functionDeclarationParams)": "no viable alternative at input ',\"TATTOOS\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"BEACH\"' (functionDeclarationParams)": "no viable alternative at input ',\"BEACH\"' (functionDeclarationParams)",
+	"no viable alternative at input '>16)' (expresion)": "no viable alternative at input '>16)' (expresion)",
+	"extraneous input 'return' expecting IDENTIFIER (unknown rule)": "extraneous input 'return' expecting IDENTIFIER (unknown rule)",
+	"mismatched input '2' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '2' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input 'i!=' (functionDecl)": "no viable alternative at input 'i!=' (functionDecl)",
+	"no viable alternative at input ',2' (functionDeclarationParams)": "no viable alternative at input ',2' (functionDeclarationParams)",
+	"no viable alternative at input ',1097' (functionDeclarationParams)": "no viable alternative at input ',1097' (functionDeclarationParams)",
+	"no viable alternative at input ',12' (functionDeclarationParams)": "no viable alternative at input ',12' (functionDeclarationParams)",
+	"mismatched input '0xFF6347AA' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '0xFF6347AA' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"extraneous input '\"kkiicckk\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"kkiicckk\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '70' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '70' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input 'if' expecting {']', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input 'if' expecting {']', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"mismatched input '[' expecting {']', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input '[' expecting {']', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"no viable alternative at input 'enterbiz[' (functionDecl)": "no viable alternative at input 'enterbiz[' (functionDecl)",
+	"mismatched input 'switch' expecting {']', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input 'switch' expecting {']', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"mismatched input 'case' expecting {']', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input 'case' expecting {']', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"extraneous input '\"OnPlayerCommandText\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"OnPlayerCommandText\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '\"is\"' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '\"is\"' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '\"/enter\"' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '\"/enter\"' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '1006' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1006' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input 'if' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char', SHARPSTRING, STRING, CHAR_STRING} (string)": "mismatched input 'if' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char', SHARPSTRING, STRING, CHAR_STRING} (string)",
+	"mismatched input '[' expecting '": "' (tag)",
+	"no viable alternative at input ']' (expresion)": "no viable alternative at input ']' (expresion)",
+	"no viable alternative at input ',i-' (functionDeclarationParams)": "no viable alternative at input ',i-' (functionDeclarationParams)",
+	"extraneous input '==' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '==' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"mismatched input ']' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input ']' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"extraneous input 'break' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'break' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"mismatched input ']' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, '\\', DocBlock} (statement)": "mismatched input ']' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, '\\', DocBlock} (statement)",
+	"no viable alternative at input ',\"Register\"' (functionDeclarationParams)": "no viable alternative at input ',\"Register\"' (functionDeclarationParams)",
+	"mismatched input '||' expecting '(' (functionDeclarationParams)": "mismatched input '||' expecting '(' (functionDeclarationParams)",
+	"no viable alternative at input ',\"d_code1\"' (functionDeclarationParams)": "no viable alternative at input ',\"d_code1\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"d_code2\"' (functionDeclarationParams)": "no viable alternative at input ',\"d_code2\"' (functionDeclarationParams)",
+	"mismatched input ')' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionDeclarationParams)": "mismatched input ')' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionDeclarationParams)",
+	"no viable alternative at input ',29322' (functionDeclarationParams)": "no viable alternative at input ',29322' (functionDeclarationParams)",
+	"no viable alternative at input ',true' (functionDeclarationParams)": "no viable alternative at input ',true' (functionDeclarationParams)",
+	"no viable alternative at input ',4385' (functionDeclarationParams)": "no viable alternative at input ',4385' (functionDeclarationParams)",
+	"no viable alternative at input ',0x33CCFFFF' (functionDeclarationParams)": "no viable alternative at input ',0x33CCFFFF' (functionDeclarationParams)",
+	"no viable alternative at input ',1331' (functionDeclarationParams)": "no viable alternative at input ',1331' (functionDeclarationParams)",
+	"extraneous input '10' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '10' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '11' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '11' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '14' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '14' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '19' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '19' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '20' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '20' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '23' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '23' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '27' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '27' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '30' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '30' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '33' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '33' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '-' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (functionDeclarationParams)": "mismatched input '-' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (functionDeclarationParams)"
+			}
+		}
+	},
+	"no viable alternative at input ',0xFFA500AA' (functionDeclarationParams)": "no viable alternative at input ',0xFFA500AA' (functionDeclarationParams)",
+	"no viable alternative at input ',0x83BFBFAA' (functionDeclarationParams)": "no viable alternative at input ',0x83BFBFAA' (functionDeclarationParams)",
+	"mismatched input '0x83BFBFAA' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '0x83BFBFAA' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',1012' (functionDeclarationParams)": "no viable alternative at input ',1012' (functionDeclarationParams)",
+	"mismatched input '0x7AADA8FF' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '0x7AADA8FF' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',0x7AADA8FF' (functionDeclarationParams)": "no viable alternative at input ',0x7AADA8FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x089401FF' (functionDeclarationParams)": "no viable alternative at input ',0x089401FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x56FB4EFF' (functionDeclarationParams)": "no viable alternative at input ',0x56FB4EFF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x49E789FF' (functionDeclarationParams)": "no viable alternative at input ',0x49E789FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x2A9170FF' (functionDeclarationParams)": "no viable alternative at input ',0x2A9170FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x9ED201FF' (functionDeclarationParams)": "no viable alternative at input ',0x9ED201FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x279B1EFF' (functionDeclarationParams)": "no viable alternative at input ',0x279B1EFF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x51964DFF' (functionDeclarationParams)": "no viable alternative at input ',0x51964DFF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xFF0606FF' (functionDeclarationParams)": "no viable alternative at input ',0xFF0606FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xFF6600FF' (functionDeclarationParams)": "no viable alternative at input ',0xFF6600FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xF45000FF' (functionDeclarationParams)": "no viable alternative at input ',0xF45000FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xBE8A01FF' (functionDeclarationParams)": "no viable alternative at input ',0xBE8A01FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xB30000FF' (functionDeclarationParams)": "no viable alternative at input ',0xB30000FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x954F4FFF' (functionDeclarationParams)": "no viable alternative at input ',0x954F4FFF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xE7961DFF' (functionDeclarationParams)": "no viable alternative at input ',0xE7961DFF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xE6284EFF' (functionDeclarationParams)": "no viable alternative at input ',0xE6284EFF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xFF9DB6FF' (functionDeclarationParams)": "no viable alternative at input ',0xFF9DB6FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x110CE7FF' (functionDeclarationParams)": "no viable alternative at input ',0x110CE7FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x0CD7E7FF' (functionDeclarationParams)": "no viable alternative at input ',0x0CD7E7FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x139BECFF' (functionDeclarationParams)": "no viable alternative at input ',0x139BECFF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x2C9197FF' (functionDeclarationParams)": "no viable alternative at input ',0x2C9197FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x114D71FF' (functionDeclarationParams)": "no viable alternative at input ',0x114D71FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x8813E7FF' (functionDeclarationParams)": "no viable alternative at input ',0x8813E7FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xB313E7FF' (functionDeclarationParams)": "no viable alternative at input ',0xB313E7FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x758C9DFF' (functionDeclarationParams)": "no viable alternative at input ',0x758C9DFF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xFFDE24FF' (functionDeclarationParams)": "no viable alternative at input ',0xFFDE24FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xFFEE8AFF' (functionDeclarationParams)": "no viable alternative at input ',0xFFEE8AFF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xDDB201FF' (functionDeclarationParams)": "no viable alternative at input ',0xDDB201FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xDDA701FF' (functionDeclarationParams)": "no viable alternative at input ',0xDDA701FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xB0B000FF' (functionDeclarationParams)": "no viable alternative at input ',0xB0B000FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x868484FF' (functionDeclarationParams)": "no viable alternative at input ',0x868484FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xB8B6B6FF' (functionDeclarationParams)": "no viable alternative at input ',0xB8B6B6FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0x333333FF' (functionDeclarationParams)": "no viable alternative at input ',0x333333FF' (functionDeclarationParams)",
+	"no viable alternative at input ',0xFAFAFAFF' (functionDeclarationParams)": "no viable alternative at input ',0xFAFAFAFF' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/time\"' (functionDeclarationParams)": "no viable alternative at input ',\"/time\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/gps\"' (functionDeclarationParams)": "no viable alternative at input ',\"/gps\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/viphelp\"' (functionDeclarationParams)": "no viable alternative at input ',\"/viphelp\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/drink\"' (functionDeclarationParams)": "no viable alternative at input ',\"/drink\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/directory\"' (functionDeclarationParams)": "no viable alternative at input ',\"/directory\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/eject\"' (functionDeclarationParams)": "no viable alternative at input ',\"/eject\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/dice\"' (functionDeclarationParams)": "no viable alternative at input ',\"/dice\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/clist\"' (functionDeclarationParams)": "no viable alternative at input ',\"/clist\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/usedrugs\"' (functionDeclarationParams)": "no viable alternative at input ',\"/usedrugs\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/showpass\"' (functionDeclarationParams)": "no viable alternative at input ',\"/showpass\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/myskill\"' (functionDeclarationParams)": "no viable alternative at input ',\"/myskill\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/hi\"' (functionDeclarationParams)": "no viable alternative at input ',\"/hi\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/id\"' (functionDeclarationParams)": "no viable alternative at input ',\"/id\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/ids\"' (functionDeclarationParams)": "no viable alternative at input ',\"/ids\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/o\"' (functionDeclarationParams)": "no viable alternative at input ',\"/o\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/ad\"' (functionDeclarationParams)": "no viable alternative at input ',\"/ad\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/gov\"' (functionDeclarationParams)": "no viable alternative at input ',\"/gov\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/f\"' (functionDeclarationParams)": "no viable alternative at input ',\"/f\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/s\"' (functionDeclarationParams)": "no viable alternative at input ',\"/s\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/m\"' (functionDeclarationParams)": "no viable alternative at input ',\"/m\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/r\"' (functionDeclarationParams)": "no viable alternative at input ',\"/r\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/d\"' (functionDeclarationParams)": "no viable alternative at input ',\"/d\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/me\"' (functionDeclarationParams)": "no viable alternative at input ',\"/me\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/call\"' (functionDeclarationParams)": "no viable alternative at input ',\"/call\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/sms\"' (functionDeclarationParams)": "no viable alternative at input ',\"/sms\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/number\"' (functionDeclarationParams)": "no viable alternative at input ',\"/number\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/h\"' (functionDeclarationParams)": "no viable alternative at input ',\"/h\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/p\"' (functionDeclarationParams)": "no viable alternative at input ',\"/p\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/togphone\"' (functionDeclarationParams)": "no viable alternative at input ',\"/togphone\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/hpanel\"' (functionDeclarationParams)": "no viable alternative at input ',\"/hpanel\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/home\"' (functionDeclarationParams)": "no viable alternative at input ',\"/home\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/spawnchange\"' (functionDeclarationParams)": "no viable alternative at input ',\"/spawnchange\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/healme\"' (functionDeclarationParams)": "no viable alternative at input ',\"/healme\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/buybiz\"' (functionDeclarationParams)": "no viable alternative at input ',\"/buybiz\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/bizstats\"' (functionDeclarationParams)": "no viable alternative at input ',\"/bizstats\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/bizwithdraw \"' (functionDeclarationParams)": "no viable alternative at input ',\"/bizwithdraw \"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/bizfee\"' (functionDeclarationParams)": "no viable alternative at input ',\"/bizfee\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/sellbiz\"' (functionDeclarationParams)": "no viable alternative at input ',\"/sellbiz\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/changehouse\"' (functionDeclarationParams)": "no viable alternative at input ',\"/changehouse\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/invite\"' (functionDeclarationParams)": "no viable alternative at input ',\"/invite\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/uninvite\"' (functionDeclarationParams)": "no viable alternative at input ',\"/uninvite\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/giverank\"' (functionDeclarationParams)": "no viable alternative at input ',\"/giverank\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/tie\"' (functionDeclarationParams)": "no viable alternative at input ',\"/tie\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/untie\"' (functionDeclarationParams)": "no viable alternative at input ',\"/untie\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/heal\"' (functionDeclarationParams)": "no viable alternative at input ',\"/heal\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/getgun\"' (functionDeclarationParams)": "no viable alternative at input ',\"/getgun\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/mafiabalance\"' (functionDeclarationParams)": "no viable alternative at input ',\"/mafiabalance\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/mafiawithdraw\"' (functionDeclarationParams)": "no viable alternative at input ',\"/mafiawithdraw\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/mafiabank\"' (functionDeclarationParams)": "no viable alternative at input ',\"/mafiabank\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/ram\"' (functionDeclarationParams)": "no viable alternative at input ',\"/ram\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/cuff\"' (functionDeclarationParams)": "no viable alternative at input ',\"/cuff\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/follow\"' (functionDeclarationParams)": "no viable alternative at input ',\"/follow\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/uncuff\"' (functionDeclarationParams)": "no viable alternative at input ',\"/uncuff\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/givecopkeys\"' (functionDeclarationParams)": "no viable alternative at input ',\"/givecopkeys\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/arrest\"' (functionDeclarationParams)": "no viable alternative at input ',\"/arrest\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/warehouse\"' (functionDeclarationParams)": "no viable alternative at input ',\"/warehouse\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/take\"' (functionDeclarationParams)": "no viable alternative at input ',\"/take\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/frisk\"' (functionDeclarationParams)": "no viable alternative at input ',\"/frisk\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/su\"' (functionDeclarationParams)": "no viable alternative at input ',\"/su\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/suspect\"' (functionDeclarationParams)": "no viable alternative at input ',\"/suspect\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/tazer\"' (functionDeclarationParams)": "no viable alternative at input ',\"/tazer\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/wanted\"' (functionDeclarationParams)": "no viable alternative at input ',\"/wanted\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/demote\"' (functionDeclarationParams)": "no viable alternative at input ',\"/demote\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/gbank\"' (functionDeclarationParams)": "no viable alternative at input ',\"/gbank\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/gbankput\"' (functionDeclarationParams)": "no viable alternative at input ',\"/gbankput\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/gbankwhisdraw\"' (functionDeclarationParams)": "no viable alternative at input ',\"/gbankwhisdraw\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/getbizstats\"' (functionDeclarationParams)": "no viable alternative at input ',\"/getbizstats\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/mafiawar\"' (functionDeclarationParams)": "no viable alternative at input ',\"/mafiawar\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/fare\"' (functionDeclarationParams)": "no viable alternative at input ',\"/fare\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/mcontract\"' (functionDeclarationParams)": "no viable alternative at input ',\"/mcontract\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/sellgrib\"' (functionDeclarationParams)": "no viable alternative at input ',\"/sellgrib\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/clear\"' (functionDeclarationParams)": "no viable alternative at input ',\"/clear\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/refill\"' (functionDeclarationParams)": "no viable alternative at input ',\"/refill\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/prodmenu\"' (functionDeclarationParams)": "no viable alternative at input ',\"/prodmenu\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/repair\"' (functionDeclarationParams)": "no viable alternative at input ',\"/repair\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/route\"' (functionDeclarationParams)": "no viable alternative at input ',\"/route\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/fixcar\"' (functionDeclarationParams)": "no viable alternative at input ',\"/fixcar\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"/newsbank\"' (functionDeclarationParams)": "no viable alternative at input ',\"/newsbank\"' (functionDeclarationParams)",
+	"no viable alternative at input ',128' (functionDeclarationParams)": "no viable alternative at input ',128' (functionDeclarationParams)",
+	"no viable alternative at input ',false' (functionDeclarationParams)": "no viable alternative at input ',false' (functionDeclarationParams)",
+	"extraneous input '<' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '<' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input ',11' (functionDeclarationParams)": "no viable alternative at input ',11' (functionDeclarationParams)",
+	"no viable alternative at input 'GetPlayerVehicleID(' (functionDeclarationParams)": "no viable alternative at input 'GetPlayerVehicleID(' (functionDeclarationParams)",
+	"no viable alternative at input ',335": {
+		"9255' (functionDeclarationParams)": "no viable alternative at input ',335.9255' (functionDeclarationParams)"
+	},
+	"extraneous input '10": {
+		"0' expecting {')', '{', ',', '&', '": {
+			"": {
+				"": {
+					"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '10.0' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',\"В матовозе нет оружия!\"' (functionDeclarationParams)": "no viable alternative at input ',\"В матовозе нет оружия!\"' (functionDeclarationParams)",
+	"no viable alternative at input ',0x00D900C8' (functionDeclarationParams)": "no viable alternative at input ',0x00D900C8' (functionDeclarationParams)",
+	"mismatched input '2745": {
+		"2368' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2745.2368' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"mismatched input '-' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '-' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '1529": {
+		"6000' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1529.6000' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"mismatched input '2292": {
+		"0837' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2292.0837' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',3232' (functionDeclarationParams)": "no viable alternative at input ',3232' (functionDeclarationParams)",
+	"no viable alternative at input ',3233' (functionDeclarationParams)": "no viable alternative at input ',3233' (functionDeclarationParams)",
+	"no viable alternative at input ',2645": {
+		"9717' (functionDeclarationParams)": "no viable alternative at input ',2645.9717' (functionDeclarationParams)"
+	},
+	"mismatched input '2795": {
+		"7639' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2795.7639' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"mismatched input '2489": {
+		"2656' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2489.2656' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"mismatched input '1806": {
+		"0304' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1806.0304' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"mismatched input '2176": {
+		"5503' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2176.5503' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',1244": {
+		"5627' (functionDeclarationParams)": "no viable alternative at input ',1244.5627' (functionDeclarationParams)"
+	},
+	"mismatched input '681": {
+		"5627' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '681.5627' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"mismatched input '662": {
+		"8604' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '662.8604' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"mismatched input '24": {
+		"4948' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '24.4948' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',14' (functionDeclarationParams)": "no viable alternative at input ',14' (functionDeclarationParams)",
+	"mismatched input '14' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '14' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',165' (functionDeclarationParams)": "no viable alternative at input ',165' (functionDeclarationParams)",
+	"mismatched input '35' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '35' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',2323' (functionDeclarationParams)": "no viable alternative at input ',2323' (functionDeclarationParams)",
+	"no viable alternative at input ',0x7FB151FF' (functionDeclarationParams)": "no viable alternative at input ',0x7FB151FF' (functionDeclarationParams)",
+	"no viable alternative at input ',(' (functionDeclarationParams)": "no viable alternative at input ',(' (functionDeclarationParams)",
+	"extraneous input '0x7FB151FF' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '0x7FB151FF' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"no viable alternative at input ',1891' (functionDeclarationParams)": "no viable alternative at input ',1891' (functionDeclarationParams)",
+	"no viable alternative at input ',7' (functionDeclarationParams)": "no viable alternative at input ',7' (functionDeclarationParams)",
+	"no viable alternative at input ',4' (functionDeclarationParams)": "no viable alternative at input ',4' (functionDeclarationParams)",
+	"mismatched input 'switch' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, '\\', DocBlock} (statement)": "mismatched input 'switch' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, '\\', DocBlock} (statement)",
+	"no viable alternative at input ',\"ooc_chat\"' (functionDeclarationParams)": "no viable alternative at input ',\"ooc_chat\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"family_chat\"' (functionDeclarationParams)": "no viable alternative at input ',\"family_chat\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"name_tag\"' (functionDeclarationParams)": "no viable alternative at input ',\"name_tag\"' (functionDeclarationParams)",
+	"no viable alternative at input ',9973' (functionDeclarationParams)": "no viable alternative at input ',9973' (functionDeclarationParams)",
+	"mismatched input '2323' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '2323' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',9943' (functionDeclarationParams)": "no viable alternative at input ',9943' (functionDeclarationParams)",
+	"no viable alternative at input ',5454' (functionDeclarationParams)": "no viable alternative at input ',5454' (functionDeclarationParams)",
+	"no viable alternative at input 'i<' (functionDecl)": "no viable alternative at input 'i<' (functionDecl)",
+	"no viable alternative at input ',20087' (functionDeclarationParams)": "no viable alternative at input ',20087' (functionDeclarationParams)",
+	"no viable alternative at input ',180' (functionDeclarationParams)": "no viable alternative at input ',180' (functionDeclarationParams)",
+	"no viable alternative at input ',10' (functionDeclarationParams)": "no viable alternative at input ',10' (functionDeclarationParams)",
+	"no viable alternative at input 'FracBank[' (functionDecl)": "no viable alternative at input 'FracBank[' (functionDecl)",
+	"no viable alternative at input 'string=' (functionDecl)": "no viable alternative at input 'string=' (functionDecl)",
+	"no viable alternative at input 'i>=' (functionDecl)": "no viable alternative at input 'i>=' (functionDecl)",
+	"no viable alternative at input ',20086' (functionDeclarationParams)": "no viable alternative at input ',20086' (functionDeclarationParams)",
+	"mismatched input '\"name_tag\"' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '\"name_tag\"' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input 'moneys=' (functionDecl)": "no viable alternative at input 'moneys=' (functionDecl)",
+	"no viable alternative at input ',\"Alogin\"' (functionDeclarationParams)": "no viable alternative at input ',\"Alogin\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"s[16]\"' (functionDeclarationParams)": "no viable alternative at input ',\"s[16]\"' (functionDeclarationParams)",
+	"no viable alternative at input ',1227' (functionDeclarationParams)": "no viable alternative at input ',1227' (functionDeclarationParams)",
+	"no viable alternative at input ',\"qwerty\"' (functionDeclarationParams)": "no viable alternative at input ',\"qwerty\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"level\"' (functionDeclarationParams)": "no viable alternative at input ',\"level\"' (functionDeclarationParams)",
+	"no viable alternative at input ',0xF4B800AA' (functionDeclarationParams)": "no viable alternative at input ',0xF4B800AA' (functionDeclarationParams)",
+	"extraneous input '0xF4B800AA' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '0xF4B800AA' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '60' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '60' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',\"password\"' (functionDeclarationParams)": "no viable alternative at input ',\"password\"' (functionDeclarationParams)",
+	"no viable alternative at input ',86400' (functionDeclarationParams)": "no viable alternative at input ',86400' (functionDeclarationParams)",
+	"extraneous input '1000' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '1000' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"no viable alternative at input 'createdcar++' (functionDecl)": "no viable alternative at input 'createdcar++' (functionDecl)",
+	"no viable alternative at input 'Fuell[' (functionDecl)": "no viable alternative at input 'Fuell[' (functionDecl)",
+	"mismatched input '69' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '69' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',1478": {
+		"7388' (functionDeclarationParams)": "no viable alternative at input ',1478.7388' (functionDeclarationParams)"
+	},
+	"no viable alternative at input ',\"AntiBreik\"' (functionDeclarationParams)": "no viable alternative at input ',\"AntiBreik\"' (functionDeclarationParams)",
+	"mismatched input '1478": {
+		"7388' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1478.7388' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',2031": {
+		"4806' (functionDeclarationParams)": "no viable alternative at input ',2031.4806' (functionDeclarationParams)"
+	},
+	"mismatched input '2031": {
+		"4806' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2031.4806' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"mismatched input '1136": {
+		"6500' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1136.6500' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',2382": {
+		"5662' (functionDeclarationParams)": "no viable alternative at input ',2382.5662' (functionDeclarationParams)"
+	},
+	"mismatched input '2382": {
+		"5662' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2382.5662' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',2613": {
+		"7803' (functionDeclarationParams)": "no viable alternative at input ',2613.7803' (functionDeclarationParams)"
+	},
+	"mismatched input '2613": {
+		"7803' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2613.7803' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',263": {
+		"1136' (functionDeclarationParams)": "no viable alternative at input ',263.1136' (functionDeclarationParams)"
+	},
+	"mismatched input '253": {
+		"0549' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '253.0549' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',614": {
+		"8352' (functionDeclarationParams)": "no viable alternative at input ',614.8352' (functionDeclarationParams)"
+	},
+	"mismatched input '614": {
+		"8352' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '614.8352' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',1575": {
+		"0957' (functionDeclarationParams)": "no viable alternative at input ',1575.0957' (functionDeclarationParams)"
+	},
+	"mismatched input '1575": {
+		"0957' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1575.0957' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',268": {
+		"3361' (functionDeclarationParams)": "no viable alternative at input ',268.3361' (functionDeclarationParams)"
+	},
+	"mismatched input '268": {
+		"3361' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '268.3361' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',6' (functionDeclarationParams)": "no viable alternative at input ',6' (functionDeclarationParams)",
+	"no viable alternative at input ',30' (functionDeclarationParams)": "no viable alternative at input ',30' (functionDeclarationParams)",
+	"no viable alternative at input ',1135": {
+		"7295' (functionDeclarationParams)": "no viable alternative at input ',1135.7295' (functionDeclarationParams)"
+	},
+	"mismatched input '1135": {
+		"7295' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1135.7295' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',1472": {
+		"8420' (functionDeclarationParams)": "no viable alternative at input ',1472.8420' (functionDeclarationParams)"
+	},
+	"mismatched input '1472": {
+		"8420' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1472.8420' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',212": {
+		"3810' (functionDeclarationParams)": "no viable alternative at input ',212.3810' (functionDeclarationParams)"
+	},
+	"mismatched input '212": {
+		"3810' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '212.3810' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',1797": {
+		"0323' (functionDeclarationParams)": "no viable alternative at input ',1797.0323' (functionDeclarationParams)"
+	},
+	"mismatched input '1797": {
+		"0323' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1797.0323' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',1973": {
+		"7936' (functionDeclarationParams)": "no viable alternative at input ',1973.7936' (functionDeclarationParams)"
+	},
+	"mismatched input '1973": {
+		"7936' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1973.7936' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',2830": {
+		"4048' (functionDeclarationParams)": "no viable alternative at input ',2830.4048' (functionDeclarationParams)"
+	},
+	"mismatched input '2830": {
+		"4048' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2830.4048' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',1961": {
+		"2422' (functionDeclarationParams)": "no viable alternative at input ',1961.2422' (functionDeclarationParams)"
+	},
+	"mismatched input '1961": {
+		"2422' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1961.2422' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',321": {
+		"2846' (functionDeclarationParams)": "no viable alternative at input ',321.2846' (functionDeclarationParams)"
+	},
+	"mismatched input '321": {
+		"2846' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '321.2846' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',91": {
+		"6006' (functionDeclarationParams)": "no viable alternative at input ',91.6006' (functionDeclarationParams)"
+	},
+	"mismatched input '91": {
+		"6006' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '91.6006' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',2196": {
+		"3066' (functionDeclarationParams)": "no viable alternative at input ',2196.3066' (functionDeclarationParams)"
+	},
+	"mismatched input '2196": {
+		"3066' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2196.3066' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',197": {
+		"1036' (functionDeclarationParams)": "no viable alternative at input ',197.1036' (functionDeclarationParams)"
+	},
+	"mismatched input '197": {
+		"1036' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '197.1036' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',3' (functionDeclarationParams)": "no viable alternative at input ',3' (functionDeclarationParams)",
+	"no viable alternative at input ',217": {
+		"7062' (functionDeclarationParams)": "no viable alternative at input ',217.7062' (functionDeclarationParams)"
+	},
+	"mismatched input '217": {
+		"7062' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '217.7062' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',2197": {
+		"4595' (functionDeclarationParams)": "no viable alternative at input ',2197.4595' (functionDeclarationParams)"
+	},
+	"mismatched input '2197": {
+		"4595' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2197.4595' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',2150": {
+		"9121' (functionDeclarationParams)": "no viable alternative at input ',2150.9121' (functionDeclarationParams)"
+	},
+	"mismatched input '2150": {
+		"9121' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '2150.9121' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',1779": {
+		"5966' (functionDeclarationParams)": "no viable alternative at input ',1779.5966' (functionDeclarationParams)"
+	},
+	"mismatched input '1779": {
+		"5966' expecting {'{', '": {
+			"": {
+				"": {
+					"', IDENTIFIER} (ellipse)": "mismatched input '1779.5966' expecting {'{', '...', IDENTIFIER} (ellipse)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',9002' (functionDeclarationParams)": "no viable alternative at input ',9002' (functionDeclarationParams)",
+	"no viable alternative at input ',\"%s\"' (functionDeclarationParams)": "no viable alternative at input ',\"%s\"' (functionDeclarationParams)",
+	"missing '": "' at '(' (unknown rule)",
+	"no viable alternative at input '{/******************************** Античит на пиздорванку *******************************/' (statement)": "no viable alternative at input '{/******************************** Античит на пиздорванку *******************************/' (statement)",
+	"mismatched input '1117' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1117' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input 'Pizdorvanka[' (functionDecl)": "no viable alternative at input 'Pizdorvanka[' (functionDecl)",
+	"extraneous input 'if' expecting {'{', 'new', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'if' expecting {'{', 'new', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"mismatched input '1118' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1118' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',\"JUMP_glide\"' (functionDeclarationParams)": "no viable alternative at input ',\"JUMP_glide\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"JUMP_land\"' (functionDeclarationParams)": "no viable alternative at input ',\"JUMP_land\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"JUMP_launch\"' (functionDeclarationParams)": "no viable alternative at input ',\"JUMP_launch\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"JUMP_launch_R\"' (functionDeclarationParams)": "no viable alternative at input ',\"JUMP_launch_R\"' (functionDeclarationParams)",
+	"mismatched input '1119' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1119' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '1120' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1120' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '": "' expecting {'}', ','} (tag)",
+	"mismatched input ';' expecting '(' (functionDeclarationParams)": "mismatched input ';' expecting '(' (functionDeclarationParams)",
+	"no viable alternative at input ',5": {
+		"0' (functionDeclarationParams)": "no viable alternative at input ',5.0' (functionDeclarationParams)"
+	},
+	"no viable alternative at input ',\"AFK_Tick\"' (functionDeclarationParams)": "no viable alternative at input ',\"AFK_Tick\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"AFK_Check\"' (functionDeclarationParams)": "no viable alternative at input ',\"AFK_Check\"' (functionDeclarationParams)",
+	"no viable alternative at input 'GetPlayerDistanceFromPoint(' (functionDeclarationParams)": "no viable alternative at input 'GetPlayerDistanceFromPoint(' (functionDeclarationParams)",
+	"mismatched input '>' expecting '(' (functionDeclarationParams)": "mismatched input '>' expecting '(' (functionDeclarationParams)",
+	"mismatched input '1122' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1122' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',\"pos_z\"' (functionDeclarationParams)": "no viable alternative at input ',\"pos_z\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"pos_x\"' (functionDeclarationParams)": "no viable alternative at input ',\"pos_x\"' (functionDeclarationParams)",
+	"extraneous input '&&' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '&&' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input ',1136' (functionDeclarationParams)": "no viable alternative at input ',1136' (functionDeclarationParams)",
+	"mismatched input '0002' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '0002' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '1124' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1124' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input 'GetPlayerAnimationIndex(' (functionDeclarationParams)": "no viable alternative at input 'GetPlayerAnimationIndex(' (functionDeclarationParams)",
+	"no viable alternative at input ',animname,sizeof(animname))' (expresion)": "no viable alternative at input ',animname,sizeof(animname))' (expresion)",
+	"mismatched input '1125' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1125' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input '1126' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1126' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"mismatched input 'if' expecting {')', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input 'if' expecting {')', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"mismatched input '[' expecting {')', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input '[' expecting {')', ',', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"mismatched input '1127' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1127' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',1128' (functionDeclarationParams)": "no viable alternative at input ',1128' (functionDeclarationParams)",
+	"no viable alternative at input ',\"rentcar_job\"' (functionDeclarationParams)": "no viable alternative at input ',\"rentcar_job\"' (functionDeclarationParams)",
+	"mismatched input 'do' expecting IDENTIFIER (functionDecl)": "mismatched input 'do' expecting IDENTIFIER (functionDecl)",
+	"mismatched input '\"Flood\"' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '\"Flood\"' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',\"Flood\"' (functionDeclarationParams)": "no viable alternative at input ',\"Flood\"' (functionDeclarationParams)",
+	"no viable alternative at input ',0xFFD5BBAA' (functionDeclarationParams)": "no viable alternative at input ',0xFFD5BBAA' (functionDeclarationParams)",
+	"no viable alternative at input ',\"DO\"' (functionDeclarationParams)": "no viable alternative at input ',\"DO\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"antireklamka\"' (functionDeclarationParams)": "no viable alternative at input ',\"antireklamka\"' (functionDeclarationParams)",
+	"mismatched input '\"antireklamka\"' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '\"antireklamka\"' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',\"s[64]\"' (functionDeclarationParams)": "no viable alternative at input ',\"s[64]\"' (functionDeclarationParams)",
+	"extraneous input '30": {
+		"0' expecting {')', '{', ',', '&', '": {
+			"": {
+				"": {
+					"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '30.0' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+				}
+			}
+		}
+	},
+	"no viable alternative at input ',0xFF9900AA' (functionDeclarationParams)": "no viable alternative at input ',0xFF9900AA' (functionDeclarationParams)",
+	"mismatched input 'goto' expecting IDENTIFIER (functionDecl)": "mismatched input 'goto' expecting IDENTIFIER (functionDecl)",
+	"no viable alternative at input ',\"u\"' (functionDeclarationParams)": "no viable alternative at input ',\"u\"' (functionDeclarationParams)",
+	"extraneous input '!=' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '!=' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input ',\" Игрок оффлайн / не залогинен\"' (functionDeclarationParams)": "no viable alternative at input ',\" Игрок оффлайн / не залогинен\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\" Администратор в режиме наблюдения\"' (functionDeclarationParams)": "no viable alternative at input ',\" Администратор в режиме наблюдения\"' (functionDeclarationParams)",
+	"no viable alternative at input ',plocy+' (functionDeclarationParams)": "no viable alternative at input ',plocy+' (functionDeclarationParams)",
+	"no viable alternative at input ',GetPlayerVirtualWorld(' (functionDeclarationParams)": "no viable alternative at input ',GetPlayerVirtualWorld(' (functionDeclarationParams)",
+	"no viable alternative at input ',GetPlayerInterior(' (functionDeclarationParams)": "no viable alternative at input ',GetPlayerInterior(' (functionDeclarationParams)",
+	"no viable alternative at input ',sizeof(textcar),\" Владелец": " %s\",PTEMP[Vehicleforeach(GetPlayerVehicleID(playerid]' (expresion)",
+	"no viable alternative at input ',\" Владелец": " %s\",PTEMP[Vehicleforeach(GetPlayerVehicleID(playerid]' (expresion)",
+	"no viable alternative at input 'PTEMP[Vehicleforeach(GetPlayerVehicleID(playerid]' (tagableExpression)": "no viable alternative at input 'PTEMP[Vehicleforeach(GetPlayerVehicleID(playerid]' (tagableExpression)",
+	"mismatched input 'exit' expecting IDENTIFIER (functionDecl)": "mismatched input 'exit' expecting IDENTIFIER (functionDecl)",
+	"mismatched input 'switch' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)": "mismatched input 'switch' expecting {',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (expresion)",
+	"mismatched input '1008' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '1008' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"no viable alternative at input ',128,\"%s сделал оружие из материалов %s\",PTEMP[GetPVarInt(playerid,\"Sell_GunId\"]' (expresion)": "no viable alternative at input ',128,\"%s сделал оружие из материалов %s\",PTEMP[GetPVarInt(playerid,\"Sell_GunId\"]' (expresion)",
+	"no viable alternative at input 'PTEMP[GetPVarInt(playerid,\"Sell_GunId\"]' (tagableExpression)": "no viable alternative at input 'PTEMP[GetPVarInt(playerid,\"Sell_GunId\"]' (tagableExpression)",
+	"no viable alternative at input ',\"Sell_GunId\"]' (expresion)": "no viable alternative at input ',\"Sell_GunId\"]' (expresion)",
+	"extraneous input '\"/switchwave\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/switchwave\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/achiv\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/achiv\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/n\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/n\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/l\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/l\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/gcontract\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/gcontract\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/gpayday\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/gpayday\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/sp\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/sp\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/o\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/o\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/бизлист\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/бизлист\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/gov\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/gov\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/s\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/s\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/su\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/su\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/m\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/m\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/am\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/am\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/f\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/f\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/d\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/d\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/t\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/t\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '\"/txt\"' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '\"/txt\"' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"extraneous input '\"/ot\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/ot\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/c\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/c\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/p\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/p\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/h\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/h\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/ad\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/ad\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/re\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/re\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '\"/ку\"' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '\"/ку\"' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"extraneous input '\"/bh\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/bh\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/ap\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/ap\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/delacc\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/delacc\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/a\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/a\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/online\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/online\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/tp\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/tp\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/givelic\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/givelic\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/w\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/w\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/addtq\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/addtq\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/setskin\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/setskin\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/fid\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/fid\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/dir\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/dir\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/mm\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/mm\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/conveyingarms\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/conveyingarms\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/ac\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/ac\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '\"/pmenu\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"/pmenu\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"no viable alternative at input '(\\' (ifStatement)": "no viable alternative at input '(\\' (ifStatement)",
+	"no viable alternative at input '!' (expresion)": "no viable alternative at input '!' (expresion)",
+	"no viable alternative at input ',Query,\"\",#}' (expresion)": "no viable alternative at input ',Query,\"\",#}' (expresion)",
+	"missing ';' at '(' (unknown rule)": "missing ';' at '(' (unknown rule)",
+	"extraneous input 'new' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input 'new' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input 'i=0;' (tagableExpression)": "no viable alternative at input 'i=0;' (tagableExpression)",
+	"no viable alternative at input ',\"RNumbers\",\"), SetPVarInt(playerid,\"RNumber_' (expresion)": "no viable alternative at input ',\"RNumbers\",\"), SetPVarInt(playerid,\"RNumber_' (expresion)",
+	"no viable alternative at input 'RNumber_' (expresion)": "no viable alternative at input 'RNumber_' (expresion)",
+	"missing '(' at 'new' (unknown rule)": "missing '(' at 'new' (unknown rule)",
+	"no viable alternative at input 'do' (expresion)": "no viable alternative at input 'do' (expresion)",
+	"mismatched input '31' expecting IDENTIFIER (tag)": "mismatched input '31' expecting IDENTIFIER (tag)",
+	"extraneous input 'return' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input 'return' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"mismatched input '<' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionDeclarationParams)": "mismatched input '<' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionDeclarationParams)",
+	"mismatched input ']' expecting {'{', '[', ',', ';'} (variable)": "mismatched input ']' expecting {'{', '[', ',', ';'} (variable)",
+	"extraneous input ')' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input ')' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"extraneous input ';' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input ';' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"mismatched input '#include <a_samp>' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#include <a_samp>' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)"
 }
