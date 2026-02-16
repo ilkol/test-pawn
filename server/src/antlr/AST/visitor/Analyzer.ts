@@ -295,6 +295,14 @@ export class Analyzer extends BaseVisitor
 	private curScope: IScope;
 
 	beforeVisitVarInit(node: VariableInit): void {
+		const modifiers: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
+		if(node.modifires.indexOf(VariableModifire.const) !== -1) {
+			modifiers.push(SemanticTokenModifiers.readonly);
+		}
+		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
+		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
+		node.symbol = symbol;
+		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 
 	}
 	afterVisitVarInit(node: VariableInit): void {
