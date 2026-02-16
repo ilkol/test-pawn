@@ -7,6 +7,7 @@ import { AbstractOpenFile } from "../../AbstractOpenFile";
 import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../AST/Nodes/enum/EnumMember";
 import { SymbolReferance } from "../../SymbolSystem/Symbols";
+import { Range } from "../../types";
 
 export class Scope implements IScope
 {
@@ -33,7 +34,7 @@ export class Scope implements IScope
 	 */
 	protected _enums: Map<string, EnumDeclaration> = new Map();
 	
-	public constructor(protected _file: AbstractOpenFile, IScope: IScope|undefined = undefined)
+	public constructor(protected _file: AbstractOpenFile, private _range: Range, IScope: IScope|undefined = undefined)
 	{
 		this._parent = IScope;
 	}
@@ -120,8 +121,8 @@ export class Scope implements IScope
         return undefined;
 	}
 
-	public extend(newSymbol?: SymbolReferance | undefined): IScope {
-		const scope =  new Scope(this._file, this);
+	public extend(range: Range, newSymbol?: SymbolReferance | undefined): IScope {
+		const scope =  new Scope(this._file, range, this);
 		scope.currentSymbol = newSymbol ?? this.currentSymbol;
 		return scope;
 	}
@@ -148,5 +149,12 @@ export class Scope implements IScope
 	}
 	set currenFunction(value: FunctionDeclaration) {
 		Scope.currentFunction = value;
+	}
+
+	get range(): Range {
+		return this._range;
+	}
+	set range(value: Range) {
+		this._range = value;
 	}
 }

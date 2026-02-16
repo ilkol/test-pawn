@@ -1,4 +1,5 @@
 import { AbstractSymbol, SymbolReferance } from "../../SymbolSystem/Symbols";
+import { Range } from "../../types";
 import { Declaration } from "../AST/Nodes/Declaration";
 import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../AST/Nodes/enum/EnumMember";
@@ -11,7 +12,7 @@ export interface IScope
 
 	includedScopes: IScope[];
 
-	extend(newSymbol?: SymbolReferance | undefined): IScope;
+	extend(range: Range, newSymbol?: SymbolReferance | undefined): IScope;
 	
 	addVar(variable: Declaration): void;
 	addEnum(variable: EnumDeclaration): void;
@@ -32,4 +33,7 @@ export interface IScope
 
 	get currenFunction(): FunctionDeclaration;
 	set currenFunction(value: FunctionDeclaration);
+
+	get range(): Range;
+	set range(value: Range);
 }

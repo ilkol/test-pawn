@@ -43,6 +43,7 @@ import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
 import { SymbolReferance } from "../../../SymbolSystem/Symbols";
 import { DefaultTag } from "../Nodes/DefaultTag";
 import { Constexpr } from "../Nodes/Variables/Constexpr";
+import { ScopeManager } from "../../../Managers/ScopeManager";
 
 export class Analyzer extends BaseVisitor
 {
@@ -50,6 +51,7 @@ export class Analyzer extends BaseVisitor
 		protected file: AbstractOpenFile,
 		scope: IScope,
 		private symbolManager: SymbolManager,
+		private scopeManager: ScopeManager,
 	) {
 		super();
 		this.curScope = scope;
@@ -159,13 +161,13 @@ export class Analyzer extends BaseVisitor
 		});
 	}
 	beforeVisitFor(node: ForCycle): void {
-		this.extendScope();
+		this.extendScope(node.range);
 	}
 	afterVisitFor(node: ForCycle): void {
 		this.restrictScope();
 	}
 	beforeVisitWhile(node: WhileCycle): void {
-		this.extendScope();
+		this.extendScope(node.range);
 	}
 	afterVisitWhile(node: WhileCycle): void {
 		this.restrictScope();
@@ -443,7 +445,7 @@ export class Analyzer extends BaseVisitor
 		this.checkTagMismatch(currentFunction.tag, node.value.tag, true, node.value.pos);
 	}
 	beforeVisitCodeBlock(node: CodeBlock): void {
-		this.extendScope();
+		this.extendScope(node.range);
 	}
 	afterVisitCodeBlock(node: CodeBlock): void {
 		this.restrictScope();
@@ -482,7 +484,7 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitDeclarations(declaration: Declarations): void {
-		
+		this.curScope.range = declaration.range;
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
 		this.checkIds(this.curScope.identifires());
@@ -556,7 +558,7 @@ export class Analyzer extends BaseVisitor
 
 		}
 
-		this.extendScope(symbol.defenition);
+		this.extendScope(node.range, symbol.defenition);
 		this.curScope.currenFunction =node;
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
@@ -692,8 +694,9 @@ export class Analyzer extends BaseVisitor
 	// 	return tokens;
 	// }
 
-	private extendScope(newSymbol?: SymbolReferance | undefined) {
-		this.curScope = this.curScope.extend(newSymbol);
+	private extendScope(range: Range, newSymbol?: SymbolReferance | undefined) {
+		this.curScope = this.curScope.extend(range, newSymbol);
+		this.scopeManager.register(this.curScope);
 	}
 	private restrictScope() {
 		this.checkIds(this.curScope.variables());

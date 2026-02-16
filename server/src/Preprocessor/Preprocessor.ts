@@ -187,7 +187,7 @@ export class Preprocessor
 			if(!inc) {
 			} else {
 				this.mergeDefines(inc, document.defines, include.defines);
-				document.scope.includedScopes.push(include.scope);
+				document.globalScope.includedScopes.push(include.globalScope);
 			}
 		}
 	}

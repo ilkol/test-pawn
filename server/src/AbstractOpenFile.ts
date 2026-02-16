@@ -9,6 +9,7 @@ import { ASTNode } from "./antlr/AST/Nodes/ASTNode";
 import { IScope } from "./antlr/Scopes/IScope";
 import { FileCache } from "./cache/FileCache";
 import { CacheManager } from "./cache/CacheManager";
+import { ScopeManager } from "./Managers/ScopeManager";
 
 export enum ParsingStep {
 	/**
@@ -115,6 +116,11 @@ export class FunctionParameterInfo
 export abstract class AbstractOpenFile
 {
 	public _parsinState: ParsingStep = ParsingStep.newFile;
+	protected _scopeManager = new ScopeManager(this);
+
+	get scopeManager(): ScopeManager {
+		return this._scopeManager;
+	}
 
 	set parsinState(value: ParsingStep) {
 		// this.cache.parseStep = 
@@ -275,7 +281,7 @@ export abstract class AbstractOpenFile
 	public includes: Include[] = [];
 	public sortedIncludes: string[] = [];
 	public defines: Map<string, Define[]> = new Map();
-	abstract get scope(): IScope;
+	abstract get globalScope(): IScope;
 
 	// public abstract getCash(): FileCache;
 	// public abstract setCache(cache: FileCache): boolean;

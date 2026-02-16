@@ -1,13 +1,9 @@
 import { AbstractOpenFile } from "./AbstractOpenFile";
 import { IScope } from "./antlr/Scopes/IScope";
-import { Scope } from "./antlr/Scopes/Scope";
 
 export class AntlrOpenedFile extends AbstractOpenFile {
-
-	private _scope: IScope = new Scope(this);
-
-	get scope(): IScope {
-		return this._scope;
+	get globalScope(): IScope {
+		return this.scopeManager.globalScope;
 	}
 
 	public findDirectives(): Promise<void> {
@@ -37,5 +33,4 @@ export class AntlrOpenedFile extends AbstractOpenFile {
 	public processDefines(): Promise<void> {
 		throw new Error("Method not implemented.");
 	}
-
 }

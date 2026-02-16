@@ -64,8 +64,9 @@ export class Parser
 		}
 		let analyzer = new Analyzer(
 			document,
-			document.scope,
-			symbolManager
+			document.globalScope,
+			symbolManager,
+			document.scopeManager
 		);
 	
 		try {
