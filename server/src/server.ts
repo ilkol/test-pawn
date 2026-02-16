@@ -14,7 +14,8 @@ import {
 	Location,
 	WorkspaceEdit,
 	SemanticTokenTypes,
-	SemanticTokenModifiers
+	SemanticTokenModifiers,
+	CompletionItemKind
 } from 'vscode-languageserver/node';
 
 import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
@@ -314,7 +315,7 @@ async function main() {
 	});
 
 	connection.onReferences(async (params, _, __, ___) => {
-		Logger.log("Request semantik tokens")
+		Logger.log("Request references")
 		const references: Location[] = [];	
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
@@ -470,8 +471,44 @@ async function main() {
 	});
 
 	connection.onCompletion(
-		(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-			return getDefaultCompletions();
+		async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
+			let result: CompletionItem[] = getDefaultCompletions();
+			const uri = _textDocumentPosition.textDocument.uri;
+			const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+			if(!document) {
+				return result;
+			}
+			
+			await document.waitForAnalysis();
+			const fileSymbols = symbolManager.getFileSymbols(document.path);
+			fileSymbols.forEach(symbol => {
+				let kind: CompletionItemKind;
+				switch(symbol.symbolKind) {
+					case SymbolKind.Variable:
+						kind = CompletionItemKind.Variable;
+						break;
+					case SymbolKind.EnumMember:
+						kind = CompletionItemKind.EnumMember;
+						break;
+					case SymbolKind.Function:
+						kind = CompletionItemKind.Function;
+						break;
+					case SymbolKind.Constant:
+						kind = CompletionItemKind.Constant;
+						break;
+					case SymbolKind.Enum:
+						kind = CompletionItemKind.Enum;
+						break;
+					default: 
+						kind = CompletionItemKind.Text;
+				}
+				result.push({
+					label: symbol.name,
+					kind,
+				} satisfies CompletionItem);
+			});
+
+			return result;
 		}
 	);
 
