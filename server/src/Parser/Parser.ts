@@ -82,7 +82,7 @@ export class Parser
 		// });
 		// this.prepareSignatures();
 	
-		// console.log(this.AST);
+		// console.log(document.AST);
 		
 		// analyzer.functionsDeclarations.forEach((value, key) => {	
 		// 	const keyMap = this.fileManager.definitionProvider.definitions.get(key);
