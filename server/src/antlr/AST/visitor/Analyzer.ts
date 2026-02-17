@@ -104,7 +104,7 @@ export class Analyzer extends BaseVisitor
 	afterVisitOperatorArrayChar(node: ArrayChar): void {
 
 	}
-	private undefindedFunctions: Map<string, Range[]> = new Map();
+	private pendingReferences: Map<string, Range[]> = new Map();
 
 	beforeVisitBoolLiteral(node: BoolLiteral): void {
 	}
@@ -378,17 +378,44 @@ export class Analyzer extends BaseVisitor
 			}
 		}
 		else {
-			const ranges = this.undefindedFunctions.get(node.id);
-			if(ranges) {
-				ranges.push(node.idPos);
-			}
-			else {
-				this.undefindedFunctions.set(node.id, [node.idPos]);
-			}
+			this.addPendingReference(node.id, node.idPos);
 		}
 		
 		
 	}
+
+	private addPendingReference(functionName: string, callHeadrRange: Range) {
+		const ranges = this.pendingReferences.get(functionName);
+		if(ranges) {
+			ranges.push(callHeadrRange);
+		}
+		else {
+			this.pendingReferences.set(functionName, [callHeadrRange]);
+		}
+	}
+	private resolvePendingReferences(functionSymbol: Symbols.Function) {
+		const pending = this.pendingReferences.get(functionSymbol.name);
+		if(!pending) {
+			return;
+		}
+		pending.forEach(pos => {
+			functionSymbol.addReferance(new Symbols.SymbolReferance(this.file.path, pos, pos));
+
+			// if (this.isDefaultTag(functionSymbol.returnTag)) {
+            //     this.file.diagnostics.push(LSPPawnErrors.reportCustom(
+            //         Locale.t("Function used before definition"), 
+            //         DiagnosticSeverity.Hint, 
+            //         pos
+            //     ));
+            // } else {
+            //     this.file.diagnostics.push(PawnErrors.report(208, pos, functionSymbol.name));
+            // }
+		});
+		this.pendingReferences.delete(functionSymbol.name);
+        functionSymbol.isUsed = true;
+	}
+
+
 	beforeVisitOperatorNew(node: OperatorNew): void {
 	
 	}
@@ -488,7 +515,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
 		this.checkIds(this.curScope.identifires());
-		this.undefindedFunctions.forEach((ranges, id) => {
+		this.pendingReferences.forEach((ranges, id) => {
 			ranges.forEach(range => {
 				this.file.diagnostics.push(LSPPawnErrors.reportError(17, 17, range, {symbolName: id}));
 				// this.file.diagnostics.push(LSPPawnErrors.reportError("17.function", 17, range, {symbolName: id}));
@@ -508,39 +535,8 @@ export class Analyzer extends BaseVisitor
 		} else {
 			this.scopeManager.globalScope.add(symbol);
 			this.scopeManager.globalScope.addFunction(node);
+			this.resolvePendingReferences(symbol);
 		}
-
-		// if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
-		// 	let id = this.curScope.find(node.id);
-		// 	if (id) {
-		// 		this.handleFunctionRedeclaration(node, id);
-		// 	} else {
-		// 		this.curScope.addFunction(node);
-		// 		const ranges = this.undefindedFunctions.get(node.id);
-		// 		if(ranges) {
-		// 			ranges.forEach(range => {
-		// 				if(this.isDefaultTag(node.tag.id)) {
-		// 					this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Function \"%s\" used before definition", node.id), DiagnosticSeverity.Hint, range));
-		// 				} else {
-		// 					this.file.diagnostics.push(PawnErrors.report(208, range, node.id));
-		// 				}
-		// 			});
-		// 			this.undefindedFunctions.delete(node.id);
-		// 			node.used = true;
-		// 		}
-
-		// 		// const array = this.functionsDeclarations.get(node.id);
-		// 		// const el = new funcDef.FunctionDeclaration(node, this.file.URI);
-		// 		// if(array)
-		// 		// {
-		// 		// 	array.push(el);
-		// 		// }
-		// 		// else {
-		// 		// 	this.functionsDeclarations.set(node.id, [el]);
-		// 		// }
-				
-		// 	}
-		// }
 
 		if(node.assigmentFunctionID) {
 			// if(!node.native) {
