@@ -18,12 +18,10 @@ export interface IScope
 	addVar(variable: Declaration): void;
 	addEnum(variable: EnumDeclaration): void;
 	addEnumMember(variable: EnumMember): void;
-	addFunction(func: FunctionDeclaration): void;
 
 	find(id: string): Declaration|undefined;
 	findVar(id: string): VarDeclaration|undefined;
 
-	functions(): Map<string, FunctionDeclaration>;
 	variables(): Map<string, VarDeclaration>;
 	identifires(): Map<string, Declaration>;
 

@@ -74,9 +74,6 @@ export class Scope implements IScope
 	public identifires(): Map<string, Declaration> {
 		return this._ids;
 	}
-	public functions(): Map<string, FunctionDeclaration> {
-		return this._functions;
-	}
 	public variables(): Map<string, VarDeclaration> {
 		return this._variables;
 	}
@@ -114,10 +111,6 @@ export class Scope implements IScope
 	public addVar(variable: VarDeclaration) {
 		this.addIdent(variable);
 		this._variables.set(variable.id, variable);
-	}
-	public addFunction(func: FunctionDeclaration) {
-		this.addIdent(func);
-		this._functions.set(func.id, func);
 	}
 
 	public get parent(): IScope|undefined {

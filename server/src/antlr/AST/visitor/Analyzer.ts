@@ -491,7 +491,6 @@ export class Analyzer extends BaseVisitor
 			this.handleFunctionRedeclaration(node, existing);
 		} else {
 			this.scopeManager.globalScope.add(symbol);
-			this.scopeManager.globalScope.addFunction(node);
 			this.resolvePendingReferences(symbol);
 		}
 
