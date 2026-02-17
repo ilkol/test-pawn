@@ -328,7 +328,7 @@ async function main() {
 		const position = params.position;
 		const fileSymbols = symbolManager.getFileSymbols(document.path);
 		const symbol = fileSymbols.find(symbol => {
-            const references = symbol.getFileReferances(document.path);
+			const references = symbol.getFileReferances(document.path);
 			for(const ref of references) {
 				const res = position.line === ref.tokenRange.start.line &&
 				position.character >= ref.tokenRange.start.character &&
@@ -338,7 +338,7 @@ async function main() {
 				}
 			}
 			return false;
-        });
+		});
 		if(symbol) {
 			const symbols = symbol.getReferences().slice(params.context.includeDeclaration ? 0 : 1);
 			symbols.forEach(ref => {
@@ -364,7 +364,7 @@ async function main() {
 		const position = params.position;
 		const fileSymbols = symbolManager.getFileSymbols(document.path);
 		const symbol = fileSymbols.find(symbol => {
-            const references = symbol.getFileReferances(document.path);
+			const references = symbol.getFileReferances(document.path);
 			for(const ref of references) {
 				const res = position.line === ref.tokenRange.start.line &&
 				position.character >= ref.tokenRange.start.character &&
@@ -374,7 +374,7 @@ async function main() {
 				}
 			}
 			return false;
-        });
+		});
 		if(!symbol) {
 			return null;
 		}
@@ -471,15 +471,20 @@ async function main() {
 	});
 
 	connection.onCompletion(
-		async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
+		async (_params: TextDocumentPositionParams): Promise<CompletionItem[]> => {
 			let result: CompletionItem[] = getDefaultCompletions();
-			const uri = _textDocumentPosition.textDocument.uri;
+			const uri = _params.textDocument.uri;
 			const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
 			if(!document) {
 				return result;
 			}
 			
 			await document.waitForAnalysis();
+
+
+			const position = new Position(_params.position.line, _params.position.character)
+			const currentScope = document.scopeManager.findInnermostAt(position);
+
 			const fileSymbols = symbolManager.getFileSymbols(document.path);
 			fileSymbols.forEach(symbol => {
 				let kind: CompletionItemKind;
