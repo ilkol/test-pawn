@@ -16,6 +16,7 @@ import { OperatorOverloadContext } from "./pawnParser";
 import { FunctionDeclarationParamsContext } from "./pawnParser";
 import { NativeAssigmentContext } from "./pawnParser";
 import { TagContext } from "./pawnParser";
+import { PluralTagContext } from "./pawnParser";
 import { VariableContext } from "./pawnParser";
 import { ArrayIndexContext } from "./pawnParser";
 import { FuncDeclModifContext } from "./pawnParser";
@@ -186,6 +187,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitTag?: (ctx: TagContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.pluralTag`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitPluralTag?: (ctx: PluralTagContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.variable`.
