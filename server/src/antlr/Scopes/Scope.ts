@@ -6,12 +6,12 @@ import { Tag } from "../AST/Nodes/Tag";
 import { AbstractOpenFile } from "../../AbstractOpenFile";
 import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../AST/Nodes/enum/EnumMember";
-import { AbstractSymbol, SymbolReferance } from "../../SymbolSystem/Symbols";
+import { AbstractSymbol, Function, SymbolReferance } from "../../SymbolSystem/Symbols";
 import { Range } from "../../types";
 
 export class Scope implements IScope
 {
-	public static currentFunction: FunctionDeclaration;
+	private _currentFunction: Function | undefined;
 
 	/**
 	 * Родительская область видимости
@@ -144,11 +144,11 @@ export class Scope implements IScope
 		return this._parent;
 	}
 
-	get currenFunction(): FunctionDeclaration {
-		return Scope.currentFunction;
+	get currentFunction(): Function | undefined {
+		return this._currentFunction;
 	}
-	set currenFunction(value: FunctionDeclaration) {
-		Scope.currentFunction = value;
+	set currentFunction(value: Function | undefined) {
+		this._currentFunction = value;
 	}
 
 	get range(): Range {

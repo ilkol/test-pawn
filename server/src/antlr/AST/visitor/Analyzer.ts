@@ -179,15 +179,19 @@ export class Analyzer extends BaseVisitor
 
 	}
 	beforeVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
-		const modifires: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
+		const modifires = [SemanticTokenModifiers.definition];
 		if(node.const) {
 			modifires.push(SemanticTokenModifiers.readonly);
 		}
 
 		const symbol = SymbolsFactory.createParameter(node.id, this.file.path, node.range, node.idPos, modifires);
 		this.symbolManager.add(this.file.path, symbol);
-		node.symbol = symbol;
+		this.curScope.add(symbol);
+
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
+		this.curScope.currentFunction?.parameters.push(symbol);
+
+		node.symbol = symbol;
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
 		this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
@@ -318,70 +322,23 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionCall(node: FunctionCall): void {
 
-		let func = this.curScope.findFunction(node.id);
-
-		if(func) {
-			const symbol = new Symbols.SymbolReferance(this.file.path, node.range, node.idPos, []);
-			func.symbol?.parent?.addReferance(symbol);
-			this.curScope.currentSymbol?.childrens.push(symbol);
-
-			func.used = true;
-			if(!node.isTaged)
-				node.tag = func.tag;
-
-			let param = 0;
-			if(func.parameters.length !== node.vars.length && func.ellipse === undefined) {
-				if(func.parameters.length < node.vars.length)
-				{
-					this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
-					func.parameters.forEach(element => {
-						this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
-						param++;
-					});
-				}
-				else
-				{
-					node.vars.forEach(element => {
-						this.checkTagMismatch(func.parameters[param].tag, element.tag, true, element.pos);
-						param++;
-					});
-
-					for(let i = param; i < func.parameters.length; i++) {
-						if(func.parameters[i].defaultValue) continue;
-						this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
-						break;
-					}
-				}
-			}
-			else {
-				if(func.parameters.length <= node.vars.length && func.ellipse) {
-					func.parameters.forEach(element => {
-						this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
-						param++;
-					});
-					for(; param < node.vars.length; param++)
-					{
-						this.checkTagMismatch(func.ellipse.tag, node.vars[param].tag, true, node.vars[param].pos);
-					}
-				}
-				else {
-					if(func.parameters.length === node.vars.length) {
-						func.parameters.forEach(element => {
-							this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
-							param++;
-						});
-					}
-					else {
-						this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
-					}
-				}
-			}
-		}
-		else {
+		const functionSymbol = this.curScope.findSymbol(node.id);
+		if(!functionSymbol) {
+			// TODO: проврека параметров после разрешения ссылки
 			this.addPendingReference(node.id, node.idPos);
+			return;
+		} 
+		if(!(functionSymbol instanceof Symbols.Function))  {
+			return;
 		}
-		
-		
+		functionSymbol.isUsed = true;
+
+		const reference = new Symbols.SymbolReferance(this.file.path, node.range, node.idPos, []);
+		functionSymbol.addReferance(reference);
+
+		this.curScope.currentSymbol?.childrens.push(reference);
+
+		this.checkCallFunctionParameters(functionSymbol, node);
 	}
 
 	private addPendingReference(functionName: string, callHeadrRange: Range) {
@@ -468,8 +425,8 @@ export class Analyzer extends BaseVisitor
 		if(!node.value) {
 			return;
 		}
-		const currentFunction = this.curScope.currenFunction;
-		this.checkTagMismatch(currentFunction.tag, node.value.tag, true, node.value.pos);
+		// const currentFunction = this.curScope.currenFunction;
+		// this.checkTagMismatch(currentFunction.tag, node.value.tag, true, node.value.pos);
 	}
 	beforeVisitCodeBlock(node: CodeBlock): void {
 		this.extendScope(node.range);
@@ -552,7 +509,7 @@ export class Analyzer extends BaseVisitor
 		}
 
 		this.extendScope(node.range, symbol.defenition);
-		this.curScope.currenFunction = node;
+		this.curScope.currentFunction = symbol;
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope();
@@ -858,5 +815,55 @@ export class Analyzer extends BaseVisitor
 			// 	this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
 			// }
 		}
+	}
+
+	private checkCallFunctionParameters(functionSymbol: Symbols.Function, node: FunctionCall) {
+		// let param = 0;
+		// if(functionSymbol.parameters.length !== node.vars.length && func.ellipse === undefined) {
+		// 	if(func.parameters.length < node.vars.length)
+		// 	{
+		// 		this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
+		// 		func.parameters.forEach(element => {
+		// 			this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
+		// 			param++;
+		// 		});
+		// 	}
+		// 	else
+		// 	{
+		// 		node.vars.forEach(element => {
+		// 			this.checkTagMismatch(func.parameters[param].tag, element.tag, true, element.pos);
+		// 			param++;
+		// 		});
+
+		// 		for(let i = param; i < func.parameters.length; i++) {
+		// 			if(func.parameters[i].defaultValue) continue;
+		// 			this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
+		// 			break;
+		// 		}
+		// 	}
+		// }
+		// else {
+		// 	if(func.parameters.length <= node.vars.length && func.ellipse) {
+		// 		func.parameters.forEach(element => {
+		// 			this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
+		// 			param++;
+		// 		});
+		// 		for(; param < node.vars.length; param++)
+		// 		{
+		// 			this.checkTagMismatch(func.ellipse.tag, node.vars[param].tag, true, node.vars[param].pos);
+		// 		}
+		// 	}
+		// 	else {
+		// 		if(func.parameters.length === node.vars.length) {
+		// 			func.parameters.forEach(element => {
+		// 				this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
+		// 				param++;
+		// 			});
+		// 		}
+		// 		else {
+		// 			this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
+		// 		}
+		// 	}
+		// }
 	}
 }

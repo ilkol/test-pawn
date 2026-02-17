@@ -7,6 +7,7 @@ import { FunctionModifire } from "../../antlr/AST/Nodes/Functions/FunctionDeclar
 
 export class Function extends AbstractSymbol {
 	public hasImplementation = false;
+	public parameters: AbstractSymbol[] = [];
 
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range) {
 		super(

@@ -1,4 +1,4 @@
-import { AbstractSymbol, SymbolReferance } from "../../SymbolSystem/Symbols";
+import { AbstractSymbol, Function, SymbolReferance } from "../../SymbolSystem/Symbols";
 import { Range } from "../../types";
 import { Declaration } from "../AST/Nodes/Declaration";
 import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
@@ -9,6 +9,7 @@ import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
 export interface IScope
 {
 	currentSymbol: SymbolReferance | undefined;
+	currentFunction: Function | undefined;
 
 	includedScopes: IScope[];
 
@@ -30,9 +31,6 @@ export interface IScope
 	get parent(): IScope|undefined;
 
 	get enums(): Map<string, EnumDeclaration>;
-
-	get currenFunction(): FunctionDeclaration;
-	set currenFunction(value: FunctionDeclaration);
 
 	get range(): Range;
 	set range(value: Range);
