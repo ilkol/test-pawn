@@ -1,11 +1,5 @@
-import { FunctionDeclaration } from "../AST/Nodes/Functions/FunctionDeclaration";
-import { Declaration } from "../AST/Nodes/Declaration";
-import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
 import { IScope } from "./IScope";
-import { Tag } from "../AST/Nodes/Tag";
 import { AbstractOpenFile } from "../../AbstractOpenFile";
-import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
-import { EnumMember } from "../AST/Nodes/enum/EnumMember";
 import { AbstractSymbol, Function, SymbolReferance } from "../../SymbolSystem/Symbols";
 import { Range } from "../../types";
 
@@ -17,22 +11,7 @@ export class Scope implements IScope
 	 * Родительская область видимости
 	 */
 	protected _parent: IScope|undefined;
-	/**
-	 * Список всех идентификатор в области видимости
-	 */
-	protected _ids: Map<string, Declaration> = new Map<string, Declaration>();
-	/**
-	 * Объявленные функции
-	 */
-	protected _functions: Map<string, FunctionDeclaration> = new Map();
-	/**
-	 * Объявленные переменные
-	 */
-	protected _variables: Map<string, VarDeclaration> = new Map();
-	/**
-	 * Объявленные перечисления
-	 */
-	protected _enums: Map<string, EnumDeclaration> = new Map();
+
 	
 	public constructor(protected _file: AbstractOpenFile, private _range: Range, IScope: IScope|undefined = undefined)
 	{
@@ -41,7 +20,7 @@ export class Scope implements IScope
 	includedScopes: IScope[] = [];
 	currentSymbol: SymbolReferance | undefined;
 
-	public extend(range: Range, newSymbol?: SymbolReferance | undefined): IScope {
+	public extend(range: Range, newSymbol?: SymbolReferance): IScope {
 		const scope =  new Scope(this._file, range, this);
 		scope.currentSymbol = newSymbol ?? this.currentSymbol;
 		return scope;
@@ -71,6 +50,15 @@ export class Scope implements IScope
 		this._symbols.set(symbol.name, symbol);
 	}
 	findSymbol(name: string): AbstractSymbol | undefined {
-		return this._symbols.get(name) ?? this.parent?.findSymbol(name); 
+		const local = this._symbols.get(name) ?? this.parent?.findSymbol(name);
+		if(local) return local;
+
+		if (!this.parent) {
+			for (const inc of this.includedScopes) {
+				const found = inc.findSymbol(name);
+				if (found) return found;
+			}
+		}
+		return undefined;
 	}
 }
