@@ -202,101 +202,88 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	afterVisitVariable(node: Variable): void {
-		const variable = this.curScope.findSymbol(node.id);
-		if(variable) {
-			const symbol = new Symbols.SymbolReferance(this.file.path, node.range, node.idPos, []);
-			variable.addReferance(symbol);
-			this.curScope.currentSymbol?.childrens.push(symbol);
+		const symbol = this.addSymbolReference(node.id, node.pos, node.idPos);
+		if(!symbol) {
+			return;
+		}
+		
+		/*
+		if(variable instanceof ArrayDeclaration) {
+			if(!(node instanceof Array)) {
 
-			variable.isUsed = true;
-			if(variable instanceof ArrayDeclaration) {
-				if(!(node instanceof Array)) {
-
-				}
-				else {
-					if(variable.indexes.length !== node.indexes.length) {
-						this.file.diagnostics.push(LSPPawnErrors.reportError(48, 48, node.idPos, {original: variable.indexes.length, passed: node.indexes.length}));
-					}
-					else {
-						let iter = -1;
-						node.indexes = node.indexes.map(el => {
-							iter++;
-							if(el.expresion instanceof IntLiteral) {
-								const size = variable.size[iter];
-								if(!size)
-									this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, el.pos));
-								else {
-									const val = el.expresion.value;
-									if(val < 0) {
-										this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArraySize, el.pos));
-									}
-									else if(val >= size) {
-										this.file.diagnostics.push(LSPPawnErrors.reportError(32, 32, el.pos, node.id,  size-1));
-									}
-								}
-								return el.expresion;
-							}
-							if(el.expresion instanceof Variable) {
-								const enumer = variable.indexes[iter];
-								// const checkVar = this.curScope.findVar(el.expresion.id);
-								// if(!(enumer instanceof EnumDeclaration)) {
-								// 	variable.used = true;
-								// } else {
-								// 	if(checkVar instanceof EnumMember) {
-								// 		if(enumer !== checkVar.parent) {
-								// 			this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\", but found from \"%s\"", enumer.id, checkVar.parent!.id), DiagnosticSeverity.Error, el.pos));
-								// 		}
-								// 	}
-								// 	else {
-								// 		this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\"", enumer.id), DiagnosticSeverity.Error, el.pos));
-								// 	}
-								// }
-							}
-							return el;
-						});
-					}
-				}
 			}
 			else {
-				if(node instanceof Array) {
-					if(variable instanceof FunctionDeclarationParameter){
-						let checkvar = variable.variable;
-						if(!(checkvar instanceof Array)) {
-							this.file.diagnostics.push(LSPPawnErrors.reportError("28.notArray",28,  node.idPos, node.id, node.idPos));
+				if(variable.indexes.length !== node.indexes.length) {
+					this.file.diagnostics.push(LSPPawnErrors.reportError(48, 48, node.idPos, {original: variable.indexes.length, passed: node.indexes.length}));
+				}
+				else {
+					let iter = -1;
+					node.indexes = node.indexes.map(el => {
+						iter++;
+						if(el.expresion instanceof IntLiteral) {
+							const size = variable.size[iter];
+							if(!size)
+								this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, el.pos));
+							else {
+								const val = el.expresion.value;
+								if(val < 0) {
+									this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArraySize, el.pos));
+								}
+								else if(val >= size) {
+									this.file.diagnostics.push(LSPPawnErrors.reportError(32, 32, el.pos, node.id,  size-1));
+								}
+							}
+							return el.expresion;
 						}
+						if(el.expresion instanceof Variable) {
+							const enumer = variable.indexes[iter];
+							// const checkVar = this.curScope.findVar(el.expresion.id);
+							// if(!(enumer instanceof EnumDeclaration)) {
+							// 	variable.used = true;
+							// } else {
+							// 	if(checkVar instanceof EnumMember) {
+							// 		if(enumer !== checkVar.parent) {
+							// 			this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\", but found from \"%s\"", enumer.id, checkVar.parent!.id), DiagnosticSeverity.Error, el.pos));
+							// 		}
+							// 	}
+							// 	else {
+							// 		this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\"", enumer.id), DiagnosticSeverity.Error, el.pos));
+							// 	}
+							// }
+						}
+						return el;
+					});
+				}
+			}
+		}
+		else {
+			if(node instanceof Array) {
+				if(variable instanceof FunctionDeclarationParameter){
+					let checkvar = variable.variable;
+					if(!(checkvar instanceof Array)) {
+						this.file.diagnostics.push(LSPPawnErrors.reportError("28.notArray",28,  node.idPos, node.id, node.idPos));
 					}
 				}
 			}
-
-			// node.declaration = variable;
-			// const array = this.functionsCalls.get(node.id);
-			// const el = new Reference<Variable>(node, this.file.URI);
-			// if(array)
-			// {
-			// 	array.push(el);	
-			// }
-			// else {
-			// 	this.functionsCalls.set(node.id, [el]);
-			// }
-			// variable.references.push(node);
-
-			// const token = variable instanceof FunctionDeclarationParameter ? SemanticTokens.parameter : (variable instanceof EnumMember ? SemanticTokens.enumMember : SemanticTokens.variable);
-			// this.tokens.addToken(node.idPos, token, this.checkVarModifires(variable.modifires));
-			// if(!node.isTaged)
-			// 	node.tag = variable.tag;
 		}
-		else {	
-			if(!this.curScope.findSymbol(node.id)) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, node.idPos, {symbolName: node.id}));
-			}
-			// const func = this.curScope.findFunction(node.id);
-			// if(func) {
-			// 	// this.tokens.addToken(node.idPos, SemanticTokens.function);
-			// 	this.addDiagnostic(new DiagnosticError(Locale.t("The identifier \"%s\" is a function", node.id), node.idPos));
-		
-			// }
-			// else this.addDiagnostic(new DiagnosticError(Locale.t("Variable \"%s\" is undefinded", node.id), node.idPos));
-		}
+
+		// node.declaration = variable;
+		// const array = this.functionsCalls.get(node.id);
+		// const el = new Reference<Variable>(node, this.file.URI);
+		// if(array)
+		// {
+		// 	array.push(el);	
+		// }
+		// else {
+		// 	this.functionsCalls.set(node.id, [el]);
+		// }
+		// variable.references.push(node);
+
+		// const token = variable instanceof FunctionDeclarationParameter ? SemanticTokens.parameter : (variable instanceof EnumMember ? SemanticTokens.enumMember : SemanticTokens.variable);
+		// this.tokens.addToken(node.idPos, token, this.checkVarModifires(variable.modifires));
+		// if(!node.isTaged)
+		// 	node.tag = variable.tag;
+		*/
 	}
 	private curScope: IScope;
 
