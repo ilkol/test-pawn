@@ -340,7 +340,7 @@ export class PawnListener implements IPawnListener
 				last.isTaged = true;
 			}
 			else if(last instanceof Ellipse) {
-				last.addTag(node);
+				last.tag = node;
 			}
 			else {
 				this.addDiagnostic(Locale.t("Unexpected tag operator"), DiagnosticSeverity.Error, node.pos);
@@ -732,6 +732,10 @@ export class PawnListener implements IPawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			
+			const id = ctx.IDENTIFIER();
+			node.id = id.text;
+			node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+
 			if(ctx.CONST())
 				node.const = true;
 			if(ctx.reference())

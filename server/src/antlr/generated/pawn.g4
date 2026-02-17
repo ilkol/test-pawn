@@ -72,8 +72,8 @@ assigments:
     ASSIGMENT_XOR           // ^=
 ;
 
-declParams:			(CONST)? (reference)? pluralTag? IDENTIFIER (arrayIndex)* (ASSIGMENT (expresion|arrayInit))?;	
-ellipse:			COMA? pluralTag? PERIOD_FUNC;
+declParams:			(CONST)? (reference)? (pluralTag | tag)? IDENTIFIER (arrayIndex)* (ASSIGMENT (expresion|arrayInit))?;	
+ellipse:			COMA? (pluralTag | tag)? PERIOD_FUNC;
 
 reference:			BIT_AND;
 

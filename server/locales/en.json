@@ -2154,5 +2154,35 @@
 			}
 		}
 	},
-	"mismatched input '=' expecting {'{', 'const', 'static', 'stock', 'public', IDENTIFIER} (varDeclaration)": "mismatched input '=' expecting {'{', 'const', 'static', 'stock', 'public', IDENTIFIER} (varDeclaration)"
+	"mismatched input '=' expecting {'{', 'const', 'static', 'stock', 'public', IDENTIFIER} (varDeclaration)": "mismatched input '=' expecting {'{', 'const', 'static', 'stock', 'public', IDENTIFIER} (varDeclaration)",
+	"mismatched input '=' expecting {')', '{', '[', ',', '=', '": {
+		"": {
+			"": {
+				"'} (declParams)": "mismatched input '=' expecting {')', '{', '[', ',', '=', '...'} (declParams)"
+			}
+		}
+	},
+	"mismatched input 'cellmin' expecting {')', '{', '[', ',', '=', '": {
+		"": {
+			"": {
+				"'} (declParams)": "mismatched input 'cellmin' expecting {')', '{', '[', ',', '=', '...'} (declParams)"
+			}
+		}
+	},
+	"extraneous input '(' expecting {')', '{', ',', '": {
+		"": {
+			"": {
+				"'} (unknown rule)": "extraneous input '(' expecting {')', '{', ',', '...'} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '(' expecting {')', '{', ',', '": {
+		"": {
+			"": {
+				"'} (functionDeclarationParams)": "mismatched input '(' expecting {')', '{', ',', '...'} (functionDeclarationParams)"
+			}
+		}
+	},
+	"missing '(' at '&' (unknown rule)": "missing '(' at '&' (unknown rule)",
+	"mismatched input 'cellmax' expecting {'{', IDENTIFIER} (declParams)": "mismatched input 'cellmax' expecting {'{', IDENTIFIER} (declParams)"
 }

@@ -5,5 +5,5 @@ import { ITag } from "./Tag";
 
 export interface IEllipse extends Node {
 	__type: NodeList.Ellipse;
-	tags: ITag[] | undefined;
+	tags: ITag[] | ITag | undefined;
 }
