@@ -22,7 +22,6 @@ export interface IScope
 
 	find(id: string): Declaration|undefined;
 	findVar(id: string): VarDeclaration|undefined;
-	findFunction(id: string): FunctionDeclaration|undefined;
 
 	functions(): Map<string, FunctionDeclaration>;
 	variables(): Map<string, VarDeclaration>;

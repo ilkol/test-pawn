@@ -71,26 +71,6 @@ export class Scope implements IScope
 		}
         return undefined;
 	}
-	public findFunction(id: string): FunctionDeclaration | undefined {
-		let currentScope: IScope | undefined = this;
-		let globalScope: IScope = this;
-		
-        while (currentScope !== undefined) {
-            if (currentScope.functions().has(id)) {
-                return currentScope.functions().get(id)!;
-            }
-			globalScope = currentScope;
-            currentScope = currentScope.parent;
-        }
-		
-        for(const scope of globalScope.includedScopes) {
-			let res = scope.findFunction(id);
-			if(res) {
-				return res;
-			}
-		}
-        return undefined;
-	}
 	public identifires(): Map<string, Declaration> {
 		return this._ids;
 	}
