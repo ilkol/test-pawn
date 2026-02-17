@@ -319,13 +319,8 @@ export class PawnListener implements IPawnListener
 		let node = <Tag>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
-			let ids = ctx.IDENTIFIER();
-			node.id = ids[0].text;
-			if(ids.length === 1) {
-				let id = ids[0];
-				node.id = id.text;
-				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
-			}
+			let id = ctx.IDENTIFIER();
+			node.id = id.text;
 			// try {
 			// 	let id = ctx.IDENTIFIER();
 			// 	node.id = id.text;
