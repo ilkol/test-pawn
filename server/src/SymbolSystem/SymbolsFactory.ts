@@ -1,6 +1,7 @@
 import { SemanticTokenModifiers, SemanticTokenTypes } from "vscode-languageserver";
 import { Range } from "../types";
 import { Enum, EnumMember, Function, Macro, Parameter, Variable } from "./Symbols";
+import { Tag } from "./Symbols/Tag";
 
 export abstract class SymbolsFactory {
 	private static symbolCount = 0;
@@ -68,5 +69,14 @@ export abstract class SymbolsFactory {
 			modifiers.push(SemanticTokenModifiers.definition);
 		}
 		return new EnumMember(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, modifiers);
+	}
+
+	static createTag(
+		name: string,
+		definitionFilePath: string,
+		range: Range,
+		tokenRange: Range,
+	): EnumMember {
+		return new Tag(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, []);
 	}
 }

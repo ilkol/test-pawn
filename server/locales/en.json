@@ -2153,5 +2153,6 @@
 				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '0xD00D' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
 			}
 		}
-	}
+	},
+	"mismatched input '=' expecting {'{', 'const', 'static', 'stock', 'public', IDENTIFIER} (varDeclaration)": "mismatched input '=' expecting {'{', 'const', 'static', 'stock', 'public', IDENTIFIER} (varDeclaration)"
 }

@@ -1,6 +1,9 @@
+import { SemanticTokenModifiers } from "vscode-languageserver";
 import { AbstractOpenFile } from "../AbstractOpenFile";
 import { IScope } from "../antlr/Scopes/IScope";
 import { Scope } from "../antlr/Scopes/Scope";
+import { Tag } from "../SymbolSystem/Symbols/Tag";
+import { SymbolsFactory } from "../SymbolSystem/SymbolsFactory";
 import { Position, Range } from "../types";
 
 export class ScopeManager {
@@ -14,6 +17,36 @@ export class ScopeManager {
 		private file: AbstractOpenFile
 	) {
 		this._globalScope = new Scope(file, new Range(0,0,0,0));
+		this.injectBuiltinConstants(this._globalScope);
+	}
+
+	private injectBuiltinConstants(scope: IScope) {
+		const boolTag = SymbolsFactory.createTag("bool", "system", new Range(0,0,0,0), new Range(0,0,0,0));
+		const defaultTag = SymbolsFactory.createTag("_", "system", new Range(0,0,0,0), new Range(0,0,0,0));
+		scope.add(boolTag);
+		scope.add(defaultTag);
+
+		[
+			this.createBuildinConstant("true", 1, boolTag),
+			this.createBuildinConstant("false", 0, boolTag),
+
+			this.createBuildinConstant("EOS", 0, defaultTag),
+			this.createBuildinConstant("cellbits", 32, defaultTag),
+			this.createBuildinConstant("cellmax", 2147483647, defaultTag),
+			this.createBuildinConstant("cellmin", -2147483647 - 1, defaultTag),
+			this.createBuildinConstant("charbits", 8, defaultTag),
+			this.createBuildinConstant("charmin", 0, defaultTag),
+			this.createBuildinConstant("charmax", 254, defaultTag), // ~((Ucell)-1 << sCHARBITS) - 1
+			this.createBuildinConstant("ucharmax", 16777215, defaultTag), // (1 << (sizeof(Cell)-1)*8)-1
+			
+			this.createBuildinConstant("__Pawn", 778, defaultTag), // Версия Pawn
+			this.createBuildinConstant("__PawnBuild", 10, defaultTag),
+			// this.addBuildinConstant("__line", 0, defaultTag); // Текущая строка
+		].forEach(scope.add.bind(scope));
+	}
+
+	private createBuildinConstant(name: string, value: number, tag: Tag) {
+		return SymbolsFactory.createVariable(name, "system", new Range(0,0,0,0), new Range(0,0,0,0), [SemanticTokenModifiers.definition, SemanticTokenModifiers.readonly]);
 	}
 
 	/** Глобальная область видимости */
