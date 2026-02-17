@@ -40,18 +40,11 @@ export class Scope implements IScope
 	}
 	includedScopes: IScope[] = [];
 	currentSymbol: SymbolReferance | undefined;
-	addEnum(variable: EnumDeclaration): void {
-		this.addIdent(variable);
-		this._enums.set(variable.id, variable);
-	}
 
 	get enums() {
 		return this._enums;
 	}
 
-	addEnumMember(variable: EnumMember): void {
-		this.addVar(variable);
-	}
 	public findVar(id: string): VarDeclaration | undefined {
 		let currentScope: IScope | undefined = this;
 		let globalScope: IScope = this;

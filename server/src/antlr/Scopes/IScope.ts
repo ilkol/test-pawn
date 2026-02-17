@@ -16,8 +16,6 @@ export interface IScope
 	extend(range: Range, newSymbol?: SymbolReferance | undefined): IScope;
 	
 	addVar(variable: Declaration): void;
-	addEnum(variable: EnumDeclaration): void;
-	addEnumMember(variable: EnumMember): void;
 
 	find(id: string): Declaration|undefined;
 	findVar(id: string): VarDeclaration|undefined;

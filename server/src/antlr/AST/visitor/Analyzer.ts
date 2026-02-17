@@ -455,9 +455,6 @@ export class Analyzer extends BaseVisitor
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
-		if(node.id) {
-			this.checkUsed(node, (variable: EnumDeclaration) => this.curScope.addEnum(variable));
-		}
 		// const array = this.functionsDeclarations.get(node.id);
 		// const el = new Definition<EnumDeclaration>(node, this.file.URI);
 		// if(array)
