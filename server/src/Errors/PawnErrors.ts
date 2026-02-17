@@ -17,6 +17,7 @@ export namespace PawnErrors {
 	export enum Code {
 		MustBeConstantExpression = 8,
 		InvalidArraySize = 9,
+		InvalidFunctioncall = 12,
 		UndefinedSymbol = 17,
 		SymbolAlreadyDefined = 21,
 		MustBeLValue = 22,

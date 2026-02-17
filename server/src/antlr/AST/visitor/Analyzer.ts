@@ -322,24 +322,16 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitFunctionCall(node: FunctionCall): void {
-
-		const functionSymbol = this.curScope.findSymbol(node.id);
-		if(!functionSymbol) {
-			// TODO: проврека параметров после разрешения ссылки
-			this.addPendingReference(node.id, node.idPos);
+		const symbol = this.addSymbolReference(node.id, node.pos, node.idPos);
+		if(!symbol) {
 			return;
 		} 
-		if(!(functionSymbol instanceof Symbols.Function))  {
+		if(!(symbol instanceof Symbols.Function))  {
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidFunctioncall, node.idPos));
 			return;
 		}
-		functionSymbol.isUsed = true;
 
-		const reference = new Symbols.SymbolReferance(this.file.path, node.range, node.idPos, []);
-		functionSymbol.addReferance(reference);
-
-		this.curScope.currentSymbol?.childrens.push(reference);
-
-		this.checkCallFunctionParameters(functionSymbol, node);
+		this.checkCallFunctionParameters(symbol, node);
 	}
 
 	private addPendingReference(functionName: string, callHeadrRange: Range) {
@@ -813,5 +805,22 @@ export class Analyzer extends BaseVisitor
 		// 		}
 		// 	}
 		// }
+	}
+
+	private addSymbolReference(name: string, symbolRange: Range, symbolnameRange: Range) {
+		const symbol = this.curScope.findSymbol(name);
+		if(!symbol) {
+			// TODO: проврека параметров после разрешения ссылки
+			this.addPendingReference(name, symbolnameRange);
+			return undefined;
+		} 
+
+		symbol.isUsed = true;
+
+		const reference = new Symbols.SymbolReferance(this.file.path, symbolRange, symbolnameRange, []);
+		symbol.addReferance(reference);
+		this.curScope.currentSymbol?.childrens.push(reference);
+
+		return symbol;
 	}
 }
