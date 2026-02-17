@@ -778,14 +778,14 @@ export class Analyzer extends BaseVisitor
 		return tag === "_";
 	}
 	private isTagFixed(tag: string): boolean {
-		return tag === "Fixed";
+		return /[A-Z]/.test(tag[0]);
 	}
 
 	private simpleCheckTagMismatch(formalTag: string, actualTag: string, allowCoerce: boolean): boolean {
 		if(formalTag === actualTag) {
 			return true;
 		}
-		// Если необходимый тэг - дефолтный, а проверяемый не Fixed, то проверяемый приводиться к дефолтному
+		// Если необходимый тэг - дефолтный, а проверяемый не "fixed", то проверяемый приводиться к дефолтному
 		return allowCoerce && this.isDefaultTag(formalTag) && this.isTagFixed(actualTag);
 	}
 
