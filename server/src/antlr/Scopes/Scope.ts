@@ -41,69 +41,10 @@ export class Scope implements IScope
 	includedScopes: IScope[] = [];
 	currentSymbol: SymbolReferance | undefined;
 
-	get enums() {
-		return this._enums;
-	}
-
-	public findVar(id: string): VarDeclaration | undefined {
-		let currentScope: IScope | undefined = this;
-		let globalScope: IScope = this;
-
-        while (currentScope !== undefined) {
-            if (currentScope.variables().has(id)) {
-                return currentScope.variables().get(id)!;
-            }
-			globalScope = currentScope;
-            currentScope = currentScope.parent;
-        }
-		for(const scope of globalScope.includedScopes) {
-			let res = scope.findVar(id);
-			if(res) {
-				return res;
-			}
-		}
-        return undefined;
-	}
-	public identifires(): Map<string, Declaration> {
-		return this._ids;
-	}
-	public variables(): Map<string, VarDeclaration> {
-		return this._variables;
-	}
-	public find(id: string): Declaration | undefined {
-		let currentScope: IScope | undefined = this;
-		let globalScope: IScope = this;
-
-        while (currentScope !== undefined) {
-            if (currentScope.identifires().has(id)) {
-                return currentScope.identifires().get(id)!;
-            }
-			globalScope = currentScope;
-            currentScope = currentScope.parent;
-        }
-
-		for(const scope of globalScope.includedScopes) {
-			let res = scope.find(id);
-			if(res) {
-				return res;
-			}
-		}
-        return undefined;
-	}
-
 	public extend(range: Range, newSymbol?: SymbolReferance | undefined): IScope {
 		const scope =  new Scope(this._file, range, this);
 		scope.currentSymbol = newSymbol ?? this.currentSymbol;
 		return scope;
-	}
-
-	private addIdent(id: Declaration) {
-		id.importFile = this._file;
-		this._ids.set(id.id, id);
-	}
-	public addVar(variable: VarDeclaration) {
-		this.addIdent(variable);
-		this._variables.set(variable.id, variable);
 	}
 
 	public get parent(): IScope|undefined {

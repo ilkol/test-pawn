@@ -60,30 +60,30 @@ export class Analyzer extends BaseVisitor
 	}
 
 	private addBuildinConstants() {
-		const boolTag = new Tag(["bool"]);
-		this.addBuildinConstant("true", 1, boolTag);
-		this.addBuildinConstant("false", 0, boolTag);
+		// const boolTag = new Tag(["bool"]);
+		// this.addBuildinConstant("true", 1, boolTag);
+		// this.addBuildinConstant("false", 0, boolTag);
 
-		const defaultTag = new DefaultTag;
-		this.addBuildinConstant("EOS", 0, defaultTag);
-		this.addBuildinConstant("cellbits", 32, defaultTag);
-		this.addBuildinConstant("cellmax", 2147483647, defaultTag);
-		this.addBuildinConstant("cellmin", -2147483647 - 1, defaultTag);
-		this.addBuildinConstant("charbits", 8, defaultTag);
-		this.addBuildinConstant("charmin", 0, defaultTag);
-		this.addBuildinConstant("charmax", 254, defaultTag); // ~((Ucell)-1 << sCHARBITS) - 1
-		this.addBuildinConstant("ucharmax", 16777215, defaultTag); // (1 << (sizeof(Cell)-1)*8)-1
+		// const defaultTag = new DefaultTag;
+		// this.addBuildinConstant("EOS", 0, defaultTag);
+		// this.addBuildinConstant("cellbits", 32, defaultTag);
+		// this.addBuildinConstant("cellmax", 2147483647, defaultTag);
+		// this.addBuildinConstant("cellmin", -2147483647 - 1, defaultTag);
+		// this.addBuildinConstant("charbits", 8, defaultTag);
+		// this.addBuildinConstant("charmin", 0, defaultTag);
+		// this.addBuildinConstant("charmax", 254, defaultTag); // ~((Ucell)-1 << sCHARBITS) - 1
+		// this.addBuildinConstant("ucharmax", 16777215, defaultTag); // (1 << (sizeof(Cell)-1)*8)-1
 		
-		this.addBuildinConstant("__Pawn", 778, defaultTag); // Версия Pawn
-		this.addBuildinConstant("__PawnBuild", 10, defaultTag);
-		this.addBuildinConstant("__line", 0, defaultTag); // Текущая строка
+		// this.addBuildinConstant("__Pawn", 778, defaultTag); // Версия Pawn
+		// this.addBuildinConstant("__PawnBuild", 10, defaultTag);
+		// this.addBuildinConstant("__line", 0, defaultTag); // Текущая строка
 
 	}
 
-	private addBuildinConstant(name: string, value: number, tag: Tag) {
-		let varInit = new Constexpr(name, value, tag);
-		this.curScope.addVar(varInit);
-	}
+	// private addBuildinConstant(name: string, value: number, tag: Tag) {
+	// 	let varInit = new Constexpr(name, value, tag);
+	// 	this.curScope.addVar(varInit);
+	// }
 
 
 	beforeVisitWDohile(node: DoWhileCycle): void {
@@ -131,7 +131,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitArrayDeclaration(node: ArrayDeclaration): void {
-		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
+		// this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
 		
 		// this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(node.modifires).concat([SemanticTokensModifires.declaration]));
 
@@ -144,7 +144,7 @@ export class Analyzer extends BaseVisitor
 					return el.expresion;
 				}
 				if(el.expresion instanceof Variable) {
-					const variable = this.curScope.findVar(el.expresion.id);
+					const variable = this.curScope.findSymbol(el.expresion.id);
 					if(variable) {
 						if(!(variable instanceof EnumDeclaration)) {
 							this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expecting an integer constant or enumeration, but found \"%s\"", el.expresion.name), DiagnosticSeverity.Error, el.pos));
@@ -194,7 +194,7 @@ export class Analyzer extends BaseVisitor
 		node.symbol = symbol;
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
-		this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
+		// this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
 
 		// this.tokens.addToken(node.idPos, SemanticTokens.parameter, this.checkVarModifires(node.modifires).concat([SemanticTokensModifires.declaration]));
 	}
@@ -202,13 +202,13 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	afterVisitVariable(node: Variable): void {
-		const variable = this.curScope.findVar(node.id);
+		const variable = this.curScope.findSymbol(node.id);
 		if(variable) {
 			const symbol = new Symbols.SymbolReferance(this.file.path, node.range, node.idPos, []);
-			variable.symbol?.addReferance(symbol);
+			variable.addReferance(symbol);
 			this.curScope.currentSymbol?.childrens.push(symbol);
 
-			variable.used = true;
+			variable.isUsed = true;
 			if(variable instanceof ArrayDeclaration) {
 				if(!(node instanceof Array)) {
 
@@ -238,19 +238,19 @@ export class Analyzer extends BaseVisitor
 							}
 							if(el.expresion instanceof Variable) {
 								const enumer = variable.indexes[iter];
-								const checkVar = this.curScope.findVar(el.expresion.id);
-								if(!(enumer instanceof EnumDeclaration)) {
-									variable.used = true;
-								} else {
-									if(checkVar instanceof EnumMember) {
-										if(enumer !== checkVar.parent) {
-											this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\", but found from \"%s\"", enumer.id, checkVar.parent!.id), DiagnosticSeverity.Error, el.pos));
-										}
-									}
-									else {
-										this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\"", enumer.id), DiagnosticSeverity.Error, el.pos));
-									}
-								}
+								// const checkVar = this.curScope.findVar(el.expresion.id);
+								// if(!(enumer instanceof EnumDeclaration)) {
+								// 	variable.used = true;
+								// } else {
+								// 	if(checkVar instanceof EnumMember) {
+								// 		if(enumer !== checkVar.parent) {
+								// 			this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\", but found from \"%s\"", enumer.id, checkVar.parent!.id), DiagnosticSeverity.Error, el.pos));
+								// 		}
+								// 	}
+								// 	else {
+								// 		this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\"", enumer.id), DiagnosticSeverity.Error, el.pos));
+								// 	}
+								// }
 							}
 							return el;
 						});
@@ -268,7 +268,7 @@ export class Analyzer extends BaseVisitor
 				}
 			}
 
-			node.declaration = variable;
+			// node.declaration = variable;
 			// const array = this.functionsCalls.get(node.id);
 			// const el = new Reference<Variable>(node, this.file.URI);
 			// if(array)
@@ -282,11 +282,11 @@ export class Analyzer extends BaseVisitor
 
 			// const token = variable instanceof FunctionDeclarationParameter ? SemanticTokens.parameter : (variable instanceof EnumMember ? SemanticTokens.enumMember : SemanticTokens.variable);
 			// this.tokens.addToken(node.idPos, token, this.checkVarModifires(variable.modifires));
-			if(!node.isTaged)
-				node.tag = variable.tag;
+			// if(!node.isTaged)
+			// 	node.tag = variable.tag;
 		}
 		else {	
-			if(!this.curScope.find(node.id)) {
+			if(!this.curScope.findSymbol(node.id)) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, node.idPos, {symbolName: node.id}));
 			}
 			// const func = this.curScope.findFunction(node.id);
@@ -307,12 +307,13 @@ export class Analyzer extends BaseVisitor
 		}
 		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
 		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
+		this.curScope.add(symbol);
 		node.symbol = symbol;
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 
 	}
 	afterVisitVarInit(node: VariableInit): void {
-		this.checkUsed(node, (variable: VariableInit) => this.curScope.addVar(variable));
+		// this.checkUsed(node, (variable: VariableInit) => this.curScope.addVar(variable));
 		if(node.rightValue) {
 			this.checkTagMismatch(node.tag, node.rightValue.tag, true, node.idPos);
 		}			
@@ -471,7 +472,7 @@ export class Analyzer extends BaseVisitor
 		this.curScope.range = declaration.range;
 	}
 	afterVisitDeclarations(declaration: Declarations): void {
-		this.checkIds(this.curScope.identifires());
+		// this.checkIds(this.curScope.identifires());
 		this.pendingReferences.forEach((ranges, id) => {
 			ranges.forEach(range => {
 				this.file.diagnostics.push(LSPPawnErrors.reportError(17, 17, range, {symbolName: id}));
@@ -538,11 +539,12 @@ export class Analyzer extends BaseVisitor
 		}
 		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
 		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
+		this.curScope.add(symbol);
 		node.symbol = symbol;
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
-		this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));		
+		// this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));		
 		// this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(node.modifires).concat(SemanticTokensModifires.declaration));
 	}
 
@@ -616,7 +618,7 @@ export class Analyzer extends BaseVisitor
 	}
 
 	private checkUsed<T extends Declaration>(node: T, callback: (variable: T) => void) {
-		let id = this.curScope.find(node.id);
+		let id = this.curScope.findSymbol(node.id);
 		if (id) {
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.idPos, node.id));
 		} else {
@@ -648,7 +650,7 @@ export class Analyzer extends BaseVisitor
 		this.scopeManager.register(this.curScope);
 	}
 	private restrictScope() {
-		this.checkIds(this.curScope.variables());
+		// this.checkIds(this.curScope.variables());
 		if(this.curScope.parent)
 			this.curScope = this.curScope.parent;
 	}

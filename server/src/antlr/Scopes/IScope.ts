@@ -1,10 +1,5 @@
 import { AbstractSymbol, Function, SymbolReferance } from "../../SymbolSystem/Symbols";
 import { Range } from "../../types";
-import { Declaration } from "../AST/Nodes/Declaration";
-import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
-import { EnumMember } from "../AST/Nodes/enum/EnumMember";
-import { FunctionDeclaration } from "../AST/Nodes/Functions/FunctionDeclaration";
-import { VarDeclaration } from "../AST/Nodes/Variables/VarDeclaration";
 
 export interface IScope
 {
@@ -15,21 +10,10 @@ export interface IScope
 
 	extend(range: Range, newSymbol?: SymbolReferance | undefined): IScope;
 	
-	addVar(variable: Declaration): void;
-
-	find(id: string): Declaration|undefined;
-	findVar(id: string): VarDeclaration|undefined;
-
-	variables(): Map<string, VarDeclaration>;
-	identifires(): Map<string, Declaration>;
-
 	get parent(): IScope|undefined;
-
-	get enums(): Map<string, EnumDeclaration>;
 
 	get range(): Range;
 	set range(value: Range);
-
 
 	add(symbol: AbstractSymbol): void;
 	findSymbol(name: string): AbstractSymbol | undefined;
