@@ -27,7 +27,8 @@ functionDecl:		(funcDeclModif)? tag? IDENTIFIER functionDeclarationParams;
 operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded functionDeclarationParams;
 functionDeclarationParams: OPEN_PARENTHESIS (declParams (COMA declParams)*)? ellipse? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
 nativeAssigment:	ASSIGMENT IDENTIFIER SEMI;
-tag:				(IDENTIFIER|(CURLY_OPEN_BRACKET IDENTIFIER (COMA IDENTIFIER)* CURLY_CLOSE_BRACKET)) COLON;
+tag:				IDENTIFIER COLON;
+pluralTag:			(CURLY_OPEN_BRACKET IDENTIFIER (COMA IDENTIFIER)* CURLY_CLOSE_BRACKET) COLON;
 
 variable:			tag? IDENTIFIER (arrayIndex)*;
 
@@ -71,8 +72,8 @@ assigments:
     ASSIGMENT_XOR           // ^=
 ;
 
-declParams:			(CONST)? (reference)? variable (ASSIGMENT (expresion|arrayInit))?;	
-ellipse:			COMA? tag? PERIOD_FUNC;
+declParams:			(CONST)? (reference)? pluralTag? IDENTIFIER (arrayIndex)* (ASSIGMENT (expresion|arrayInit))?;	
+ellipse:			COMA? pluralTag? PERIOD_FUNC;
 
 reference:			BIT_AND;
 
