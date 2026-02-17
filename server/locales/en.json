@@ -2129,5 +2129,29 @@
 	"extraneous input ';' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input ';' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
 	"mismatched input '#include <a_samp>' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#include <a_samp>' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
 	"no viable alternative at input 'SendMailstrcat' (statement)": "no viable alternative at input 'SendMailstrcat' (statement)",
-	"duplicating function implementation": "duplicating function implementation"
+	"duplicating function implementation": "duplicating function implementation",
+	"no viable alternative at input '{xnew' (statement)": "no viable alternative at input '{xnew' (statement)",
+	"mismatched input 'new' expecting {'}', ','} (tag)": "mismatched input 'new' expecting {'}', ','} (tag)",
+	"extraneous input '1024' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '1024' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '\"t=\"' expecting IDENTIFIER (nativeAssigment)": "mismatched input '\"t=\"' expecting IDENTIFIER (nativeAssigment)",
+	"no viable alternative at input ',iPos*' (functionDeclarationParams)": "no viable alternative at input ',iPos*' (functionDeclarationParams)",
+	"no viable alternative at input ',1024' (functionDeclarationParams)": "no viable alternative at input ',1024' (functionDeclarationParams)",
+	"no viable alternative at input ',\"&f=\"' (functionDeclarationParams)": "no viable alternative at input ',\"&f=\"' (functionDeclarationParams)",
+	"no viable alternative at input 'iLength=' (functionDecl)": "no viable alternative at input 'iLength=' (functionDecl)",
+	"no viable alternative at input ',\"&n=\"' (functionDeclarationParams)": "no viable alternative at input ',\"&n=\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"&s=\"' (functionDeclarationParams)": "no viable alternative at input ',\"&s=\"' (functionDeclarationParams)",
+	"no viable alternative at input ',\"&m=\"' (functionDeclarationParams)": "no viable alternative at input ',\"&m=\"' (functionDeclarationParams)",
+	"extraneous input '0xD00D' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '0xD00D' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	}
 }

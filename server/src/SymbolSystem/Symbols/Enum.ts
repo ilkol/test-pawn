@@ -3,8 +3,11 @@ import { Range } from "../../types";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
+import { EnumMember } from "./EnumMember";
 
 export class Enum extends AbstractSymbol {
+	public members: EnumMember[] = [];
+
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[]) {
 		super(
 			id, 

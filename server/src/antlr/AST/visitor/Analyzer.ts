@@ -438,18 +438,21 @@ export class Analyzer extends BaseVisitor
 		const symbol = SymbolsFactory.createEnumMember(node.id, this.file.path, node.range, node.idPos, true);
 		node.symbol = symbol;
 		this.symbolManager.add(this.file.path, symbol);
-		node.parent?.symbol?.childrens.push(symbol.defenition);
+		node.parent?.symbol?.members.push(symbol);
+		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
+		this.curScope.parent?.add(symbol);
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
-		this.checkUsed(node, (variable: EnumMember) => this.curScope.addEnumMember(variable));
+		// this.checkUsed(node, (variable: EnumMember) => this.curScope.addEnumMember(variable));
 		
 	}
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
-		if(node.id) {
-			const symbol = SymbolsFactory.createEnum(node.id, this.file.path, node.range, node.idPos, true);	
-			this.symbolManager.add(this.file.path, symbol, true);	
-			node.symbol = symbol.defenition;
-		}
+		const name = node.id || "<anonymous>";
+		const symbol = SymbolsFactory.createEnum(name, this.file.path, node.range, node.idPos, true);	
+		this.symbolManager.add(this.file.path, symbol, true);	
+		node.symbol = symbol;
+		this.extendScope(node.range, symbol.defenition);
+		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
 		if(node.id) {

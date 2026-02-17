@@ -5,12 +5,13 @@ import { EnumMember } from "./EnumMember";
 import { Serialization } from "../../../../cache/Serialization";
 import { ASTNode } from "../ASTNode";
 import { SymbolReferance } from "../../../../SymbolSystem/Symbols/SymbolReferance";
+import { Enum } from "../../../../SymbolSystem/Symbols";
 
 export class EnumDeclaration extends Declaration implements IContainsVars<EnumMember>
 {
 	name = "декларация перечисления";
 
-	public symbol?: SymbolReferance;
+	public symbol?: Enum;
 
 	private lastIndex: number = 0;
 	private readonly _variables: EnumMember[] = [];
