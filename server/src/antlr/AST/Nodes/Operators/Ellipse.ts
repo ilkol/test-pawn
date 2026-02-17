@@ -10,8 +10,12 @@ export class Ellipse extends ASTNode
 	}
 	private _tags: Tag[] | undefined = undefined;
 
-	get tag(): Tag[] | undefined {
+	get tags(): Tag[] | undefined {
 		return this._tags;
+	}
+
+	get tagString(): string {
+		return this.tags ? this.tags.map(tag => tag.id).join(", ") : "_";
 	}
 
 	addTag(tag: Tag) {

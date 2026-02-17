@@ -676,7 +676,7 @@ export class Analyzer extends BaseVisitor
 			functionInfo.pushParameter(param);
 		});
 		if(func.ellipse) {
-			const param: FunctionParameterInfo = new FunctionParameterInfo("...", func.ellipse.tag.id);
+			const param: FunctionParameterInfo = new FunctionParameterInfo("...", func.ellipse.tagString);
 			functionInfo.pushParameter(param);
 		}
 	
