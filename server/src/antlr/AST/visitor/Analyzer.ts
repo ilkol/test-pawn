@@ -123,7 +123,7 @@ export class Analyzer extends BaseVisitor
 	afterVisitAssigment(node: AssigmentOperator): void {
 		if(node.left?.declaration) {
 			if(node.left?.declaration.isConstant) {
-				this.file.diagnostics.push(PawnErrors.report(22, node.left.range));
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.left.range));
 			}
 		}
 	}
@@ -220,11 +220,11 @@ export class Analyzer extends BaseVisitor
 							if(el.expresion instanceof IntLiteral) {
 								const size = variable.size[iter];
 								if(!size)
-									this.file.diagnostics.push(PawnErrors.report(8, el.pos));
+									this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, el.pos));
 								else {
 									const val = el.expresion.value;
 									if(val < 0) {
-										this.file.diagnostics.push(PawnErrors.report(9, el.pos));
+										this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArraySize, el.pos));
 									}
 									else if(val >= size) {
 										this.file.diagnostics.push(LSPPawnErrors.reportError(32, 32, el.pos, node.id,  size-1));
@@ -283,7 +283,7 @@ export class Analyzer extends BaseVisitor
 		}
 		else {	
 			if(!this.curScope.find(node.id)) {
-				this.file.diagnostics.push(PawnErrors.report(17, node.idPos, {symbolName: node.id}));
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, node.idPos, {symbolName: node.id}));
 			}
 			// const func = this.curScope.findFunction(node.id);
 			// if(func) {
@@ -599,7 +599,7 @@ export class Analyzer extends BaseVisitor
 			if(element instanceof FunctionDeclaration) {
 				if(!element.used && !element.native && !element.stock && element.modifire !== FunctionModifire.public && element.modifire !== FunctionModifire.forward && element.id !== "main")
 				{
-					this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, element.idPos, key));
 				}
 			} else if(element instanceof Constexpr) {
 				return;
@@ -613,7 +613,7 @@ export class Analyzer extends BaseVisitor
 					if(element.isConstant) {
 						this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Constant is never used"), DiagnosticSeverity.Hint, element.idPos, [DiagnosticTag.Unnecessary]));
 					} else if(!element.stock && element.modifires.indexOf(VariableModifire.public) === -1){
-						this.file.diagnostics.push(PawnErrors.report(203, element.idPos, key));
+						this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, element.idPos, key));
 					}
 				} 
 			}
@@ -662,7 +662,7 @@ export class Analyzer extends BaseVisitor
 	private checkUsed<T extends Declaration>(node: T, callback: (variable: T) => void) {
 		let id = this.curScope.find(node.id);
 		if (id) {
-			this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.idPos, node.id));
 		} else {
 			callback(node);
 		}
@@ -745,7 +745,7 @@ export class Analyzer extends BaseVisitor
 
 	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
 		if(!this.isEqualTag(a.tag, b.tag)) {
-			this.file.diagnostics.push(PawnErrors.report(213, errorRange, Locale.t("Tag"), a.tag.tagString, b.tag.tagString));
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, errorRange, Locale.t("Tag"), a.tag.tagString, b.tag.tagString));
 			return false;
 		}
 		return true;
@@ -797,7 +797,7 @@ export class Analyzer extends BaseVisitor
 		const lastTag = names.pop();
 		const formalTag = names.join(", ");
 		const formalTagsName = formalTag === "" ? `${lastTag},` : `${formalTag} or ${lastTag};`;
-		this.file.diagnostics.push(PawnErrors.report(213, range, formalTags.length === 1 ? Locale.t("tag") : Locale.t("tags"), formalTagsName, actualTag))
+		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, range, formalTags.length === 1 ? Locale.t("tag") : Locale.t("tags"), formalTagsName, actualTag))
 	}	
 
 	private checkAllTags(formalTags: string[], actualTag: string): boolean {
@@ -813,7 +813,7 @@ export class Analyzer extends BaseVisitor
 		if(this.simpleCheckTagMismatch(formalTag, actualTag, allowCoerce)) {
 			return;
 		}
-		this.file.diagnostics.push(PawnErrors.report(213, range, Locale.t("tag"), formalTag, actualTag))
+		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, range, Locale.t("tag"), formalTag, actualTag))
 	}
 
 	private isDefaultTag(tag: string): boolean {
@@ -833,7 +833,7 @@ export class Analyzer extends BaseVisitor
 
 	private handleFunctionRedeclaration(node: FunctionDeclaration, existing: Symbols.AbstractSymbol) {
 		if(!(existing instanceof Symbols.Function)) {
-			this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.idPos, node.id));
 			return;
 		}
 		if(existing.hasImplementation) {

@@ -235,7 +235,7 @@ export class Preprocessor
 			includePath.absolutePath = await this.plungeInclude(includePath, this.fileManager.currentPath);
 			if(!includePath.absolutePath) { // Если путь не найден, то пропускаем
 				if(!includePath.silent) {
-					openedFile.diagnostics.push(PawnErrors.report(100, includePath.pathRange, includePath.pathText));
+					openedFile.diagnostics.push(PawnErrors.report(PawnErrors.Code.CannotReadFromFile, includePath.pathRange, includePath.pathText));
 				}
 				continue;
 			} 
@@ -338,7 +338,7 @@ export class Preprocessor
 			}
 			else if(element instanceof Directives.Error) {
 				document.diagnostics.push(PawnErrors.report(
-					element.type === Directives.Error.Type.Error ? 111 : 237, 
+					element.type === Directives.Error.Type.Error ? PawnErrors.Code.UserError : PawnErrors.Code.UserWarning, 
 					element.range, 
 					element.message
 				));
@@ -394,7 +394,7 @@ export class Preprocessor
 			lastDef.undef = directive;
 		} else {
 			console.log(directive.define);
-			this.currentDocument?.diagnostics.push(PawnErrors.report(17, directive.defineRange, {symbolName: directive.define}));
+			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, directive.defineRange, {symbolName: directive.define}));
 		}
 	}
 	private handleDefine(directive: Directives.Defining.Define, defines:  Map<string, Directives.Defining.Define[]>)
@@ -433,7 +433,7 @@ export class Preprocessor
 	private handleEndIf(code: string, directive: Directives.Conditionals.Endif, ifStack: ConditionStack): string
 	{
 		if (ifStack.length === 0) {
-			this.currentDocument?.diagnostics.push(PawnErrors.report(26, directive.range));
+			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, directive.range));
 			return code;
 			throw new Error("Unexpected #endif");
 		}
@@ -471,7 +471,7 @@ export class Preprocessor
 	private handleElse(directive: Directives.Conditionals.Else, ifStack: ConditionStack): void
 	{
 		if (ifStack.length === 0) {
-			this.currentDocument?.diagnostics.push(PawnErrors.report(26, directive.range));
+			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, directive.range));
 			return;
 			throw new Error("Unexpected #else");
 		}
@@ -484,7 +484,7 @@ export class Preprocessor
 	private handleElseIf(directive: Directives.Conditionals.ElseIf, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>): void
 	{
 		if (ifStack.length === 0) {
-			this.currentDocument?.diagnostics.push(PawnErrors.report(26, directive.range));
+			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, directive.range));
 			return;
 		}
 	
@@ -706,7 +706,7 @@ export class Preprocessor
 				);
 			}
 			default:
-				this.currentDocument?.diagnostics.push(PawnErrors.report(31, directiveRange));
+				this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.UnknownDirective, directiveRange));
 		}
 	}
 
