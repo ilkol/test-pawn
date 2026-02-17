@@ -552,11 +552,11 @@ async function main() {
 		}
 		await document.waitForAnalysis();
 		
-		// symbolManager.getFileGlobalSymbols(document.path).forEach((symbol) => {
-		// 	symbols.push(
-		// 		symbol.defenition.getSymbolInfo(),
-		// 	);
-		// });
+		symbolManager.getFileGlobalSymbols(document.path).forEach((symbol) => {
+			symbols.push(
+				symbol.defenition.getSymbolInfo(),
+			);
+		});
 
 		return symbols;
 	});

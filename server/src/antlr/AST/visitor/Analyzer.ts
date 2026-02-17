@@ -452,8 +452,8 @@ export class Analyzer extends BaseVisitor
 		const symbol = SymbolsFactory.createEnum(name, this.file.path, node.range, node.idPos, true);	
 		this.symbolManager.add(this.file.path, symbol, true);	
 		node.symbol = symbol;
-		this.extendScope(node.range, symbol.defenition);
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
+		this.extendScope(node.range, symbol.defenition);
 	}
 	afterVisitEnumDeclaration(node: EnumDeclaration): void {
 		// const array = this.functionsDeclarations.get(node.id);
