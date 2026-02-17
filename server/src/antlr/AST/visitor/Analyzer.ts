@@ -40,7 +40,7 @@ import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
 import { SymbolManager } from "../../../SymbolSystem";
 import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
-import { SymbolReferance } from "../../../SymbolSystem/Symbols";
+import * as Symbols from "../../../SymbolSystem/Symbols";
 import { DefaultTag } from "../Nodes/DefaultTag";
 import { Constexpr } from "../Nodes/Variables/Constexpr";
 import { ScopeManager } from "../../../Managers/ScopeManager";
@@ -200,7 +200,7 @@ export class Analyzer extends BaseVisitor
 	afterVisitVariable(node: Variable): void {
 		const variable = this.curScope.findVar(node.id);
 		if(variable) {
-			const symbol = new SymbolReferance(this.file.path, node.range, node.idPos, []);
+			const symbol = new Symbols.SymbolReferance(this.file.path, node.range, node.idPos, []);
 			variable.symbol?.addReferance(symbol);
 			this.curScope.currentSymbol?.childrens.push(symbol);
 
@@ -321,7 +321,7 @@ export class Analyzer extends BaseVisitor
 		let func = this.curScope.findFunction(node.id);
 
 		if(func) {
-			const symbol = new SymbolReferance(this.file.path, node.range, node.idPos, []);
+			const symbol = new Symbols.SymbolReferance(this.file.path, node.range, node.idPos, []);
 			func.symbol?.parent?.addReferance(symbol);
 			this.curScope.currentSymbol?.childrens.push(symbol);
 
@@ -500,50 +500,47 @@ export class Analyzer extends BaseVisitor
 		const symbol = SymbolsFactory.createFunction(node.id, this.file.path, node.range, node.idPos);
 		this.symbolManager.add(this.file.path, symbol, true);
 		node.symbol = symbol.defenition;
-		if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
-			let id = this.curScope.find(node.id);
-			if (id) {
-				if(id instanceof FunctionDeclaration) {
-					if(!id.code) {
-						if(!node.code) {
-							this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("duplicating function head"), DiagnosticSeverity.Warning, node.idPos));
-						}
-					}else {
-						if((id.modifire !== FunctionModifire.forward && node.modifire !== FunctionModifire.public) && (id.modifire !== FunctionModifire.public && node.modifire !== FunctionModifire.forward)) {
-							this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
-						}
-					}
-				}
-				else {
-					this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
-				}
-			} else {
-				this.curScope.addFunction(node);
-				const ranges = this.undefindedFunctions.get(node.id);
-				if(ranges) {
-					ranges.forEach(range => {
-						if(this.isDefaultTag(node.tag.id)) {
-							this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Function \"%s\" used before definition", node.id), DiagnosticSeverity.Hint, range));
-						} else {
-							this.file.diagnostics.push(PawnErrors.report(208, range, node.id));
-						}
-					});
-					this.undefindedFunctions.delete(node.id);
-					node.used = true;
-				}
+		symbol.hasImplementation = node.code !== undefined;
 
-				// const array = this.functionsDeclarations.get(node.id);
-				// const el = new funcDef.FunctionDeclaration(node, this.file.URI);
-				// if(array)
-				// {
-				// 	array.push(el);
-				// }
-				// else {
-				// 	this.functionsDeclarations.set(node.id, [el]);
-				// }
-				
-			}
+		const existing = this.scopeManager.globalScope.findSymbol(node.id);
+		if(existing) {
+			this.handleFunctionRedeclaration(node, existing);
+		} else {
+			this.scopeManager.globalScope.add(symbol);
+			this.scopeManager.globalScope.addFunction(node);
 		}
+
+		// if(node.id !== "main" && !(node instanceof OperatorOverload)) { 
+		// 	let id = this.curScope.find(node.id);
+		// 	if (id) {
+		// 		this.handleFunctionRedeclaration(node, id);
+		// 	} else {
+		// 		this.curScope.addFunction(node);
+		// 		const ranges = this.undefindedFunctions.get(node.id);
+		// 		if(ranges) {
+		// 			ranges.forEach(range => {
+		// 				if(this.isDefaultTag(node.tag.id)) {
+		// 					this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Function \"%s\" used before definition", node.id), DiagnosticSeverity.Hint, range));
+		// 				} else {
+		// 					this.file.diagnostics.push(PawnErrors.report(208, range, node.id));
+		// 				}
+		// 			});
+		// 			this.undefindedFunctions.delete(node.id);
+		// 			node.used = true;
+		// 		}
+
+		// 		// const array = this.functionsDeclarations.get(node.id);
+		// 		// const el = new funcDef.FunctionDeclaration(node, this.file.URI);
+		// 		// if(array)
+		// 		// {
+		// 		// 	array.push(el);
+		// 		// }
+		// 		// else {
+		// 		// 	this.functionsDeclarations.set(node.id, [el]);
+		// 		// }
+				
+		// 	}
+		// }
 
 		if(node.assigmentFunctionID) {
 			// if(!node.native) {
@@ -559,7 +556,7 @@ export class Analyzer extends BaseVisitor
 		}
 
 		this.extendScope(node.range, symbol.defenition);
-		this.curScope.currenFunction =node;
+		this.curScope.currenFunction = node;
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope();
@@ -694,7 +691,7 @@ export class Analyzer extends BaseVisitor
 	// 	return tokens;
 	// }
 
-	private extendScope(range: Range, newSymbol?: SymbolReferance | undefined) {
+	private extendScope(range: Range, newSymbol?: Symbols.SymbolReferance | undefined) {
 		this.curScope = this.curScope.extend(range, newSymbol);
 		this.scopeManager.register(this.curScope);
 	}
@@ -836,5 +833,34 @@ export class Analyzer extends BaseVisitor
 		}
 		// Если необходимый тэг - дефолтный, а проверяемый не Fixed, то проверяемый приводиться к дефолтному
 		return allowCoerce && this.isDefaultTag(formalTag) && this.isTagFixed(actualTag);
+	}
+
+	private handleFunctionRedeclaration(node: FunctionDeclaration, existing: Symbols.AbstractSymbol) {
+		if(!(existing instanceof Symbols.Function)) {
+			this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
+			return;
+		}
+		if(existing.hasImplementation) {
+			if (!node.code) {
+				this.file.diagnostics.push(LSPPawnErrors.reportCustom(
+					Locale.t("duplicating function head"), 
+					DiagnosticSeverity.Warning, 
+					node.idPos
+				));
+			} else {
+				this.file.diagnostics.push(LSPPawnErrors.reportCustom(
+					Locale.t("duplicating function implementation"), 
+					DiagnosticSeverity.Warning, 
+					node.idPos
+				));
+			}
+		} else {
+			// const isCompatible = (existing.modifier === FunctionModifire.forward && node.modifier === FunctionModifire.public) ||
+            //                  (existing.modifier === FunctionModifire.public && node.modifier === FunctionModifire.forward);
+
+			// if (!isCompatible) {
+			// 	this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
+			// }
+		}
 	}
 }

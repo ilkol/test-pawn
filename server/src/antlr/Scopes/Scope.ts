@@ -6,7 +6,7 @@ import { Tag } from "../AST/Nodes/Tag";
 import { AbstractOpenFile } from "../../AbstractOpenFile";
 import { EnumDeclaration } from "../AST/Nodes/enum/EnumDeclaration";
 import { EnumMember } from "../AST/Nodes/enum/EnumMember";
-import { SymbolReferance } from "../../SymbolSystem/Symbols";
+import { AbstractSymbol, SymbolReferance } from "../../SymbolSystem/Symbols";
 import { Range } from "../../types";
 
 export class Scope implements IScope
@@ -156,5 +156,14 @@ export class Scope implements IScope
 	}
 	set range(value: Range) {
 		this._range = value;
+	}
+
+
+	protected _symbols: Map<string, AbstractSymbol> = new Map();
+	add(symbol: AbstractSymbol) {
+		this._symbols.set(symbol.name, symbol);
+	}
+	findSymbol(name: string): AbstractSymbol | undefined {
+		return this._symbols.get(name) ?? this.parent?.findSymbol(name); 
 	}
 }

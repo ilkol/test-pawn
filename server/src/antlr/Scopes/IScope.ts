@@ -36,4 +36,8 @@ export interface IScope
 
 	get range(): Range;
 	set range(value: Range);
+
+
+	add(symbol: AbstractSymbol): void;
+	findSymbol(name: string): AbstractSymbol | undefined;
 }

@@ -3,8 +3,11 @@ import { Range } from "../../types";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
+import { FunctionModifire } from "../../antlr/AST/Nodes/Functions/FunctionDeclaration";
 
 export class Function extends AbstractSymbol {
+	public hasImplementation = false;
+
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range) {
 		super(
 			id, 
