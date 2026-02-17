@@ -22,6 +22,7 @@ export abstract class AbstractSymbol {
 	public readonly kind: number;
 
 	private referances: SymbolReferance[] = [];
+	public isUsed = false;
 
 	public readonly defenition: SymbolReferance;
 
