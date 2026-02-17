@@ -9,7 +9,7 @@ export class BoolLiteral extends Literal<boolean>
 	name = "булево";
 	constructor() {
 		super();
-		this.tag = new Tag(["bool"]);
+		this.tag = new Tag("bool");
 	}
 
 	public accept(visitor: IVisitor): void {

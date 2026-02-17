@@ -13,7 +13,7 @@ export class ChainedOperator extends AbstractOperator
 	private cur?: BinarOperator = undefined;
 	constructor() {
 		super();	
-		this.tag = new Tag(["bool"]);
+		this.tag = new Tag("bool");
 	}
 
 	public accept(visitor: IVisitor): void {

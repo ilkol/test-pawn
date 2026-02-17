@@ -403,7 +403,7 @@ export class Analyzer extends BaseVisitor
 
 		if(node.left && node.right) {
 			this.checkTagMismatch(node.left.tag, node.right.tag, true, node.pos);
-			if(!node.isTaged && node.tag.tags.indexOf("bool") === -1) {
+			if(!node.isTaged && node.tag.id !== "bool") {
 				node.tag = node.left.tag;
 			}
 		}
@@ -415,7 +415,7 @@ export class Analyzer extends BaseVisitor
 			case ">=":
 			case "<=":
 			case "==":
-				(<BinarOperator>node).tag = new Tag(["bool"]);
+				(<BinarOperator>node).tag = new Tag("bool");
 		}
 	}
 	beforeVisitReturn(node: ReturnStatement): void {
@@ -655,45 +655,6 @@ export class Analyzer extends BaseVisitor
 			this.curScope = this.curScope.parent;
 	}
 
-
-	private isEqualTag(a: Tag, b: Tag): boolean {
-		for(let first of a.tags) {
-			for(let second of b.tags) {
-				if(this.isEqualSimpleTag(first,second)) {
-					return true;
-				}
-			}
-		}
-		return false;
-		// console.error(a, b);
-		// if(a.tags.length === 1 && b.tags.length) {
-		// 	return a.id === b.id || (a.id === "_" && b.id === "bool") || (b.id === "_" && a.id === "bool");
-		// }
-		// else if(a.tags.length === 1) {
-		// 	const tag = a.tags[0];
-		// 	for(var element of b.tags)
-		// 	{
-		// 		if(tag === element) return true;
-		// 	}
-		// }
-		// else if(b.tags.length === 1) {
-		// 	const tag = b.tags[0];
-		// 	for(var element of a.tags)
-		// 	{
-		// 		if(tag === element) return true;
-		// 	}
-		
-		// }
-		// else {
-		// 	for(var element of a.tags)
-		// 	{
-		// 		console.log(element, b.tags.indexOf(element));
-		// 		if(b.tags.indexOf(element) !== -1) return true;
-		// 	}
-		// }
-		// return false;
-
-	}
 	private isEqualSimpleTag(a: string, b: string) {
 		if(a === b) {
 			return true;
@@ -701,29 +662,21 @@ export class Analyzer extends BaseVisitor
 		return a === "_" && b === "bool" || a === "_" && b === "bool";
 	}
 
-	private compareTag(a: IHasTag, b: IHasTag, errorRange: Range): boolean {
-		if(!this.isEqualTag(a.tag, b.tag)) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, errorRange, Locale.t("Tag"), a.tag.tagString, b.tag.tagString));
-			return false;
-		}
-		return true;
-	}
-
 	public functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
 
 	private addFunctionSignature(func: FunctionDeclaration) {
 
-		const functionInfo: FunctionInfo = new FunctionInfo(func.id, func.tag.tagString);
+		const functionInfo: FunctionInfo = new FunctionInfo(func.id, func.tag.id);
 		// functionInfo.docs = func.docs;
 		func.parameters.forEach(el => {
-			const param: FunctionParameterInfo = new FunctionParameterInfo(el.id, el.tag.tagString);
+			const param: FunctionParameterInfo = new FunctionParameterInfo(el.id, el.tag.id);
 			param.constant = el.const;
 			param.reference = el.reference;
 
 			functionInfo.pushParameter(param);
 		});
 		if(func.ellipse) {
-			const param: FunctionParameterInfo = new FunctionParameterInfo("...", func.ellipse.tag.tagString);
+			const param: FunctionParameterInfo = new FunctionParameterInfo("...", func.ellipse.tag.id);
 			functionInfo.pushParameter(param);
 		}
 	
@@ -737,13 +690,7 @@ export class Analyzer extends BaseVisitor
 	 * @param allowCoerce разрешено грубое приведение типа
 	 */
 	private checkTagMismatch(formalTag: Tag, actualTag: Tag, allowCoerce: boolean, errorRange: Range) {
-		if(formalTag.tags.length === 1) {
-			this.checkSingleTagMismatch(formalTag.tags[0], actualTag.tags[0], allowCoerce, errorRange);
-			return;
-		}
-		else {
-			this.checkMultyTagMismatch(formalTag.tags, actualTag.tags[0], errorRange);
-		}
+		this.checkSingleTagMismatch(formalTag.id, actualTag.id, allowCoerce, errorRange);
 	}
 
 	private checkMultyTagMismatch(formalTags: string[], actualTag: string, range: Range) {

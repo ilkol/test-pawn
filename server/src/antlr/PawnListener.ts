@@ -101,7 +101,7 @@ export class PawnListener implements IPawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			node.operator = ctx.canBeOverloaded().text;
-			node.id = node.tag.tagString + `:operator` + node.operator;
+			node.id = node.tag.id + `:operator` + node.operator;
 
 			node.setIDPos(
 				ctx.OPERATOR().symbol.line, ctx.OPERATOR().symbol.charPositionInLine, 
@@ -288,7 +288,7 @@ export class PawnListener implements IPawnListener
 			}
 
 			node.vars.forEach(element => {
-				element.tag = new Tag([node.id]);
+				element.tag = new Tag(node.id);
 			});
 		}
 	}
@@ -320,9 +320,7 @@ export class PawnListener implements IPawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			let ids = ctx.IDENTIFIER();
-			ids.forEach(id => {
-				node.addTag(id.text);
-			});
+			node.id = ids[0].text;
 			if(ids.length === 1) {
 				let id = ids[0];
 				node.id = id.text;

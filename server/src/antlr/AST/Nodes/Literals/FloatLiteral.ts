@@ -7,7 +7,7 @@ export class FloatLiteral extends NumberLiteral<number>
 {
 	name = "вещественное число";
 	constructor() {
-		const tag = new Tag(["Float"]);
+		const tag = new Tag("Float");
 		tag.id = "Float";
 
 		super(tag);

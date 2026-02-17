@@ -7,7 +7,7 @@ export class FixedLiteral extends NumberLiteral<string>
 {
 	name = "Fixed число";
 	constructor() {
-		const tag = new Tag(["Real"]);
+		const tag = new Tag("Real");
 
 		super(tag);
 	}

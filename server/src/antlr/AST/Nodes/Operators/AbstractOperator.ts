@@ -18,7 +18,7 @@ export class AbstractOperator extends Expression
 		switch(_operator) {
 			case "!": {
 				// this.tag = new Tag();
-				this.tag.tags = ["bool"];
+				this.tag.id = "bool";
 			}
 		}
 	}

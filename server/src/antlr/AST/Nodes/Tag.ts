@@ -10,30 +10,9 @@ export class Tag extends HasID
 	public accept(visitor: IVisitor): void {
 		throw new Error("Method not implemented.");
 	}
-	constructor(tags: string[] = []) {
+	constructor(tag: string = "_") {
 		super();
-		this._tags = tags;
-	}
-
-	protected _tags: string[] = [];
-
-	public addTag(tagName: string) {
-		this._tags.push(tagName);
-	}
-	public get tags(): string[]
-	{
-		return this._tags;
-	}
-	public set tags(tags: string[])
-	{
-		this._tags = tags;
-	}
-	public get tagString(): string
-	{
-		if(this._tags.length === 1) {
-			return this._tags[0];
-		}
-		return "{" + this._tags.map(el => el).join(", ") + "}";
+		this.id = tag;
 	}
 
 	toJSON(): Serialization.Nodes.Tag {
@@ -41,11 +20,10 @@ export class Tag extends HasID
 			...super.toJSON(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			__type: Serialization.NodeList.Tag,
-			tags: this._tags,
 		};
 	}
 	static fromJSON(json: Serialization.Nodes.Tag): Tag {
-		const instance = new Tag(json.tags);
+		const instance = new Tag(json.identifire.text);
 		instance.prepareFromJSON(json);
 		return instance;
 	}
