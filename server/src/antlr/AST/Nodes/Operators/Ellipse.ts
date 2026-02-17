@@ -1,28 +1,30 @@
 import { Serialization } from "../../../../cache/Serialization";
 import { IVisitor } from "../../visitor/IVisitor";
 import { ASTNode } from "../ASTNode";
-import { DefaultTag } from "../DefaultTag";
-import { IHasTag } from "../IHasTag";
 import { Tag } from "../Tag";
 
-export class Ellipse extends ASTNode implements IHasTag
+export class Ellipse extends ASTNode
 {
 	public accept(visitor: IVisitor): void {
 		throw new Error("Method not implemented.");
 	}
-	private _tag: Tag = new DefaultTag();
+	private _tags: Tag[] | undefined = undefined;
 
-	get tag(): Tag {
-		return this._tag;
-	}
-	set tag(v: Tag) {
-		this._tag = v;
+	get tag(): Tag[] | undefined {
+		return this._tags;
 	}
 
+	addTag(tag: Tag) {
+		if(!this._tags) {
+			this._tags = [];
+		}
+		this._tags.push(tag);
+	}
+	
 	toJSON(): Serialization.Nodes.Ellipse {
 		return {
 			...super.toJSON(),
-			tag: this._tag.toJSON(),
+			tags: this._tags?.map(tag => tag.toJSON()),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			__type: Serialization.NodeList.Ellipse,
 		};
@@ -31,7 +33,11 @@ export class Ellipse extends ASTNode implements IHasTag
 	static fromJSON(json: Serialization.Nodes.Ellipse): Ellipse {
 		const instance = new Ellipse();
 		instance.prepareFromJSON(json);
-		instance._tag = Serialization.Deserialize.object(json.tag);
+		if(json.tags) {
+			instance._tags = json.tags.map(tag => Serialization.Deserialize.object(tag));
+		} else {
+			instance._tags = undefined;
+		}
 		return instance;
 	}
 
