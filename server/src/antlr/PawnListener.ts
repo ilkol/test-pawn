@@ -318,6 +318,7 @@ export class PawnListener implements IPawnListener
 			ctx.IDENTIFIER().forEach(id => {
 				const tag = new Tag(id.text);
 				tag.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+				tag.range = tag.idPos;
 				node.addTag(tag);
 			});
 		}
