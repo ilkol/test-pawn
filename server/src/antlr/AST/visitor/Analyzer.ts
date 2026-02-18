@@ -459,9 +459,9 @@ export class Analyzer extends BaseVisitor
 		this.pendingReferences.forEach((ranges, id) => {
 			ranges.forEach(range => {
 				this.file.diagnostics.push(LSPPawnErrors.reportError(17, 17, range, {symbolName: id}));
-				// this.file.diagnostics.push(LSPPawnErrors.reportError("17.function", 17, range, {symbolName: id}));
 			});
 		});
+		this.pendingReferences.clear();
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
