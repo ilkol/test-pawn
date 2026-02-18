@@ -14,11 +14,12 @@ export class Enum extends AbstractSymbol {
 			name, 
 			SymbolKind.Enum, 
 			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokenTypes.enum),
+			modifiers.map(SemanticTokensLegendManager.getTokenModifierIndex),
 			new SymbolReferance(
 				definitionFilePath, 
 				range, 
 				tokenRange, 
-				modifiers.map(SemanticTokensLegendManager.getTokenModifierIndex)
+				[...modifiers, SemanticTokenModifiers.declaration].map(SemanticTokensLegendManager.getTokenModifierIndex)
 			)
 		);
 	}

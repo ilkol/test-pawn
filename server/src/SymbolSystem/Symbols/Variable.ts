@@ -11,11 +11,12 @@ export class Variable extends AbstractSymbol {
 			name, 
 			SymbolKind.Variable, 
 			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokenTypes.variable),
+			modifiers.map(SemanticTokensLegendManager.getTokenModifierIndex),
 			new SymbolReferance(
 				definitionFilePath, 
 				range, 
 				tokenRange, 
-				modifiers.map(SemanticTokensLegendManager.getTokenModifierIndex)
+				[...modifiers, SemanticTokenModifiers.definition].map(SemanticTokensLegendManager.getTokenModifierIndex)
 			)
 		);
 	}

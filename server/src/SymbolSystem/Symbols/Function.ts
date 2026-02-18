@@ -15,6 +15,7 @@ export class Function extends AbstractSymbol {
 			name, 
 			SymbolKind.Function, 
 			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokenTypes.function),
+			[],
 			new SymbolReferance(
 				definitionFilePath, 
 				range, 

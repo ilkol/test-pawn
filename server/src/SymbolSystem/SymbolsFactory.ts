@@ -50,11 +50,7 @@ export abstract class SymbolsFactory {
 		tokenRange: Range,
 		definition: boolean
 	): Enum {
-		const modifiers = [];
-		if(definition) {
-			modifiers.push(SemanticTokenModifiers.definition);
-		}
-		return new Enum(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, modifiers);
+		return new Enum(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, []);
 	}
 
 	static createEnumMember(
@@ -64,11 +60,8 @@ export abstract class SymbolsFactory {
 		tokenRange: Range,
 		definition: boolean
 	): EnumMember {
-		const modifiers = [SemanticTokenModifiers.readonly];
-		if(definition) {
-			modifiers.push(SemanticTokenModifiers.definition);
-		}
-		return new EnumMember(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, modifiers);
+		
+		return new EnumMember(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, []);
 	}
 
 	static createTag(

@@ -288,7 +288,7 @@ export class Analyzer extends BaseVisitor
 	private curScope: IScope;
 
 	beforeVisitVarInit(node: VariableInit): void {
-		const modifiers: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
+		const modifiers: SemanticTokenModifiers[] = [];
 		if(node.modifires.indexOf(VariableModifire.const) !== -1) {
 			modifiers.push(SemanticTokenModifiers.readonly);
 		}
@@ -804,7 +804,7 @@ export class Analyzer extends BaseVisitor
 
 		symbol.isUsed = true;
 
-		const reference = new Symbols.SymbolReferance(this.file.path, symbolRange, symbolnameRange, []);
+		const reference = new Symbols.SymbolReferance(this.file.path, symbolRange, symbolnameRange, symbol.modifiers);
 		symbol.addReferance(reference);
 		this.curScope.currentSymbol?.childrens.push(reference);
 

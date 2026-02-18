@@ -12,11 +12,12 @@ export class Tag extends AbstractSymbol {
 			name, 
 			SymbolKind.TypeParameter, 
 			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokenTypes.type),
+			modifiers.map(SemanticTokensLegendManager.getTokenModifierIndex),
 			new SymbolReferance(
 				definitionFilePath, 
 				range, 
 				tokenRange, 
-				modifiers.map(SemanticTokensLegendManager.getTokenModifierIndex)
+				[...modifiers, SemanticTokenModifiers.declaration].map(SemanticTokensLegendManager.getTokenModifierIndex)
 			)
 		);
 	}

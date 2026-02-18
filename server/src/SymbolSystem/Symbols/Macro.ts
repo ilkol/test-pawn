@@ -11,6 +11,7 @@ export class Macro extends AbstractSymbol {
 			name, 
 			SymbolKind.Constant, 
 			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokenTypes.macro),
+			[SemanticTokensLegendManager.getTokenModifierIndex(SemanticTokenModifiers.readonly)],
 			new SymbolReferance(
 				definitionFilePath, 
 				range, 

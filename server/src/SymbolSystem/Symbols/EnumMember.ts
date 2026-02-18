@@ -11,11 +11,12 @@ export class EnumMember extends AbstractSymbol {
 			name, 
 			SymbolKind.EnumMember, 
 			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokenTypes.enumMember),
+			modifiers.map(SemanticTokensLegendManager.getTokenModifierIndex),
 			new SymbolReferance(
 				definitionFilePath, 
 				range, 
 				tokenRange, 
-				modifiers.map(SemanticTokensLegendManager.getTokenModifierIndex)
+				[...modifiers, SemanticTokenModifiers.declaration].map(SemanticTokensLegendManager.getTokenModifierIndex)
 			)
 		);
 	}

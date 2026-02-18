@@ -11,6 +11,7 @@ export class Parameter extends AbstractSymbol {
 			name, 
 			SymbolKind.Variable, 
 			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokenTypes.parameter),
+			[],
 			new SymbolReferance(
 				definitionFilePath, 
 				range, 
