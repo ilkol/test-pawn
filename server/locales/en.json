@@ -2188,5 +2188,7 @@
 	"mismatched input ')' expecting {'+=', '*=', '<<='} (enumIterator)": "mismatched input ')' expecting {'+=', '*=', '<<='} (enumIterator)",
 	"extraneous input ';' expecting {'}', ','} (unknown rule)": "extraneous input ';' expecting {'}', ','} (unknown rule)",
 	"no viable alternative at input 'a=' (functionDecl)": "no viable alternative at input 'a=' (functionDecl)",
-	"no viable alternative at input '{Float,a}main' (functionDeclarationParams)": "no viable alternative at input '{Float,a}main' (functionDeclarationParams)"
+	"no viable alternative at input '{Float,a}main' (functionDeclarationParams)": "no viable alternative at input '{Float,a}main' (functionDeclarationParams)",
+	"no viable alternative at input 'tru}' (statement)": "no viable alternative at input 'tru}' (statement)",
+	"no viable alternative at input 'a}' (statement)": "no viable alternative at input 'a}' (statement)"
 }

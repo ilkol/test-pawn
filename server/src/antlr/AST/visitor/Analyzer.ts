@@ -303,12 +303,10 @@ export class Analyzer extends BaseVisitor
 		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
 		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
 		this.curScope.add(symbol);
-		// node.symbol = symbol;
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 
 	}
 	afterVisitVarInit(node: VariableInit): void {
-		// this.checkUsed(node, (variable: VariableInit) => this.curScope.addVar(variable));
 		if(node.rightValue) {
 			this.checkTagMismatch(node.tag, node.rightValue.tag, true, node.idPos);
 		}			
@@ -430,9 +428,7 @@ export class Analyzer extends BaseVisitor
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 		this.curScope.parent?.add(symbol);
 	}
-	afterVisitEnumMember(node: EnumMember): void {	
-		// this.checkUsed(node, (variable: EnumMember) => this.curScope.addEnumMember(variable));
-		
+	afterVisitEnumMember(node: EnumMember): void {			
 	}
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
 		const name = node.id || "<anonymous>";

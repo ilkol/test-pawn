@@ -297,5 +297,7 @@
 	"duplicating function implementation": "duplicating function implementation",
 	"no viable alternative at input '{' (expresion)": "no viable alternative at input '{' (expresion)",
 	"no viable alternative at input 'a=' (functionDecl)": "no viable alternative at input 'a=' (functionDecl)",
-	"no viable alternative at input '{Float,a}main' (functionDeclarationParams)": "no viable alternative at input '{Float,a}main' (functionDeclarationParams)"
+	"no viable alternative at input '{Float,a}main' (functionDeclarationParams)": "no viable alternative at input '{Float,a}main' (functionDeclarationParams)",
+	"no viable alternative at input 'tru}' (statement)": "no viable alternative at input 'tru}' (statement)",
+	"no viable alternative at input 'a}' (statement)": "no viable alternative at input 'a}' (statement)"
 }
