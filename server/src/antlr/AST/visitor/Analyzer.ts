@@ -315,7 +315,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitFunctionCall(node: FunctionCall): void {
-		const symbol = this.addSymbolReference(node.id, node.pos, node.idPos);
+		const symbol = this.addSymbolReference(node.id, node.pos, node.idPos, true);
 		if(!symbol) {
 			return;
 		} 
@@ -798,17 +798,21 @@ export class Analyzer extends BaseVisitor
 		// }
 	}
 
-	private addSymbolReference(name: string, symbolRange: Range, symbolnameRange: Range) {
+	private addSymbolReference(name: string, symbolRange: Range, symbolNameRange: Range, addPendingReference = false) {
 		const symbol = this.curScope.findSymbol(name);
 		if(!symbol) {
-			// TODO: проврека параметров после разрешения ссылки
-			this.addPendingReference(name, symbolnameRange);
+			if(addPendingReference) {
+				// TODO: проврека параметров после разрешения ссылки
+				this.addPendingReference(name, symbolNameRange);
+			} else {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, symbolNameRange, {symbolName: name}));
+			}
 			return undefined;
 		} 
 
 		symbol.isUsed = true;
 
-		const reference = new Symbols.SymbolReferance(this.file.path, symbolRange, symbolnameRange, symbol.modifiers);
+		const reference = new Symbols.SymbolReferance(this.file.path, symbolRange, symbolNameRange, symbol.modifiers);
 		symbol.addReferance(reference);
 		this.curScope.currentSymbol?.childrens.push(reference);
 
