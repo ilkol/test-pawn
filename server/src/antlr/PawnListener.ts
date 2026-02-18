@@ -312,7 +312,7 @@ export class PawnListener implements IPawnListener
 	}
 
 	exitPluralTag(ctx: PluralTagContext) {
-		let node = <ASTNode>this.nodes.pop();
+		let node = <ASTNode>this.nodes.peek();
 		if(node instanceof Ellipse) {
 			ctx.IDENTIFIER().forEach(id => {
 				const tag = new Tag(id.text);
@@ -382,7 +382,6 @@ export class PawnListener implements IPawnListener
 			// ctx.tag()?.IDENTIFIER().forEach((tag) => {
 			// 	node.addTag(tag.text);
 			// });
-
 			if(last instanceof FunctionDeclaration) {
 				last.ellipse = node;
 			}
