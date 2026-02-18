@@ -314,8 +314,10 @@ export class PawnListener implements IPawnListener
 	exitPluralTag(ctx: PluralTagContext) {
 		let node = <ASTNode>this.nodes.peek();
 		if(node instanceof Ellipse) {
+			
 			ctx.IDENTIFIER().forEach(id => {
 				const tag = new Tag(id.text);
+				tag.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 				node.addTag(tag);
 			});
 		}
