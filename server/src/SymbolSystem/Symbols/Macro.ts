@@ -1,10 +1,11 @@
-import { SemanticTokenModifiers, SemanticTokenTypes, SymbolKind } from "vscode-languageserver";
+import { CompletionItemKind, SemanticTokenModifiers, SemanticTokenTypes, SymbolKind } from "vscode-languageserver";
 import { Range } from "../../types";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
 
 export class Macro extends AbstractSymbol {
+	public readonly completionKind = CompletionItemKind.Function;
 	isConst: true = true;
 	
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range) {

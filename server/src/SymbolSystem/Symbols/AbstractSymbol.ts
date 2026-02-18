@@ -1,9 +1,10 @@
-import { DocumentSymbol, SymbolKind } from "vscode-languageserver";
+import { CompletionItemKind, DocumentSymbol, SymbolKind } from "vscode-languageserver";
 import { Position, Range } from "../../types";
 import { SymbolReferance } from "./SymbolReferance";
 import { SemanticToken } from "../SemanticToken";
 
 export abstract class AbstractSymbol {
+	public abstract readonly completionKind: CompletionItemKind;
 	/**
 	 * Уникальный идентификатор символа
 	 */

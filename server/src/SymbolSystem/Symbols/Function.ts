@@ -1,4 +1,4 @@
-import { SemanticTokenModifiers, SemanticTokenTypes, SymbolKind } from "vscode-languageserver";
+import { CompletionItemKind, SemanticTokenModifiers, SemanticTokenTypes, SymbolKind } from "vscode-languageserver";
 import { Range } from "../../types";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
@@ -6,6 +6,7 @@ import { SymbolReferance } from "./SymbolReferance";
 import { FunctionModifire } from "../../antlr/AST/Nodes/Functions/FunctionDeclaration";
 
 export class Function extends AbstractSymbol {
+	public readonly completionKind = CompletionItemKind.Function;
 	public hasImplementation = false;
 	public parameters: AbstractSymbol[] = [];
 

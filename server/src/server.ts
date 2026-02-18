@@ -36,6 +36,7 @@ import { ASTNode } from './antlr/AST/Nodes/ASTNode';
 import { SemanticTokensLegendManager, SymbolManager } from './SymbolSystem';
 import { DocumentUri, TextEdit } from 'vscode-languageserver-textdocument';
 import { SemanticTokensBuilder } from './SymbolSystem/SemanticTokensBuilder';
+import { Function } from './SymbolSystem/Symbols';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -484,34 +485,17 @@ async function main() {
 
 			const position = new Position(_params.position.line, _params.position.character)
 			const currentScope = document.scopeManager.findInnermostAt(position);
+			const symbols = currentScope.getAllVisibleSymbols(position);
 
-			const fileSymbols = symbolManager.getFileSymbols(document.path);
-			fileSymbols.forEach(symbol => {
-				let kind: CompletionItemKind;
-				switch(symbol.symbolKind) {
-					case SymbolKind.Variable:
-						kind = CompletionItemKind.Variable;
-						break;
-					case SymbolKind.EnumMember:
-						kind = CompletionItemKind.EnumMember;
-						break;
-					case SymbolKind.Function:
-						kind = CompletionItemKind.Function;
-						break;
-					case SymbolKind.Constant:
-						kind = CompletionItemKind.Constant;
-						break;
-					case SymbolKind.Enum:
-						kind = CompletionItemKind.Enum;
-						break;
-					default: 
-						kind = CompletionItemKind.Text;
-				}
-				result.push({
+			const items = symbols.map(symbol => {
+				return {
 					label: symbol.name,
-					kind,
-				} satisfies CompletionItem);
+					kind: symbol.completionKind,
+					detail: (symbol instanceof Function) ? "Function" : "Variable",
+					data: symbol.id
+				} satisfies CompletionItem;
 			});
+			result = result.concat(items);
 
 			return result;
 		}

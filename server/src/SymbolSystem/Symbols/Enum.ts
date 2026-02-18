@@ -1,4 +1,4 @@
-import { SemanticTokenModifiers, SemanticTokenTypes, SymbolKind } from "vscode-languageserver";
+import { CompletionItemKind, SemanticTokenModifiers, SemanticTokenTypes, SymbolKind } from "vscode-languageserver";
 import { Range } from "../../types";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
@@ -6,6 +6,7 @@ import { SymbolReferance } from "./SymbolReferance";
 import { EnumMember } from "./EnumMember";
 
 export class Enum extends AbstractSymbol {
+	public readonly completionKind = CompletionItemKind.Enum;
 	public members: EnumMember[] = [];
 	isConst: true = true;
 

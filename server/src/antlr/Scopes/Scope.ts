@@ -1,7 +1,7 @@
 import { IScope } from "./IScope";
 import { AbstractOpenFile } from "../../AbstractOpenFile";
 import { AbstractSymbol, Function, SymbolReferance } from "../../SymbolSystem/Symbols";
-import { Range } from "../../types";
+import { Position, Range } from "../../types";
 
 export class Scope implements IScope
 {
@@ -60,5 +60,24 @@ export class Scope implements IScope
 			}
 		}
 		return undefined;
+	}
+
+	getAllVisibleSymbols(position: Position, result: Map<string, AbstractSymbol> = new Map()) {
+		for (const [name, symbol] of this._symbols) {
+			if (result.has(name)) continue;
+			// Функции видны в любом месте файла, а остальные символы только после объявления
+			if(symbol instanceof Function || symbol.defenition.range.start.isBefore(position)) {
+				result.set(name, symbol);
+			}
+		}
+		if(this.parent) {
+			this.parent.getAllVisibleSymbols(position, result);
+		} else {
+			for (const inc of this.includedScopes) {
+				inc.getAllVisibleSymbols(new Position(0,0), result);
+			}
+		}
+
+		return Array.from(result.values());
 	}
 }
