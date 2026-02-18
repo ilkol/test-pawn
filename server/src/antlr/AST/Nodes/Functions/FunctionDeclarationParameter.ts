@@ -5,6 +5,7 @@ import { VariableModifire } from "../Operators/OperatorNew";
 import { VarDeclaration } from "../Variables/VarDeclaration";
 import { Serialization } from "../../../../cache/Serialization";
 import { Parameter } from "../../../../SymbolSystem/Symbols/Parameter";
+import { Tag } from "../Tag";
 
 export class FunctionDeclarationParameter extends VarDeclaration
 {
@@ -28,6 +29,7 @@ export class FunctionDeclarationParameter extends VarDeclaration
 		this.idPos = v.idPos;
 		this.id = v.id;
 		this.tag = v.tag;
+		this.tags.push(this.tag);
 	}
 	public get variable(): Variable|undefined {
 		return this._var;
@@ -64,6 +66,7 @@ export class FunctionDeclarationParameter extends VarDeclaration
 			defaultValue: this._value?.toJSON(),
 			isReference: this.isRef,
 			variable: this._var ? this._var.toJSON() : undefined,
+			tags: this.tags.map(tag => tag.toJSON()),
  		};
 	}
 	public static fromJSON(json: Serialization.Nodes.ParameterDeclaration): FunctionDeclarationParameter {
@@ -76,5 +79,15 @@ export class FunctionDeclarationParameter extends VarDeclaration
 		this._var = Serialization.Deserialize.object(json.variable);
 		this._value = Serialization.Deserialize.object(json.defaultValue);
 		this.isRef = json.isReference;
+		this._tags = json.tags.map(tag => Serialization.Deserialize.object(tag));
+	}
+
+	private _tags: Tag[] = [];
+	get tags() {
+		return this._tags;
+	}
+
+	addTag(tag: Tag) {
+		this.tags.push(tag);
 	}
 }
