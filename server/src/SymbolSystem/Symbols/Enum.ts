@@ -7,6 +7,7 @@ import { EnumMember } from "./EnumMember";
 
 export class Enum extends AbstractSymbol {
 	public members: EnumMember[] = [];
+	isConst: true = true;
 
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[]) {
 		super(

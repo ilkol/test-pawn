@@ -14,7 +14,7 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 
 	public references: Variable[] = [];
 
-	public symbol: VariableSymbol | undefined = undefined;
+	// public symbol: VariableSymbol | undefined = undefined;
 
 	constructor(instance: VarDeclaration | undefined = undefined) {
 		super(instance);

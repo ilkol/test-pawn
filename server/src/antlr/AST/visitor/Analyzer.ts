@@ -121,8 +121,16 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitAssigment(node: AssigmentOperator): void {
-		if(node.left?.declaration) {
-			if(node.left?.declaration.isConstant) {
+		if(node.left) {
+			const symbol = this.curScope.findSymbol(node.left.id);
+			if(!symbol) {
+				return;
+			}
+			if(!(symbol instanceof Symbols.Variable || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.Macro)) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidFunctionCall, node.range));
+				return;
+			}
+			if(symbol.isConst) {					
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.left.range));
 			}
 		}
@@ -295,7 +303,7 @@ export class Analyzer extends BaseVisitor
 		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
 		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
 		this.curScope.add(symbol);
-		node.symbol = symbol;
+		// node.symbol = symbol;
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 
 	}
@@ -519,7 +527,7 @@ export class Analyzer extends BaseVisitor
 		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
 		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
 		this.curScope.add(symbol);
-		node.symbol = symbol;
+		// node.symbol = symbol;
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration): void {

@@ -5,6 +5,8 @@ import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
 
 export class Macro extends AbstractSymbol {
+	isConst: true = true;
+	
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range) {
 		super(
 			id, 

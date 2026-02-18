@@ -9,3 +9,5 @@ export * from "./Enum";
 export * from "./EnumMember";
 
 export * from "./Variable";
+
+export * from "./Tag";

@@ -23,6 +23,7 @@ export namespace PawnErrors {
 		MustBeLValue = 22,
 		NotMatchingPreprocessorCondition = 26,
 		UnknownDirective = 31,
+		InvalidFunctionCall = 76,
 
 		CannotReadFromFile = 100,
 		UserError = 111,

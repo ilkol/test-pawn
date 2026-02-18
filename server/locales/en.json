@@ -2184,5 +2184,7 @@
 		}
 	},
 	"missing '(' at '&' (unknown rule)": "missing '(' at '&' (unknown rule)",
-	"mismatched input 'cellmax' expecting {'{', IDENTIFIER} (declParams)": "mismatched input 'cellmax' expecting {'{', IDENTIFIER} (declParams)"
+	"mismatched input 'cellmax' expecting {'{', IDENTIFIER} (declParams)": "mismatched input 'cellmax' expecting {'{', IDENTIFIER} (declParams)",
+	"mismatched input ')' expecting {'+=', '*=', '<<='} (enumIterator)": "mismatched input ')' expecting {'+=', '*=', '<<='} (enumIterator)",
+	"extraneous input ';' expecting {'}', ','} (unknown rule)": "extraneous input ';' expecting {'}', ','} (unknown rule)"
 }

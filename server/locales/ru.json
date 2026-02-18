@@ -291,5 +291,8 @@
 	"extraneous input '}' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input '}' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
 	"Tag": "Tag",
 	"no viable alternative at input '}' (expresion)": "no viable alternative at input '}' (expresion)",
-	"mismatched input 'include' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input 'include' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)"
+	"mismatched input 'include' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input 'include' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
+	"mismatched input ')' expecting {'+=', '*=', '<<='} (enumIterator)": "mismatched input ')' expecting {'+=', '*=', '<<='} (enumIterator)",
+	"extraneous input ';' expecting {'}', ','} (unknown rule)": "extraneous input ';' expecting {'}', ','} (unknown rule)",
+	"duplicating function implementation": "duplicating function implementation"
 }

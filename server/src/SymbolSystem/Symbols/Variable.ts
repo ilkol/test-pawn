@@ -5,6 +5,9 @@ import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
 
 export class Variable extends AbstractSymbol {
+
+	public readonly isConst: boolean;
+
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[]) {
 		super(
 			id, 
@@ -19,5 +22,7 @@ export class Variable extends AbstractSymbol {
 				[...modifiers, SemanticTokenModifiers.definition].map(SemanticTokensLegendManager.getTokenModifierIndex)
 			)
 		);
+
+		this.isConst = modifiers.indexOf(SemanticTokenModifiers.readonly) !== -1;
 	}
 }
