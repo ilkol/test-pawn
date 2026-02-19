@@ -13,12 +13,12 @@ export class Parameter extends AbstractSymbol {
 			name, 
 			SymbolKind.Variable, 
 			SemanticTokensLegendManager.getTokenTypeIndex(SemanticTokenTypes.parameter),
-			[],
+			modifiers.map(SemanticTokensLegendManager.getTokenModifierIndex),
 			new SymbolReferance(
 				definitionFilePath, 
 				range, 
 				tokenRange, 
-				modifiers.map(SemanticTokensLegendManager.getTokenModifierIndex)
+				[...modifiers, SemanticTokenModifiers.declaration].map(SemanticTokensLegendManager.getTokenModifierIndex)
 			)
 		);
 	}

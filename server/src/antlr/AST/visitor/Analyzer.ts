@@ -187,7 +187,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 	beforeVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
-		const modifires = [SemanticTokenModifiers.definition];
+		const modifires: SemanticTokenModifiers[] = [];	
 		if(node.const) {
 			modifires.push(SemanticTokenModifiers.readonly);
 		}
