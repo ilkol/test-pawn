@@ -94,6 +94,19 @@ export class FileManager {
 	init() {
 		this.documents.onDidOpen(e => this.onDidOpenDocument(e.document));
 		this.documents.onDidSave(e => this.onDidSaveDocument(e.document));
+
+		let analysisDebounceTimer: NodeJS.Timeout | undefined;
+		this.documents.onDidChangeContent(change => {
+
+			if (analysisDebounceTimer) {
+				clearTimeout(analysisDebounceTimer);
+			}
+
+			analysisDebounceTimer = setTimeout(async () => {
+				this.onDidSaveDocument(change.document)
+				
+			}, 200);
+		});
 	}
 
 	/**
