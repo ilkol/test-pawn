@@ -486,7 +486,6 @@ async function main() {
 				return {
 					label: symbol.name,
 					kind: symbol.completionKind,
-					detail: (symbol instanceof Function) ? "Function" : "Variable",
 					data: symbol.id
 				} satisfies CompletionItem;
 			});
