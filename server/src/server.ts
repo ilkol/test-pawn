@@ -461,11 +461,6 @@ async function main() {
 			} satisfies DocumentDiagnosticReport;
 		}
 	});
-
-	// documents.onDidChangeContent(change => {
-
-	// });
-
 	
 	connection.onDidChangeWatchedFiles(_change => {
 
