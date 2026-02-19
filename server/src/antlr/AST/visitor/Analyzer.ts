@@ -749,6 +749,9 @@ export class Analyzer extends BaseVisitor
 	}
 
 	private checkCallFunctionParameters(functionSymbol: Symbols.Function, node: FunctionCall) {
+		if(functionSymbol.parameters.length != node.vars.length) {
+			this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.pos, functionSymbol.parameters.length, node.vars.length));
+		}
 		// let param = 0;
 		// if(functionSymbol.parameters.length !== node.vars.length && func.ellipse === undefined) {
 		// 	if(func.parameters.length < node.vars.length)
