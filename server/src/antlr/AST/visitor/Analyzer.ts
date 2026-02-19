@@ -38,7 +38,7 @@ import { Locale } from "../../../Locale";
 import { DiagnosticSeverity, DiagnosticTag, SemanticTokenModifiers} from "vscode-languageserver";
 import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
-import { SymbolManager } from "../../../SymbolSystem";
+import { SemanticTokensLegendManager, SymbolManager } from "../../../SymbolSystem";
 import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
 import * as Symbols from "../../../SymbolSystem/Symbols";
 import { DefaultTag } from "../Nodes/DefaultTag";
@@ -122,15 +122,14 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitAssigment(node: AssigmentOperator): void {
 		if(node.left) {
-			const symbol = this.curScope.findSymbol(node.left.id);
+			const symbol = this.addSymbolReference(node.left.id, node.left.pos, node.left.idPos, [SemanticTokenModifiers.modification]);
 			if(!symbol) {
 				return;
 			}
-			if(!(symbol instanceof Symbols.Variable || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.Macro)) {
+			else if(!(symbol instanceof Symbols.Variable || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.Macro)) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidFunctionCall, node.range));
-				return;
 			}
-			if(symbol.isConst) {					
+			else if(symbol.isConst) {					
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.left.range));
 			}
 		}
@@ -315,7 +314,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitFunctionCall(node: FunctionCall): void {
-		const symbol = this.addSymbolReference(node.id, node.pos, node.idPos, true);
+		const symbol = this.addSymbolReference(node.id, node.pos, node.idPos, [], true);
 		if(!symbol) {
 			return;
 		} 
@@ -798,7 +797,7 @@ export class Analyzer extends BaseVisitor
 		// }
 	}
 
-	private addSymbolReference(name: string, symbolRange: Range, symbolNameRange: Range, addPendingReference = false) {
+	private addSymbolReference(name: string, symbolRange: Range, symbolNameRange: Range, modifiers: SemanticTokenModifiers[] = [], addPendingReference = false) {
 		const symbol = this.curScope.findSymbol(name);
 		if(!symbol) {
 			if(addPendingReference) {

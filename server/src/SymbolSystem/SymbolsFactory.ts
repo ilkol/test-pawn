@@ -49,7 +49,7 @@ export abstract class SymbolsFactory {
 		tokenRange: Range,
 		definition: boolean
 	): Enum {
-		return new Enum(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, []);
+		return new Enum(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, [SemanticTokenModifiers.readonly]);
 	}
 
 	static createEnumMember(
@@ -60,7 +60,7 @@ export abstract class SymbolsFactory {
 		definition: boolean
 	): EnumMember {
 		
-		return new EnumMember(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, []);
+		return new EnumMember(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, [SemanticTokenModifiers.readonly]);
 	}
 
 	static createTag(
