@@ -463,7 +463,7 @@ async function main() {
 	});
 	
 	connection.onDidChangeWatchedFiles(_change => {
-
+		
 	});
 
 	connection.onCompletion(
@@ -536,6 +536,14 @@ async function main() {
 				symbol.defenition.getSymbolInfo(),
 			);
 		});
+
+		document.defines.forEach(definelist => {
+			definelist.forEach(define => {
+				if(define.symbol) {
+					symbols.push(define.symbol.defenition.getSymbolInfo());
+				}
+			})
+		})
 
 		return symbols;
 	});
