@@ -70,14 +70,24 @@ export class Scope implements IScope
 				result.set(name, symbol);
 			}
 		}
+		
 		if(this.parent) {
 			this.parent.getAllVisibleSymbols(position, result);
 		} else {
+			for (const [name, defineList] of this._file.defines) {
+				if (result.has(name)) continue;
+				for(const define of defineList) {
+					if(define.symbol?.defenition.range.start.isBefore(position)) {
+						result.set(name, define.symbol);
+					}
+				}
+			}
 			for (const inc of this.includedScopes) {
 				inc.getAllVisibleSymbols(new Position(0,0), result);
 			}
 		}
 
+		
 		return Array.from(result.values());
 	}
 }
