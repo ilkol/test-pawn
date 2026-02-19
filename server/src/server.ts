@@ -468,7 +468,7 @@ async function main() {
 
 	connection.onCompletion(
 		async (_params: TextDocumentPositionParams): Promise<CompletionItem[]> => {
-			let result: CompletionItem[] = getDefaultCompletions();
+			let result: CompletionItem[] = [];// getDefaultCompletions();
 			const uri = _params.textDocument.uri;
 			const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
 			if(!document) {
