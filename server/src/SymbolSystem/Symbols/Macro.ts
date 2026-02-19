@@ -5,7 +5,7 @@ import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
 
 export class Macro extends AbstractSymbol {
-	public readonly completionKind = CompletionItemKind.Function;
+	public readonly completionKind = CompletionItemKind.Constant;
 	isConst: true = true;
 	
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range) {
