@@ -48,6 +48,9 @@ export abstract class AbstractSymbol {
 	getReferences(): SymbolReferance[] {
 		return this.referances;
 	}
+	clearReferences() {
+		this.referances = [];
+	}
 
 	getFileSymbolReferancesInfo(filePath: string): DocumentSymbol[] {
 		const referances = this.getFileReferances(filePath);
