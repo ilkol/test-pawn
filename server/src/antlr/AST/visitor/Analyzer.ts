@@ -35,7 +35,7 @@ import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { Range } from "../../../types";
 import { Locale } from "../../../Locale";
-import { DiagnosticSeverity, DiagnosticTag, SemanticTokenModifiers} from "vscode-languageserver";
+import { DiagnosticSeverity, DiagnosticTag, SemanticTokenModifiers, SymbolKind} from "vscode-languageserver";
 import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
 import { SymbolManager } from "../../../SymbolSystem";
@@ -44,6 +44,7 @@ import * as Symbols from "../../../SymbolSystem/Symbols";
 import { DefaultTag } from "../Nodes/DefaultTag";
 import { Constexpr } from "../Nodes/Variables/Constexpr";
 import { ScopeManager } from "../../../Managers/ScopeManager";
+import { MayBeTag } from "../../../SymbolSystem/Symbols/MayBeTag";
 
 export class Analyzer extends BaseVisitor
 {
@@ -434,7 +435,18 @@ export class Analyzer extends BaseVisitor
 		const name = node.id || "<anonymous>";
 		const symbol = SymbolsFactory.createEnum(name, this.file.path, node.range, node.idPos, true);	
 		this.symbolManager.add(this.file.path, symbol, true);	
+		this.curScope.add(symbol);
 		node.symbol = symbol;
+		
+		if(node.id) {
+			const tag = this.addTag(node.id, node.idPos);
+			if(tag.symbolKind !== SymbolKind.Enum) {
+				tag.getReferences().forEach(symbol.addReferance.bind(symbol));
+				tag.clearReferences();
+				this.curScope.replaceTag(symbol);
+			}
+		}
+
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 		this.extendScope(node.range, symbol.defenition);
 	}
@@ -824,7 +836,7 @@ export class Analyzer extends BaseVisitor
 		return symbol;
 	}
 
-	private addTag(name: string, range: Range, nameRange: Range = range): Symbols.Tag {
+	private addTag(name: string, range: Range, nameRange: Range = range): MayBeTag {
 		let tag = this.curScope.findTag(name);
 		if(!tag) {
 			tag = SymbolsFactory.createTag(name, this.file.path, range, nameRange);
