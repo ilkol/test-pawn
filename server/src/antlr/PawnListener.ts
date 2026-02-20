@@ -333,6 +333,7 @@ export class PawnListener implements IPawnListener
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			let id = ctx.IDENTIFIER();
+			node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 			node.id = id.text;
 			let last = this.nodes.peek();
 			if(last instanceof VarOrFunctionDeclaration) {
