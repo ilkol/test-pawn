@@ -1,3 +1,4 @@
+import { ScopeManager } from "../Managers/ScopeManager";
 import { Position } from "../types";
 import { AbstractSymbol } from "./Symbols";
 import { SymbolReferance } from "./Symbols/SymbolReferance";
@@ -41,16 +42,16 @@ export class SymbolManager {
         return Array.from(this.symbols.values()).filter(symbol => symbol.name === name);
     }
 
-	getSymbolOnPosition(filePath: string, position: Position): {symbol: AbstractSymbol, ref: SymbolReferance} | undefined {
-		const fileSymbols = this.getFileSymbols(filePath);
-		for(const symbol of fileSymbols) {
+	getSymbolOnPosition(filePath: string, position: Position, scopeManager: ScopeManager): {symbol: AbstractSymbol, ref: SymbolReferance} | undefined {
+		const currentScope = scopeManager.findInnermostAt(position);
+		
+		const visibleSymbols = currentScope.getAllVisibleSymbols(position);
+
+		for (const symbol of visibleSymbols) {
 			const references = symbol.getFileReferances(filePath);
-			for(const ref of references) {
-				const res = position.line === ref.tokenRange.start.line &&
-					position.character >= ref.tokenRange.start.character &&
-					position.character <= ref.tokenRange.end.character;
-				if(res) {
-					return {symbol, ref};
+			for (const ref of references) {
+				if (ref.tokenRange.contains(position)) {
+					return { symbol, ref };
 				}
 			}
 		}

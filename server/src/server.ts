@@ -264,7 +264,7 @@ async function main() {
 		await document.waitForAnalysis();
 
 		const position = Position.fromLSP(params.position);
-		const {symbol, ref} = symbolManager.getSymbolOnPosition(document.path, position) ?? {};
+		const {symbol, ref} = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager) ?? {};
 	
 		if(!symbol || !ref) {
 			return null;
@@ -287,7 +287,7 @@ async function main() {
 		await document.waitForAnalysis();
 
 		const position = Position.fromLSP(params.position);
-		const {symbol} = symbolManager.getSymbolOnPosition(document.path, position) ?? {};
+		const {symbol} = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager) ?? {};
 	
 		if(!symbol) {
 			return null;
@@ -326,31 +326,21 @@ async function main() {
 		
 		await document.waitForAnalysis();
 
-		const position = params.position;
-		const fileSymbols = symbolManager.getFileSymbols(document.path);
-		const symbol = fileSymbols.find(symbol => {
-			const references = symbol.getFileReferances(document.path);
-			for(const ref of references) {
-				const res = position.line === ref.tokenRange.start.line &&
-				position.character >= ref.tokenRange.start.character &&
-				position.character <= ref.tokenRange.end.character;
-				if(res) {
-					return true;
-				}
-			}
-			return false;
-		});
-		if(symbol) {
-			const symbols = symbol.getReferences().slice(params.context.includeDeclaration ? 0 : 1);
-			symbols.forEach(ref => {
-				references.push({
+		const position = Position.fromLSP(params.position);
+		const result = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager);
+		if(result) {
+			const { symbol } = result;
+			const refs = symbol.getReferences();
+
+			return refs
+				.filter(ref => params.context.includeDeclaration || !ref.tokenRange.isEqual(symbol.defenition.tokenRange))
+				.map(ref => ({
 					range: ref.tokenRange,
 					uri: FileManager.getUriFromPath(ref.filePath)
-				})
-			})
+				}));
 		}
 		
-		return references;
+		return [];
 	});
 
 	connection.onDefinition(async (params, _, __, ___) => {
