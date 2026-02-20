@@ -1,5 +1,6 @@
 import { Symbols } from "../../SymbolSystem";
 import { AbstractSymbol, Function, SymbolReferance } from "../../SymbolSystem/Symbols";
+import { MayBeTag } from "../../SymbolSystem/Symbols/MayBeTag";
 import { Position, Range } from "../../types";
 
 export interface IScope
@@ -19,8 +20,9 @@ export interface IScope
 	add(symbol: AbstractSymbol): void;
 	findSymbol(name: string): AbstractSymbol | undefined;
 
-	getAllVisibleSymbols(position: Position, result?: Map<string, AbstractSymbol>, tags?: Set<Symbols.Tag>): AbstractSymbol[];
+	getAllVisibleSymbols(position: Position, result?: Map<string, AbstractSymbol>, tags?: Set<MayBeTag>): AbstractSymbol[];
 
-	addTag(tag: Symbols.Tag): void;
-	findTag(name: string): Symbols.Tag | undefined;
+	addTag(tag: MayBeTag): void;
+	findTag(name: string): MayBeTag | undefined;
+	replaceTag(tag: MayBeTag): void;
 }

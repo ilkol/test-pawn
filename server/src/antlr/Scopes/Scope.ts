@@ -3,6 +3,8 @@ import { AbstractOpenFile } from "../../AbstractOpenFile";
 import { AbstractSymbol, Function, SymbolReferance } from "../../SymbolSystem/Symbols";
 import { Position, Range } from "../../types";
 import { Symbols } from "../../SymbolSystem";
+import { MayBeTag } from "../../SymbolSystem/Symbols/MayBeTag";
+import { SymbolKind } from "vscode-languageserver";
 
 export class Scope implements IScope
 {
@@ -63,7 +65,7 @@ export class Scope implements IScope
 		return undefined;
 	} 
 
-	getAllVisibleSymbols(position: Position, result: Map<string, AbstractSymbol> = new Map(), tags: Set<Symbols.Tag> = new Set()) {
+	getAllVisibleSymbols(position: Position, result: Map<string, AbstractSymbol> = new Map(), tags: Set<MayBeTag> = new Set()) {
 		for (const [name, symbol] of this._symbols) {
 			if (result.has(name)) continue;
 			// Функции видны в любом месте файла, а остальные символы только после объявления
@@ -90,17 +92,27 @@ export class Scope implements IScope
 			}
 		}
 	
-		return Array.from(result.values()).concat(Array.from(tags.values()));
+		let tagsArray = Array.from(tags.values());
+		tagsArray = tagsArray.filter(tag => {
+			if(tag.symbolKind === SymbolKind.Enum) {
+				return !result.has(tag.name);
+			}
+			return true;
+		});
+		return Array.from(result.values()).concat(tagsArray);
 	}
 
-	private _tags: Map<string, Symbols.Tag> = new Map();
+	private _tags: Map<string, MayBeTag> = new Map();
 	addTag(tag: Symbols.Tag) {
 		if(this._tags.has(tag.name)) {
 			return;
 		}
 		this._tags.set(tag.name, tag);
 	}
-	findTag(name: string): Symbols.Tag | undefined {
+	findTag(name: string): MayBeTag | undefined {
 		return this._tags.get(name) ?? this.parent?.findTag(name);;
+	}
+	replaceTag(tag: MayBeTag): void {
+		this._tags.set(tag.name, tag);
 	}
 }
