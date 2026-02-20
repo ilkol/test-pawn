@@ -61,9 +61,9 @@ export class Scope implements IScope
 			}
 		}
 		return undefined;
-	}
+	} 
 
-	getAllVisibleSymbols(position: Position, result: Map<string, AbstractSymbol> = new Map()) {
+	getAllVisibleSymbols(position: Position, result: Map<string, AbstractSymbol> = new Map(), tags: Set<Symbols.Tag> = new Set()) {
 		for (const [name, symbol] of this._symbols) {
 			if (result.has(name)) continue;
 			// Функции видны в любом месте файла, а остальные символы только после объявления
@@ -72,8 +72,10 @@ export class Scope implements IScope
 			}
 		}
 		
+		this._tags.forEach(tags.add.bind(tags));
+
 		if(this.parent) {
-			this.parent.getAllVisibleSymbols(position, result);
+			this.parent.getAllVisibleSymbols(position, result, tags);
 		} else {
 			for (const [name, defineList] of this._file.defines) {
 				if (result.has(name)) continue;
@@ -84,11 +86,11 @@ export class Scope implements IScope
 				}
 			}
 			for (const inc of this.includedScopes) {
-				inc.getAllVisibleSymbols(new Position(0,0), result);
+				inc.getAllVisibleSymbols(new Position(0,0), result, tags);
 			}
 		}
 	
-		return Array.from(result.values()).concat(Array.from(this._tags.values()));
+		return Array.from(result.values()).concat(Array.from(tags.values()));
 	}
 
 	private _tags: Map<string, Symbols.Tag> = new Map();

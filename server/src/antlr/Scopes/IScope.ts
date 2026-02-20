@@ -19,7 +19,7 @@ export interface IScope
 	add(symbol: AbstractSymbol): void;
 	findSymbol(name: string): AbstractSymbol | undefined;
 
-	getAllVisibleSymbols(position: Position, result?: Map<string, AbstractSymbol>): AbstractSymbol[];
+	getAllVisibleSymbols(position: Position, result?: Map<string, AbstractSymbol>, tags?: Set<Symbols.Tag>): AbstractSymbol[];
 
 	addTag(tag: Symbols.Tag): void;
 	findTag(name: string): Symbols.Tag | undefined;
