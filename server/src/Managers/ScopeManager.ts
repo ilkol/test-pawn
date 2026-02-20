@@ -21,10 +21,10 @@ export class ScopeManager {
 	}
 
 	private injectBuiltinConstants(scope: IScope) {
-		const boolTag = SymbolsFactory.createTag("bool", "system", new Range(0,0,0,0), new Range(0,0,0,0));
 		const defaultTag = SymbolsFactory.createTag("_", "system", new Range(0,0,0,0), new Range(0,0,0,0));
-		scope.add(boolTag);
-		scope.add(defaultTag);
+		const boolTag = SymbolsFactory.createTag("bool", "system", new Range(0,0,0,0), new Range(0,0,0,0));
+		scope.addTag(defaultTag);
+		scope.addTag(boolTag);
 
 		[
 			this.createBuildinConstant("true", 1, boolTag),

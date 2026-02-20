@@ -2,6 +2,7 @@ import { IScope } from "./IScope";
 import { AbstractOpenFile } from "../../AbstractOpenFile";
 import { AbstractSymbol, Function, SymbolReferance } from "../../SymbolSystem/Symbols";
 import { Position, Range } from "../../types";
+import { Symbols } from "../../SymbolSystem";
 
 export class Scope implements IScope
 {
@@ -86,8 +87,18 @@ export class Scope implements IScope
 				inc.getAllVisibleSymbols(new Position(0,0), result);
 			}
 		}
+	
+		return Array.from(result.values()).concat(Array.from(this._tags.values()));
+	}
 
-		
-		return Array.from(result.values());
+	private _tags: Map<string, Symbols.Tag> = new Map();
+	addTag(tag: Symbols.Tag) {
+		if(this._tags.has(tag.name)) {
+			return;
+		}
+		this._tags.set(tag.name, tag);
+	}
+	findTag(name: string): Symbols.Tag | undefined {
+		return this._tags.get(name) ?? this.parent?.findTag(name);;
 	}
 }

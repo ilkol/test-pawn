@@ -1,3 +1,4 @@
+import { Symbols } from "../../SymbolSystem";
 import { AbstractSymbol, Function, SymbolReferance } from "../../SymbolSystem/Symbols";
 import { Position, Range } from "../../types";
 
@@ -19,4 +20,7 @@ export interface IScope
 	findSymbol(name: string): AbstractSymbol | undefined;
 
 	getAllVisibleSymbols(position: Position, result?: Map<string, AbstractSymbol>): AbstractSymbol[];
+
+	addTag(tag: Symbols.Tag): void;
+	findTag(name: string): Symbols.Tag | undefined;
 }
