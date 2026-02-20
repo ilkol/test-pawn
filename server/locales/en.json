@@ -2278,5 +2278,19 @@
 	"no viable alternative at input 'bookl}' (statement)": "no viable alternative at input 'bookl}' (statement)",
 	"extraneous input 'main' expecting '(' (unknown rule)": "extraneous input 'main' expecting '(' (unknown rule)",
 	"no viable alternative at input 'Vnew' (statement)": "no viable alternative at input 'Vnew' (statement)",
-	"no viable alternative at input 'Valnew' (statement)": "no viable alternative at input 'Valnew' (statement)"
+	"no viable alternative at input 'Valnew' (statement)": "no viable alternative at input 'Valnew' (statement)",
+	"extraneous input '[' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input '[' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"no viable alternative at input 'native[' (declaration)": "no viable alternative at input 'native[' (declaration)",
+	"no viable alternative at input 'nativebool": "[' (declaration)",
+	"mismatched input '[' expecting IDENTIFIER (functionDecl)": "mismatched input '[' expecting IDENTIFIER (functionDecl)",
+	"mismatched input '[' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '[' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
+	"no viable alternative at input 'forward[' (declaration)": "no viable alternative at input 'forward[' (declaration)",
+	"no viable alternative at input '[' (expresion)": "no viable alternative at input '[' (expresion)",
+	"extraneous input '[' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '[' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"no viable alternative at input '(' (expresion)": "no viable alternative at input '(' (expresion)",
+	"mismatched input '2' expecting {'}', ','} (arrayInit)": "mismatched input '2' expecting {'}', ','} (arrayInit)",
+	"no viable alternative at input '3' (expresion)": "no viable alternative at input '3' (expresion)",
+	"no viable alternative at input 'forwardstock' (declaration)": "no viable alternative at input 'forwardstock' (declaration)",
+	"no viable alternative at input 'forwardFloat": "[' (declaration)",
+	"extraneous input '[' expecting IDENTIFIER (unknown rule)": "extraneous input '[' expecting IDENTIFIER (unknown rule)"
 }
