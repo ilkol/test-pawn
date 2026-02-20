@@ -470,6 +470,8 @@ export class Analyzer extends BaseVisitor
 		node.symbol = symbol.defenition;
 		symbol.hasImplementation = node.code !== undefined;
 
+		this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
+
 		const existing = this.scopeManager.globalScope.findSymbol(node.id);
 		if(existing) {
 			this.handleFunctionRedeclaration(node, existing);
@@ -820,5 +822,19 @@ export class Analyzer extends BaseVisitor
 		this.curScope.currentSymbol?.childrens.push(reference);
 
 		return symbol;
+	}
+
+	private addTag(name: string, range: Range, nameRange: Range = range): Symbols.Tag {
+		let tag = this.curScope.findTag(name);
+		if(!tag) {
+			tag = SymbolsFactory.createTag(name, this.file.path, range, nameRange);
+			this.curScope.addTag(tag);
+			this.curScope.currentSymbol?.childrens.push(tag.defenition);
+		} else {
+			const reference = new Symbols.SymbolReferance(this.file.path, range, nameRange, tag.modifiers);
+			tag.addReferance(reference);
+			this.curScope.currentSymbol?.childrens.push(reference);
+		}
+		return tag;
 	}
 }
