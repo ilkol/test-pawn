@@ -529,6 +529,25 @@ export class Analyzer extends BaseVisitor
 			count++;
 		});
 
+		switch(node.operator) {
+			case "!":
+			case "=":
+			case "++":
+			case "--":
+				if(count !== 1) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
+				}
+				break;
+			case "-":
+				if(count !== 1 && count !== 2) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
+				}
+				break;
+			default:
+				if(count !== 2) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
+				}
+		}
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {

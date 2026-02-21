@@ -25,6 +25,7 @@ export namespace PawnErrors {
 		UnknownDirective = 31,
 		MaxArrayDimenssions = 53,
 		MayNotHaveDefaultValue = 59,
+		InvalidArgumentsCountInOperatorOverloading = 62,
 		InvalidOperatorOverloadResultTag = 63,
 		FunctionArgumentMayOnlyHaveSingleArgument = 65,
 		MustBeNonReference = 66,
