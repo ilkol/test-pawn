@@ -336,7 +336,7 @@ export class Analyzer extends BaseVisitor
 			return;
 		}
 
-		node.inferredTag = symbol.returnTag = this.tagInferer.inferTag(node);
+		node.inferredTag = this.tagInferer.inferTag(node);
 
 		this.checkCallFunctionParameters(symbol, node);
 	}
@@ -476,6 +476,40 @@ export class Analyzer extends BaseVisitor
 		});
 		this.pendingReferences.clear();
 	}
+
+	beforeVisitOperatorOverload(node: OperatorOverload): void {
+		
+	}
+	afterVisitOperatorOverload(node: OperatorOverload): void {
+		const symbol = SymbolsFactory.createFunction(node.id, this.file.path, node.range, node.idPos);
+		this.symbolManager.add(this.file.path, symbol, true);
+		node.symbol = symbol.defenition;
+		symbol.hasImplementation = node.code !== undefined;
+
+		symbol.returnTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
+
+		this.checkOperatorTag(node.operator, symbol.returnTag, node.tag.idPos);
+
+		// like operatoradjust in pawnc
+		// this.operatorAdjust();
+		const tags: Tag[] = [];
+		let count = 0;
+		node.parameters.forEach(param => {
+			if(count < 2) {
+				if(param.tags.length > 1) {
+					/* function argument may only have a single tag */
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionArgumentMayOnlyHaveSingleArgument, param.pos, count + 1));
+				}
+				else if (param.tags.length == 1) {
+					tags.push(param.tags[0]);
+				}
+			}
+			if(node.operator === "~" && count == 0) {
+				// if(param instanceof Array)
+			}
+		});
+
+	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		const symbol = SymbolsFactory.createFunction(node.id, this.file.path, node.range, node.idPos);
@@ -483,7 +517,7 @@ export class Analyzer extends BaseVisitor
 		node.symbol = symbol.defenition;
 		symbol.hasImplementation = node.code !== undefined;
 
-		this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
+		symbol.returnTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
 
 		const existing = this.scopeManager.globalScope.findSymbol(node.id);
 		if(existing) {
@@ -851,5 +885,35 @@ export class Analyzer extends BaseVisitor
 			this.curScope.currentSymbol?.childrens.push(reference);
 		}
 		return tag;
+	}
+
+	private checkOperatorTag(operator: string, resultTag: MayBeTag, errorRange: Range) {
+		switch(operator) {
+			case "!":
+			case "<":
+			case ">":
+			case "==":
+			case "!=":
+			case "<=":
+			case ">=": {
+				console.log(resultTag, this.addTag("bool", errorRange));
+
+				if (resultTag != this.addTag("bool", errorRange)) {
+					/* operator X requires a "bool:" result tag */
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidOperatorOverloadResultTag, errorRange, operator,"bool:")); 
+				}
+				break;
+			}
+			case "~": {
+				if(!this.isDefaultTag(resultTag.name)) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidOperatorOverloadResultTag, errorRange, operator,"_:"));
+				}
+				break;
+			}
+		}
+	}
+
+	private operatorAdjust() {
+
 	}
 }

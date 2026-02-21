@@ -1,4 +1,5 @@
 import { Serialization } from "../../../../cache/Serialization";
+import { IVisitor } from "../../visitor/IVisitor";
 import { FunctionDeclaration } from "../Functions/FunctionDeclaration";
 
 export class OperatorOverload extends FunctionDeclaration
@@ -7,6 +8,10 @@ export class OperatorOverload extends FunctionDeclaration
 	public operator: string = "";
 	constructor() {
 		super();
+	}
+	
+	public accept(visitor: IVisitor): void {
+		visitor.visitOperatorOverload(this);
 	}
 
 	static fromJSON(json: Serialization.Nodes.Operators.OperatorOverload): OperatorOverload {

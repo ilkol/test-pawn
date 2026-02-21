@@ -28,6 +28,7 @@ import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
+import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 
 export interface IVisitor
 {
@@ -45,6 +46,7 @@ export interface IVisitor
 	visitEnumDeclaration(node: EnumDeclaration): void;
 	visitDeclarations(node: Declarations): void;
 	visitFunctionDeclaration(node: FunctionDeclaration): void;
+	visitOperatorOverload(node: OperatorOverload): void;
 	visitVariableDeclaration(node: VarDeclaration): void;
 	visitFunctionCall(node: FunctionCall): void;
 	visitVarInit(node: VariableInit): void;

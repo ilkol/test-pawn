@@ -23,6 +23,8 @@ export namespace PawnErrors {
 		MustBeLValue = 22,
 		NotMatchingPreprocessorCondition = 26,
 		UnknownDirective = 31,
+		InvalidOperatorOverloadResultTag = 63,
+		FunctionArgumentMayOnlyHaveSingleArgument = 65,
 		InvalidFunctionCall = 76,
 
 		CannotReadFromFile = 100,

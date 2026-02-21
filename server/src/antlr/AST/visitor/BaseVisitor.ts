@@ -33,6 +33,7 @@ import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
+import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 
 export abstract class BaseVisitor implements IVisitor
 {
@@ -180,6 +181,21 @@ export abstract class BaseVisitor implements IVisitor
 		this.checkVars(node);
 		this.afterVisitEnumDeclaration(node);
 	}
+	visitOperatorOverload(node: OperatorOverload) {
+		this.beforeVisitOperatorOverload(node);
+		if(node.code) {
+			
+			if(node.modifire === FunctionModifire.public) {
+				node.parameters.forEach(el => {
+					el.stock = true;
+				});
+			}
+			this.checkVars(node);
+			node.code.accept(this);
+		}
+		this.afterVisitOperatorOverload(node);
+
+	}
 	visitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.beforeVisitFunctionDeclaration(node);
 		if(node.code) {
@@ -236,6 +252,9 @@ export abstract class BaseVisitor implements IVisitor
 	
 	abstract beforeVisitFunctionDeclaration(node: FunctionDeclaration): void;
 	abstract afterVisitFunctionDeclaration(node: FunctionDeclaration): void;
+
+	abstract beforeVisitOperatorOverload(node: OperatorOverload): void;
+	abstract afterVisitOperatorOverload(node: OperatorOverload): void;
 	
 	abstract beforeVisitVariableDeclaration(node: VarDeclaration): void;
 	abstract afterVisitVariableDeclaration(node: VarDeclaration): void;

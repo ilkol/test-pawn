@@ -1163,7 +1163,7 @@ export class PawnListener implements IPawnListener
 		{	
 			node.setPos(ctx.start, ctx.stop);
 
-			const last = this.nodes.peek();	
+			const last = this.nodes.peek();
 			if(last instanceof Expression)
 			{
 				last.expresion = node;

@@ -2311,5 +2311,6 @@
 	"no viable alternative at input 'emain' (file)": "no viable alternative at input 'emain' (file)",
 	"no viable alternative at input 'ebmain' (file)": "no viable alternative at input 'ebmain' (file)",
 	"no viable alternative at input 'ebyunmain' (file)": "no viable alternative at input 'ebyunmain' (file)",
-	"no viable alternative at input 'enmain' (file)": "no viable alternative at input 'enmain' (file)"
+	"no viable alternative at input 'enmain' (file)": "no viable alternative at input 'enmain' (file)",
+	"mismatched input 'operator' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input 'operator' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)"
 }
