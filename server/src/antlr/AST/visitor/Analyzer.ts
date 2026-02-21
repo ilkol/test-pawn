@@ -502,7 +502,7 @@ export class Analyzer extends BaseVisitor
 
 		// like operatoradjust in pawnc
 		// this.operatorAdjust();
-		const tags: Tag[] = [];
+		const tags: MayBeTag[] = [];
 		let count = 0;
 		node.parameters.forEach(param => {
 			if(count < 2) {
@@ -511,7 +511,8 @@ export class Analyzer extends BaseVisitor
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionArgumentMayOnlyHaveSingleArgument, param.pos, count + 1));
 				}
 				else if (param.tags.length == 1) {
-					tags.push(param.tags[0]);
+					const tag = param.tags[0];
+					tags.push(this.addTag(tag.id, tag.pos, tag.idPos));
 				}
 			}
 			if(node.operator === "~" && count == 0) {
@@ -549,8 +550,10 @@ export class Analyzer extends BaseVisitor
 				}
 		}
 
-		if (this.isDefaultTag(tags[0].id) && ((node.operator != '=' && this.isDefaultTag(tags[1].id)) || (node.operator == '=' && this.isDefaultTag(symbol.returnTag.name))))
+		if (this.isDefaultTag(tags[0].name) && ((node.operator != '=' && this.isDefaultTag(tags[1].name)) || (node.operator == '=' && this.isDefaultTag(symbol.returnTag.name))))
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
+
+		const operatorName = this.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
@@ -957,5 +960,9 @@ export class Analyzer extends BaseVisitor
 
 	private operatorAdjust() {
 
+	}
+
+	private operatorName(operator: string, firstTag: MayBeTag, secondTag: MayBeTag, paramsCount: number, resultTag: MayBeTag): string {
+		return "";
 	}
 }
