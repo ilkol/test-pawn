@@ -844,6 +844,7 @@ export class Analyzer extends BaseVisitor
 		if(!tag) {
 			tag = SymbolsFactory.createTag(name, this.file.path, range, nameRange);
 			this.curScope.addTag(tag);
+			this.symbolManager.add(this.file.path, tag);
 			this.curScope.currentSymbol?.childrens.push(tag.defenition);
 		} else {
 			const reference = new Symbols.SymbolReferance(this.file.path, range, nameRange, tag.modifiers);
