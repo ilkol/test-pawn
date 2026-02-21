@@ -554,6 +554,11 @@ export class Analyzer extends BaseVisitor
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
 
 		node.id = this.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
+
+		if(this.curScope.findSymbol(node.id)) {
+			// TODO: должна быть проверка реализована функция или просто объявлена
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
+		}
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
