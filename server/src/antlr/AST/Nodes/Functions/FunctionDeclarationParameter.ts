@@ -13,8 +13,12 @@ export class FunctionDeclarationParameter extends VarDeclaration
 
 	public symbol: Parameter | undefined = undefined;
 	private _var: Variable|undefined = undefined;
+	/** Значение по умолчанию */
 	private _value: RightValue|undefined = undefined;
 	private isRef: boolean = false;
+
+	/** Размерность массива */
+	private numdim: number = 0;
 	
 	constructor(param: VarDeclaration|undefined = undefined) {
 		super(param);
@@ -89,5 +93,10 @@ export class FunctionDeclarationParameter extends VarDeclaration
 
 	addTag(tag: Tag) {
 		this.tags.push(tag);
+	}
+
+	/** Размерность массива */
+	get dimensions(): number {
+		return this.numdim;
 	}
 }

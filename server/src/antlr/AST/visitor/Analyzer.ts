@@ -47,6 +47,7 @@ import { ScopeManager } from "../../../Managers/ScopeManager";
 import { MayBeTag } from "../../../SymbolSystem/Symbols/MayBeTag";
 import { TypeInferenceEngine } from "../../../TypeInferenceEngine";
 import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
+import { Pawn } from "../../../Pawn";
 
 export class Analyzer extends BaseVisitor
 {
@@ -206,8 +207,17 @@ export class Analyzer extends BaseVisitor
 		this.curScope.currentFunction?.parameters.push(symbol);
 
 		node.symbol = symbol;
+
+		
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
+		if(node.reference) {
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CanBeReferenceToArray, node.pos, node.id));
+		}
+		if(node.dimensions >= Pawn.MAX_ARRAY_DIMENSIONS) {
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArrayDimenssions, node.pos));
+		}
+
 		// this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
 
 		// this.tokens.addToken(node.idPos, SemanticTokens.parameter, this.checkVarModifires(node.modifires).concat([SemanticTokensModifires.declaration]));
@@ -505,6 +515,7 @@ export class Analyzer extends BaseVisitor
 				}
 			}
 			if(node.operator === "~" && count == 0) {
+				
 				// if(param instanceof Array)
 			}
 		});
