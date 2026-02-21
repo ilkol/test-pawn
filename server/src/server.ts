@@ -401,11 +401,11 @@ async function main() {
 		tokens.sort((a, b) => {
 			if (a.line !== b.line) return a.line - b.line;
 			return a.char - b.char;
+		}).forEach(info => {
+			console.log(info);
+			builder.push(info);
 		});
 
-		tokens.forEach(info => {
-			builder.push(info)
-		});
 
 		return builder.build();
 		
