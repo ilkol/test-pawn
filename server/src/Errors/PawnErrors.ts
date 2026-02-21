@@ -27,6 +27,7 @@ export namespace PawnErrors {
 		MayNotHaveDefaultValue = 59,
 		InvalidArgumentsCountInOperatorOverloading = 62,
 		InvalidOperatorOverloadResultTag = 63,
+		CantChangePredefinedOperator = 64,
 		FunctionArgumentMayOnlyHaveSingleArgument = 65,
 		MustBeNonReference = 66,
 		CanBeReferenceToArray = 67,

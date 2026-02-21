@@ -548,6 +548,9 @@ export class Analyzer extends BaseVisitor
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
 				}
 		}
+
+		if (this.isDefaultTag(tags[0].id) && ((node.operator != '=' && this.isDefaultTag(tags[1].id)) || (node.operator == '=' && this.isDefaultTag(symbol.returnTag.name))))
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
