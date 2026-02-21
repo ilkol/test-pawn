@@ -45,9 +45,13 @@ import { DefaultTag } from "../Nodes/DefaultTag";
 import { Constexpr } from "../Nodes/Variables/Constexpr";
 import { ScopeManager } from "../../../Managers/ScopeManager";
 import { MayBeTag } from "../../../SymbolSystem/Symbols/MayBeTag";
+import { TypeInferenceEngine } from "../../../TypeInferenceEngine";
+import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 
 export class Analyzer extends BaseVisitor
 {
+
+	private tagInferer: TypeInferenceEngine;
 	constructor(
 		protected file: AbstractOpenFile,
 		scope: IScope,
@@ -57,6 +61,7 @@ export class Analyzer extends BaseVisitor
 		super();
 		this.curScope = scope;
 
+		this.tagInferer = new TypeInferenceEngine(this.scopeManager, this.addTag.bind(this));
 		this.addBuildinConstants();
 	}
 
@@ -110,6 +115,7 @@ export class Analyzer extends BaseVisitor
 	beforeVisitBoolLiteral(node: BoolLiteral): void {
 	}
 	afterVisitBoolLiteral(node: BoolLiteral): void {
+		node.inferredTag = this.tagInferer.inferTag(node);
 	}
 
 	beforeVisitIfStatemnt(node: IfStatement): void {
@@ -296,6 +302,10 @@ export class Analyzer extends BaseVisitor
 	private curScope: IScope;
 
 	beforeVisitVarInit(node: VariableInit): void {
+		
+
+	}
+	afterVisitVarInit(node: VariableInit): void {
 		const modifiers: SemanticTokenModifiers[] = [];
 		if(node.modifires.indexOf(VariableModifire.const) !== -1) {
 			modifiers.push(SemanticTokenModifiers.readonly);
@@ -304,11 +314,13 @@ export class Analyzer extends BaseVisitor
 		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
 		this.curScope.add(symbol);
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
+		symbol.tag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
 
-	}
-	afterVisitVarInit(node: VariableInit): void {
 		if(node.rightValue) {
-			this.checkTagMismatch(node.tag, node.rightValue.tag, true, node.idPos);
+			const expectedTag = symbol.tag;
+			const actualTag = node.rightValue.inferredTag;
+			
+			this.checkTagMismatch(expectedTag, actualTag, true, node.idPos);
 		}			
 	}
 	beforeVisitFunctionCall(node: FunctionCall): void {
@@ -323,6 +335,8 @@ export class Analyzer extends BaseVisitor
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidFunctioncall, node.idPos));
 			return;
 		}
+
+		node.inferredTag = symbol.returnTag = this.tagInferer.inferTag(node);
 
 		this.checkCallFunctionParameters(symbol, node);
 	}
@@ -369,13 +383,14 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitUnarOperator(node: UnarOperator): void {
-
+		node.inferredTag = this.tagInferer.inferTag(node);
 	}
-	beforeVisitIntLiteral(node: IntLiteral): void {
+	beforeVisitLiteral(node: IntLiteral | FloatLiteral): void {
 	
 	}
-	afterVisitIntLiteral(node: IntLiteral): void {
-	
+	afterVisitLiteral(node: IntLiteral | FloatLiteral): void {
+		node.inferredTag = this.tagInferer.inferTag(node);
+		console.log(node.inferredTag );
 	}
 	beforeVisitBinarOperator(node: BinarOperator): void {
 		
@@ -387,21 +402,9 @@ export class Analyzer extends BaseVisitor
 		}
 
 		if(node.left && node.right) {
-			this.checkTagMismatch(node.left.tag, node.right.tag, true, node.pos);
-			if(!node.isTaged && node.tag.id !== "bool") {
-				node.tag = node.left.tag;
-			}
+			node.inferredTag = this.tagInferer.inferTag(node);
 		}
 
-		switch(node.operator) {
-			case "<":
-			case ">":
-			case "!=":
-			case ">=":
-			case "<=":
-			case "==":
-				(<BinarOperator>node).tag = new Tag("bool");
-		}
 	}
 	beforeVisitReturn(node: ReturnStatement): void {
 	
@@ -685,9 +688,10 @@ export class Analyzer extends BaseVisitor
 	 * @param actualRag проверяемый тэг
 	 * @param allowCoerce разрешено грубое приведение типа
 	 */
-	private checkTagMismatch(formalTag: Tag, actualTag: Tag, allowCoerce: boolean, errorRange: Range) {
-		this.checkSingleTagMismatch(formalTag.id, actualTag.id, allowCoerce, errorRange);
+	private checkTagMismatch(formalTag: MayBeTag | null, actualTag: MayBeTag | null, allowCoerce: boolean, errorRange: Range) {
+		this.checkSingleTagMismatch(formalTag?.name ?? "_", actualTag?.name ?? "_", allowCoerce, errorRange);
 	}
+
 
 	private checkMultyTagMismatch(formalTags: string[], actualTag: string, range: Range) {
 		if(this.checkAllTags(formalTags, actualTag)) {

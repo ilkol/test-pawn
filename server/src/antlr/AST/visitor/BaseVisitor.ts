@@ -32,6 +32,7 @@ import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
+import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 
 export abstract class BaseVisitor implements IVisitor
 {
@@ -137,9 +138,9 @@ export abstract class BaseVisitor implements IVisitor
 		node.value?.accept(this);
 		this.afterVisitUnarOperator(node);
 	}
-	visitIntLiteral(node: IntLiteral): void {
-		this.beforeVisitIntLiteral(node);
-		this.afterVisitIntLiteral(node);
+	visitLiteral(node: IntLiteral | FloatLiteral): void {
+		this.beforeVisitLiteral(node);
+		this.afterVisitLiteral(node);
 	}
 	visitBoolLiteral(node: BoolLiteral): void {
 		this.beforeVisitBoolLiteral(node);
@@ -258,8 +259,8 @@ export abstract class BaseVisitor implements IVisitor
 	abstract beforeVisitBinarOperator(node: BinarOperator): void;
 	abstract afterVisitBinarOperator(node: BinarOperator): void;
 
-	abstract beforeVisitIntLiteral(node: IntLiteral): void;
-	abstract afterVisitIntLiteral(node: IntLiteral): void;
+	abstract beforeVisitLiteral(node: IntLiteral | FloatLiteral): void;
+	abstract afterVisitLiteral(node: IntLiteral | FloatLiteral): void;
 
 	abstract beforeVisitBoolLiteral(node: BoolLiteral): void;
 	abstract afterVisitBoolLiteral(node: BoolLiteral): void;

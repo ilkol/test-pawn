@@ -5,6 +5,7 @@ import { Expression } from "../Expresion";
 import { Serialization } from "../../../../cache/Serialization";
 import { RightValue } from "../RightValue";
 import { Range } from "../../../../types";
+import { Function } from "../../../../SymbolSystem/Symbols";
 
 
 export class FunctionCall extends Expression implements IContainsVars<RightValue>, IHasID
@@ -14,6 +15,7 @@ export class FunctionCall extends Expression implements IContainsVars<RightValue
 	private _parameters: RightValue[] = [];
 	private _identifire: string = "";
 	private _idPos: Range = new Range(0,0,0,0);
+	symbol?: Function;
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitFunctionCall(this);

@@ -14,7 +14,7 @@ export class FloatLiteral extends NumberLiteral<number>
 	}
 
 	public accept(visitor: IVisitor): void {
-
+		visitor.visitLiteral(this);
 	}
 
 	toJSON(): Serialization.Nodes.Literal<number> {

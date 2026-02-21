@@ -27,6 +27,7 @@ import { BoolLiteral } from "../Nodes/Literals/BoolLiteral";
 import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
 import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
+import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 
 export interface IVisitor
 {
@@ -35,7 +36,7 @@ export interface IVisitor
 
 	visitOperatorNew(node: OperatorNew): void;
 	visitUnarOperator(node: UnarOperator): void;
-	visitIntLiteral(node: IntLiteral): void;
+	visitLiteral(node: IntLiteral | FloatLiteral): void;
 	visitBoolLiteral(node: BoolLiteral): void;
 	visitBinarOperator(node: BinarOperator): void;
 	visitReturn(node: ReturnStatement): void;

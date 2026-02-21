@@ -4,6 +4,7 @@ import { AbstractStatement } from "./AbstractStatement";
 import { Tag } from "./Tag";
 import { Serialization } from "../../../cache/Serialization";
 import { IHasTag } from "./IHasTag";
+import { MayBeTag } from "../../../SymbolSystem/Symbols/MayBeTag";
 
 export class Expression extends AbstractStatement implements IHasTag {
 	name = "вырожение";
@@ -11,6 +12,7 @@ export class Expression extends AbstractStatement implements IHasTag {
 	private translateTag: boolean = false;
 	private _tag: Tag = new DefaultTag();
 	protected exp: Expression|undefined = undefined;
+	public inferredTag: MayBeTag | null = null;
 
 	public get tag() : Tag {
 		return this._tag;

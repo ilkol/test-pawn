@@ -2292,5 +2292,20 @@
 	"no viable alternative at input '3' (expresion)": "no viable alternative at input '3' (expresion)",
 	"no viable alternative at input 'forwardstock' (declaration)": "no viable alternative at input 'forwardstock' (declaration)",
 	"no viable alternative at input 'forwardFloat": "[' (declaration)",
-	"extraneous input '[' expecting IDENTIFIER (unknown rule)": "extraneous input '[' expecting IDENTIFIER (unknown rule)"
+	"extraneous input '[' expecting IDENTIFIER (unknown rule)": "extraneous input '[' expecting IDENTIFIER (unknown rule)",
+	"no viable alternative at input 'Pnew' (statement)": "no viable alternative at input 'Pnew' (statement)",
+	"no viable alternative at input 'Penum' (file)": "no viable alternative at input 'Penum' (file)",
+	"no viable alternative at input 'Poenum' (file)": "no viable alternative at input 'Poenum' (file)",
+	"no viable alternative at input 'Posenum' (file)": "no viable alternative at input 'Posenum' (file)",
+	"no viable alternative at input 'Ponew' (statement)": "no viable alternative at input 'Ponew' (statement)",
+	"no viable alternative at input 'Posnew' (statement)": "no viable alternative at input 'Posnew' (statement)",
+	"no viable alternative at input 'Posmain' (file)": "no viable alternative at input 'Posmain' (file)",
+	"no viable alternative at input 'a[' (functionDecl)": "no viable alternative at input 'a[' (functionDecl)",
+	"extraneous input 'stock' expecting {'(', '{', IDENTIFIER} (unknown rule)": "extraneous input 'stock' expecting {'(', '{', IDENTIFIER} (unknown rule)",
+	"extraneous input 'new' expecting {'}', IDENTIFIER} (unknown rule)": "extraneous input 'new' expecting {'}', IDENTIFIER} (unknown rule)",
+	"extraneous input '{' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '{' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
+	"extraneous input 'return' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'return' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
+	"mismatched input 'stock' expecting {'(', '{'} (enum)": "mismatched input 'stock' expecting {'(', '{'} (enum)",
+	"mismatched input '<EOF>' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (compoundStatment)": "mismatched input '<EOF>' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (compoundStatment)",
+	"no viable alternative at input 'Float": "3.0' (varDeclaration)"
 }

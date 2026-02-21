@@ -3,11 +3,13 @@ import { Range } from "../../types";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
+import { MayBeTag } from "./MayBeTag";
 
 export class Variable extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Variable;
 	
 	public readonly isConst: boolean;
+	public tag: MayBeTag | null = null;
 
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[]) {
 		super(
