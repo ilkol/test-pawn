@@ -344,7 +344,7 @@ async function main() {
 	});
 
 	connection.onDefinition(async (params, _, __, ___) => {
-		Logger.log("Request semantik tokens")
+		Logger.log("Request defenition")
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
 		if(!document) {
