@@ -393,7 +393,6 @@ export class Preprocessor
 			const lastDef = define[define.length - 1];
 			lastDef.undef = directive;
 		} else {
-			console.log(directive.define);
 			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, directive.defineRange, {symbolName: directive.define}));
 		}
 	}
@@ -1227,9 +1226,7 @@ export class Preprocessor
 			this.substindex.set(define.prefix[0], [define]); // добавляем в массив макрос с ключом равным первому символу макроса
 		
 			if(this.currentDocument?.path === "d:\\SA-MP 0.3.7 Windows Server\\gamemodes\\test.pwn" && define.pattern === "KEY_FIRE" && code.length > 10) {
-				console.log(code);
-				console.log(1);
-				
+				console.log(code);				
 			}
 			
 			return this.substallpatterns(code, changes);

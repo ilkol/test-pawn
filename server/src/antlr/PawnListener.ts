@@ -164,7 +164,7 @@ export class PawnListener implements IPawnListener
 				last.statemnent = node;
 			}
 			else {
-				console.log(last);
+				console.error(last);
 				this.addDiagnostic(Locale.t("Unexpected var declaration"), DiagnosticSeverity.Error, node.pos);	
 			}
 		}
@@ -198,7 +198,7 @@ export class PawnListener implements IPawnListener
 			}
 		}
 		else {
-			console.log(last);
+			console.error(last);
 			this.addDiagnostic(Locale.t("Unexpected var modifire"), DiagnosticSeverity.Error, pos);	
 		}
 	};
@@ -263,7 +263,7 @@ export class PawnListener implements IPawnListener
 				this.addDiagnostic("warning 215: " + Locale.t("expression has no effect"), DiagnosticSeverity.Warning, node.idPos);
 			}
 			else {
-				console.log(last);
+				console.error(last);
 				this.addDiagnostic(Locale.t("Unexpected variable"), DiagnosticSeverity.Error, node.idPos);
 			}
 		}
@@ -409,8 +409,8 @@ export class PawnListener implements IPawnListener
 				last.statemnent = node;
 			}
 			else {
-				console.log(node);
-				console.log(last);
+				console.error(node);
+				console.error(last);
 				this.addDiagnostic(Locale.t("Unexpected code"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
@@ -514,7 +514,7 @@ export class PawnListener implements IPawnListener
 				last.statemnent = node;
 			}
 			else {
-				console.log(node);
+				console.error(node);
 				console.error(last);
 				this.addDiagnostic(Locale.t("Unexpected return statement"), DiagnosticSeverity.Error, node.pos);	
 			}
@@ -575,7 +575,7 @@ export class PawnListener implements IPawnListener
 					last.addExpresion(node);
 				}
 				catch(e) {
-					console.log(last);
+					console.error(last);
 					this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
 				}
 			}
@@ -720,7 +720,7 @@ export class PawnListener implements IPawnListener
 				last.pushParameter(node);
 			}
 			else {
-				console.log(last);
+				console.error(last);
 				this.addDiagnostic(Locale.t("parserErrorUnexpectedInitialization"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
@@ -874,7 +874,7 @@ export class PawnListener implements IPawnListener
 				last.statemnent = node;
 			}
 			else {
-				console.log(last);
+				console.error(last);
 				this.addDiagnostic(Locale.t("Unexpected condition statement"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
@@ -963,8 +963,8 @@ export class PawnListener implements IPawnListener
 			last.statements.push(node);
 		}
 		else {
-			console.log(node);
-			console.log(last);
+			console.error(node);
+			console.error(last);
 			this.addDiagnostic(Locale.t("Unexpected code"), DiagnosticSeverity.Error, node.pos);
 		}	
 	}
@@ -1143,7 +1143,7 @@ export class PawnListener implements IPawnListener
 				last.expresion = node;
 			}
 			else {
-				console.log(last);
+				console.error(last);
 				this.addDiagnostic(Locale.t("Unexpected symbol"), DiagnosticSeverity.Error, node.idPos);
 			}
 		}
@@ -1169,7 +1169,7 @@ export class PawnListener implements IPawnListener
 				last.expresion = node;
 			}
 			else {
-				console.log(last);
+				console.error(last);
 				this.addDiagnostic(Locale.t("Unexpected array"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
@@ -1214,7 +1214,7 @@ export class PawnListener implements IPawnListener
 				
 			}
 			else {
-				console.log(last);
+				console.error(last);
 				this.addDiagnostic(Locale.t("Expected symbol or array index/char operator"), DiagnosticSeverity.Error, node.pos);
 				return;
 			}
@@ -1236,7 +1236,7 @@ export class PawnListener implements IPawnListener
 				last.expresion = node;
 			}
 			else {
-				console.log(last);
+				console.error(last);
 				this.addDiagnostic(Locale.t("Unexpected constant"), DiagnosticSeverity.Error, node.idPos);
 			}
 		}

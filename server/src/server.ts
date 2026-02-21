@@ -402,7 +402,6 @@ async function main() {
 			if (a.line !== b.line) return a.line - b.line;
 			return a.char - b.char;
 		}).forEach(info => {
-			console.log(info);
 			builder.push(info);
 		});
 

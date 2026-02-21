@@ -13,11 +13,9 @@ export class TypeInferenceEngine {
 	constructor(private scopeManager: ScopeManager, private addTag: (name: string, range: Range, nameRange?: Range) => MayBeTag) {}
 
 	public inferTag(node: Expression): MayBeTag | null {
-		console.log(node);
 		if(node.isTaged) {
 			return this.addTag(node.tag.id, node.tag.pos, node.tag.idPos); 
 		}
-		console.log(node instanceof Literal);
 		if (node instanceof Literal) return this.evaluateLiteral(node);
         if (node instanceof FunctionCall) return this.evaluateCall(node);
         if (node instanceof BinarOperator) return this.evaluateBinary(node);

@@ -2307,5 +2307,9 @@
 	"extraneous input 'return' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'return' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
 	"mismatched input 'stock' expecting {'(', '{'} (enum)": "mismatched input 'stock' expecting {'(', '{'} (enum)",
 	"mismatched input '<EOF>' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (compoundStatment)": "mismatched input '<EOF>' expecting {'(', '{', '}', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (compoundStatment)",
-	"no viable alternative at input 'Float": "3.0' (varDeclaration)"
+	"no viable alternative at input 'Float": "3.0' (varDeclaration)",
+	"no viable alternative at input 'emain' (file)": "no viable alternative at input 'emain' (file)",
+	"no viable alternative at input 'ebmain' (file)": "no viable alternative at input 'ebmain' (file)",
+	"no viable alternative at input 'ebyunmain' (file)": "no viable alternative at input 'ebyunmain' (file)",
+	"no viable alternative at input 'enmain' (file)": "no viable alternative at input 'enmain' (file)"
 }

@@ -390,7 +390,6 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitLiteral(node: IntLiteral | FloatLiteral): void {
 		node.inferredTag = this.tagInferer.inferTag(node);
-		console.log(node.inferredTag );
 	}
 	beforeVisitBinarOperator(node: BinarOperator): void {
 		
