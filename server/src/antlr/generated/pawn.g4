@@ -86,7 +86,7 @@ hex: HEX;
 rational: RATIONAL;
 binary: BINARY;
 
-canBeOverloaded:	arefmeticOperator | compareOperator | ASSIGMENT;
+canBeOverloaded:	arefmeticOperator | compareOperator | ASSIGMENT | BIT_COMPLEMEN;
 
 arefmeticOperator:	PLUS | MINUS | MULTY | DIV | REMAINDE | INCREMENTS | DECREMENTS;
 compareOperator:	NOT | EQUAL | NOTEQUAL | LESS | LARGER | LESSEQ | LARGEREQ;
