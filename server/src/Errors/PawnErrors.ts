@@ -24,9 +24,12 @@ export namespace PawnErrors {
 		NotMatchingPreprocessorCondition = 26,
 		UnknownDirective = 31,
 		MaxArrayDimenssions = 53,
+		MayNotHaveDefaultValue = 59,
 		InvalidOperatorOverloadResultTag = 63,
 		FunctionArgumentMayOnlyHaveSingleArgument = 65,
+		MustBeNonReference = 66,
 		CanBeReferenceToArray = 67,
+		MustBeArrayArgument = 73,
 		InvalidFunctionCall = 76,
 
 		CannotReadFromFile = 100,

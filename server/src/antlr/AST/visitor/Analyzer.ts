@@ -515,9 +515,18 @@ export class Analyzer extends BaseVisitor
 				}
 			}
 			if(node.operator === "~" && count == 0) {
-				
-				// if(param instanceof Array)
+				if(param.dimensions === 0) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeArrayArgument, param.pos, param.id));
+				}
+			} else {
+				if(param.dimensions !== 0 || param.reference) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeNonReference, param.pos, param.id));
+				}
 			}
+			if(param.defaultValue) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MayNotHaveDefaultValue, param.pos, param.id));
+			}
+			count++;
 		});
 
 	}
