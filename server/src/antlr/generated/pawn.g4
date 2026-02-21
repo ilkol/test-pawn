@@ -24,7 +24,7 @@ enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEF
 varDeclaration:     (NEW varModifires*| varModifires+) (variable | varInit) (COMA (variable | varInit))*;
 varInit:			variable ASSIGMENT (expresion | arrayInit);
 functionDecl:		(funcDeclModif)? tag? IDENTIFIER functionDeclarationParams;
-operatorOverload:	(funcDeclModif) tag? OPERATOR canBeOverloaded functionDeclarationParams;
+operatorOverload:	(funcDeclModif)? tag? OPERATOR canBeOverloaded functionDeclarationParams;
 functionDeclarationParams: OPEN_PARENTHESIS (declParams (COMA declParams)*)? ellipse? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
 nativeAssigment:	ASSIGMENT IDENTIFIER SEMI;
 tag:				IDENTIFIER COLON;
