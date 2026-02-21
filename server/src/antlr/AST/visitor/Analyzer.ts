@@ -553,7 +553,7 @@ export class Analyzer extends BaseVisitor
 		if (this.isDefaultTag(tags[0].name) && ((node.operator != '=' && this.isDefaultTag(tags[1].name)) || (node.operator == '=' && this.isDefaultTag(symbol.returnTag.name))))
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
 
-		const operatorName = this.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
+		node.id = this.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
@@ -963,6 +963,12 @@ export class Analyzer extends BaseVisitor
 	}
 
 	private operatorName(operator: string, firstTag: MayBeTag, secondTag: MayBeTag, paramsCount: number, resultTag: MayBeTag): string {
-		return "";
+		if(operator === "=") {
+			return `${resultTag.name}=${firstTag.name}`;
+		} 
+		if(paramsCount === 1 || operator === "~") {
+			return `${operator}${secondTag}`;
+		}
+		return `${firstTag}${operator}${secondTag}`;
 	}
 }
