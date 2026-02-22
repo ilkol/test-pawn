@@ -21,6 +21,8 @@ export abstract class AbstractSymbol {
 	 * Тип токена символа
 	 */
 	public readonly kind: number;
+	/** Виден ли символ пользователю */
+	public isInternal: boolean = false;
 
 	private referances: SymbolReferance[] = [];
 	public isUsed = false;
