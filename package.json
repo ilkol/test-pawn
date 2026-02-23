@@ -29,7 +29,6 @@
 	],
 	"l10n": "./l10n",
 	"contributes": {
-		
 		"configuration": [
 			{
 				"title": "Pawn Language",
@@ -40,7 +39,8 @@
 						"description": "%configuration.clearOnBuild.description%"
 					}
 				}
-			}, {
+			},
+			{
 				"languageServerExample.trace.server": {
 					"scope": "window",
 					"type": "string",
@@ -126,13 +126,9 @@
 		]
 	},
 	"dependencies": {
-		"@types/vscode": "^1.103.0",
 		"@vscode/l10n": "^0.0.18",
-		"@vscode/vsce": "^3.2.2",
 		"antlr4ts": "^0.5.0-alpha.4",
-		"crypto": "^1.0.1",
-		"findup-sync": "^5.0.0",
-		"vsce": "^2.15.0"
+		"findup-sync": "^5.0.0"
 	},
 	"scripts": {
 		"pretest": "npm run compile && npm run lint",
@@ -151,6 +147,8 @@
 		"@types/deep-diff": "^1.0.5",
 		"@types/mocha": "^10.0.6",
 		"@types/node": "^22",
+		"@types/vscode": "^1.103.0",
+		"@vscode/vsce": "^3.2.2",
 		"deep-diff": "^1.0.2",
 		"eslint": "^9.13.0",
 		"mocha": "^10.3.0",

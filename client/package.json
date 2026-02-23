@@ -15,11 +15,11 @@
 	},
 	"dependencies": {
 		"glob": "^11.0.0",
-		"typescript": "^5.9.2",
 		"vscode-languageclient": "^9.0.1"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.100.0",
-		"@vscode/test-electron": "^2.3.9"
+		"@types/vscode": "^1.103.0",
+		"@vscode/test-electron": "^2.3.9",
+		"typescript": "^5.9.2"
 	}
 }
