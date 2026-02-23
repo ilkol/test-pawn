@@ -29,7 +29,7 @@ export abstract class VarOrFunctionDeclaration extends Declaration implements IH
 	public toJSON(): Serialization.Nodes.VarOrFunctionDeclaration {
 		return {
 			...super.toJSON(),
-			tag: this.tag.toJSON(),
+			tag: this._tag.toJSON(),
 		};
 	}
 

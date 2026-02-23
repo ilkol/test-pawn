@@ -6,6 +6,7 @@ import { VarDeclaration } from "../Variables/VarDeclaration";
 import { Serialization } from "../../../../cache/Serialization";
 import { Parameter } from "../../../../SymbolSystem/Symbols/Parameter";
 import { Tag } from "../Tag";
+import { DefaultTag } from "../DefaultTag";
 
 export class FunctionDeclarationParameter extends VarDeclaration
 {
@@ -92,6 +93,9 @@ export class FunctionDeclarationParameter extends VarDeclaration
 	}
 
 	addTag(tag: Tag) {
+		if(!this.tag) {
+			super.tag = tag;
+		}
 		this.tags.push(tag);
 	}
 
@@ -99,4 +103,5 @@ export class FunctionDeclarationParameter extends VarDeclaration
 	get dimensions(): number {
 		return this.numdim;
 	}
+
 }

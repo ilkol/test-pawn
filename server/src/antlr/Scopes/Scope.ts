@@ -67,6 +67,7 @@ export class Scope implements IScope
 
 	getAllVisibleSymbols(position: Position, result: Map<string, AbstractSymbol> = new Map(), tags: Set<MayBeTag> = new Set()) {
 		for (const [name, symbol] of this._symbols) {
+			if(symbol.isInternal) continue;
 			if (result.has(name)) continue;
 			// Функции видны в любом месте файла, а остальные символы только после объявления
 			if(symbol instanceof Function || symbol.defenition.range.start.isBefore(position)) {

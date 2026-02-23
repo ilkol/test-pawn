@@ -302,5 +302,14 @@
 	"no viable alternative at input 'a}' (statement)": "no viable alternative at input 'a}' (statement)",
 	"extraneous input 'stock' expecting {'}', IDENTIFIER} (unknown rule)": "extraneous input 'stock' expecting {'}', IDENTIFIER} (unknown rule)",
 	"mismatched input '}' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (tagableExpression)": "mismatched input '}' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (tagableExpression)",
-	"Empty expresion": "Empty expresion"
+	"Empty expresion": "Empty expresion",
+	"no viable alternative at input 'a=' (declaration)": "no viable alternative at input 'a=' (declaration)",
+	"no viable alternative at input 'pstock' (statement)": "no viable alternative at input 'pstock' (statement)",
+	"no viable alternative at input 'ostock' (statement)": "no viable alternative at input 'ostock' (statement)",
+	"no viable alternative at input 'opstock' (statement)": "no viable alternative at input 'opstock' (statement)",
+	"no viable alternative at input 'opestock' (statement)": "no viable alternative at input 'opestock' (statement)",
+	"no viable alternative at input 'operastock' (statement)": "no viable alternative at input 'operastock' (statement)",
+	"no viable alternative at input 'Fstock' (statement)": "no viable alternative at input 'Fstock' (statement)",
+	"no viable alternative at input 'Flstock' (statement)": "no viable alternative at input 'Flstock' (statement)",
+	"no viable alternative at input 'Flostock' (statement)": "no viable alternative at input 'Flostock' (statement)"
 }
