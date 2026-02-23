@@ -22,11 +22,23 @@ async function main() {
       esbuildProblemMatcherPlugin
     ]
   });
+
+  const serverCtx = await esbuild.context({
+    entryPoints: ['server/src/server.ts'], // проверь путь до главного файла сервера!
+    bundle: true,
+    format: 'cjs',
+    platform: 'node',
+    outfile: 'server/out/server.js', // сервер будет лежать тут
+    minify: true,
+    sourcemap: !production,
+    plugins: [esbuildProblemMatcherPlugin]
+  });
+
   if (watch) {
-    await ctx.watch();
+    await Promise.all([ctx.watch(), serverCtx.watch()]);
   } else {
-    await ctx.rebuild();
-    await ctx.dispose();
+    await Promise.all([ctx.rebuild(), serverCtx.rebuild()]);
+    await Promise.all([ctx.dispose(), serverCtx.dispose()]);
   }
 }
 
