@@ -553,11 +553,13 @@ export class Analyzer extends BaseVisitor
 		if (this.isDefaultTag(tags[0].name) && ((node.operator != '=' && this.isDefaultTag(tags[1].name)) || (node.operator == '=' && this.isDefaultTag(symbol.returnTag.name))))
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
 
-		node.id = this.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
+		symbol.name = node.id = this.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
 
 		if(this.curScope.findSymbol(node.id)) {
 			// TODO: должна быть проверка реализована функция или просто объявлена
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
+		} else {
+			this.curScope.add(symbol);
 		}
 	}
 	
@@ -972,8 +974,8 @@ export class Analyzer extends BaseVisitor
 			return `${resultTag.name}=${firstTag.name}`;
 		} 
 		if(paramsCount === 1 || operator === "~") {
-			return `${operator}${secondTag}`;
+			return `${operator}${secondTag.name}`;
 		}
-		return `${firstTag}${operator}${secondTag}`;
+		return `${firstTag.name}${operator}${secondTag.name}`;
 	}
 }

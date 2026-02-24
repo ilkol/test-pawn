@@ -12,7 +12,7 @@ export abstract class AbstractSymbol {
 	/**
 	 * Имя символа
 	 */
-	public readonly name: string;
+	public name: string;
 	/**
 	 * Тип символа
 	 */
