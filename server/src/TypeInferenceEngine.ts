@@ -5,6 +5,7 @@ import { FloatLiteral } from "./antlr/AST/Nodes/Literals/FloatLiteral";
 import { Literal } from "./antlr/AST/Nodes/Literals/Literal";
 import { BinarOperator } from "./antlr/AST/Nodes/Operators/BinarOperator";
 import { UnarOperator } from "./antlr/AST/Nodes/Operators/UnarOperator";
+import { Variable } from "./antlr/AST/Nodes/Variable";
 import { Analyzer } from "./antlr/AST/visitor/Analyzer";
 import { ScopeManager } from "./Managers/ScopeManager";
 import { Symbols } from "./SymbolSystem";
@@ -23,6 +24,7 @@ export class TypeInferenceEngine {
         if (node instanceof FunctionCall) return this.evaluateCall(node);
         if (node instanceof BinarOperator) return this.evaluateBinary(node);
         if (node instanceof UnarOperator) return this.evaluateUnary(node);
+		if (node instanceof Variable) return this.evaluateVariable(node);
 
 		return SymbolsFactory.defaultTag;
 	}
@@ -101,6 +103,17 @@ export class TypeInferenceEngine {
 		}
 
 		return symbol || null;
+	}
+
+	private evaluateVariable(node: Variable) {
+		// const symbol = node as Symbols.Variable | Symbols.Parameter | Symbols.EnumMember;
+		
+    
+		// if (symbol instanceof Symbols.EnumMember) {
+		// 	return symbol.enumTag; 
+		// }
+
+		return /*symbol?. || */SymbolsFactory.defaultTag;
 	}
 	
 }
