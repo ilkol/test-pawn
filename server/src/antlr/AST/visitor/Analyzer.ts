@@ -555,11 +555,11 @@ export class Analyzer extends BaseVisitor
 
 		symbol.name = node.id = this.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
 
-		if(this.curScope.findSymbol(node.id)) {
+		if(this.scopeManager.globalScope.findSymbol(node.id)) {
 			// TODO: должна быть проверка реализована функция или просто объявлена
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
 		} else {
-			this.curScope.add(symbol);
+			this.scopeManager.globalScope.add(symbol);
 		}
 	}
 	
@@ -977,5 +977,62 @@ export class Analyzer extends BaseVisitor
 			return `${operator}${secondTag.name}`;
 		}
 		return `${firstTag.name}${operator}${secondTag.name}`;
+	}
+
+	private isEqulTags(tag1: MayBeTag, tag2: MayBeTag) {
+		return tag1.name === tag2.name;
+	}
+
+	/** Аналог check_userop pawnc. Выполняет существует ли пользовательская перегрузка оператора */
+	private checkUserOperator(operator: string, tag1: MayBeTag, tag2: MayBeTag, paramsCount: number) {
+		if(this.isDefaultTag(tag1.name) && (paramsCount === 1 || this.isDefaultTag(tag2.name))) {
+			return false;
+		}
+
+		// if(paramsCount === 2) {
+		// 	if(operator === "=") {
+		// 		// if (lval != null && (lval->ident==iARRAYCELL || lval->ident==iARRAYCHAR))
+ 		// 		// 	savealt = true;
+		// 	} else {
+
+		// 	}
+		// }
+
+		let operatorName = this.operatorName(operator, tag1, tag2, paramsCount, tag2);
+		let symbol = this.scopeManager.globalScope.findSymbol(operatorName);
+		let swapArgs = false;
+		if(!symbol) {
+			if(this.isEqulTags(tag1, tag2) || !this.isCommutativeOperation(operator)) { // || oper==NULL || !commutative(oper)
+				return false;
+			}
+			operatorName = this.operatorName(operator, tag2, tag1, paramsCount, tag1);
+			symbol = this.scopeManager.globalScope.findSymbol(operatorName);
+			swapArgs = true;
+			if(!symbol) {
+				return false;
+			}
+		}
+
+		if(symbol === this.curScope.currentFunction) {
+			return false;
+		}
+
+		symbol.isUsed = true;
+		return true;
+	}
+
+	private isCommutativeOperation(operator: string)
+	{
+		switch(operator) {
+			case "+": // ob_add 
+			case "*": // os_mult
+			case "=": // ob_eq
+			case "!=": // ob_ne
+			case "&&": // ob_and
+			case "^": // ob_xor
+			case "||": // ob_or
+				return true;
+			default: return false;
+		}
 	}
 }
