@@ -62,11 +62,15 @@ export class TypeInferenceEngine {
 	}
 
 	private evaluateUnary(node: UnarOperator): MayBeTag {
-		const operandTag = this.inferTag(node.value!);
+		const tag = node.value?.inferredTag ?? SymbolsFactory.defaultTag;
+
 		if (node.operator === "!") {
 			return SymbolsFactory.boolTag;
 		}
-		return operandTag;
+
+		const userOp = this.findUserOperator(node.operator, tag, tag, 1);
+		
+		return userOp?.returnTag ?? tag;
 	}
 
 	static isDefaultTag(tag: MayBeTag) {
