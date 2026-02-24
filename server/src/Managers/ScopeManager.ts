@@ -21,8 +21,8 @@ export class ScopeManager {
 	}
 
 	private injectBuiltinConstants(scope: IScope) {
-		const defaultTag = SymbolsFactory.createTag("_", "system", new Range(0,0,0,0), new Range(0,0,0,0));
-		const boolTag = SymbolsFactory.createTag("bool", "system", new Range(0,0,0,0), new Range(0,0,0,0));
+		const defaultTag = SymbolsFactory.defaultTag;
+		const boolTag = SymbolsFactory.boolTag;
 		const flaotTag = SymbolsFactory.createTag("Float", "system", new Range(0,0,0,0), new Range(0,0,0,0));
 		scope.addTag(defaultTag);
 		scope.addTag(boolTag);

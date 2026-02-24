@@ -67,7 +67,6 @@ export class Analyzer extends BaseVisitor
 	}
 
 	private addBuildinConstants() {
-		// const boolTag = new Tag(["bool"]);
 		// this.addBuildinConstant("true", 1, boolTag);
 		// this.addBuildinConstant("false", 0, boolTag);
 
@@ -738,12 +737,6 @@ export class Analyzer extends BaseVisitor
 			this.curScope = this.curScope.parent;
 	}
 
-	private isEqualSimpleTag(a: string, b: string) {
-		if(a === b) {
-			return true;
-		}
-		return a === "_" && b === "bool" || a === "_" && b === "bool";
-	}
 
 	public functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
 
@@ -947,8 +940,6 @@ export class Analyzer extends BaseVisitor
 			case "!=":
 			case "<=":
 			case ">=": {
-				console.log(resultTag, this.addTag("bool", errorRange));
-
 				if (resultTag != this.addTag("bool", errorRange)) {
 					/* operator X requires a "bool:" result tag */
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidOperatorOverloadResultTag, errorRange, operator,"bool:")); 

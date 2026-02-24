@@ -9,6 +9,7 @@ import { Analyzer } from "./antlr/AST/visitor/Analyzer";
 import { ScopeManager } from "./Managers/ScopeManager";
 import { Symbols } from "./SymbolSystem";
 import { MayBeTag } from "./SymbolSystem/Symbols/MayBeTag";
+import { SymbolsFactory } from "./SymbolSystem/SymbolsFactory";
 import { Range } from "./types";
 
 export class TypeInferenceEngine {
@@ -29,7 +30,7 @@ export class TypeInferenceEngine {
 	private evaluateLiteral<T>(node: Literal<T>): MayBeTag | null {
 		const global = this.scopeManager.globalScope;
 		if (node instanceof FloatLiteral) return global.findTag("Float")!;
-        if (node instanceof BoolLiteral) return global.findTag("bool")!;
+        if (node instanceof BoolLiteral) return SymbolsFactory.boolTag;
 		return null;
 	}
 	private evaluateCall(node: FunctionCall) {
@@ -41,7 +42,7 @@ export class TypeInferenceEngine {
 		const op = node.operator;
 
 		if (["==", "!=", "<", ">", "<=", ">=", "&&", "||"].includes(op)) {
-			return this.scopeManager.globalScope.findTag("bool")!;
+			return SymbolsFactory.boolTag;
 		}
 		if(!leftTag || !rightTag ) {
 			throw new Error("Undefined tag");
@@ -63,7 +64,7 @@ export class TypeInferenceEngine {
 	private evaluateUnary(node: UnarOperator): MayBeTag | null {
 		const operandTag = this.inferTag(node.value!);
 		if (node.operator === "!") {
-			return this.scopeManager.globalScope.findTag("bool")!;
+			return SymbolsFactory.boolTag;
 		}
 		return operandTag;
 	}
