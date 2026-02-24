@@ -5,7 +5,9 @@ import { FloatLiteral } from "./antlr/AST/Nodes/Literals/FloatLiteral";
 import { Literal } from "./antlr/AST/Nodes/Literals/Literal";
 import { BinarOperator } from "./antlr/AST/Nodes/Operators/BinarOperator";
 import { UnarOperator } from "./antlr/AST/Nodes/Operators/UnarOperator";
+import { Analyzer } from "./antlr/AST/visitor/Analyzer";
 import { ScopeManager } from "./Managers/ScopeManager";
+import { Symbols } from "./SymbolSystem";
 import { MayBeTag } from "./SymbolSystem/Symbols/MayBeTag";
 import { Range } from "./types";
 
@@ -41,8 +43,16 @@ export class TypeInferenceEngine {
 		if (["==", "!=", "<", ">", "<=", ">=", "&&", "||"].includes(op)) {
 			return this.scopeManager.globalScope.findTag("bool")!;
 		}
+		if(!leftTag || !rightTag ) {
+			throw new Error("Undefined tag");
+		}
 
 		if (leftTag === rightTag) return leftTag;
+
+		const operator = this.findUserOperator(node.operator, leftTag, rightTag, 2);
+		if(operator) {
+			return operator.returnTag;
+		}
 
 		if (!leftTag) return rightTag;
     	if (!rightTag) return leftTag;
@@ -57,4 +67,35 @@ export class TypeInferenceEngine {
 		}
 		return operandTag;
 	}
+
+	static isDefaultTag(tag: MayBeTag) {
+		return tag.name === "_";
+	}
+	static isEqulTags(tag1: MayBeTag, tag2: MayBeTag) {
+		return tag1.name === tag2.name;
+	}
+
+	isDefaultTag(tag: MayBeTag) {
+		return TypeInferenceEngine.isDefaultTag(tag);
+	}
+
+	isEqulTags(tag1: MayBeTag, tag2: MayBeTag) {
+		return TypeInferenceEngine.isEqulTags(tag1, tag2);
+	}
+
+	public findUserOperator(operator: string, tag1: MayBeTag, tag2: MayBeTag, paramsCount: number) {
+		if(this.isDefaultTag(tag1) && (paramsCount === 1 || this.isDefaultTag(tag2))) {
+			return null;
+		}
+
+		let operatorName = Analyzer.operatorName(operator, tag1, tag2, paramsCount, tag2);
+		let symbol = this.scopeManager.globalScope.findSymbol(operatorName) as Symbols.Function;
+		if(!symbol && !this.isEqulTags(tag1, tag2) && Analyzer.isCommutativeOperation(operator)) {
+			operatorName = Analyzer.operatorName(operator, tag2, tag1, paramsCount, tag1);
+			symbol = this.scopeManager.globalScope.findSymbol(operatorName) as Symbols.Function;
+		}
+
+		return symbol || null;
+	}
+	
 }

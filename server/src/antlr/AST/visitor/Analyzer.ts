@@ -406,14 +406,13 @@ export class Analyzer extends BaseVisitor
 			
 	}
 	afterVisitBinarOperator(node: BinarOperator): void {
-		if(node.left && node.right) {
-			node.setRange(node.left.pos.start, node.right.pos.end);
+		if(!(node.left && node.right)) {
+			return;
 		}
-
-		if(node.left && node.right) {
-			node.inferredTag = this.tagInferer.inferTag(node);
-		}
-
+		
+		node.setRange(node.left.pos.start, node.right.pos.end);
+		node.inferredTag = this.tagInferer.inferTag(node);
+		
 	}
 	beforeVisitReturn(node: ReturnStatement): void {
 	
@@ -553,7 +552,7 @@ export class Analyzer extends BaseVisitor
 		if (this.isDefaultTag(tags[0].name) && ((node.operator != '=' && this.isDefaultTag(tags[1].name)) || (node.operator == '=' && this.isDefaultTag(symbol.returnTag.name))))
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
 
-		symbol.name = node.id = this.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
+		symbol.name = node.id = Analyzer.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
 
 		if(this.scopeManager.globalScope.findSymbol(node.id)) {
 			// TODO: должна быть проверка реализована функция или просто объявлена
@@ -969,7 +968,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 
-	private operatorName(operator: string, firstTag: MayBeTag, secondTag: MayBeTag, paramsCount: number, resultTag: MayBeTag): string {
+	static operatorName(operator: string, firstTag: MayBeTag, secondTag: MayBeTag, paramsCount: number, resultTag: MayBeTag): string {
 		if(operator === "=") {
 			return `${resultTag.name}=${firstTag.name}`;
 		} 
@@ -977,10 +976,6 @@ export class Analyzer extends BaseVisitor
 			return `${operator}${secondTag.name}`;
 		}
 		return `${firstTag.name}${operator}${secondTag.name}`;
-	}
-
-	private isEqulTags(tag1: MayBeTag, tag2: MayBeTag) {
-		return tag1.name === tag2.name;
 	}
 
 	/** Аналог check_userop pawnc. Выполняет существует ли пользовательская перегрузка оператора */
@@ -998,19 +993,9 @@ export class Analyzer extends BaseVisitor
 		// 	}
 		// }
 
-		let operatorName = this.operatorName(operator, tag1, tag2, paramsCount, tag2);
-		let symbol = this.scopeManager.globalScope.findSymbol(operatorName);
-		let swapArgs = false;
+		let symbol = this.tagInferer.findUserOperator(operator, tag1, tag2, paramsCount);
 		if(!symbol) {
-			if(this.isEqulTags(tag1, tag2) || !this.isCommutativeOperation(operator)) { // || oper==NULL || !commutative(oper)
-				return false;
-			}
-			operatorName = this.operatorName(operator, tag2, tag1, paramsCount, tag1);
-			symbol = this.scopeManager.globalScope.findSymbol(operatorName);
-			swapArgs = true;
-			if(!symbol) {
-				return false;
-			}
+			return false;
 		}
 
 		if(symbol === this.curScope.currentFunction) {
@@ -1021,7 +1006,8 @@ export class Analyzer extends BaseVisitor
 		return true;
 	}
 
-	private isCommutativeOperation(operator: string)
+	
+	static isCommutativeOperation(operator: string)
 	{
 		switch(operator) {
 			case "+": // ob_add 
@@ -1035,4 +1021,5 @@ export class Analyzer extends BaseVisitor
 			default: return false;
 		}
 	}
+
 }
