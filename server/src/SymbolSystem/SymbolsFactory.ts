@@ -5,10 +5,20 @@ import { Enum, EnumMember, Function, Macro, Parameter, Tag, Variable } from "./S
 export abstract class SymbolsFactory {
 	private static symbolCount = 0;
 
-	private static readonly _defaultTag: Tag = this.createTag("_", "system", new Range(0,0,0,0), new Range(0,0,0,0));
-	private static readonly _boolTag: Tag = this.createTag("bool", "system", new Range(0,0,0,0), new Range(0,0,0,0));
-	public static get defaultTag() { return this._defaultTag; }
-	public static get boolTag() { return this._boolTag; }
+	private static _defaultTag: Tag | undefined;
+	private static _boolTag: Tag | undefined;
+	public static get defaultTag(): Tag { 
+		if(!this._defaultTag) {
+			this._defaultTag = this.createTag("_", "system", new Range(0,0,0,0), new Range(0,0,0,0)); 
+		}
+		return this._defaultTag;
+	}
+	public static get boolTag(): Tag { 
+		if(!this._boolTag) {
+			this._boolTag = this.createTag("bool", "system", new Range(0,0,0,0), new Range(0,0,0,0)); 
+		}
+		return this._boolTag;
+	 }
 
     static createMacro(
         name: string,

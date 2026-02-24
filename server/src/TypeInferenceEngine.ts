@@ -15,7 +15,7 @@ import { Range } from "./types";
 export class TypeInferenceEngine {
 	constructor(private scopeManager: ScopeManager, private addTag: (name: string, range: Range, nameRange?: Range) => MayBeTag) {}
 
-	public inferTag(node: Expression): MayBeTag | null {
+	public inferTag(node: Expression): MayBeTag {
 		if(node.isTaged) {
 			return this.addTag(node.tag.id, node.tag.pos, node.tag.idPos); 
 		}
@@ -24,17 +24,17 @@ export class TypeInferenceEngine {
         if (node instanceof BinarOperator) return this.evaluateBinary(node);
         if (node instanceof UnarOperator) return this.evaluateUnary(node);
 
-		return null;
+		return SymbolsFactory.defaultTag;
 	}
 
-	private evaluateLiteral<T>(node: Literal<T>): MayBeTag | null {
+	private evaluateLiteral<T>(node: Literal<T>): MayBeTag {
 		const global = this.scopeManager.globalScope;
 		if (node instanceof FloatLiteral) return global.findTag("Float")!;
         if (node instanceof BoolLiteral) return SymbolsFactory.boolTag;
-		return null;
+		return SymbolsFactory.defaultTag;
 	}
 	private evaluateCall(node: FunctionCall) {
-		return node.symbol?.returnTag || null;
+		return node.symbol?.returnTag || SymbolsFactory.defaultTag;
 	}
 	private evaluateBinary(node: BinarOperator) {
 		const leftTag = node.left!.inferredTag;
@@ -61,7 +61,7 @@ export class TypeInferenceEngine {
 		return leftTag;
 	}
 
-	private evaluateUnary(node: UnarOperator): MayBeTag | null {
+	private evaluateUnary(node: UnarOperator): MayBeTag {
 		const operandTag = this.inferTag(node.value!);
 		if (node.operator === "!") {
 			return SymbolsFactory.boolTag;

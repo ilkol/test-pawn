@@ -5,11 +5,12 @@ import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
 import { FunctionModifire } from "../../antlr/AST/Nodes/Functions/FunctionDeclaration";
 import { MayBeTag } from "./MayBeTag";
+import { SymbolsFactory } from "../SymbolsFactory";
 
 export class Function extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Function;
 	public hasImplementation = false;
-	public returnTag: MayBeTag | null = null;
+	public returnTag: MayBeTag = SymbolsFactory.boolTag;
 	public parameters: AbstractSymbol[] = [];
 
 
