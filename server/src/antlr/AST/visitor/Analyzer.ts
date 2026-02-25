@@ -199,6 +199,9 @@ export class Analyzer extends BaseVisitor
 		}
 
 		const symbol = SymbolsFactory.createParameter(node.id, this.file.path, node.range, node.idPos, modifires);
+		for(const tag of node.tags) {
+			symbol.validTags.push(this.addTag(tag.id, tag.range, tag.idPos));
+		}
 		this.symbolManager.add(this.file.path, symbol);
 		this.curScope.add(symbol);
 
