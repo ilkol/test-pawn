@@ -826,8 +826,9 @@ export class Analyzer extends BaseVisitor
 		if(formalTag === actualTag) {
 			return true;
 		}
+
 		// Если необходимый тэг - дефолтный, а проверяемый не "fixed", то проверяемый приводиться к дефолтному
-		return allowCoerce && this.isDefaultTag(formalTag) && this.isTagFixed(actualTag);
+		return allowCoerce && this.isDefaultTag(formalTag) && !this.isTagFixed(actualTag);
 	}
 
 	private handleFunctionRedeclaration(node: FunctionDeclaration, existing: Symbols.AbstractSymbol) {
