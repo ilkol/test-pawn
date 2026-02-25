@@ -72,10 +72,10 @@ export abstract class SymbolsFactory {
 		definitionFilePath: string,
 		range: Range,
 		tokenRange: Range,
-		definition: boolean
+		parentSymbol: Enum | undefined
 	): EnumMember {
 		
-		return new EnumMember(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, [SemanticTokenModifiers.readonly]);
+		return new EnumMember(SymbolsFactory.symbolCount++, name, definitionFilePath, range, tokenRange, [SemanticTokenModifiers.readonly], parentSymbol);
 	}
 
 	static createTag(

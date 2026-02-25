@@ -437,7 +437,7 @@ export class Analyzer extends BaseVisitor
 		this.restrictScope();
 	}
 	beforeVisitEnumMember(node: EnumMember): void {
-		const symbol = SymbolsFactory.createEnumMember(node.id, this.file.path, node.range, node.idPos, true);
+		const symbol = SymbolsFactory.createEnumMember(node.id, this.file.path, node.range, node.idPos, node.parent?.symbol);
 		node.symbol = symbol;
 		this.symbolManager.add(this.file.path, symbol);
 		node.parent?.symbol?.members.push(symbol);

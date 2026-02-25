@@ -3,12 +3,16 @@ import { Range } from "../../types";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
+import { Enum } from "./Enum";
 
 export class EnumMember extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.EnumMember;
 	isConst: true = true;
 	
-	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[]) {
+	constructor(
+		id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[],
+		public readonly parentSymbol: Enum | undefined
+	) {
 		super(
 			id, 
 			name, 
