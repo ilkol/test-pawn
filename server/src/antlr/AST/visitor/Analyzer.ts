@@ -438,8 +438,13 @@ export class Analyzer extends BaseVisitor
 		if(!node.value) {
 			return;
 		}
-		// const currentFunction = this.curScope.currenFunction;
-		// this.checkTagMismatch(currentFunction.tag, node.value.tag, true, node.value.pos);
+
+		const currentFunction = this.curScope.currentFunction;
+		if(!currentFunction) {
+			console.log(currentFunction);
+			throw new Error("Неожиданный return");
+		}
+		this.checkTagMismatch(currentFunction.returnTag, node.value.inferredTag, true, node.value.pos);
 	}
 	beforeVisitCodeBlock(node: CodeBlock): void {
 		this.extendScope(node.range);
