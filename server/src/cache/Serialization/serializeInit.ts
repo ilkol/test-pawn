@@ -37,7 +37,7 @@ import { ReturnStatement } from "../../antlr/AST/Nodes/ReturnStatement";
 import { Tag } from "../../antlr/AST/Nodes/Tag";
 import { Variable } from "../../antlr/AST/Nodes/Variable";
 import { VariableInit } from "../../antlr/AST/Nodes/VariableInit";
-import { Array } from "../../antlr/AST/Nodes/Variables/Array";
+import { ArrayNode } from "../../antlr/AST/Nodes/Variables/Array";
 import { ArrayDeclaration } from "../../antlr/AST/Nodes/Variables/ArrayDeclaration";
 import { VarDeclaration } from "../../antlr/AST/Nodes/Variables/VarDeclaration";
 import { Endinput, Error, FileLineChange, Include, Pragma } from "../../Preprocessor/Directives";
@@ -65,7 +65,7 @@ export function serializeInit(): void {
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayDeclaration, ArrayDeclaration);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.EnumMember, EnumMember);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Enum, EnumDeclaration);
-	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Array, Array);
+	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Array, ArrayNode);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.BinarOperator, BinarOperator);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.FunctionCall, FunctionCall);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.UnarOperator, UnarOperator );

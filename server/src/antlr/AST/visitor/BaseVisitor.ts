@@ -77,7 +77,7 @@ export abstract class BaseVisitor implements IVisitor
 		node.else?.accept(this);
 		this.afterVisitIfStatemnt(node);
 	}
-	visitArray(node: ArrayNode.Array): void {
+	visitArray(node: ArrayNode.ArrayNode): void {
 		this.visitVariable(node);
 		this.acceptArray(node.indexes);
 	}

@@ -29,7 +29,7 @@ import { StringLiteral } from "./AST/Nodes/Literals/StringLiteral";
 import { WhileCycle } from "./AST/Nodes/Cycles/WhileCycle";
 import { Cycle } from "./AST/Nodes/Cycles/Cycle";
 import { ForCycle } from "./AST/Nodes/Cycles/ForCycle";
-import { Array } from "./AST/Nodes/Variables/Array";
+import { ArrayNode } from "./AST/Nodes/Variables/Array";
 import { ArrayDeclaration } from "./AST/Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "./AST/Nodes/Operators/AssigmentOperator";
 import { Ellipse } from "./AST/Nodes/Operators/Ellipse";
@@ -229,7 +229,7 @@ export class PawnListener implements IPawnListener
 
 			const last = this.nodes.peek();
 			var declarationVar:VarDeclaration = new VarDeclaration();
-			if(node instanceof Array) {
+			if(node instanceof ArrayNode) {
 				declarationVar = new ArrayDeclaration();
 				(<ArrayDeclaration>declarationVar).indexes = node.indexes;
 			}

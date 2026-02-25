@@ -16,7 +16,7 @@ import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclara
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
-import { Array } from "../Nodes/Variables/Array";
+import { ArrayNode } from "../Nodes/Variables/Array";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 import { IfStatement } from "../Nodes/Conditions/IfStatement";
@@ -61,7 +61,7 @@ export interface IVisitor
 	visitWFor(node: ForCycle): void;
 	
 
-	visitArray(ndoe: Array): void;
+	visitArray(ndoe: ArrayNode): void;
 	visitArrayDeclaration(node: ArrayDeclaration): void;
 
 	visitItStatement(node: IfStatement): void;

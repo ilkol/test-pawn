@@ -23,7 +23,7 @@ import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { Expression } from "../Nodes/Expresion";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
-import { Array } from "../Nodes/Variables/Array";
+import { ArrayNode } from "../Nodes/Variables/Array";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 import { Tag } from "../Nodes/Tag";
 import { IHasTag } from "../Nodes/IHasTag";
@@ -48,6 +48,7 @@ import { MayBeTag } from "../../../SymbolSystem/Symbols/MayBeTag";
 import { TypeInferenceEngine } from "../../../TypeInferenceEngine";
 import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 import { Pawn } from "../../../Pawn";
+import { NamedArgument } from "../Nodes/Functions/NamedArgument";
 
 export class Analyzer extends BaseVisitor
 {
@@ -882,11 +883,40 @@ export class Analyzer extends BaseVisitor
 	}
 
 	private checkCallFunctionParameters(functionSymbol: Symbols.Function, node: FunctionCall) {
-		if(functionSymbol.parameters.length != node.vars.length) {
-			this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.pos, functionSymbol.parameters.length, node.vars.length));
-		}
+		let namedArguments = false;
+		let argPos = 0, argNumber = 0;
+		const usedArgs: boolean[] = Array(functionSymbol.parameters.length).fill(false);
+		
+		for(const argument of node.vars) {
+			if(argument instanceof NamedArgument) {
+				namedArguments = true;
+				argPos = functionSymbol.parameters.findIndex(param => param.name === argument.id);
+				if(argPos === -1) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, argument.idPos, argument.id));
+					break;
+				}
+			} else {
+				if(namedArguments) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.NamedargumentsMustBeAfterPositional, argument.pos));
+				}
+				argPos = argNumber;
+			}
 
-		let index = 0;
+			if(argPos >= Pawn.MAX_PARAMETERS_COUNt) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArguments, argument.pos));
+				break;
+			}
+			if(usedArgs[argPos] === true) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentAlreadySet, argument.pos));
+			}
+
+
+		}
+		// if(functionSymbol.parameters.length != node.vars.length) {
+		// 	this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.pos, functionSymbol.parameters.length, node.vars.length));
+		// }
+
+		// let index = 0;
 		// for(const argument of node.vars) {
 		// 	const param = functionSymbol.parameters[index];
 		// 	if(!param) {

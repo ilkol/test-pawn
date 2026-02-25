@@ -6,7 +6,7 @@ import { IHasID } from "../IHasID";
 import { RightValue } from "../RightValue";
 
 export class NamedArgument extends ASTNode implements IHasID {
-	public _id: string = "";
+	protected _id: string = "";
 	private _idPos: Range = new Range(0,0,0,0);
 	public value: RightValue | undefined;
 
