@@ -119,6 +119,9 @@ export class TypeInferenceEngine {
 		if(symbol instanceof Symbols.Function) {
 			return symbol.returnTag;
 		}		
+		if(symbol instanceof Symbols.Parameter) {
+			return symbol.validTags[0] ?? SymbolsFactory.defaultTag;
+		}
 		
 
 		return SymbolsFactory.defaultTag;

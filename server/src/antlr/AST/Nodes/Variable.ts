@@ -5,6 +5,8 @@ import { VarDeclaration } from "./Variables/VarDeclaration";
 import { Serialization } from "../../../cache/Serialization";
 import { Range } from "../../../types";
 import { Symbols } from "../../../SymbolSystem";
+import { MayBeTag } from "../../../SymbolSystem/Symbols/MayBeTag";
+import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
 
 export class Variable extends Expression implements IHasID
 {
@@ -13,6 +15,7 @@ export class Variable extends Expression implements IHasID
 	private _identifire: string = "";
 	private _idPos: Range = new Range(0,0,0,0);
 	public symbol: Symbols.Enum | Symbols.EnumMember | Symbols.Function | Symbols.Parameter | Symbols.Variable | undefined;
+	public inferredTag: MayBeTag = SymbolsFactory.defaultTag;
 
     constructor(instance: Variable|undefined = undefined) {
         super();

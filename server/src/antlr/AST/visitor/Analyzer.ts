@@ -238,6 +238,7 @@ export class Analyzer extends BaseVisitor
 			|| symbol instanceof Symbols.Variable) {
 			node.symbol = symbol;
 		}
+		node.inferredTag = this.tagInferer.inferTag(node);
 		
 		/*
 		if(variable instanceof ArrayDeclaration) {
@@ -973,7 +974,7 @@ export class Analyzer extends BaseVisitor
 			return `${resultTag.name}=${firstTag.name}`;
 		} 
 		if(paramsCount === 1 || operator === "~") {
-			return `${operator}${secondTag.name}`;
+			return `${operator}${firstTag.name}`;
 		}
 		return `${firstTag.name}${operator}${secondTag.name}`;
 	}
