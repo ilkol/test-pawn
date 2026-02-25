@@ -33,11 +33,13 @@ export namespace PawnErrors {
 		CanBeReferenceToArray = 67,
 		MustBeArrayArgument = 73,
 		InvalidFunctionCall = 76,
+		MixEmptyReturnAndReturnValue = 78,
 
 		CannotReadFromFile = 100,
 		UserError = 111,
 
 		SymbolIsNeverUsed = 203,
+		ShoutdReturnValue = 209,
 		TagMismatch = 213,
 		UserWarning = 237,
 	}

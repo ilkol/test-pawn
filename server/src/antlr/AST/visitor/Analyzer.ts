@@ -434,16 +434,32 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	afterVisitReturn(node: ReturnStatement): void {
-		// TODO: error 78
-		if(!node.value) {
-			return;
-		}
-
 		const currentFunction = this.curScope.currentFunction;
 		if(!currentFunction) {
-			console.log(currentFunction);
 			throw new Error("Неожиданный return");
 		}
+		
+		// TODO: error 78
+		if(!node.value) {
+			if(!currentFunction.shuldReturnValue) {
+				currentFunction.emptyReturnsRanges.push(node.range);
+				return;
+			}
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ShoutdReturnValue, node.range, currentFunction.name));
+			return;
+		}
+		if(!currentFunction.shuldReturnValue) {
+			currentFunction.emptyReturnsRanges.forEach(range => {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ShoutdReturnValue, range, currentFunction.name));
+			});
+			if(currentFunction.emptyReturnsRanges.length) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MixEmptyReturnAndReturnValue, node.range));
+			}
+			currentFunction.emptyReturnsRanges = [];
+		}
+		currentFunction.shuldReturnValue = true;
+
+		
 		this.checkTagMismatch(currentFunction.returnTag, node.value.inferredTag, true, node.value.pos);
 	}
 	beforeVisitCodeBlock(node: CodeBlock): void {

@@ -12,6 +12,8 @@ export class Function extends AbstractSymbol {
 	public hasImplementation = false;
 	public returnTag: MayBeTag = SymbolsFactory.boolTag;
 	public parameters: Parameter[] = [];
+	public emptyReturnsRanges: Range[] = [];
+	public shuldReturnValue: boolean = false;
 
 
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range) {
