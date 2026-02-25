@@ -4,6 +4,7 @@ import { Expression } from "./Expresion";
 import { VarDeclaration } from "./Variables/VarDeclaration";
 import { Serialization } from "../../../cache/Serialization";
 import { Range } from "../../../types";
+import { Symbols } from "../../../SymbolSystem";
 
 export class Variable extends Expression implements IHasID
 {
@@ -11,6 +12,7 @@ export class Variable extends Expression implements IHasID
 	public declaration?: VarDeclaration;
 	private _identifire: string = "";
 	private _idPos: Range = new Range(0,0,0,0);
+	public symbol: Symbols.Enum | Symbols.EnumMember | Symbols.Function | Symbols.Parameter | Symbols.Variable | undefined;
 
     constructor(instance: Variable|undefined = undefined) {
         super();

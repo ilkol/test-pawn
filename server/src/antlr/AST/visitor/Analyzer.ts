@@ -229,6 +229,12 @@ export class Analyzer extends BaseVisitor
 		if(!symbol) {
 			return;
 		}
+		if(symbol instanceof Symbols.Enum || symbol instanceof Symbols.EnumMember 
+			|| symbol instanceof Symbols.Function 
+			|| symbol instanceof Symbols.Parameter 
+			|| symbol instanceof Symbols.Variable) {
+			node.symbol = symbol;
+		}
 		
 		/*
 		if(variable instanceof ArrayDeclaration) {

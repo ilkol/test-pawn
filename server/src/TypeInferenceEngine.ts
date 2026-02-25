@@ -106,14 +106,22 @@ export class TypeInferenceEngine {
 	}
 
 	private evaluateVariable(node: Variable) {
-		// const symbol = node as Symbols.Variable | Symbols.Parameter | Symbols.EnumMember;
+		const symbol = node.symbol;
+		if(!symbol) {
+			return SymbolsFactory.defaultTag;
+		}
+		if(symbol instanceof Symbols.Variable) {
+			return symbol.tag;
+		}
+		if(symbol instanceof Symbols.Enum) {
+			return symbol;
+		}
+		if(symbol instanceof Symbols.Function) {
+			return symbol.returnTag;
+		}		
 		
-    
-		// if (symbol instanceof Symbols.EnumMember) {
-		// 	return symbol.enumTag; 
-		// }
 
-		return /*symbol?. || */SymbolsFactory.defaultTag;
+		return SymbolsFactory.defaultTag;
 	}
 	
 }
