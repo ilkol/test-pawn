@@ -427,7 +427,7 @@ export class Analyzer extends BaseVisitor
 
 		if (!leftTag || !rightTag || !this.tagInferer.findUserOperator(node.operator, leftTag, rightTag, 2)) {
 			this.checkTagMismatch(leftTag, rightTag, false, node.range);
-   		 }
+   		}
 		
 	}
 	beforeVisitReturn(node: ReturnStatement): void {
@@ -863,53 +863,16 @@ export class Analyzer extends BaseVisitor
 		if(functionSymbol.parameters.length != node.vars.length) {
 			this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.pos, functionSymbol.parameters.length, node.vars.length));
 		}
-		// let param = 0;
-		// if(functionSymbol.parameters.length !== node.vars.length && func.ellipse === undefined) {
-		// 	if(func.parameters.length < node.vars.length)
-		// 	{
-		// 		this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
-		// 		func.parameters.forEach(element => {
-		// 			this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
-		// 			param++;
-		// 		});
-		// 	}
-		// 	else
-		// 	{
-		// 		node.vars.forEach(element => {
-		// 			this.checkTagMismatch(func.parameters[param].tag, element.tag, true, element.pos);
-		// 			param++;
-		// 		});
 
-		// 		for(let i = param; i < func.parameters.length; i++) {
-		// 			if(func.parameters[i].defaultValue) continue;
-		// 			this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
-		// 			break;
-		// 		}
-		// 	}
-		// }
-		// else {
-		// 	if(func.parameters.length <= node.vars.length && func.ellipse) {
-		// 		func.parameters.forEach(element => {
-		// 			this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
-		// 			param++;
-		// 		});
-		// 		for(; param < node.vars.length; param++)
-		// 		{
-		// 			this.checkTagMismatch(func.ellipse.tag, node.vars[param].tag, true, node.vars[param].pos);
-		// 		}
-		// 	}
-		// 	else {
-		// 		if(func.parameters.length === node.vars.length) {
-		// 			func.parameters.forEach(element => {
-		// 				this.checkTagMismatch(element.tag, node.vars[param].tag, true, node.vars[param].pos);
-		// 				param++;
-		// 			});
-		// 		}
-		// 		else {
-		// 			this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.idPos, func.parameters.length, node.vars.length));
-		// 		}
-		// 	}
-		// }
+		let index = 0;
+		for(const argument of node.vars) {
+			const param = functionSymbol.parameters[index];
+			if(!param) {
+				break;
+			}
+			this.checkMultyTagMismatch(param.validTags.map(tag => tag.name), argument.tag.id, argument.pos);
+			index++;
+		}
 	}
 
 	private addSymbolReference(name: string, symbolRange: Range, symbolNameRange: Range, modifiers: SemanticTokenModifiers[] = [], addPendingReference = false) {
