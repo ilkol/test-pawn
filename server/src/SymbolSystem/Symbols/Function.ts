@@ -3,15 +3,15 @@ import { Range } from "../../types";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
-import { FunctionModifire } from "../../antlr/AST/Nodes/Functions/FunctionDeclaration";
 import { MayBeTag } from "./MayBeTag";
 import { SymbolsFactory } from "../SymbolsFactory";
+import { Parameter } from "./Parameter";
 
 export class Function extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Function;
 	public hasImplementation = false;
 	public returnTag: MayBeTag = SymbolsFactory.boolTag;
-	public parameters: AbstractSymbol[] = [];
+	public parameters: Parameter[] = [];
 
 
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range) {
