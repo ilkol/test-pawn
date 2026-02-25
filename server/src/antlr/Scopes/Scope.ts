@@ -34,7 +34,7 @@ export class Scope implements IScope
 	}
 
 	get currentFunction(): Function | undefined {
-		return this._currentFunction;
+		return this._currentFunction ?? this.parent?.currentFunction;
 	}
 	set currentFunction(value: Function | undefined) {
 		this._currentFunction = value;
