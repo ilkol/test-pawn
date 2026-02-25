@@ -220,7 +220,7 @@ arrayOperatorChar:
 functionCallOperator:
     IDENTIFIER OPEN_PARENTHESIS (functionArgument (COMA functionArgument)*)? CLOSE_PARENTHESIS
 ;
-functionArgument: ('.' symbol ASSIGMENT)? expresion;
+functionArgument: SKIP_PARAM | (('.' symbol ASSIGMENT)? expresion);
 tagOperator:
     tag tagableExpression
 ;
@@ -262,6 +262,8 @@ fragment HASHTAG:	'#';
 
 COMA:		',';
 SEMI:		';';
+
+SKIP_PARAM: '_';
 
 ASSIGMENT:			'=';
 ASSIGMENT_PLUS:		'+=';

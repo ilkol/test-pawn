@@ -57,6 +57,7 @@ import { DiagnosticSeverity } from "vscode-languageserver";
 import { Position, Range } from "../types";
 import { Locale } from "../Locale";
 import { NamedArgument } from "./AST/Nodes/Functions/NamedArgument";
+import { TerminalNode } from "antlr4ts/tree/TerminalNode";
 
 export class PawnListener implements IPawnListener
 {
@@ -691,17 +692,26 @@ export class PawnListener implements IPawnListener
 			throw new Error(`Ожидается FunctionCall, а найден ${last?.name}`);
 		}
 
-		const symbol = ctx.symbol();
-
-		if(!symbol) {
-			if(node.value)
-				last.pushParameter(node.value);
+		let id: TerminalNode;
+		if(ctx.SKIP_PARAM()) {
+			id = ctx.SKIP_PARAM()!;
+			node.id = id.text;
+			node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 			return;
+		} else {
+			const symbol = ctx.symbol();
+	
+			if(!symbol) {
+				if(node.value)
+					last.pushParameter(node.value);
+				return;
+			}
+			id = symbol.IDENTIFIER();
 		}
-		let id = symbol.IDENTIFIER();
+
 		node.id = id.text;
 		node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
-
+		last.pushParameter(node);
 	}
 
 	enterFunctionCallOperator(ctx: FunctionCallOperatorContext): void {
