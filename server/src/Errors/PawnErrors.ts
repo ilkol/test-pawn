@@ -23,6 +23,7 @@ export namespace PawnErrors {
 		MustBeLValue = 22,
 		NotMatchingPreprocessorCondition = 26,
 		UnknownDirective = 31,
+		ArgumentHasntDefaultValue = 34,
 		NamedargumentsMustBeAfterPositional = 44,
 		MaxArguments = 45,
 		MaxArrayDimenssions = 53,

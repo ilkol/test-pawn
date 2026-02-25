@@ -50,6 +50,16 @@ import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 import { Pawn } from "../../../Pawn";
 import { NamedArgument } from "../Nodes/Functions/NamedArgument";
 
+/** Состояние проверки аргумента функции при ее вызове */
+enum ArgumentState {
+	/** Ещё не проверен */
+	Unset,
+	/** Аргумент пропущен (_) */
+	Skiped,
+	/** Аргумент проверен */
+	Done
+}
+
 export class Analyzer extends BaseVisitor
 {
 
@@ -885,10 +895,10 @@ export class Analyzer extends BaseVisitor
 	private checkCallFunctionParameters(functionSymbol: Symbols.Function, node: FunctionCall) {
 		let namedArguments = false;
 		let argPos = 0, argNumber = 0;
-		const usedArgs: boolean[] = Array(functionSymbol.parameters.length).fill(false);
+		const usedArgs: ArgumentState[] = Array(functionSymbol.parameters.length).fill(ArgumentState.Unset);
 		
 		for(const argument of node.vars) {
-			if(argument instanceof NamedArgument) {
+			if(argument instanceof NamedArgument && argument.id !== "_") {
 				namedArguments = true;
 				argPos = functionSymbol.parameters.findIndex(param => param.name === argument.id);
 				if(argPos === -1) {
@@ -906,8 +916,21 @@ export class Analyzer extends BaseVisitor
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArguments, argument.pos));
 				break;
 			}
-			if(usedArgs[argPos] === true) {
+			if(usedArgs[argPos] === ArgumentState.Unset) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentAlreadySet, argument.pos));
+			}
+
+			if(argument instanceof NamedArgument && argument.id === "_") {
+				usedArgs[argPos] = ArgumentState.Skiped;
+				/*if (arg[argidx].ident==0 || arg[argidx].ident==iVARARGS) {
+					error(202);
+				} else */if (!functionSymbol.parameters[argPos].hasDefaultValue) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentHasntDefaultValue, argument.pos, argPos + 1));
+				}
+				// if (arg[argidx].ident!=0 && arg[argidx].ident!=iVARARGS)
+  				// 	argidx++;
+			} else {
+
 			}
 
 
