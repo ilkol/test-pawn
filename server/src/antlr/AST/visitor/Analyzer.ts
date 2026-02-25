@@ -887,14 +887,14 @@ export class Analyzer extends BaseVisitor
 		}
 
 		let index = 0;
-		for(const argument of node.vars) {
-			const param = functionSymbol.parameters[index];
-			if(!param) {
-				break;
-			}
-			this.checkMultyTagMismatch(param.validTags.map(tag => tag.name), argument.tag.id, argument.pos);
-			index++;
-		}
+		// for(const argument of node.vars) {
+		// 	const param = functionSymbol.parameters[index];
+		// 	if(!param) {
+		// 		break;
+		// 	}
+		// 	this.checkMultyTagMismatch(param.validTags.map(tag => tag.name), argument.tag.id, argument.pos);
+		// 	index++;
+		// }
 	}
 
 	private addSymbolReference(name: string, symbolRange: Range, symbolNameRange: Range, modifiers: SemanticTokenModifiers[] = [], addPendingReference = false) {

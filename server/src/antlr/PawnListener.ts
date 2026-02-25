@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener as IPawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
@@ -56,6 +56,7 @@ import { ArrayChar } from "./AST/Nodes/Operators/ArrayChar";
 import { DiagnosticSeverity } from "vscode-languageserver";
 import { Position, Range } from "../types";
 import { Locale } from "../Locale";
+import { NamedArgument } from "./AST/Nodes/Functions/NamedArgument";
 
 export class PawnListener implements IPawnListener
 {
@@ -591,10 +592,6 @@ export class PawnListener implements IPawnListener
 			else if(last instanceof ReturnStatement) {
 				last.value = node;
 			}
-			else if(last instanceof FunctionCall)
-			{
-				last.pushParameter(node);
-			}
 			else if(last instanceof EnumMember) {
 				// last.value = node;
 			}
@@ -675,7 +672,37 @@ export class PawnListener implements IPawnListener
 			}
 		}
 	};
-	
+
+	enterFunctionArgument(ctx: FunctionArgumentContext) {
+		let node = new NamedArgument();	
+		this.nodes.push(node);
+	}
+	exitFunctionArgument(ctx: FunctionArgumentContext) {
+		let node = this.nodes.pop();
+		if(!(node instanceof NamedArgument)) {
+			throw new Error(`Ожидается NamedArgument, а найден ${node?.name}`);
+		}
+		if(!ctx.stop) {
+			return;
+		}
+		node.setPos(ctx.start, ctx.stop);
+		const last = this.nodes.peek();
+		if(!(last instanceof FunctionCall)) {
+			throw new Error(`Ожидается FunctionCall, а найден ${last?.name}`);
+		}
+
+		const symbol = ctx.symbol();
+
+		if(!symbol) {
+			if(node.value)
+				last.pushParameter(node.value);
+			return;
+		}
+		let id = symbol.IDENTIFIER();
+		node.id = id.text;
+		node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+
+	}
 
 	enterFunctionCallOperator(ctx: FunctionCallOperatorContext): void {
 		let node = new FunctionCall();	

@@ -6,13 +6,14 @@ import { Serialization } from "../../../../cache/Serialization";
 import { RightValue } from "../RightValue";
 import { Range } from "../../../../types";
 import { Function } from "../../../../SymbolSystem/Symbols";
+import { NamedArgument } from "./NamedArgument";
 
 
-export class FunctionCall extends Expression implements IContainsVars<RightValue>, IHasID
+export class FunctionCall extends Expression implements IContainsVars<RightValue | NamedArgument>, IHasID
 {
 	name = "вызов функции";
 
-	private _parameters: RightValue[] = [];
+	private _parameters: (RightValue | NamedArgument)[] = [];
 	private _identifire: string = "";
 	private _idPos: Range = new Range(0,0,0,0);
 	symbol?: Function;
@@ -24,7 +25,7 @@ export class FunctionCall extends Expression implements IContainsVars<RightValue
 		super();
 	}
 	
-	get vars(): RightValue[] {
+	get vars(): (RightValue | NamedArgument)[] {
 		return this._parameters;
 	}
 	public get id() : string {
@@ -40,7 +41,7 @@ export class FunctionCall extends Expression implements IContainsVars<RightValue
 	}
 	
 
-	pushParameter(el: RightValue): void {
+	pushParameter(el: RightValue | NamedArgument): void {
 		this._parameters.push(el);
 	}
 	
