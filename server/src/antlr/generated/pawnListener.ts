@@ -79,6 +79,7 @@ import { AssigmentOperatorContext } from "./pawnParser";
 import { ArrayOperatorIndexContext } from "./pawnParser";
 import { ArrayOperatorCharContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
+import { FunctionArgumentContext } from "./pawnParser";
 import { TagOperatorContext } from "./pawnParser";
 import { SymbolContext } from "./pawnParser";
 import { LvalueContext } from "./pawnParser";
@@ -929,6 +930,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitFunctionCallOperator?: (ctx: FunctionCallOperatorContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.functionArgument`.
+	 * @param ctx the parse tree
+	 */
+	enterFunctionArgument?: (ctx: FunctionArgumentContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.functionArgument`.
+	 * @param ctx the parse tree
+	 */
+	exitFunctionArgument?: (ctx: FunctionArgumentContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.tagOperator`.

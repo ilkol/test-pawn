@@ -79,6 +79,7 @@ import { AssigmentOperatorContext } from "./pawnParser";
 import { ArrayOperatorIndexContext } from "./pawnParser";
 import { ArrayOperatorCharContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
+import { FunctionArgumentContext } from "./pawnParser";
 import { TagOperatorContext } from "./pawnParser";
 import { SymbolContext } from "./pawnParser";
 import { LvalueContext } from "./pawnParser";
@@ -628,6 +629,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitFunctionCallOperator?: (ctx: FunctionCallOperatorContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.functionArgument`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitFunctionArgument?: (ctx: FunctionArgumentContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.tagOperator`.

@@ -218,8 +218,9 @@ arrayOperatorChar:
     (CURLY_OPEN_BRACKET expresion? CURLY_CLOSE_BRACKET)
 ;
 functionCallOperator:
-    IDENTIFIER OPEN_PARENTHESIS (expresion (COMA expresion)*)? CLOSE_PARENTHESIS
+    IDENTIFIER OPEN_PARENTHESIS (functionArgument (COMA functionArgument)*)? CLOSE_PARENTHESIS
 ;
+functionArgument: ('.' symbol ASSIGMENT)? expresion;
 tagOperator:
     tag tagableExpression
 ;
