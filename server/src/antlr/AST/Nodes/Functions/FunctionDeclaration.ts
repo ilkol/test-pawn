@@ -28,7 +28,7 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	
 	private _parameters: FunctionDeclarationParameter[] = [];
 	private _code?: AbstractStatement = undefined;
-	private _modifire: FunctionModifire = FunctionModifire.None;
+	private _modifire: number = FunctionModifire.None;
 	private _ellipse?: Ellipse = undefined;
 
 	public docs?: Docs = undefined;

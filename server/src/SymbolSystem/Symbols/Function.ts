@@ -6,6 +6,7 @@ import { SymbolReferance } from "./SymbolReferance";
 import { MayBeTag } from "./MayBeTag";
 import { SymbolsFactory } from "../SymbolsFactory";
 import { Parameter } from "./Parameter";
+import { FunctionModifire } from "../../antlr/AST/Nodes/Functions/FunctionDeclaration";
 
 export class Function extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Function;
@@ -14,7 +15,7 @@ export class Function extends AbstractSymbol {
 	public parameters: Parameter[] = [];
 	public emptyReturnsRanges: Range[] = [];
 	public shuldReturnValue: boolean = false;
-
+	private functionModifiers: number = FunctionModifire.None;
 
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range) {
 		super(
@@ -32,5 +33,13 @@ export class Function extends AbstractSymbol {
 				]
 			)
 		);
+	}
+
+	addModifier(modifire: FunctionModifire) {
+		this.functionModifiers |= modifire;
+	}
+
+	hasModifier(modifire: FunctionModifire): boolean {
+		return (this.functionModifiers & modifire) !== 0;
 	}
 }

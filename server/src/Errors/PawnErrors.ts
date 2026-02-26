@@ -15,15 +15,18 @@ export namespace PawnErrors {
 	}
 
 	export enum Code {
+		FunctionMaynotHaveArguments = 5,
 		MustBeConstantExpression = 8,
 		InvalidArraySize = 9,
 		InvalidFunctioncall = 12,
 		UndefinedSymbol = 17,
 		SymbolAlreadyDefined = 21,
 		MustBeLValue = 22,
+		MismatchPrototype = 26,
 		NotMatchingPreprocessorCondition = 26,
 		UnknownDirective = 31,
 		ArgumentHasntDefaultValue = 34,
+		InvalidModifiersCombination = 42,
 		NamedargumentsMustBeAfterPositional = 44,
 		MaxArguments = 45,
 		MaxArrayDimenssions = 53,
@@ -46,6 +49,7 @@ export namespace PawnErrors {
 		SymbolIsNeverUsed = 203,
 		ShoutdReturnValue = 209,
 		TagMismatch = 213,
+		PublicBeforeForward = 235,
 		UserWarning = 237,
 	}
 }

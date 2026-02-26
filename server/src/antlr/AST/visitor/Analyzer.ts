@@ -611,10 +611,52 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		const symbol = SymbolsFactory.createFunction(node.id, this.file.path, node.range, node.idPos);
-		this.symbolManager.add(this.file.path, symbol, true);
+		
+
+		const isStocked = node.stock;
+		const isStatic = node.hasModifier(FunctionModifire.Static);
+		const isPublic = node.hasModifier(FunctionModifire.Public) || node.id[0] === '@';
+		if(isPublic && isStocked) {
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.idPos));
+		}
+
+		const symbol = this.ensureFunctionSymbol(node.id, this.addTag(node.tag.id, node.tag.pos, node.tag.idPos), node.range, node.idPos);
+		if(!symbol) {
+			return;
+		}
 		node.symbol = symbol.defenition;
-		symbol.hasImplementation = node.code !== undefined;
+
+		if(isPublic) {
+			symbol.addModifier(FunctionModifire.Public);
+		}
+		if(isStatic) {
+			symbol.addModifier(FunctionModifire.Static);
+		}
+
+		if(isPublic && !symbol.hasModifier(FunctionModifire.Forward)) {
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.PublicBeforeForward, node.idPos, symbol.name));
+		}
+
+		const argCount = node.parameters.length;
+		if(symbol.name === "main" || symbol.name === "entry") {
+			if(argCount) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionMaynotHaveArguments, node.pos));
+			}
+			symbol.isUsed = true;
+		}
+	
+		if(node.code === undefined) {
+			symbol.addModifier(FunctionModifire.Forward);
+			// this.file.diagnostics.push(PawnErrors.report(218, node.pos));
+		} else {
+			symbol.hasImplementation = true;
+		}
+		if(isStocked) {
+			symbol.addModifier(FunctionModifire.Stock);
+		}
+
+
+
 
 		symbol.returnTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
 
@@ -1077,6 +1119,31 @@ export class Analyzer extends BaseVisitor
 				return true;
 			default: return false;
 		}
+	}
+
+	/**
+	 * Ищет символ функции либо создает его. Аналог из pawnc fetchfunc
+	 */
+	private ensureFunctionSymbol(name: string, tag: MayBeTag, range: Range, idRange: Range, declaration: boolean = true): Symbols.Function | null {
+		let symbol = this.scopeManager.globalScope.findSymbol(name);
+		if(symbol) {
+			if(!(symbol instanceof Symbols.Function)) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, idRange, name));
+				return null;
+			}
+			if(symbol.hasModifier(FunctionModifire.Native)) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, idRange, name));
+			}
+			if(symbol.returnTag != tag) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MismatchPrototype, idRange));
+			}
+			
+		} else {
+			symbol = SymbolsFactory.createFunction(name, this.file.path, range, idRange);
+			this.symbolManager.add(this.file.path, symbol, true);
+		}
+		// тут должна быть проверка deprecated
+		return symbol as Symbols.Function;
 	}
 
 }
