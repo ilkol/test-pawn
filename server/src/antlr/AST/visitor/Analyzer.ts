@@ -930,24 +930,35 @@ export class Analyzer extends BaseVisitor
 				// if (arg[argidx].ident!=0 && arg[argidx].ident!=iVARARGS)
   				// 	argidx++;
 			} else {
+				usedArgs[argPos] = ArgumentState.Done;
+				const parameter = functionSymbol.parameters[argPos];
+				// if(!parameter) {
+					// 202
+				// } else if() {
 
+				// }
 			}
-
+			argNumber++;
 
 		}
-		// if(functionSymbol.parameters.length != node.vars.length) {
-		// 	this.file.diagnostics.push(LSPPawnErrors.reportWarn(202,202,node.pos, functionSymbol.parameters.length, node.vars.length));
-		// }
 
-		// let index = 0;
-		// for(const argument of node.vars) {
-		// 	const param = functionSymbol.parameters[index];
-		// 	if(!param) {
-		// 		break;
-		// 	}
-		// 	this.checkMultyTagMismatch(param.validTags.map(tag => tag.name), argument.tag.id, argument.pos);
-		// 	index++;
-		// }
+		// Проверка пропущенных аргументов, иимеющих значения по умолчанию
+		let argindex = 0;
+		for(const parameter of functionSymbol.parameters) {
+			if(usedArgs[argindex] === ArgumentState.Done) continue;
+			if(!parameter.hasDefaultValue) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentCountMismatch, node.pos, argindex));
+			}
+
+			usedArgs[argindex] = ArgumentState.Done;
+			argindex++;
+		}
+
+		// Проверка пропущенных аргументов, имеющих в качестве значений по умолчанию операторы tagof и sizeof
+		for(const parameter of functionSymbol.parameters) {
+			if(usedArgs[argindex] === ArgumentState.Done) continue;
+		}
+
 	}
 
 	private addSymbolReference(name: string, symbolRange: Range, symbolNameRange: Range, modifiers: SemanticTokenModifiers[] = [], addPendingReference = false) {

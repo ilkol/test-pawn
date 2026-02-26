@@ -42,6 +42,7 @@ export namespace PawnErrors {
 		CannotReadFromFile = 100,
 		UserError = 111,
 
+		ArgumentCountMismatch = 202,
 		SymbolIsNeverUsed = 203,
 		ShoutdReturnValue = 209,
 		TagMismatch = 213,
