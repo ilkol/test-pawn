@@ -185,7 +185,7 @@ export abstract class BaseVisitor implements IVisitor
 		this.beforeVisitOperatorOverload(node);
 		if(node.code) {
 			
-			if(node.modifire === FunctionModifire.public) {
+			if(node.hasModifier(FunctionModifire.Public)) {
 				node.parameters.forEach(el => {
 					el.stock = true;
 				});
@@ -200,7 +200,7 @@ export abstract class BaseVisitor implements IVisitor
 		this.beforeVisitFunctionDeclaration(node);
 		if(node.code) {
 			
-			if(node.modifire === FunctionModifire.public) {
+			if(node.hasModifier(FunctionModifire.Public)) {
 				node.parameters.forEach(el => {
 					el.stock = true;
 				});

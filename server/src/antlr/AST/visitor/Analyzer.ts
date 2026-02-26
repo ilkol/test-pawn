@@ -686,7 +686,7 @@ export class Analyzer extends BaseVisitor
 			}
 
 			if(element instanceof FunctionDeclaration) {
-				if(!element.used && !element.native && !element.stock && element.modifire !== FunctionModifire.public && element.modifire !== FunctionModifire.forward && element.id !== "main")
+				if(!element.used && !element.native && !element.stock && element.hasModifier(FunctionModifire.Public) && !element.hasModifier(FunctionModifire.Forward) && element.id !== "main")
 				{
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, element.idPos, key));
 				}

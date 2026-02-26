@@ -11,11 +11,13 @@ import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 import { FunctionDeclarationParameter } from "./FunctionDeclarationParameter";
 
 export enum FunctionModifire {
-	none = 0,
-	native,
-	forward,
-	public,
-	stock
+	None = 0,
+	Static = 1 << 0,
+	Stock = 1 << 1,
+	Public = 1 << 2,
+	Native = 1 << 3,
+	Forward = 1 << 4,
+	Const = 1 << 5,
 }
 
 export class FunctionDeclaration extends VarOrFunctionDeclaration implements IContainsVars<FunctionDeclarationParameter>
@@ -26,14 +28,20 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 	
 	private _parameters: FunctionDeclarationParameter[] = [];
 	private _code?: AbstractStatement = undefined;
-	private _modifire: FunctionModifire = FunctionModifire.none;
+	private _modifire: FunctionModifire = FunctionModifire.None;
 	private _ellipse?: Ellipse = undefined;
 
 	public docs?: Docs = undefined;
 
 	private _assigmentNative?: string = undefined;
 
+	addModifier(modifire: FunctionModifire) {
+		this._modifire |= modifire;
+	}
 
+	hasModifier(modifire: FunctionModifire): boolean {
+		return (this._modifire & modifire) !== 0;
+	}
 
 	
 	public accept(visitor: IVisitor): void {
@@ -67,7 +75,7 @@ export class FunctionDeclaration extends VarOrFunctionDeclaration implements ICo
 		return this._modifire;
 	}
 	public get stock(): boolean {
-		return this._modifire === FunctionModifire.stock;
+		return this.hasModifier(FunctionModifire.Stock);
 	}
 
 	public get ellipse(): Ellipse | undefined

@@ -2340,5 +2340,6 @@
 	"no viable alternative at input 'Fstock' (statement)": "no viable alternative at input 'Fstock' (statement)",
 	"no viable alternative at input 'Flstock' (statement)": "no viable alternative at input 'Flstock' (statement)",
 	"no viable alternative at input 'Flostock' (statement)": "no viable alternative at input 'Flostock' (statement)",
-	"no viable alternative at input 'amain' (declaration)": "no viable alternative at input 'amain' (declaration)"
+	"no viable alternative at input 'amain' (declaration)": "no viable alternative at input 'amain' (declaration)",
+	"Unexpected symbol": "Unexpected symbol"
 }
