@@ -823,7 +823,11 @@ export class Analyzer extends BaseVisitor
 		this.scopeManager.register(this.curScope);
 	}
 	private restrictScope() {
-		// this.checkIds(this.curScope.variables());
+		this.curScope.getLocalSymbols().forEach(symbol => {
+			if(!symbol.isUsed) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, symbol.defenition.tokenRange, symbol.name));
+			}
+		});
 		if(this.curScope.parent)
 			this.curScope = this.curScope.parent;
 	}

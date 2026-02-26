@@ -2342,5 +2342,12 @@
 	"no viable alternative at input 'Flostock' (statement)": "no viable alternative at input 'Flostock' (statement)",
 	"no viable alternative at input 'amain' (declaration)": "no viable alternative at input 'amain' (declaration)",
 	"Unexpected symbol": "Unexpected symbol",
-	"mismatched input '(' expecting {'{', '[', ',', ';'} (variable)": "mismatched input '(' expecting {'{', '[', ',', ';'} (variable)"
+	"mismatched input '(' expecting {'{', '[', ',', ';'} (variable)": "mismatched input '(' expecting {'{', '[', ',', ';'} (variable)",
+	"extraneous input 'new' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input 'new' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	}
 }

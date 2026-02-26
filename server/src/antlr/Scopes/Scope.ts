@@ -65,6 +65,10 @@ export class Scope implements IScope
 		return undefined;
 	} 
 
+	getLocalSymbols() {
+		return Array.from(this._symbols.values());
+	}
+
 	getAllVisibleSymbols(position: Position, result: Map<string, AbstractSymbol> = new Map(), tags: Set<MayBeTag> = new Set()) {
 		for (const [name, symbol] of this._symbols) {
 			if(symbol.isInternal) continue;
