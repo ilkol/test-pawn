@@ -2349,5 +2349,12 @@
 				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input 'new' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
 			}
 		}
+	},
+	"mismatched input '_' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (functionDeclarationParams)": "mismatched input '_' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (functionDeclarationParams)"
+			}
+		}
 	}
 }

@@ -47,6 +47,7 @@ export namespace PawnErrors {
 
 		ArgumentCountMismatch = 202,
 		SymbolIsNeverUsed = 203,
+		FunctionWithTagUsedBeforeDeclaration = 208,
 		ShoutdReturnValue = 209,
 		TagMismatch = 213,
 		PublicBeforeForward = 235,
