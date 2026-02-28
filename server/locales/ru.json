@@ -311,5 +311,19 @@
 	"no viable alternative at input 'operastock' (statement)": "no viable alternative at input 'operastock' (statement)",
 	"no viable alternative at input 'Fstock' (statement)": "no viable alternative at input 'Fstock' (statement)",
 	"no viable alternative at input 'Flstock' (statement)": "no viable alternative at input 'Flstock' (statement)",
-	"no viable alternative at input 'Flostock' (statement)": "no viable alternative at input 'Flostock' (statement)"
+	"no viable alternative at input 'Flostock' (statement)": "no viable alternative at input 'Flostock' (statement)",
+	"mismatched input '_' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (tagableExpression)": "mismatched input '_' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (tagableExpression)",
+	"no viable alternative at input ',{Float,_' (functionDeclarationParams)": "no viable alternative at input ',{Float,_' (functionDeclarationParams)",
+	"token recognition error at": " ''\\' :           continue; // ���� ��� ���������� ������, �������� � ����. ������� �����\\r'",
+	"no viable alternative at input 'main' (file)": "no viable alternative at input 'main' (file)",
+	"no viable alternative at input 'main)' (file)": "no viable alternative at input 'main)' (file)",
+	"mismatched input '<EOF>' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionDeclarationParams)": "mismatched input '<EOF>' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionDeclarationParams)",
+	"no viable alternative at input 'tag' (declaration)": "no viable alternative at input 'tag' (declaration)",
+	"no viable alternative at input 'F' (declaration)": "no viable alternative at input 'F' (declaration)",
+	"no viable alternative at input 'Float": "3.0' (varDeclaration)",
+	"mismatched input '<EOF>' expecting '(' (functionDeclarationParams)": "mismatched input '<EOF>' expecting '(' (functionDeclarationParams)",
+	"missing '(' at ')' (unknown rule)": "missing '(' at ')' (unknown rule)",
+	"no viable alternative at input 'getp}' (statement)": "no viable alternative at input 'getp}' (statement)",
+	"no viable alternative at input 'getPos}' (statement)": "no viable alternative at input 'getPos}' (statement)",
+	"no viable alternative at input 'getPos)' (statement)": "no viable alternative at input 'getPos)' (statement)"
 }

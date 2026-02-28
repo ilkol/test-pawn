@@ -11,6 +11,8 @@ import { Declarations } from "../antlr/AST/Nodes/Declarations";
 import { Logger } from "../Logger/Logger";
 import { Analyzer } from "../antlr/AST/visitor/Analyzer";
 import { SymbolManager } from "../SymbolSystem";
+import { Tag } from "../antlr/AST/Nodes/Tag";
+import { FunctionDeclaration } from "../antlr/AST/Nodes/Functions/FunctionDeclaration";
 
 export type OnFileParsedListener = (file: AbstractOpenFile) => (Promise<void> | void);
 export type OnFileWalkedASTListener = (file: AbstractOpenFile) => (Promise<void> | void);
@@ -68,6 +70,17 @@ export class Parser
 			symbolManager,
 			document.scopeManager
 		);
+
+		analyzer.declaraedFunctions.clear();
+		if(document.AST instanceof Declarations) {
+			const functions: Map<string, Tag> = analyzer.declaraedFunctions;
+			for(const decl of document.AST.declarations) {
+				if(!(decl instanceof FunctionDeclaration)) {
+					continue;
+				}
+				functions.set(decl.id, decl.tag);
+			}
+		}  
 	
 		try {
 			document.AST.accept(analyzer); // Здесь тоже может быть нужен await, если accept асинхронный
