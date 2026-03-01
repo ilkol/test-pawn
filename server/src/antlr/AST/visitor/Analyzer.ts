@@ -614,7 +614,10 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		
+		if(node.hasModifier(FunctionModifire.Forward | FunctionModifire.Native)) {
+			this.createFunctionStub(node);
+			return;
+		}
 
 		const isStocked = node.stock;
 		const isStatic = node.hasModifier(FunctionModifire.Static);
@@ -1152,5 +1155,39 @@ export class Analyzer extends BaseVisitor
 		// тут должна быть проверка deprecated
 		return symbol as Symbols.Function;
 	}
+	private createFunctionStub(node: FunctionDeclaration) {
+		const tag = SymbolsFactory.defaultTag;
+		// TODO: тут в оригинальном компиляторе есть проверка размерности...
+		const isPublic = node.hasModifier(FunctionModifire.Public) || node.id[0] === '@';
+		const isStocked = node.hasModifier(FunctionModifire.Stock);
+		const isNative = node.hasModifier(FunctionModifire.Native);
+		const isStatic = node.hasModifier(FunctionModifire.Static);
+		if(isNative) {
+			if(isPublic || isStocked || isStatic) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.pos));
+			}
+		} else {
+			// if(node.hasModifier(FunctionModifire.Public | FunctionModifire.Stock | FunctionModifire.Static)) {
 
+			// }
+		}
+
+		const symbol = this.ensureFunctionSymbol(node.id, this.addTag(node.tag.id, node.tag.pos, node.tag.idPos), node.range, node.idPos);
+		if(!symbol) {
+			return;
+		}
+
+		if(isNative) {
+			symbol.addModifier(FunctionModifire.Native);
+			// TODO: тут идёт установка текущей библы			
+		} else if(isPublic) {
+			symbol.addModifier(FunctionModifire.Public);
+		}
+		symbol.addModifier(FunctionModifire.Forward);
+
+		// TODO: дальше тут есть присвоение функции для нативок
+		// Плюс к тому создания массива с таким же идентификатором,
+		// если функция возвращает массив
+		
+	}
 }
