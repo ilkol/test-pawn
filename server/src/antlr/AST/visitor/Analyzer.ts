@@ -224,8 +224,10 @@ export class Analyzer extends BaseVisitor
 		
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
-		if(node.reference) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CanBeReferenceToArray, node.pos, node.id));
+		if(node.dimensions) {
+			if(node.reference) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CanBeReferenceToArray, node.pos, node.id));
+			}
 		}
 		if(node.dimensions >= Pawn.MAX_ARRAY_DIMENSIONS) {
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArrayDimenssions, node.pos));
