@@ -622,7 +622,6 @@ export class Analyzer extends BaseVisitor
 		}
 		if(node.hasModifier(FunctionModifire.Forward | FunctionModifire.Native)) {
 			this.createFunctionStub(node, symbol);
-			return;
 		} else {
 
 			const isStocked = node.stock;

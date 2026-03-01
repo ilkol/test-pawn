@@ -2376,5 +2376,22 @@
 	"no viable alternative at input 'tesgetPos' (statement)": "no viable alternative at input 'tesgetPos' (statement)",
 	"no viable alternative at input '_asd": "no viable alternative at input '_asd",
 	"no viable alternative at input 'tesr' (declaration)": "no viable alternative at input 'tesr' (declaration)",
-	"no viable alternative at input 'a;' (declaration)": "no viable alternative at input 'a;' (declaration)"
+	"no viable alternative at input 'a;' (declaration)": "no viable alternative at input 'a;' (declaration)",
+	"extraneous input '\"ChangeState\"' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (unknown rule)": "extraneous input '\"ChangeState\"' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (unknown rule)"
+			}
+		}
+	},
+	"mismatched input '5000' expecting {'{', '": {
+		"": {
+			"": {
+				"', IDENTIFIER} (ellipse)": "mismatched input '5000' expecting {'{', '...', IDENTIFIER} (ellipse)"
+			}
+		}
+	},
+	"extraneous input '}' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input '}' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (unknown rule)",
+	"no viable alternative at input '()' (ifStatement)": "no viable alternative at input '()' (ifStatement)",
+	"extraneous input '#' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input '#' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (unknown rule)"
 }
