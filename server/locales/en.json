@@ -2374,5 +2374,7 @@
 	"no viable alternative at input '_asdgetPos' (statement)": "no viable alternative at input '_asdgetPos' (statement)",
 	"no viable alternative at input 'FgetPos' (statement)": "no viable alternative at input 'FgetPos' (statement)",
 	"no viable alternative at input 'tesgetPos' (statement)": "no viable alternative at input 'tesgetPos' (statement)",
-	"no viable alternative at input '_asd": "no viable alternative at input '_asd"
+	"no viable alternative at input '_asd": "no viable alternative at input '_asd",
+	"no viable alternative at input 'tesr' (declaration)": "no viable alternative at input 'tesr' (declaration)",
+	"no viable alternative at input 'a;' (declaration)": "no viable alternative at input 'a;' (declaration)"
 }
