@@ -614,67 +614,61 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		if(node.hasModifier(FunctionModifire.Forward | FunctionModifire.Native)) {
-			this.createFunctionStub(node);
-			return;
-		}
-
-		const isStocked = node.stock;
-		const isStatic = node.hasModifier(FunctionModifire.Static);
-		const isPublic = node.hasModifier(FunctionModifire.Public) || node.id[0] === '@';
-		if(isPublic && isStocked) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.idPos));
-		}
-
 		const symbol = this.ensureFunctionSymbol(node.id, this.addTag(node.tag.id, node.tag.pos, node.tag.idPos), node.range, node.idPos);
 		if(!symbol) {
 			return;
 		}
-		node.symbol = symbol.defenition;
-
-		if(isPublic) {
-			symbol.addModifier(FunctionModifire.Public);
-		}
-		if(isStatic) {
-			symbol.addModifier(FunctionModifire.Static);
-		}
-
-		if(isPublic && !symbol.hasModifier(FunctionModifire.Forward)) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.PublicBeforeForward, node.idPos, symbol.name));
-		}
-
-		const argCount = node.parameters.length;
-		if(symbol.name === "main" || symbol.name === "entry") {
-			if(argCount) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionMaynotHaveArguments, node.pos));
-			}
-			symbol.isUsed = true;
-		}
-	
-		if(node.code === undefined) {
-			symbol.addModifier(FunctionModifire.Forward);
-			// this.file.diagnostics.push(PawnErrors.report(218, node.pos));
+		if(node.hasModifier(FunctionModifire.Forward | FunctionModifire.Native)) {
+			this.createFunctionStub(node, symbol);
+			return;
 		} else {
-			symbol.hasImplementation = true;
-		}
-		if(isStocked) {
-			symbol.addModifier(FunctionModifire.Stock);
-		}
 
-
+			const isStocked = node.stock;
+			const isStatic = node.hasModifier(FunctionModifire.Static);
+			const isPublic = node.hasModifier(FunctionModifire.Public) || node.id[0] === '@';
+			if(isPublic && isStocked) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.idPos));
+			}
+	
+			
+			node.symbol = symbol.defenition;
+	
+			if(isPublic) {
+				symbol.addModifier(FunctionModifire.Public);
+			}
+			if(isStatic) {
+				symbol.addModifier(FunctionModifire.Static);
+			}
+	
+			if(isPublic && !symbol.hasModifier(FunctionModifire.Forward)) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.PublicBeforeForward, node.idPos, symbol.name));
+			}
+	
+			const argCount = node.parameters.length;
+			if(symbol.name === "main" || symbol.name === "entry") {
+				if(argCount) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionMaynotHaveArguments, node.pos));
+				}
+				symbol.isUsed = true;
+			}
+		
+			if(node.code === undefined) {
+				symbol.addModifier(FunctionModifire.Forward);
+				// this.file.diagnostics.push(PawnErrors.report(218, node.pos));
+			} else {
+				symbol.hasImplementation = true;
+			}
+			if(isStocked) {
+				symbol.addModifier(FunctionModifire.Stock);
+			}
+		}
 
 
 		symbol.returnTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
 
-		const existing = this.scopeManager.globalScope.findSymbol(node.id);
-		if(existing) {
-			this.handleFunctionRedeclaration(node, existing);
-		} else {
-			this.scopeManager.globalScope.add(symbol);
-			this.resolvePendingReferences(symbol);
-		}
-
-		if(node.assigmentFunctionID) {
+		this.resolvePendingReferences(symbol);
+		
+		// if(node.assigmentFunctionID) {
 			// if(!node.native) {
 			// 	this.addDiagnostic(new DiagnosticError(Locale.t("Assignment is only possible to a native function"), node.idPos));
 			// 	return;
@@ -685,7 +679,7 @@ export class Analyzer extends BaseVisitor
 			// 	this.addDiagnostic(new DiagnosticError(Locale.t("Identifire \"%s\" not found", node.assigmentFunctionID), node.pos));
 			// }
 
-		}
+		// }
 
 		this.extendScope(node.range, symbol.defenition);
 		this.curScope.currentFunction = symbol;
@@ -829,11 +823,15 @@ export class Analyzer extends BaseVisitor
 		this.scopeManager.register(this.curScope);
 	}
 	private restrictScope() {
-		this.curScope.getLocalSymbols().forEach(symbol => {
+		console.log(this.curScope.getLocalSymbols());
+		for(const symbol of this.curScope.getLocalSymbols()) {
 			if(!symbol.isUsed) {
+				if(symbol instanceof Symbols.Function && symbol.hasModifier(FunctionModifire.Native | FunctionModifire.Stock | FunctionModifire.Public)) {
+					continue;
+				}
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, symbol.defenition.tokenRange, symbol.name));
 			}
-		});
+		}
 		if(this.curScope.parent)
 			this.curScope = this.curScope.parent;
 	}
@@ -1155,7 +1153,7 @@ export class Analyzer extends BaseVisitor
 		// тут должна быть проверка deprecated
 		return symbol as Symbols.Function;
 	}
-	private createFunctionStub(node: FunctionDeclaration) {
+	private createFunctionStub(node: FunctionDeclaration, symbol: Symbols.Function) {
 		const tag = SymbolsFactory.defaultTag;
 		// TODO: тут в оригинальном компиляторе есть проверка размерности...
 		const isPublic = node.hasModifier(FunctionModifire.Public) || node.id[0] === '@';
@@ -1172,10 +1170,6 @@ export class Analyzer extends BaseVisitor
 			// }
 		}
 
-		const symbol = this.ensureFunctionSymbol(node.id, this.addTag(node.tag.id, node.tag.pos, node.tag.idPos), node.range, node.idPos);
-		if(!symbol) {
-			return;
-		}
 
 		if(isNative) {
 			symbol.addModifier(FunctionModifire.Native);
