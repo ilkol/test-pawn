@@ -144,7 +144,7 @@ export class Analyzer extends BaseVisitor
 			if(!symbol) {
 				return;
 			}
-			else if(!(symbol instanceof Symbols.Variable || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.Macro)) {
+			if(!(symbol instanceof Symbols.Variable || symbol instanceof Symbols.Parameter || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.Macro)) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidFunctionCall, node.range));
 			}
 			else if(symbol.isConst) {					
@@ -855,6 +855,12 @@ export class Analyzer extends BaseVisitor
 		const usedArgs: ArgumentState[] = Array(functionSymbol.parameters.length).fill(ArgumentState.Unset);
 		
 		for(const argument of node.vars) {
+			const argSymbol =  this.curScope.findSymbol(argument.name);
+			console.log(argSymbol);
+			if(argSymbol) {
+				argSymbol.isUsed = true;
+			}
+
 			if(argument instanceof NamedArgument && argument.id !== "_") {
 				namedArguments = true;
 				argPos = functionSymbol.parameters.findIndex(param => param.name === argument.id);
