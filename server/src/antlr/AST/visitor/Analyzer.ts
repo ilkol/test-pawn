@@ -535,6 +535,8 @@ export class Analyzer extends BaseVisitor
 			});
 		});
 		this.pendingReferences.clear();
+
+		this.restrictScope(true);
 	}
 
 	beforeVisitOperatorOverload(node: OperatorOverload): void {
@@ -724,9 +726,11 @@ export class Analyzer extends BaseVisitor
 		this.curScope = this.curScope.extend(range, newSymbol);
 		this.scopeManager.register(this.curScope);
 	}
-	private restrictScope() {
-		console.log(this.curScope.getLocalSymbols());
+	private restrictScope(skipConstatns: boolean = false) {
 		for(const symbol of this.curScope.getLocalSymbols()) {
+			if(skipConstatns && symbol instanceof Symbols.Variable && symbol.isConst) {
+				continue;
+			}
 			if(!symbol.isUsed) {
 				if(symbol instanceof Symbols.Function && symbol.hasModifier(FunctionModifire.Native | FunctionModifire.Stock | FunctionModifire.Public)) {
 					continue;
