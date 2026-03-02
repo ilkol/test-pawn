@@ -553,7 +553,7 @@ export class Analyzer extends BaseVisitor
 		// this.checkIds(this.curScope.identifires());
 		this.pendingReferences.forEach((ranges, id) => {
 			ranges.forEach(func => {
-				this.file.diagnostics.push(LSPPawnErrors.reportError(17, 17, func.range, {symbolName: id}));
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, func.idPos, func.id));
 			});
 		});
 		this.pendingReferences.clear();
