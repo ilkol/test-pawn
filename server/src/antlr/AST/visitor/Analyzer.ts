@@ -373,7 +373,7 @@ export class Analyzer extends BaseVisitor
 			const expectedTag = symbol.tag;
 			const actualTag = node.rightValue.inferredTag;
 			
-			this.checkTagMismatch(expectedTag, actualTag, true, node.idPos);
+			this.checkTagMismatch(expectedTag, actualTag, true, node.rightValue.pos);
 		}			
 	}
 	beforeVisitFunctionCall(node: FunctionCall): void {
