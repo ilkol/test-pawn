@@ -100,7 +100,7 @@
 		"14": "error 014: invalid statement; not in switch",
 		"15": "error 015: \"default\" case must be the last case in switch statement",
 		"16": "error 016: multiple defaults in \"switch\"",
-		"17": "error 017: undefined symbol \"{{symbolName}}\"",
+		"17": "error 017: undefined symbol \"%s\"",
 		"18": "error 018: initialization data exceeds declared size",
 		"19": "error 019: not a label: \"%s\"",
 		"20": "error 020: invalid symbol name \"%s\"",

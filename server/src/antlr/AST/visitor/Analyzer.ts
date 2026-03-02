@@ -553,7 +553,7 @@ export class Analyzer extends BaseVisitor
 		// this.checkIds(this.curScope.identifires());
 		this.pendingReferences.forEach((ranges, id) => {
 			ranges.forEach(func => {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, func.idPos, func.id));
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, func.idPos, id));
 			});
 		});
 		this.pendingReferences.clear();
@@ -954,7 +954,7 @@ export class Analyzer extends BaseVisitor
 				// TODO: проврека параметров после разрешения ссылки
 				// this.addPendingReference(name, symbolNameRange);
 			} else {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, symbolNameRange, {symbolName: name}));
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, symbolNameRange, name));
 			}
 			return undefined;
 		} 
