@@ -562,6 +562,9 @@ export class PawnListener implements IPawnListener
 
 			if(last instanceof VariableInit) {
 				last.rightValue = node;
+			} 
+			else if(last instanceof NamedArgument) {
+				last.value = node;
 			}
 			else if(last instanceof AbstractOperator) {
 				last.expresion = node;
