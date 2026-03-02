@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener as IPawnListener } from "./generated/pawnListener";
-import { AdditiveExpressionContext, ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, AssigmentExpressionContext, BinarExpressionOperatorContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompareExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostDecrementContext, PostIncrementContext, PostfixExpressionContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, TernarOperatorContext, TernaryExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
+import { AdditiveExpressionContext, ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, ChainedRelationalOperatorsContext, CompareExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostDecrementContext, PostIncrementContext, PostfixExpressionContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, TernarOperatorContext, TernaryExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
@@ -807,14 +807,14 @@ export class PawnListener implements IPawnListener
 		last.pushParameter(node);
 	}
 
-	enterFunctionCallOperator(ctx: FunctionCallOperatorContext): void {
+	enterFunctionCall(ctx: FunctionCallContext): void {
 		let node = new FunctionCall();	
 		this.nodes.push(node);
 	}
 
 	
 
-	exitFunctionCallOperator(ctx: FunctionCallOperatorContext): void 
+	exitFunctionCall(ctx: FunctionCallContext): void 
 	{
 		let node = <FunctionCall>this.nodes.pop();
 		if(ctx.stop) {
@@ -1103,51 +1103,51 @@ export class PawnListener implements IPawnListener
 	}
 
 	
-	enterBinarExpressionOperator =(ctx: BinarExpressionOperatorContext) => {
-		const node = new BinarOperator();
-		this.nodes.push(node);
-	};
-	exitBinarExpressionOperator =(ctx: BinarExpressionOperatorContext) => {
-		let node = <BinarOperator>this.nodes.pop();
-		if(ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
-			node.operator = ctx._operator.text;
+	// enterBinarExpressionOperator =(ctx: BinarExpressionOperatorContext) => {
+	// 	const node = new BinarOperator();
+	// 	this.nodes.push(node);
+	// };
+	// exitBinarExpressionOperator =(ctx: BinarExpressionOperatorContext) => {
+	// 	let node = <BinarOperator>this.nodes.pop();
+	// 	if(ctx.stop) {
+	// 		node.setPos(ctx.start, ctx.stop);
+	// 		node.operator = ctx._operator.text;
 			
-			if(node.operator === "=") {
-				node = AssigmentOperator.copy(node);
-			}
+	// 		if(node.operator === "=") {
+	// 			node = AssigmentOperator.copy(node);
+	// 		}
 
-			const last = this.nodes.peek();
-			if(last instanceof Expression) {
-				node.left = last.expresion!;
-				last.expresion = node;
-			}
-			else {
-				this.addDiagnostic(Locale.t("Unexpected binar operator"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
-	};
-	enterChainedRelationalOperator(ctx: ChainedRelationalOperatorContext) {
-		const node = new ChainedOperator();
-		this.nodes.push(node);
-	}
-	exitChainedRelationalOperator = (ctx: ChainedRelationalOperatorContext) => {
-		const node = <ChainedOperator>this.nodes.pop();
-		if(ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
-			// node.operator = ctx.chainedRelationalOperators()[0].text;
+	// 		const last = this.nodes.peek();
+	// 		if(last instanceof Expression) {
+	// 			node.left = last.expresion!;
+	// 			last.expresion = node;
+	// 		}
+	// 		else {
+	// 			this.addDiagnostic(Locale.t("Unexpected binar operator"), DiagnosticSeverity.Error, node.pos);
+	// 		}
+	// 	}
+	// };
+	// enterChainedRelationalOperator(ctx: ChainedRelationalOperatorContext) {
+	// 	const node = new ChainedOperator();
+	// 	this.nodes.push(node);
+	// }
+	// exitChainedRelationalOperator = (ctx: ChainedRelationalOperatorContext) => {
+	// 	const node = <ChainedOperator>this.nodes.pop();
+	// 	if(ctx.stop) {
+	// 		node.setPos(ctx.start, ctx.stop);
+	// 		// node.operator = ctx.chainedRelationalOperators()[0].text;
 			
-			const last = this.nodes.peek();
-			if(last instanceof Expression) {
-				node.setFirstLeft(last.expresion!);
-				last.expresion = node;
-			}
-			else {
-				console.error(last);
-				this.addDiagnostic(Locale.t("Unexpected binar operator"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
-	};
+	// 		const last = this.nodes.peek();
+	// 		if(last instanceof Expression) {
+	// 			node.setFirstLeft(last.expresion!);
+	// 			last.expresion = node;
+	// 		}
+	// 		else {
+	// 			console.error(last);
+	// 			this.addDiagnostic(Locale.t("Unexpected binar operator"), DiagnosticSeverity.Error, node.pos);
+	// 		}
+	// 	}
+	// };
 
 	exitChainedRelationalOperators = (ctx: ChainedRelationalOperatorsContext) => {
 		const last = this.nodes.peek();
