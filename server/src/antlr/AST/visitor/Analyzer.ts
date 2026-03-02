@@ -213,6 +213,16 @@ export class Analyzer extends BaseVisitor
 		for(const tag of node.tags) {
 			symbol.validTags.push(this.addTag(tag.id, tag.range, tag.idPos));
 		}
+
+		if(this.curScope.findSymbol(symbol.name, true)) {
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
+		} else {
+			const findedSymbol = this.curScope.findSymbol(symbol.name);
+			if(findedSymbol && !(findedSymbol instanceof Symbols.Function)) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolShadowing, node.pos, node.id));
+			} 
+		}
+
 		this.symbolManager.add(this.file.path, symbol);
 		this.curScope.add(symbol);
 
@@ -242,10 +252,6 @@ export class Analyzer extends BaseVisitor
 			symbol.addModifier(Symbols.VariableModifire.Const)
 		}
 		// TODO: тут есть какой-то written
-
-		if(this.curScope.findSymbol(symbol.name, true)) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
-		}
 
 		// this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
 
