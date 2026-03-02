@@ -758,7 +758,7 @@ export class Analyzer extends BaseVisitor
 				continue;
 			}
 			if(!symbol.isUsed) {
-				if(symbol instanceof Symbols.Function && symbol.hasModifier(FunctionModifire.Native | FunctionModifire.Stock | FunctionModifire.Public)) {
+				if(symbol instanceof Symbols.Function && (!symbol.hasImplementation || symbol.hasModifier(FunctionModifire.Native | FunctionModifire.Stock | FunctionModifire.Public))) {
 					continue;
 				}
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, symbol.defenition.tokenRange, symbol.name));
@@ -767,7 +767,6 @@ export class Analyzer extends BaseVisitor
 		if(this.curScope.parent)
 			this.curScope = this.curScope.parent;
 	}
-
 
 	public functions: Map<string, FunctionInfo> = new Map<string, FunctionInfo>();
 

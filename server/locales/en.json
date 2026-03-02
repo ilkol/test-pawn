@@ -2433,5 +2433,15 @@
 	"no viable alternative at input ',va_start<2>)' (expresion)": "no viable alternative at input ',va_start<2>)' (expresion)",
 	"no viable alternative at input 'lstock' (statement)": "no viable alternative at input 'lstock' (statement)",
 	"no viable alternative at input 'forwardd;' (declaration)": "no viable alternative at input 'forwardd;' (declaration)",
-	"mismatched input '/' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (file)": "mismatched input '/' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (file)"
+	"mismatched input '/' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (file)": "mismatched input '/' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (file)",
+	"no viable alternative at input 'fowardFloat' (declaration)": "no viable alternative at input 'fowardFloat' (declaration)",
+	"no viable alternative at input 'T}' (statement)": "no viable alternative at input 'T}' (statement)",
+	"no viable alternative at input 'p' (declaration)": "no viable alternative at input 'p' (declaration)",
+	"no viable alternative at input 'pub' (declaration)": "no viable alternative at input 'pub' (declaration)",
+	"no viable alternative at input 'public' (declaration)": "no viable alternative at input 'public' (declaration)",
+	"no viable alternative at input 'publicOn' (declaration)": "no viable alternative at input 'publicOn' (declaration)",
+	"no viable alternative at input 'publicOnPlayer' (declaration)": "no viable alternative at input 'publicOnPlayer' (declaration)",
+	"no viable alternative at input 'publicOnPlayerConn' (declaration)": "no viable alternative at input 'publicOnPlayerConn' (declaration)",
+	"no viable alternative at input 'publicOnPlayerConnect' (declaration)": "no viable alternative at input 'publicOnPlayerConnect' (declaration)",
+	"no viable alternative at input 'format}' (statement)": "no viable alternative at input 'format}' (statement)"
 }
