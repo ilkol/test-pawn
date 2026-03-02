@@ -198,14 +198,8 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.beforeVisitFunctionDeclaration(node);
+		this.checkVars(node);
 		if(node.code) {
-			
-			if(node.hasModifier(FunctionModifire.Public)) {
-				node.parameters.forEach(el => {
-					el.stock = true;
-				});
-			}
-			this.checkVars(node);
 			node.code.accept(this);
 		}
 		
