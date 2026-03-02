@@ -877,8 +877,12 @@ export class Analyzer extends BaseVisitor
 		let namedArguments = false;
 		let argPos = 0, argNumber = 0;
 		const usedArgs: ArgumentState[] = Array(functionSymbol.parameters.length).fill(ArgumentState.Unset);
-		
+
 		for(const argument of node.vars) {
+			if(argNumber >= functionSymbol.parameters.length) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentCountMismatch, argument.pos, argNumber));
+				break;
+			}
 			const argSymbol =  this.curScope.findSymbol(argument.name);
 			if(argSymbol) {
 				argSymbol.isUsed = true;
