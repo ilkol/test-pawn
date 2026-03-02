@@ -1,4 +1,4 @@
-// Generated from .\server\src\antlr\generated\pawn.g4 by ANTLR 4.9.0-SNAPSHOT
+// Generated from ./server/src/antlr/generated/pawn.g4 by ANTLR 4.9.0-SNAPSHOT
 
 
 import { ParseTreeVisitor } from "antlr4ts/tree/ParseTreeVisitor";
@@ -64,6 +64,22 @@ import { PredefinedConstantsContext } from "./pawnParser";
 import { StringContext } from "./pawnParser";
 import { DocsContext } from "./pawnParser";
 import { DocBlockContext } from "./pawnParser";
+import { AssigmentExpressionContext } from "./pawnParser";
+import { TernaryExpressionContext } from "./pawnParser";
+import { LogicalOrExpressionContext } from "./pawnParser";
+import { LogicalAndExpressionContext } from "./pawnParser";
+import { EqualOrNotExpressionContext } from "./pawnParser";
+import { CompareExpressionContext } from "./pawnParser";
+import { BitOrExpressionContext } from "./pawnParser";
+import { XorExpressionContext } from "./pawnParser";
+import { BitAndExpressionContext } from "./pawnParser";
+import { BitShiftExpressionContext } from "./pawnParser";
+import { AdditiveExpressionContext } from "./pawnParser";
+import { MultiplicativeExpressionContext } from "./pawnParser";
+import { PrefixExpressionContext } from "./pawnParser";
+import { PostfixExpressionContext } from "./pawnParser";
+import { PrimaryExpressionContext } from "./pawnParser";
+import { LiteralOrSymbolContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
 import { TagableExpressionContext } from "./pawnParser";
 import { TernarOperatorContext } from "./pawnParser";
@@ -524,6 +540,118 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitDocBlock?: (ctx: DocBlockContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.assigmentExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitAssigmentExpression?: (ctx: AssigmentExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.ternaryExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitTernaryExpression?: (ctx: TernaryExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.logicalOrExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitLogicalOrExpression?: (ctx: LogicalOrExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.logicalAndExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitLogicalAndExpression?: (ctx: LogicalAndExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.equalOrNotExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitEqualOrNotExpression?: (ctx: EqualOrNotExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.compareExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitCompareExpression?: (ctx: CompareExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.bitOrExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitBitOrExpression?: (ctx: BitOrExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.xorExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitXorExpression?: (ctx: XorExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.bitAndExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitBitAndExpression?: (ctx: BitAndExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.bitShiftExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitBitShiftExpression?: (ctx: BitShiftExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.additiveExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitAdditiveExpression?: (ctx: AdditiveExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.multiplicativeExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitMultiplicativeExpression?: (ctx: MultiplicativeExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.prefixExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitPrefixExpression?: (ctx: PrefixExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.postfixExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitPostfixExpression?: (ctx: PostfixExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.primaryExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitPrimaryExpression?: (ctx: PrimaryExpressionContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.literalOrSymbol`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitLiteralOrSymbol?: (ctx: LiteralOrSymbolContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.expresion`.

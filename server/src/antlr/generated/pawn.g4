@@ -114,7 +114,7 @@ docs: docBlock;
 docBlock: DocBlock;
 // docLine: DocLine;
 // hier14
-assigmentExpression: ternaryExpression (assigments ternaryExpression)?;
+assigmentExpression: ternaryExpression (assigments ternaryExpression)*;
 // hier13
 ternaryExpression: logicalOrExpression ternarOperator?;
 
@@ -147,14 +147,7 @@ prefixExpression:
 	(INCREMENTS | DECREMENTS | BIT_COMPLEMEN | NOT | MINUS | tag) prefixExpression |
 	// ADDRESSOF symbol | 
 	// ADDRESSOF OPEN_PARENTHESIS symbol CLOSE_PARENTHESIS |
-	DEFINED symbol | // тут lex какой-то
-	DEFINED OPEN_PARENTHESIS symbol CLOSE_PARENTHESIS |
-	SIZEOF symbol |
-	SIZEOF OPEN_PARENTHESIS symbol CLOSE_PARENTHESIS |
-	TAGOF symbol |
-	TAGOF OPEN_PARENTHESIS symbol CLOSE_PARENTHESIS |
-	STATE symbol |
-	// EMIT
+	((/* ADDRESSOF |*/ DEFINED | SIZEOF | TAGOF | STATE /* | EMIT */ ) (literalOrSymbol | DEFINED OPEN_PARENTHESIS literalOrSymbol CLOSE_PARENTHESIS)) |
 	postfixExpression
 ;
 
@@ -162,24 +155,14 @@ postfixExpression: primaryExpression (INCREMENTS | DECREMENTS | CHAR)*;
 
 // hier1
 primaryExpression: 
-	OPEN_PARENTHESIS assigmentExpression (COMA assigmentExpression)? CLOSE_PARENTHESIS |
-	symbol | 
-	literal
+	OPEN_PARENTHESIS assigmentExpression (COMA assigmentExpression)* CLOSE_PARENTHESIS |
+	literalOrSymbol
 ;
 
+literalOrSymbol: symbol | literal;
 
 
-
-
-
-// hier1
-primaryExpression: ;
-
-
-expresion: 
-    tagableExpression
-    (CHAR? | ternarOperator | chainedRelationalOperator | binarExpressionOperator)
-;
+expresion: assigmentExpression;
 tagableExpression: 
 	(literal |
     symbol |

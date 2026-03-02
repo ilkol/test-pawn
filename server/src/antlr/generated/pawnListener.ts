@@ -1,4 +1,4 @@
-// Generated from .\server\src\antlr\generated\pawn.g4 by ANTLR 4.9.0-SNAPSHOT
+// Generated from ./server/src/antlr/generated/pawn.g4 by ANTLR 4.9.0-SNAPSHOT
 
 
 import { ParseTreeListener } from "antlr4ts/tree/ParseTreeListener";
@@ -64,6 +64,22 @@ import { PredefinedConstantsContext } from "./pawnParser";
 import { StringContext } from "./pawnParser";
 import { DocsContext } from "./pawnParser";
 import { DocBlockContext } from "./pawnParser";
+import { AssigmentExpressionContext } from "./pawnParser";
+import { TernaryExpressionContext } from "./pawnParser";
+import { LogicalOrExpressionContext } from "./pawnParser";
+import { LogicalAndExpressionContext } from "./pawnParser";
+import { EqualOrNotExpressionContext } from "./pawnParser";
+import { CompareExpressionContext } from "./pawnParser";
+import { BitOrExpressionContext } from "./pawnParser";
+import { XorExpressionContext } from "./pawnParser";
+import { BitAndExpressionContext } from "./pawnParser";
+import { BitShiftExpressionContext } from "./pawnParser";
+import { AdditiveExpressionContext } from "./pawnParser";
+import { MultiplicativeExpressionContext } from "./pawnParser";
+import { PrefixExpressionContext } from "./pawnParser";
+import { PostfixExpressionContext } from "./pawnParser";
+import { PrimaryExpressionContext } from "./pawnParser";
+import { LiteralOrSymbolContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
 import { TagableExpressionContext } from "./pawnParser";
 import { TernarOperatorContext } from "./pawnParser";
@@ -765,6 +781,182 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitDocBlock?: (ctx: DocBlockContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.assigmentExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterAssigmentExpression?: (ctx: AssigmentExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.assigmentExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitAssigmentExpression?: (ctx: AssigmentExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.ternaryExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterTernaryExpression?: (ctx: TernaryExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.ternaryExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitTernaryExpression?: (ctx: TernaryExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.logicalOrExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterLogicalOrExpression?: (ctx: LogicalOrExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.logicalOrExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitLogicalOrExpression?: (ctx: LogicalOrExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.logicalAndExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterLogicalAndExpression?: (ctx: LogicalAndExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.logicalAndExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitLogicalAndExpression?: (ctx: LogicalAndExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.equalOrNotExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterEqualOrNotExpression?: (ctx: EqualOrNotExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.equalOrNotExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitEqualOrNotExpression?: (ctx: EqualOrNotExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.compareExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterCompareExpression?: (ctx: CompareExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.compareExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitCompareExpression?: (ctx: CompareExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.bitOrExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterBitOrExpression?: (ctx: BitOrExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.bitOrExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitBitOrExpression?: (ctx: BitOrExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.xorExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterXorExpression?: (ctx: XorExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.xorExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitXorExpression?: (ctx: XorExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.bitAndExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterBitAndExpression?: (ctx: BitAndExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.bitAndExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitBitAndExpression?: (ctx: BitAndExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.bitShiftExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterBitShiftExpression?: (ctx: BitShiftExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.bitShiftExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitBitShiftExpression?: (ctx: BitShiftExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.additiveExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterAdditiveExpression?: (ctx: AdditiveExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.additiveExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitAdditiveExpression?: (ctx: AdditiveExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.multiplicativeExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterMultiplicativeExpression?: (ctx: MultiplicativeExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.multiplicativeExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitMultiplicativeExpression?: (ctx: MultiplicativeExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.prefixExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterPrefixExpression?: (ctx: PrefixExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.prefixExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitPrefixExpression?: (ctx: PrefixExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.postfixExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterPostfixExpression?: (ctx: PostfixExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.postfixExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitPostfixExpression?: (ctx: PostfixExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.primaryExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterPrimaryExpression?: (ctx: PrimaryExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.primaryExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitPrimaryExpression?: (ctx: PrimaryExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.literalOrSymbol`.
+	 * @param ctx the parse tree
+	 */
+	enterLiteralOrSymbol?: (ctx: LiteralOrSymbolContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.literalOrSymbol`.
+	 * @param ctx the parse tree
+	 */
+	exitLiteralOrSymbol?: (ctx: LiteralOrSymbolContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.expresion`.
