@@ -7,7 +7,7 @@ import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { BinarOperator } from "../Nodes/Operators/BinarOperator";
 import { IntLiteral } from "../Nodes/Literals/IntLiteral";
 import { UnarOperator } from "../Nodes/Operators/UnarOperator";
-import { OperatorNew, VariableModifire } from "../Nodes/Operators/OperatorNew";
+import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { FunctionDeclaration, FunctionModifire } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
 import { VariableInit } from "../Nodes/VariableInit";
@@ -224,6 +224,7 @@ export class Analyzer extends BaseVisitor
 		
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
+		
 		if(node.dimensions) {
 			if(node.reference) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CanBeReferenceToArray, node.pos, node.id));
@@ -231,6 +232,19 @@ export class Analyzer extends BaseVisitor
 		}
 		if(node.dimensions >= Pawn.MAX_ARRAY_DIMENSIONS) {
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArrayDimenssions, node.pos));
+		}
+
+		const symbol = node.symbol!;
+		symbol.hasDefaultValue = node.defaultValue ? true : false;
+		// TODO: тут должна быть првоерка tagof/sizeof
+
+		if(node.isConstant) {
+			symbol.addModifier(Symbols.VariableModifire.Const)
+		}
+		// TODO: тут есть какой-то written
+
+		if(this.curScope.findSymbol(symbol.name)) {
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
 		}
 
 		// this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
@@ -339,7 +353,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVarInit(node: VariableInit): void {
 		const modifiers: SemanticTokenModifiers[] = [];
-		if(node.modifires.indexOf(VariableModifire.const) !== -1) {
+		if(node.isConstant) {
 			modifiers.push(SemanticTokenModifiers.readonly);
 		}
 		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
@@ -685,6 +699,10 @@ export class Analyzer extends BaseVisitor
 
 		// }
 
+		if(node.parameters.length >= Pawn.MAX_PARAMETERS_COUNt) {
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArguments, node.pos));
+		}
+
 		this.extendScope(node.range, symbol.defenition);
 		this.curScope.currentFunction = symbol;
 	}
@@ -711,7 +729,7 @@ export class Analyzer extends BaseVisitor
 	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
 		const modifiers: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
-		if(node.modifires.indexOf(VariableModifire.const) !== -1) {
+		if(node.isConstant) {
 			modifiers.push(SemanticTokenModifiers.readonly);
 		}
 		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);

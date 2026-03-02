@@ -4,20 +4,14 @@ import { IVisitor } from "../../visitor/IVisitor";
 import { VarDeclaration } from "../Variables/VarDeclaration";
 import { Serialization } from "../../../../cache/Serialization";
 import { ASTNode } from "../ASTNode";
-
-export enum VariableModifire {
-	const,
-	stock,
-	static,
-	public
-}
+import { VariableModifire } from "../../../../SymbolSystem/Symbols";
 
 export class OperatorNew extends AbstractStatement implements IContainsVars<VarDeclaration>
 {
 	name = "операртор декларации";
 
 	private readonly _variables: VarDeclaration[] = [];
-	private _modifires: VariableModifire[] = [];
+	private _modifires: number = VariableModifire.None;
 
 	public constructor() {
 		super();
@@ -35,10 +29,10 @@ export class OperatorNew extends AbstractStatement implements IContainsVars<VarD
 	}
 
 	public addModifire(modifire: VariableModifire): void {
-		this._modifires.push(modifire);
+		this._modifires |= modifire;
 	}
 
-	public get modifires() : VariableModifire[] {
+	public get modifires() : number {
 		return this._modifires;
 	}
 

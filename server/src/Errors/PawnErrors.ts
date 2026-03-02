@@ -50,6 +50,7 @@ export namespace PawnErrors {
 		FunctionWithTagUsedBeforeDeclaration = 208,
 		ShoutdReturnValue = 209,
 		TagMismatch = 213,
+		SymbolShadowing = 219,
 		PublicBeforeForward = 235,
 		UserWarning = 237,
 	}

@@ -1,8 +1,6 @@
 import { Serialization } from "../../../../cache/Serialization";
-import { Variable as VariableSymbol } from "../../../../SymbolSystem/Symbols";
+import { VariableModifire } from "../../../../SymbolSystem/Symbols";
 import { IVisitor } from "../../visitor/IVisitor";
-import { ASTNode } from "../ASTNode";
-import { VariableModifire } from "../Operators/OperatorNew";
 import { Variable } from "../Variable";
 import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 
@@ -10,7 +8,7 @@ import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 export class VarDeclaration extends VarOrFunctionDeclaration
 {
 	name = "объявление переменной";
-	protected _modifires: VariableModifire[] = [];
+	protected _modifires: number = VariableModifire.None;
 
 	public references: Variable[] = [];
 
@@ -29,25 +27,19 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 	}
 
 	
-	public get modifires() : VariableModifire[] {
+	public get modifires() : number {
 		return this._modifires;
 	}
 	
-	public set modifires(v : VariableModifire[]) {
+	public set modifires(v : number) {
 		this._modifires = v;
-		if(v.indexOf(VariableModifire.stock) !== -1) {
+		if(v & VariableModifire.Stock) {
 			this.stock = true;
 		}
 	}
 
 	public get isConstant(): boolean {
-		for(let el of this._modifires) {
-			if(el === VariableModifire.const) {
-				return true;
-			}
-		}
-		return false;
-		// return this._modifires.find(el => el === VariableModifire.const) ? true : false;
+		return this.hasModifier(VariableModifire.Const);
 	}
 
 	public toJSON(): Serialization.Nodes.VarDeclaration {
@@ -70,5 +62,12 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 		this.modifires = json.modifires;
 	}
 
-	
+	addModifier(modifire: VariableModifire) {
+		this._modifires |= modifire;
+	}
+
+	hasModifier(modifire: VariableModifire): boolean {
+		return (this._modifires & modifire) !== 0;
+	}
+
 }

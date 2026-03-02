@@ -17,7 +17,6 @@ export enum FunctionModifire {
 	Public = 1 << 2,
 	Native = 1 << 3,
 	Forward = 1 << 4,
-	Const = 1 << 5,
 }
 
 export class FunctionDeclaration extends VarOrFunctionDeclaration implements IContainsVars<FunctionDeclarationParameter>
