@@ -34,6 +34,7 @@ import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
+import { TernarOperator } from "../Nodes/Operators/TernarOperator";
 
 export abstract class BaseVisitor implements IVisitor
 {
@@ -155,6 +156,17 @@ export abstract class BaseVisitor implements IVisitor
 			node.right.accept(this);
 		this.afterVisitBinarOperator(node);
 	}
+	visitTernarOperator(node: TernarOperator): void {
+		this.beforeVisitTernarOperator(node);
+		if(node.condition)
+			node.condition.accept(this);
+		if(node.onTrue)
+			node.onTrue.accept(this);
+		if(node.onFalse)
+			node.onFalse.accept(this);
+		this.afterVisitTernarOperator(node);
+	}
+
 	visitReturn(node: ReturnStatement): void {
 		this.beforeVisitReturn(node);
 		if(node.value)
@@ -271,6 +283,9 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitBinarOperator(node: BinarOperator): void;
 	abstract afterVisitBinarOperator(node: BinarOperator): void;
+
+	abstract beforeVisitTernarOperator(node: TernarOperator): void;
+	abstract afterVisitTernarOperator(node: TernarOperator): void;
 
 	abstract beforeVisitLiteral(node: IntLiteral | FloatLiteral): void;
 	abstract afterVisitLiteral(node: IntLiteral | FloatLiteral): void;

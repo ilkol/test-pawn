@@ -49,6 +49,7 @@ import { TypeInferenceEngine } from "../../../TypeInferenceEngine";
 import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 import { Pawn } from "../../../Pawn";
 import { NamedArgument } from "../Nodes/Functions/NamedArgument";
+import { TernarOperator } from "../Nodes/Operators/TernarOperator";
 
 /** Состояние проверки аргумента функции при ее вызове */
 enum ArgumentState {
@@ -463,6 +464,25 @@ export class Analyzer extends BaseVisitor
 
 		if (!leftTag || !rightTag || !this.tagInferer.findUserOperator(node.operator, leftTag, rightTag, 2)) {
 			this.checkTagMismatch(leftTag, rightTag, false, node.range);
+   		}
+		
+	}
+	beforeVisitTernarOperator(node: TernarOperator): void {
+		
+			
+	}
+	afterVisitTernarOperator(node: TernarOperator): void {
+		if(!(node.onTrue && node.onFalse && node.condition)) {
+			return;
+		}
+
+		node.inferredTag = this.tagInferer.inferTag(node);
+
+		const onTrue = node.onTrue.inferredTag;
+		const onFalse = node.onFalse.inferredTag;
+
+		if (onTrue && onFalse) {
+			this.checkTagMismatch(onTrue, onFalse, false, node.onFalse.range);
    		}
 		
 	}

@@ -29,6 +29,7 @@ import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
+import { TernarOperator } from "../Nodes/Operators/TernarOperator";
 
 export interface IVisitor
 {
@@ -37,17 +38,22 @@ export interface IVisitor
 
 	visitOperatorNew(node: OperatorNew): void;
 	visitUnarOperator(node: UnarOperator): void;
-	visitLiteral(node: IntLiteral | FloatLiteral): void;
-	visitBoolLiteral(node: BoolLiteral): void;
 	visitBinarOperator(node: BinarOperator): void;
+	visitTernarOperator(node: TernarOperator): void;
+
 	visitReturn(node: ReturnStatement): void;
 	visitCodeBlock(node: CodeBlock): void;
-	visitEnumMember(node: EnumMember): void;
-	visitEnumDeclaration(node: EnumDeclaration): void;
+
 	visitDeclarations(node: Declarations): void;
+	visitEnumDeclaration(node: EnumDeclaration): void;
+	visitEnumMember(node: EnumMember): void;
 	visitFunctionDeclaration(node: FunctionDeclaration): void;
 	visitOperatorOverload(node: OperatorOverload): void;
 	visitVariableDeclaration(node: VarDeclaration): void;
+
+	visitLiteral(node: IntLiteral | FloatLiteral): void;
+	visitBoolLiteral(node: BoolLiteral): void;
+	
 	visitFunctionCall(node: FunctionCall): void;
 	visitVarInit(node: VariableInit): void;
 	visitVariable(node: Variable): void;

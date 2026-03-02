@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener as IPawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, TernarOperatorContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
@@ -59,6 +59,7 @@ import { Locale } from "../Locale";
 import { NamedArgument } from "./AST/Nodes/Functions/NamedArgument";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
 import { VariableModifire } from "../SymbolSystem/Symbols";
+import { TernarOperator } from "./AST/Nodes/Operators/TernarOperator";
 
 export class PawnListener implements IPawnListener
 {
@@ -566,6 +567,13 @@ export class PawnListener implements IPawnListener
 			} 
 			else if(last instanceof NamedArgument) {
 				last.value = node;
+			}
+			else if(last instanceof TernarOperator) {
+				try {
+					last.pushValue(node);
+				} catch(e) {
+					this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
+				}
 			}
 			else if(last instanceof AbstractOperator) {
 				last.expresion = node;
@@ -1228,6 +1236,25 @@ export class PawnListener implements IPawnListener
 	}
 	exitArrayOperatorChar(ctx: ArrayOperatorCharContext) {
 		this.enterArrayIndexOper(ctx);
+	}
+
+	enterTernarOperator(ctx: TernarOperatorContext) {
+		this.nodes.push(new TernarOperator());
+	}
+	exitTernarOperator(ctx: TernarOperatorContext) {
+		let node = <TernarOperator>this.nodes.pop();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+
+			const last = this.nodes.peek();
+			if(last instanceof Expression) {
+				node.condition = last.expresion!;
+				last.expresion = node;
+			}
+			else {
+				this.addDiagnostic(Locale.t("Unexpected binar operator"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
 	}
 
 	private enterArrayIndexOper(ctx: ArrayOperatorIndexContext|ArrayOperatorCharContext) {
