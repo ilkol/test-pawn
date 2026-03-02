@@ -558,7 +558,7 @@ export class Analyzer extends BaseVisitor
 		});
 		this.pendingReferences.clear();
 
-		this.restrictScope(true);
+		this.restrictScope(true, true);
 	}
 
 	beforeVisitOperatorOverload(node: OperatorOverload): void {
@@ -713,7 +713,7 @@ export class Analyzer extends BaseVisitor
 		this.curScope.currentFunction = symbol;
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		this.restrictScope();
+		this.restrictScope(node.code ? true : false);
 
 		node.parameters.forEach(parameter => {
 			const modifires: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
@@ -752,16 +752,18 @@ export class Analyzer extends BaseVisitor
 		this.curScope = this.curScope.extend(range, newSymbol);
 		this.scopeManager.register(this.curScope);
 	}
-	private restrictScope(skipConstatns: boolean = false) {
-		for(const symbol of this.curScope.getLocalSymbols()) {
-			if(skipConstatns && symbol instanceof Symbols.Variable && symbol.isConst) {
-				continue;
-			}
-			if(!symbol.isUsed) {
-				if(symbol instanceof Symbols.Function && (!symbol.hasImplementation || symbol.hasModifier(FunctionModifire.Native | FunctionModifire.Stock | FunctionModifire.Public))) {
+	private restrictScope(checkUsed: boolean = true, skipConstatns: boolean = false) {
+		if(checkUsed) {
+			for(const symbol of this.curScope.getLocalSymbols()) {
+				if(skipConstatns && symbol instanceof Symbols.Variable && symbol.isConst) {
 					continue;
 				}
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, symbol.defenition.tokenRange, symbol.name));
+				if(!symbol.isUsed) {
+					if(symbol instanceof Symbols.Function && (!symbol.hasImplementation || symbol.hasModifier(FunctionModifire.Native | FunctionModifire.Stock | FunctionModifire.Public))) {
+						continue;
+					}
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, symbol.defenition.tokenRange, symbol.name));
+				}
 			}
 		}
 		if(this.curScope.parent)
