@@ -1,7 +1,6 @@
 import { Serialization } from "../../../cache/Serialization";
 import { IVisitor } from "../visitor/IVisitor";
 import { RightValue } from "./RightValue";
-import { Variable } from "./Variable";
 import { VarDeclaration } from "./Variables/VarDeclaration";
 
 export class VariableInit extends VarDeclaration
@@ -14,7 +13,7 @@ export class VariableInit extends VarDeclaration
 	public accept(visitor: IVisitor): void {
 		visitor.visitVarInit(this);
 	}
-	
+
 	public get rightValue() : RightValue | undefined {
 		return this._value;
 	}
@@ -25,6 +24,7 @@ export class VariableInit extends VarDeclaration
 
 	public set var(v : VarDeclaration) {
 		this._var = v;
+		this.tag = v.tag;
 		this.id = v.id;
 		this.idPos = v.idPos;
 		this._modifires = v.modifires;
@@ -48,9 +48,9 @@ export class VariableInit extends VarDeclaration
 	}
 
 	protected prepareFromJSON(json: Serialization.Nodes.VariableInit): void {
+		this._var = Serialization.Deserialize.object(json.variable);
 		super.prepareFromJSON(json);
 		this._value = Serialization.Deserialize.object(json.value);
-		this._var = Serialization.Deserialize.object(json.variable);
 	}
 	
 }
