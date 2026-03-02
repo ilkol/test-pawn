@@ -251,11 +251,11 @@ export class Analyzer extends BaseVisitor
 		if(node.isConstant) {
 			symbol.addModifier(Symbols.VariableModifire.Const)
 		}
-		// TODO: тут есть какой-то written
+		// TODO: тут есть какой-то written (doarg)
 
-		// this.checkUsed(node, (variable: FunctionDeclarationParameter) => this.curScope.addVar(variable));
-
-		// this.tokens.addToken(node.idPos, SemanticTokens.parameter, this.checkVarModifires(node.modifires).concat([SemanticTokensModifires.declaration]));
+		if(this.curScope.currentFunction?.hasModifier(FunctionModifire.Public)) {
+			symbol.isUsed = true;
+		}
 	}
 	beforeVisitVariable(node: Variable): void {
 	
