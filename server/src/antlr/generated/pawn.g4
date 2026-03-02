@@ -58,18 +58,18 @@ arrayInitMember:	tag? (MINUS? IDENTIFIER | MINUS? number | string) | (arrayInit)
 
 
 assigments:
-	ASSIGMENT |             // =
+    ASSIGMENT_OR |          // |=
+    ASSIGMENT_XOR |          // ^=
+	ASSIGMENT_AND |         // &=
     ASSIGMENT_PLUS |        // += 
     ASSIGMENT_MINUS |       // -= 
     ASSIGMENT_MULT |        // *= 
     ASSIGMENT_DIV |         // /= 
     ASSIGMENT_REMAINDE |    // %=
-    ASSIGMENT_RIGHT |       // >>=
     ASSIGMENT_RIGHT_LOG |   // >>>= 
+    ASSIGMENT_RIGHT |       // >>=
     ASSIGMENT_LEFT |        // <<=
-	ASSIGMENT_AND |         // &=
-    ASSIGMENT_OR |          // |=
-    ASSIGMENT_XOR           // ^=
+	ASSIGMENT             // =
 ;
 
 declParams:			(CONST)? (reference)? (pluralTag | tag)? IDENTIFIER (arrayIndex)* (ASSIGMENT (expresion|arrayInit))?;	
@@ -113,6 +113,68 @@ docs: docBlock;
 
 docBlock: DocBlock;
 // docLine: DocLine;
+// hier14
+assigmentExpression: ternaryExpression (assigments ternaryExpression)?;
+// hier13
+ternaryExpression: logicalOrExpression ternarOperator?;
+
+// hier12
+logicalOrExpression: logicalAndExpression (op=OR logicalAndExpression)*;
+// hier11
+logicalAndExpression: equalOrNotExpression (op=AND equalOrNotExpression)*;
+
+// hier10
+equalOrNotExpression: compareExpression (op=(EQUAL | NOTEQUAL) compareExpression)*;
+// hier9
+compareExpression: bitOrExpression (op=(LESSEQ | LARGEREQ | LESS | LARGER) bitOrExpression)*;
+
+// hier8
+bitOrExpression: xorExpression (op=BIT_OR xorExpression)*;
+// hier7
+xorExpression: bitAndExpression (op=BIT_XOR bitAndExpression)*;
+// hier6
+bitAndExpression: bitShiftExpression (op=BIT_AND bitShiftExpression)*;
+// hier5
+bitShiftExpression: additiveExpression  (op=(BIT_LEFT | BIT_RIGHT | BIT_RIGHT_LOG) additiveExpression )*;
+
+// hier4
+additiveExpression : multiplicativeExpression  (op=(PLUS | MINUS) multiplicativeExpression )*;
+// hier3
+multiplicativeExpression : prefixExpression (op=(MULTY | DIV | REMAINDE) prefixExpression)*;
+
+// hier2
+prefixExpression: 
+	(INCREMENTS | DECREMENTS | BIT_COMPLEMEN | NOT | MINUS | tag) prefixExpression |
+	// ADDRESSOF symbol | 
+	// ADDRESSOF OPEN_PARENTHESIS symbol CLOSE_PARENTHESIS |
+	DEFINED symbol | // тут lex какой-то
+	DEFINED OPEN_PARENTHESIS symbol CLOSE_PARENTHESIS |
+	SIZEOF symbol |
+	SIZEOF OPEN_PARENTHESIS symbol CLOSE_PARENTHESIS |
+	TAGOF symbol |
+	TAGOF OPEN_PARENTHESIS symbol CLOSE_PARENTHESIS |
+	STATE symbol |
+	// EMIT
+	postfixExpression
+;
+
+postfixExpression: primaryExpression (INCREMENTS | DECREMENTS | CHAR)*;
+
+// hier1
+primaryExpression: 
+	OPEN_PARENTHESIS assigmentExpression (COMA assigmentExpression)? CLOSE_PARENTHESIS |
+	symbol | 
+	literal
+;
+
+
+
+
+
+
+// hier1
+primaryExpression: ;
+
 
 expresion: 
     tagableExpression
@@ -126,7 +188,7 @@ tagableExpression:
     unarOperator |
     binarOperator)
 ;
-ternarOperator: QUESTION expresion COLON expresion;
+ternarOperator: QUESTION ternaryExpression COLON ternaryExpression;
 chainedRelationalOperator: (chainedRelationalOperators expresion)+;
 binarExpressionOperator: operator=binarExpressionOperators right=expresion;
 
