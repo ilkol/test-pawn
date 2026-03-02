@@ -902,7 +902,7 @@ export class Analyzer extends BaseVisitor
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArguments, argument.pos));
 				break;
 			}
-			if(usedArgs[argPos] === ArgumentState.Unset) {
+			if(usedArgs[argPos] !== ArgumentState.Unset) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentAlreadySet, argument.pos));
 			}
 
