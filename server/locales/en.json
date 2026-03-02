@@ -2466,5 +2466,6 @@
 	},
 	"no viable alternative at input 'main' (declaration)": "no viable alternative at input 'main' (declaration)",
 	"mismatched input '=' expecting {'const', 'static', 'stock', 'public', IDENTIFIER} (varDeclaration)": "mismatched input '=' expecting {'const', 'static', 'stock', 'public', IDENTIFIER} (varDeclaration)",
-	"no viable alternative at input 'b' (expresion)": "no viable alternative at input 'b' (expresion)"
+	"no viable alternative at input 'b' (expresion)": "no viable alternative at input 'b' (expresion)",
+	"mismatched input ';' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (varInit)": "mismatched input ';' expecting {'(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (varInit)"
 }

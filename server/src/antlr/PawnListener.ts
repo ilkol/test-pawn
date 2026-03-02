@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener as IPawnListener } from "./generated/pawnListener";
-import { ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, TernarOperatorContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
+import { AdditiveExpressionContext, ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, AssigmentExpressionContext, BinarExpressionOperatorContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompareExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostDecrementContext, PostIncrementContext, PostfixExpressionContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, TernarOperatorContext, TernaryExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
@@ -60,6 +60,9 @@ import { NamedArgument } from "./AST/Nodes/Functions/NamedArgument";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
 import { VariableModifire } from "../SymbolSystem/Symbols";
 import { TernarOperator } from "./AST/Nodes/Operators/TernarOperator";
+import { ComaOperator } from "./AST/Nodes/Operators/ComaOperator";
+import { Token } from "antlr4ts";
+import { Interval } from "antlr4ts/misc/Interval";
 
 export class PawnListener implements IPawnListener
 {
@@ -482,7 +485,7 @@ export class PawnListener implements IPawnListener
 			last.value.push(node);
 		}
 		else if(last instanceof Expression) {
-			last.expresion = node;
+			this.nodes.push(node);
 		}
 		else if(last instanceof FunctionDeclarationParameter) {
 			last.defaultValue = node;
@@ -541,6 +544,84 @@ export class PawnListener implements IPawnListener
 	exitExpresion(ctx: ExpresionContext): void {
 		this.evalExpression(ctx);
 	}
+
+	// hier14
+	exitAssigmentExpression(ctx: AssigmentExpressionContext) {
+		
+	}
+	exitTernaryExpression(ctx: TernaryExpressionContext) {
+		
+	}
+	exitLogicalOrExpression(ctx: LogicalOrExpressionContext) {
+		
+	}
+	exitLogicalAndExpression(ctx: LogicalAndExpressionContext) {
+		
+	}
+	exitEqualOrNotExpression(ctx: EqualOrNotExpressionContext) {
+		
+	}
+	exitCompareExpression(ctx: CompareExpressionContext) {
+		
+	}
+	exitBitOrExpression(ctx: BitOrExpressionContext) {
+		
+	}
+	exitXorExpression(ctx: XorExpressionContext) {
+		
+	}
+	exitBitAndExpression(ctx: BitAndExpressionContext) {
+		
+	}
+	exitBitShiftExpression(ctx: BitShiftExpressionContext) {
+		
+	}
+	exitAdditiveExpression(ctx: AdditiveExpressionContext) {
+		
+	}
+	exitMultiplicativeExpression(ctx: MultiplicativeExpressionContext) {
+		
+	}
+	exitPrefixExpression(ctx: PrefixExpressionContext) {
+		
+	}
+	exitPostfixExpression(ctx: PostfixExpressionContext) {
+		if(!ctx.stop || ctx.childCount <= 1) {
+			return; // primaryExpression уже лежит в стеке
+		}
+		
+		let node = this.nodes.pop() as Expression;
+		for(let i = 1; i < ctx.childCount; i++) {
+			const child = ctx.getChild(i);
+			const operator = child.text;
+			
+			const nodeOperator = new UnarOperator();
+			nodeOperator.operator = operator;
+			nodeOperator.setPos(ctx.start, ctx.stop);
+			nodeOperator.value = node;
+
+			node = nodeOperator;
+		}
+		this.nodes.push(node);
+	}
+	exitPrimaryExpression(ctx: PrimaryExpressionContext) {
+		if(!ctx.stop) {
+			return;
+		}
+		if(!ctx.OPEN_PARENTHESIS()) {
+			return; // литерал/символ уже загружен в стек
+		}
+		const expCount = ctx.assigmentExpression().length;
+		if(expCount === 1) {
+			return; // одно выражение уже в стеке
+		}
+		const nodes: Expression[] = [];
+		for(let i = 0; i < expCount; i++) {
+			nodes.unshift(this.nodes.pop() as Expression);
+		}
+		this.nodes.push(new ComaOperator(nodes, this.calculateNodeRange(ctx.start, ctx.stop)))
+	}
+	
 
 	private evalExpression(ctx: ExpresionContext | TagableExpressionContext) {
 		let node = <Expression>this.nodes.pop();
@@ -835,6 +916,7 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitString(ctx: StringContext): void {
+		
 		let node = <StringLiteral>this.nodes.pop();
 		if(ctx.stop) {
 			node.value = ctx.text;
@@ -842,7 +924,7 @@ export class PawnListener implements IPawnListener
 
 			const last = this.nodes.peek();
 			if(last instanceof Expression) {
-				last.expresion = node;
+				this.nodes.push(node);
 			}
 			else if(last instanceof FunctionDeclarationParameter) {
 				last.defaultValue = node;
@@ -1162,7 +1244,12 @@ export class PawnListener implements IPawnListener
 		}
 	};
 	exitSymbol = (ctx: SymbolContext) => {
+		const last = this.nodes.peek();
 		const node = new Variable();
+		if(last instanceof Expression) {
+			this.nodes.push(node);
+			return;
+		}
 		if(ctx.stop)
 		{	
 			node.setPos(ctx.start, ctx.stop);
@@ -1303,12 +1390,33 @@ export class PawnListener implements IPawnListener
 			
 			if(last instanceof Expression)
 			{
-				last.expresion = node;
+				this.nodes.push(node);
 			}
 			else {
 				console.error(last);
 				this.addDiagnostic(Locale.t("Unexpected constant"), DiagnosticSeverity.Error, node.idPos);
 			}
 		}
+	}
+
+
+
+	private calculateNodeRange(start: Token, end: Token) {
+		let endLine = end.line;
+		let endCharacter = end.charPositionInLine;
+
+		const stopText = end.inputStream?.getText(new Interval(end.startIndex, end.stopIndex)) || "";
+		if (stopText.includes('\n')) {
+			const lines = stopText.split('\n');
+			const lineCount = lines.length;
+			const lastLine = lines[lineCount - 1];
+
+			endLine = end.line + (lineCount - 1);
+			endCharacter = lastLine.length;
+		} else {
+			endCharacter += stopText.length;
+		}
+
+		return new Range(start.line - 1, start.charPositionInLine,endLine - 1, endCharacter);
 	}
 }
