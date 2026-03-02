@@ -151,9 +151,18 @@ prefixExpression:
 	postfixExpression
 ;
 
-postfixExpression: primaryExpression (INCREMENTS | DECREMENTS | CHAR)*;
+postfixExpression: functionOrArrayExpression (INCREMENTS | DECREMENTS | CHAR)*;
 
-// hier1
+functionOrArrayExpression: 
+	primaryExpression 
+	(
+		SQUARE_OPEN_BRACKET assigmentExpression SQUARE_CLOSE_BRACKET
+		| CURLY_OPEN_BRACKET assigmentExpression CURLY_CLOSE_BRACKET
+		| functionCallOperator
+	)
+;
+
+// аналог primary
 primaryExpression: 
 	OPEN_PARENTHESIS assigmentExpression (COMA assigmentExpression)* CLOSE_PARENTHESIS |
 	literalOrSymbol
@@ -166,14 +175,14 @@ expresion: assigmentExpression;
 tagableExpression: 
 	(literal |
     symbol |
-    functionCallOperator |
+    functionCall |
     OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS |
     unarOperator |
     binarOperator)
 ;
 ternarOperator: QUESTION ternaryExpression COLON ternaryExpression;
-chainedRelationalOperator: (chainedRelationalOperators expresion)+;
-binarExpressionOperator: operator=binarExpressionOperators right=expresion;
+// chainedRelationalOperator: (chainedRelationalOperators expresion)+;
+// binarExpressionOperator: operator=binarExpressionOperators right=expresion;
 
 unarOperator:
     postIncrement |         // v++ 
@@ -263,7 +272,10 @@ arrayOperatorChar:
     (CURLY_OPEN_BRACKET expresion? CURLY_CLOSE_BRACKET)
 ;
 functionCallOperator:
-    IDENTIFIER OPEN_PARENTHESIS (functionArgument (COMA functionArgument)*)? CLOSE_PARENTHESIS
+    OPEN_PARENTHESIS (functionArgument (COMA functionArgument)*)? CLOSE_PARENTHESIS
+;
+functionCall:
+    IDENTIFIER functionCallOperator
 ;
 functionArgument: SKIP_PARAM | (('.' symbol ASSIGMENT)? expresion);
 tagOperator:
