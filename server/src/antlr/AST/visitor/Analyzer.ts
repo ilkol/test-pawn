@@ -666,6 +666,7 @@ export class Analyzer extends BaseVisitor
 			}
 		}
 
+		this.scopeManager.globalScope.add(symbol);
 
 		symbol.returnTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
 
@@ -856,7 +857,6 @@ export class Analyzer extends BaseVisitor
 		
 		for(const argument of node.vars) {
 			const argSymbol =  this.curScope.findSymbol(argument.name);
-			console.log(argSymbol);
 			if(argSymbol) {
 				argSymbol.isUsed = true;
 			}

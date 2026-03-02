@@ -2430,5 +2430,6 @@
 	"no viable alternative at input '>)' (expresion)": "no viable alternative at input '>)' (expresion)",
 	"no viable alternative at input ',va_start<1>)' (expresion)": "no viable alternative at input ',va_start<1>)' (expresion)",
 	"no viable alternative at input '(str[0]=={' (ifStatement)": "no viable alternative at input '(str[0]=={' (ifStatement)",
-	"no viable alternative at input ',va_start<2>)' (expresion)": "no viable alternative at input ',va_start<2>)' (expresion)"
+	"no viable alternative at input ',va_start<2>)' (expresion)": "no viable alternative at input ',va_start<2>)' (expresion)",
+	"no viable alternative at input 'lstock' (statement)": "no viable alternative at input 'lstock' (statement)"
 }
