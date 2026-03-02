@@ -1,9 +1,9 @@
 import { VarDeclaration } from "../Variables/VarDeclaration";
 import { IVisitor } from "../../visitor/IVisitor";
 import { EnumDeclaration } from "./EnumDeclaration";
-import { VariableModifire } from "../Operators/OperatorNew";
 import { Serialization } from "../../../../cache/Serialization";
 import * as SymbolSystem from "../../../../SymbolSystem";
+import { VariableModifire } from "../../../../SymbolSystem/Symbols";
 
 export class EnumMember extends VarDeclaration
 {
@@ -14,7 +14,7 @@ export class EnumMember extends VarDeclaration
 	private _value: number = 0;
 	private _parent: EnumDeclaration | undefined;
 	
-	_modifires = [VariableModifire.const];
+	_modifires = VariableModifire.Const;
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitEnumMember(this);

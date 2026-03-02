@@ -1,4 +1,4 @@
-import { VariableModifire } from "../Operators/OperatorNew";
+import { VariableModifire } from "../../../../SymbolSystem/Symbols";
 import { Tag } from "../Tag";
 import { VarDeclaration } from "./VarDeclaration";
 
@@ -7,6 +7,6 @@ export class Constexpr extends VarDeclaration {
 		super();
 		this.tag = tag;
 		this.id = name;
-		this.modifires = [VariableModifire.const];
+		this.modifires = VariableModifire.Const;
 	}
 }

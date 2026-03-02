@@ -6,7 +6,7 @@ import { Stack } from "./Stack/Stack";
 import { pawnListener as IPawnListener } from "./generated/pawnListener";
 import { ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, BinarExpressionOperatorContext, BinaryContext, Bool_constContext, CaseContext, ChainedRelationalOperatorContext, ChainedRelationalOperatorsContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, HexContext, IfStatementContext, IntegerContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostDecrementContext, PostIncrementContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
-import { OperatorNew, VariableModifire } from "./AST/Nodes/Operators/OperatorNew";
+import { OperatorNew } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
 import { EnumMember } from "./AST/Nodes/enum/EnumMember";
 import { Tag } from "./AST/Nodes/Tag";
@@ -58,6 +58,7 @@ import { Position, Range } from "../types";
 import { Locale } from "../Locale";
 import { NamedArgument } from "./AST/Nodes/Functions/NamedArgument";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
+import { VariableModifire } from "../SymbolSystem/Symbols";
 
 export class PawnListener implements IPawnListener
 {
@@ -179,19 +180,19 @@ export class PawnListener implements IPawnListener
 			const modif = ctx.text;
 			switch(modif) {
 				case "const": {
-					last.modifires.push(VariableModifire.const);
+					last.addModifire(VariableModifire.Const);
 					break;
 				}
 				case "stock": {
-					last.modifires.push(VariableModifire.stock);
+					last.addModifire(VariableModifire.Stock);
 					break;
 				}
 				case "static": {
-					last.modifires.push(VariableModifire.static);
+					last.addModifire(VariableModifire.Static);
 					break;
 				}
 				case "public": {
-					last.modifires.push(VariableModifire.public);
+					last.addModifire(VariableModifire.Public);
 					break;
 				}
 				default: {

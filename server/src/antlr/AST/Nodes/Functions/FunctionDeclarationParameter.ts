@@ -1,10 +1,9 @@
 import { IVisitor } from "../../visitor/IVisitor";
 import { Variable } from "../Variable";
 import { RightValue } from "../RightValue";
-import { VariableModifire } from "../Operators/OperatorNew";
 import { VarDeclaration } from "../Variables/VarDeclaration";
 import { Serialization } from "../../../../cache/Serialization";
-import { Parameter } from "../../../../SymbolSystem/Symbols/Parameter";
+import { Parameter, VariableModifire } from "../../../../SymbolSystem/Symbols/Parameter";
 import { Tag } from "../Tag";
 import { DefaultTag } from "../DefaultTag";
 
@@ -48,11 +47,11 @@ export class FunctionDeclarationParameter extends VarDeclaration
 	}
 
 	public set const(v: true) {
-		this._modifires.push(VariableModifire.const);
+		this.addModifier(VariableModifire.Const);
 	}
 
 	public get const(): boolean {
-		return this._modifires.indexOf(VariableModifire.const) !== -1;
+		return this.hasModifier(VariableModifire.Const);
 	}
 
 	public set reference(v: true) {

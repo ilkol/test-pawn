@@ -18,7 +18,7 @@ export interface IScope
 	set range(value: Range);
 
 	add(symbol: AbstractSymbol): void;
-	findSymbol(name: string): AbstractSymbol | undefined;
+	findSymbol(name: string, onlyLocal?: boolean): AbstractSymbol | undefined;
 
 	getAllVisibleSymbols(position: Position, result?: Map<string, AbstractSymbol>, tags?: Set<MayBeTag>): AbstractSymbol[];
 	/** Возвращает список всех объявленных символов (без тегов) */

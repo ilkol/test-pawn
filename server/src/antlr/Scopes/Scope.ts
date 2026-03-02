@@ -52,9 +52,9 @@ export class Scope implements IScope
 	add(symbol: AbstractSymbol) {
 		this._symbols.set(symbol.name, symbol);
 	}
-	findSymbol(name: string): AbstractSymbol | undefined {
-		const local = this._symbols.get(name) ?? this.parent?.findSymbol(name);
-		if(local) return local;
+	findSymbol(name: string, onlyLocal: boolean = false): AbstractSymbol | undefined {
+		const local = this._symbols.get(name) ?? (!onlyLocal ? this.parent?.findSymbol(name) : undefined);
+		if(local || onlyLocal) return local;
 
 		if (!this.parent) {
 			for (const inc of this.includedScopes) {

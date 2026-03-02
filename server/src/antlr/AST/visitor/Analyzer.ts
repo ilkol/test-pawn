@@ -243,7 +243,7 @@ export class Analyzer extends BaseVisitor
 		}
 		// TODO: тут есть какой-то written
 
-		if(this.curScope.findSymbol(symbol.name)) {
+		if(this.curScope.findSymbol(symbol.name, true)) {
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
 		}
 
