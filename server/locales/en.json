@@ -2432,5 +2432,6 @@
 	"no viable alternative at input '(str[0]=={' (ifStatement)": "no viable alternative at input '(str[0]=={' (ifStatement)",
 	"no viable alternative at input ',va_start<2>)' (expresion)": "no viable alternative at input ',va_start<2>)' (expresion)",
 	"no viable alternative at input 'lstock' (statement)": "no viable alternative at input 'lstock' (statement)",
-	"no viable alternative at input 'forwardd;' (declaration)": "no viable alternative at input 'forwardd;' (declaration)"
+	"no viable alternative at input 'forwardd;' (declaration)": "no viable alternative at input 'forwardd;' (declaration)",
+	"mismatched input '/' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (file)": "mismatched input '/' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (file)"
 }

@@ -858,8 +858,7 @@ export class PawnListener implements IPawnListener
 			else if(ctx.FORWARD())
 				last.addModifier(FunctionModifire.Forward);
 			else if(ctx.NATIVE())
-				last.native = true;
-				// last.modifire = FunctionModifire.native;
+				last.addModifier(FunctionModifire.Native);
 		}
 		else if(ctx.stop) {
 			console.debug(last);
