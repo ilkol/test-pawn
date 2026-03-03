@@ -172,133 +172,14 @@ literalOrSymbol: symbol | literal;
 
 
 expresion: assigmentExpression;
-tagableExpression: 
-	(literal |
-    symbol |
-    functionCall |
-    OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS |
-    unarOperator |
-    binarOperator)
-;
+
 ternarOperator: QUESTION ternaryExpression COLON ternaryExpression;
-// chainedRelationalOperator: (chainedRelationalOperators expresion)+;
-// binarExpressionOperator: operator=binarExpressionOperators right=expresion;
 
-unarOperator:
-    postIncrement |         // v++ 
-    preIncrement |          // ++v 
-    postDecrement |         // v--  
-    preDecrement |          // --v 
-
-    (preExpresionOperator expresion) |
-    (preSymbolOperator symbol)
-;
-
-preExpresionOperator:
-	BIT_COMPLEMEN|		// ~e
-	MINUS|				// -e
-	NOT	|				// !e
-	SIZEOF				// sizeof e
-;
-preSymbolOperator:
-	DEFINED|			// defined e
-	STATE|				// state e
-	TAGOF				// tagof e
-;
-
-
-binarOperator:
-
-    assigmentOperator |     // v = e
-
-	arrayIndexOperator |
-    tagOperator             // tagname : e
-
-;
-
-arrayIndexOperator:
-	symbol (
-		arrayOperatorIndex |    // a[e]    
-		arrayOperatorChar     // a{e}
-	)+    
-;
-
-binarExpressionOperators:
-    PLUS |                  // e1 + e2
-    MINUS |                 // e1 - e2
-    MULTY |                 // e1 * e2
-    DIV |                   // e1 / e2
-    REMAINDE |              // e1 % e2
-
-    BIT_RIGHT |             // e1 >> e2
-    BIT_RIGHT_LOG |         // e1 >>> e2
-    BIT_LEFT |              // e1 << e2
-    BIT_AND |               // e1 & e2
-    BIT_OR |                // e1 | e2
-    BIT_XOR |               // e1 ^ e2
-
-    EQUAL |                 // e1 == e2
-    NOTEQUAL |              // e1 != e2
-
-    OR |                    // e1 || e2
-    AND |                   // e1 && e2
-
-    COMA |                  // e1 , e2
-
-    ASSIGMENT |             // e1 = e2
-    ASSIGMENT_PLUS |        // e1 += e2
-    ASSIGMENT_MINUS |       // e1 -= e2
-    ASSIGMENT_MULT |        // e1 *= e2
-    ASSIGMENT_DIV |         // e1 /= e2
-    ASSIGMENT_REMAINDE |    // e1 %= e2
-    ASSIGMENT_RIGHT |       // e1 >>= e2
-    ASSIGMENT_RIGHT_LOG |   // e1 >>>= e2
-    ASSIGMENT_LEFT |        // e1 <<= e2
-	ASSIGMENT_AND |         // e1 &= e2
-    ASSIGMENT_OR |          // e1 |= e2
-    ASSIGMENT_XOR           // e1 ^= e2
-;
-
-
-assigmentOperator:
-    lvalue ASSIGMENT expresion     // v = e
-;
-
-
-arrayOperatorIndex: 
-    (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)
-;
-arrayOperatorChar: 
-    (CURLY_OPEN_BRACKET expresion? CURLY_CLOSE_BRACKET)
-;
 functionCallOperator:
     OPEN_PARENTHESIS (functionArgument (COMA functionArgument)*)? CLOSE_PARENTHESIS
 ;
-functionCall:
-    IDENTIFIER functionCallOperator
-;
 functionArgument: SKIP_PARAM | (('.' symbol ASSIGMENT)? expresion);
-tagOperator:
-    tag tagableExpression
-;
-
 symbol: IDENTIFIER;
-
-
-lvalue: symbol | arrayIndexOperator;
-
-postIncrement: lvalue INCREMENTS;
-preIncrement: INCREMENTS lvalue;
-postDecrement: lvalue DECREMENTS;
-preDecrement: DECREMENTS lvalue;
-
-chainedRelationalOperators: 
-    LESS |      // e1 < e2
-    LESSEQ |    // e1 <= e2
-    LARGER |    // e1 > e2
-    LARGEREQ    // e1 >= e2
-;
-
 
 
 

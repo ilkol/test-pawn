@@ -82,28 +82,10 @@ import { FunctionOrArrayExpressionContext } from "./pawnParser";
 import { PrimaryExpressionContext } from "./pawnParser";
 import { LiteralOrSymbolContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
-import { TagableExpressionContext } from "./pawnParser";
 import { TernarOperatorContext } from "./pawnParser";
-import { UnarOperatorContext } from "./pawnParser";
-import { PreExpresionOperatorContext } from "./pawnParser";
-import { PreSymbolOperatorContext } from "./pawnParser";
-import { BinarOperatorContext } from "./pawnParser";
-import { ArrayIndexOperatorContext } from "./pawnParser";
-import { BinarExpressionOperatorsContext } from "./pawnParser";
-import { AssigmentOperatorContext } from "./pawnParser";
-import { ArrayOperatorIndexContext } from "./pawnParser";
-import { ArrayOperatorCharContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
-import { FunctionCallContext } from "./pawnParser";
 import { FunctionArgumentContext } from "./pawnParser";
-import { TagOperatorContext } from "./pawnParser";
 import { SymbolContext } from "./pawnParser";
-import { LvalueContext } from "./pawnParser";
-import { PostIncrementContext } from "./pawnParser";
-import { PreIncrementContext } from "./pawnParser";
-import { PostDecrementContext } from "./pawnParser";
-import { PreDecrementContext } from "./pawnParser";
-import { ChainedRelationalOperatorsContext } from "./pawnParser";
 
 
 /**
@@ -668,81 +650,11 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitExpresion?: (ctx: ExpresionContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.tagableExpression`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitTagableExpression?: (ctx: TagableExpressionContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `pawnParser.ternarOperator`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	visitTernarOperator?: (ctx: TernarOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.unarOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitUnarOperator?: (ctx: UnarOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.preExpresionOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitPreExpresionOperator?: (ctx: PreExpresionOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.preSymbolOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitPreSymbolOperator?: (ctx: PreSymbolOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.binarOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitBinarOperator?: (ctx: BinarOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.arrayIndexOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitArrayIndexOperator?: (ctx: ArrayIndexOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.binarExpressionOperators`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitBinarExpressionOperators?: (ctx: BinarExpressionOperatorsContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.assigmentOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitAssigmentOperator?: (ctx: AssigmentOperatorContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.arrayOperatorIndex`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitArrayOperatorIndex?: (ctx: ArrayOperatorIndexContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.arrayOperatorChar`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitArrayOperatorChar?: (ctx: ArrayOperatorCharContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.functionCallOperator`.
@@ -752,13 +664,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitFunctionCallOperator?: (ctx: FunctionCallOperatorContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.functionCall`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitFunctionCall?: (ctx: FunctionCallContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `pawnParser.functionArgument`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -766,59 +671,10 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitFunctionArgument?: (ctx: FunctionArgumentContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.tagOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitTagOperator?: (ctx: TagOperatorContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `pawnParser.symbol`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	visitSymbol?: (ctx: SymbolContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.lvalue`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitLvalue?: (ctx: LvalueContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.postIncrement`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitPostIncrement?: (ctx: PostIncrementContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.preIncrement`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitPreIncrement?: (ctx: PreIncrementContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.postDecrement`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitPostDecrement?: (ctx: PostDecrementContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.preDecrement`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitPreDecrement?: (ctx: PreDecrementContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.chainedRelationalOperators`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitChainedRelationalOperators?: (ctx: ChainedRelationalOperatorsContext) => Result;
 }
 

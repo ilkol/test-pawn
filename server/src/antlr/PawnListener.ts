@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener as IPawnListener } from "./generated/pawnListener";
-import { AdditiveExpressionContext, ArrayIndexContext, ArrayIndexOperatorContext, ArrayInitContext, ArrayOperatorCharContext, ArrayOperatorIndexContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, ChainedRelationalOperatorsContext, CompareExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, FunctionOrArrayExpressionContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostDecrementContext, PostIncrementContext, PostfixExpressionContext, PreDecrementContext, PreExpresionOperatorContext, PreIncrementContext, PreSymbolOperatorContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TagOperatorContext, TagableExpressionContext, TernarOperatorContext, TernaryExpressionContext, UnarOperatorContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
+import { AdditiveExpressionContext, ArrayIndexContext, ArrayInitContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, CompareExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, FunctionOrArrayExpressionContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostfixExpressionContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TernarOperatorContext, TernaryExpressionContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
@@ -537,13 +537,7 @@ export class PawnListener implements IPawnListener
 			}
 		}
 	}
-	enterTagableExpression(ctx: TagableExpressionContext): void {
-		const node = new Expression();
-		this.nodes.push(node);
-	}
-	exitTagableExpression(ctx: TagableExpressionContext): void {
-		this.evalExpression(ctx);
-	}
+	
 	enterExpresion(ctx: ExpresionContext): void {
 		const node = new Expression();
 		this.nodes.push(node);
@@ -848,109 +842,6 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(new ComaOperator(nodes, this.calculateNodeRange(ctx.start, ctx.stop)))
 	}
 	
-
-	private evalExpression(ctx: ExpresionContext | TagableExpressionContext) {
-		let node = <Expression>this.nodes.pop();
-
-		if(!node.expresion) {
-			if(ctx.stop) {
-				const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop.line - 1, ctx.stop.charPositionInLine);
-				this.addDiagnostic(Locale.t("Empty expresion"), DiagnosticSeverity.Error, pos);
-			}
-			return;
-		}
-		if(node.isTaged) {
-			node.expresion.tag = node.tag;
-			node.expresion.isTaged = true;
-		}
-		node = node.expresion;
-		if(ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
-			
-			const last = this.nodes.peek();
-
-			if(last instanceof VariableInit) {
-				last.rightValue = node;
-			} 
-			else if(last instanceof NamedArgument) {
-				last.value = node;
-			}
-			else if(last instanceof TernarOperator) {
-				try {
-					last.pushValue(node);
-				} catch(e) {
-					this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
-				}
-			}
-			else if(last instanceof AbstractOperator) {
-				last.expresion = node;
-			}
-			else if(last instanceof Statement) {
-				last.statemnent = node;
-			}
-			else if(last instanceof IfStatement) {
-				last.condition = node;
-			}
-			else if(last instanceof SwitchStatement) {
-				last.condition = node;
-			}
-			else if(last instanceof ForCycle) {
-				try {
-					last.addExpresion(node);
-				}
-				catch(e) {
-					console.error(last);
-					this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
-				}
-			}
-			else if(last instanceof Cycle) {
-				last.condition = node;
-			}
-			else if(last instanceof FunctionDeclarationParameter) {
-				last.defaultValue = node;
-			}
-			else if(last instanceof ReturnStatement) {
-				last.value = node;
-			}
-			else if(last instanceof EnumMember) {
-				// last.value = node;
-			}
-			else if(last instanceof CaseStatement || last instanceof DefaultStatement)
-			{
-				last.code = node;
-			}
-			else if(last instanceof Expression)
-			{
-				last.expresion = node;
-			}
-			else {
-				console.debug(last);
-				this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
-
-		// let pre = ctx.preOperators();
-		// if(pre) {
-			// if(ctx.stop) {
-				// let node = new UnarOperator();
-				// node.value = last;
-				// if(pre.NOT()) {	
-				// 	node.operator = "!";
-				// }
-				// else if(pre.MINUS()) {
-				// 	node.operator = "!";			
-				// }
-				// else if(pre.DECREMENTS()) {
-				// 	node.operator = "--";			
-				// }
-				// else if(pre.DECREMENTS()) {
-				// 	node.operator = "++";			
-				// }
-				// this.nodes.push(node);
-			// }
-		// }
-	}
-	
 	enterArrayInit = (ctx: ArrayInitContext) => {
 		let node = new ArrayInit();	
 		this.nodes.push(node);
@@ -1036,39 +927,6 @@ export class PawnListener implements IPawnListener
 		node.id = id.text;
 		node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 		resultAction(node);
-	}
-
-	enterFunctionCall(ctx: FunctionCallContext): void {
-		let node = new FunctionCall();	
-		this.nodes.push(node);
-	}
-
-	
-
-	exitFunctionCall(ctx: FunctionCallContext): void 
-	{
-		let node = <FunctionCall>this.nodes.pop();
-		if(ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
-
-			try {
-				let id = ctx.IDENTIFIER();
-				node.id = id.text;
-				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
-
-			} catch(e) {
-				this.addDiagnostic(Locale.t("Function identifire expected"), DiagnosticSeverity.Error, node.pos);
-			}
-			
-			let last = this.nodes.peek();
-			if(last instanceof Expression) {
-				last.expresion = node;
-			}
-			else {
-				console.debug(last);
-				this.addDiagnostic(Locale.t("Unexpected function call"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
 	}
 
 	enterVarInit(ctx: VarInitContext):void {
@@ -1380,100 +1238,7 @@ export class PawnListener implements IPawnListener
 	// 	}
 	// };
 
-	exitChainedRelationalOperators = (ctx: ChainedRelationalOperatorsContext) => {
-		const last = this.nodes.peek();
-		if(last instanceof ChainedOperator) {
-			if(ctx.stop) { 
-				const node = new BinarOperator();
-				node.setPos(ctx.start, ctx.stop);
-				node.operator = ctx.text;
-				last.pushOperator(node.operator);
-			}
-		} else {
-			const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
-			this.addDiagnostic(Locale.t("Unexpected compare operator"), DiagnosticSeverity.Error, pos);
-		}
-	};
-
-	enterUnarOperator = (ctx: UnarOperatorContext) => {
-		const node = new UnarOperator();
-		this.nodes.push(node);
-	};
-	exitUnarOperator =(ctx: UnarOperatorContext) => {
-		const node = <UnarOperator>this.nodes.pop();
-		if(ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
-			
-			const last = this.nodes.peek();
-			if(last instanceof Expression) {
-				last.expresion = node;
-			}
-			else {
-				this.addDiagnostic(Locale.t("Unexpected unar operator"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
-	};
-
-	exitPostDecrement = (ctx: PostDecrementContext) => {
-		const node = this.nodes.peek();
-		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
-		if(node instanceof UnarOperator) {
-			node.operator = "--";
-		}
-		else {
-			this.addDiagnostic(Locale.t("Unexpected post decrement"), DiagnosticSeverity.Error, pos);
-		}
-	};
-	exitPreDecrement = (ctx: PreDecrementContext) => {
-		const node = this.nodes.peek();
-		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
-		if(node instanceof UnarOperator) {
-			node.operator = "--";
-		}
-		else {
-			this.addDiagnostic(Locale.t("Unexpected pre decrement"), DiagnosticSeverity.Error, pos);
-		}
-	};
-	exitPreIncrement = (ctx: PreIncrementContext) => {
-		const node = this.nodes.peek();
-		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
-		if(node instanceof UnarOperator) {
-			node.operator = "++";
-		}
-		else {
-			this.addDiagnostic(Locale.t("Unexpected pre increment"), DiagnosticSeverity.Error, pos);
-		}
-	};
-	exitPostIncrement = (ctx: PostIncrementContext) => {
-		const node = this.nodes.peek();
-		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
-		if(node instanceof UnarOperator) {
-			node.operator = "++";
-		}
-		else {
-			this.addDiagnostic(Locale.t("Unexpected pre increment"), DiagnosticSeverity.Error, pos);
-		}
-	};
-	exitPreExpresionOperator = (ctx: PreExpresionOperatorContext) => {
-		const node = this.nodes.peek();
-		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
-		if(node instanceof UnarOperator) {
-			node.operator = ctx.text;
-		}
-		else {
-			this.addDiagnostic(Locale.t("Unexpected operator"), DiagnosticSeverity.Error, pos);
-		}
-	};
-	exitPreSymbolOperator = (ctx: PreSymbolOperatorContext) => {
-		const node = this.nodes.peek();
-		const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
-		if(node instanceof UnarOperator) {
-			node.operator = ctx.text;
-		}
-		else {
-			this.addDiagnostic(Locale.t("Unexpected operator"), DiagnosticSeverity.Error, pos);
-		}
-	};
+	
 	exitSymbol = (ctx: SymbolContext) => {
 		const last = this.nodes.peek();
 		const node = new Variable();
@@ -1511,44 +1276,6 @@ export class PawnListener implements IPawnListener
 		}
 	};
 
-	enterArrayIndexOperator(ctx: ArrayIndexOperatorContext) {
-		this.nodes.push(new UnarOperator());
-	}
-	exitArrayIndexOperator(ctx: ArrayIndexOperatorContext) {
-		const node = <ASTNode>this.nodes.pop();
-		if(!(node instanceof ArrayIndex || node instanceof ArrayChar)) {
-			console.error(node);
-			this.addDiagnostic(Locale.t("Unexpected node (AST error)"), DiagnosticSeverity.Error, node.pos);
-			return;
-		}
-		if(ctx.stop)
-		{	
-			node.setPos(ctx.start, ctx.stop);
-
-			const last = this.nodes.peek();
-			if(last instanceof Expression)
-			{
-				last.expresion = node;
-			}
-			else {
-				console.error(last);
-				this.addDiagnostic(Locale.t("Unexpected array"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
-	}
-	enterArrayOperatorIndex(ctx: ArrayOperatorIndexContext) {
-		this.nodes.push(new ArrayIndex());
-	}
-	exitArrayOperatorIndex(ctx: ArrayOperatorIndexContext) {
-		this.enterArrayIndexOper(ctx);
-	}
-	enterArrayOperatorChar(ctx: ArrayOperatorCharContext) {
-		this.nodes.push(new ArrayChar());
-	}
-	exitArrayOperatorChar(ctx: ArrayOperatorCharContext) {
-		this.enterArrayIndexOper(ctx);
-	}
-
 	enterTernarOperator(ctx: TernarOperatorContext) {
 		this.nodes.push(new TernarOperator());
 	}
@@ -1565,41 +1292,6 @@ export class PawnListener implements IPawnListener
 			else {
 				this.addDiagnostic(Locale.t("Unexpected binar operator"), DiagnosticSeverity.Error, node.pos);
 			}
-		}
-	}
-
-	private enterArrayIndexOper(ctx: ArrayOperatorIndexContext|ArrayOperatorCharContext) {
-		const node = <ASTNode>this.nodes.pop();
-		if(!(node instanceof ArrayIndex || node instanceof ArrayChar)) {
-			console.error(node);
-			this.addDiagnostic(Locale.t("Unexpected node (AST error)"), DiagnosticSeverity.Error, node.pos);
-			return;
-		}
-		if(ctx.stop)
-		{	
-			node.setPos(ctx.start, ctx.stop);
-
-			const last = this.nodes.pop();	
-			if(last instanceof UnarOperator)
-			{
-				if(!last.value) {
-					this.addDiagnostic(Locale.t("Symbol not found"), DiagnosticSeverity.Error, last.pos);
-					this.nodes.push(last);
-					return;
-				}
-				node.left = last.value;
-			}
-			else if(last instanceof ArrayIndex || last instanceof ArrayChar)
-			{
-				node.left = last;
-				
-			}
-			else {
-				console.error(last);
-				this.addDiagnostic(Locale.t("Expected symbol or array index/char operator"), DiagnosticSeverity.Error, node.pos);
-				return;
-			}
-			this.nodes.push(node);
 		}
 	}
 
