@@ -82,7 +82,6 @@ import { FunctionOrArrayExpressionContext } from "./pawnParser";
 import { PrimaryExpressionContext } from "./pawnParser";
 import { LiteralOrSymbolContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
-import { TernarOperatorContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
 import { FunctionArgumentContext } from "./pawnParser";
 import { SymbolContext } from "./pawnParser";
@@ -648,13 +647,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitExpresion?: (ctx: ExpresionContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.ternarOperator`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitTernarOperator?: (ctx: TernarOperatorContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.functionCallOperator`.

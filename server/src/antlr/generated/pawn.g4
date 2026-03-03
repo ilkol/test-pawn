@@ -116,7 +116,7 @@ docBlock: DocBlock;
 // hier14
 assigmentExpression: ternaryExpression (assigments ternaryExpression)*;
 // hier13
-ternaryExpression: logicalOrExpression ternarOperator?;
+ternaryExpression: logicalOrExpression (QUESTION ternaryExpression COLON ternaryExpression)?;
 
 // hier12
 logicalOrExpression: logicalAndExpression (op=OR logicalAndExpression)*;
@@ -173,7 +173,6 @@ literalOrSymbol: symbol | literal;
 
 expresion: assigmentExpression;
 
-ternarOperator: QUESTION ternaryExpression COLON ternaryExpression;
 
 functionCallOperator:
     OPEN_PARENTHESIS (functionArgument (COMA functionArgument)*)? CLOSE_PARENTHESIS
