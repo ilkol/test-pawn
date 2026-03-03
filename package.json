@@ -122,6 +122,10 @@
 			{
 				"command": "pawnlanguage.flushWorkspaceCache",
 				"title": "Очистить кэш текущей рабочей области"
+			},
+			{
+				"command": "pawnlanguage.showAST",
+				"title": "Посмотреть AST"
 			}
 		]
 	},
