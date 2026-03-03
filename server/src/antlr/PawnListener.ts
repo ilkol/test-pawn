@@ -1008,12 +1008,14 @@ export class PawnListener implements IPawnListener
 		}
 		node.setPos(ctx.start, ctx.stop);
 		const last = this.nodes.peek();
-		let resultAction: (node: NamedArgument | RightValue) => void  = (<FunctionCall>last).pushParameter.bind(last);
+		let resultAction: (node: NamedArgument | RightValue) => void;
 		if(!(last instanceof FunctionCall)) {
 			if(!(last instanceof Expression)) {
-				resultAction = this.nodes.push.bind(this.nodes);
 				throw new Error(`Ожидается FunctionCall, а найден ${last?.name}`);
 			}
+			resultAction = this.nodes.push.bind(this.nodes);
+		} else {
+			resultAction = (<FunctionCall>last).pushParameter.bind(last);;
 		}
 
 		let id: TerminalNode;
