@@ -549,7 +549,6 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitExpresion(ctx: ExpresionContext): void {
-		console.log(ctx.start, ctx.stop);
 		let node = <Expression>this.nodes.pop();
 		this.nodes.pop(); // pop stub
 
@@ -617,7 +616,7 @@ export class PawnListener implements IPawnListener
 
 	// hier14
 	exitAssigmentExpression(ctx: AssigmentExpressionContext) {
-		 if (!ctx.stop || !ctx.assigments()) {
+		 if (!ctx.stop || !ctx.assigments().length) {
 			return; 
 		}
 
@@ -1494,10 +1493,10 @@ export class PawnListener implements IPawnListener
 	
 			const last = this.nodes.peek();
 			
-			if(last instanceof UnarOperator) {
-				last.value = node;
-			}
-			else if(last instanceof Expression)
+			// if(last instanceof UnarOperator) {
+			// 	last.value = node;
+			// }
+			if(last instanceof Expression)
 			{
 				this.nodes.push(node);
 			}
