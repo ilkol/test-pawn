@@ -1500,10 +1500,6 @@ export class PawnListener implements IPawnListener
 			{
 				this.nodes.push(node);
 			}
-			else if(last instanceof BinarOperator)
-			{
-				last.expresion = node;
-			}
 			else if(last instanceof Expression)
 			{
 				last.expresion = node;
