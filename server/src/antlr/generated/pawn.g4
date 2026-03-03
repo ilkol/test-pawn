@@ -158,8 +158,8 @@ functionOrArrayExpression:
 	(
 		SQUARE_OPEN_BRACKET assigmentExpression SQUARE_CLOSE_BRACKET
 		| CURLY_OPEN_BRACKET assigmentExpression CURLY_CLOSE_BRACKET
-		| functionCallOperator
-	)
+	)*
+	(functionCallOperator)?
 ;
 
 // аналог primary

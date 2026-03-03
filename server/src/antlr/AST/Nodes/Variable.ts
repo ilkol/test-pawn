@@ -10,7 +10,7 @@ import { SymbolsFactory } from "../../../SymbolSystem/SymbolsFactory";
 
 export class Variable extends Expression implements IHasID
 {
-
+	name = "var";
 	public declaration?: VarDeclaration;
 	private _identifire: string = "";
 	private _idPos: Range = new Range(0,0,0,0);

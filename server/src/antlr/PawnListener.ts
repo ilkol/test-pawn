@@ -63,6 +63,8 @@ import { TernarOperator } from "./AST/Nodes/Operators/TernarOperator";
 import { ComaOperator } from "./AST/Nodes/Operators/ComaOperator";
 import { Token } from "antlr4ts";
 import { Interval } from "antlr4ts/misc/Interval";
+import { RightValue } from "./AST/Nodes/RightValue";
+import { PawnErrors } from "../Errors/PawnErrors";
 
 export class PawnListener implements IPawnListener
 {
@@ -349,9 +351,14 @@ export class PawnListener implements IPawnListener
 			else if(last instanceof VarOrFunctionDeclaration) {
 				last.tag = node;
 			}
-			else if(last instanceof Expression) {
+			else if(last instanceof Variable) {
 				last.tag = node;
 				last.isTaged = true;
+			}
+			else if(last instanceof Expression) {
+				this.nodes.push(node);
+				// last.tag = node;
+				// last.isTaged = true;
 			}
 			else if(last instanceof Ellipse) {
 				last.tag = node;
@@ -542,48 +549,199 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitExpresion(ctx: ExpresionContext): void {
-		this.evalExpression(ctx);
+		console.log(ctx.start, ctx.stop);
+		let node = <Expression>this.nodes.pop();
+		this.nodes.pop(); // pop stub
+
+		const last = this.nodes.peek();
+
+		if(last instanceof VariableInit) {
+			last.rightValue = node;
+		} 
+		else if(last instanceof NamedArgument) {
+			last.value = node;
+		}
+		else if(last instanceof TernarOperator) {
+			try {
+				last.pushValue(node);
+			} catch(e) {
+				this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+		else if(last instanceof AbstractOperator) {
+			last.expresion = node;
+		}
+		else if(last instanceof Statement) {
+			last.statemnent = node;
+		}
+		else if(last instanceof IfStatement) {
+			last.condition = node;
+		}
+		else if(last instanceof SwitchStatement) {
+			last.condition = node;
+		}
+		else if(last instanceof ForCycle) {
+			try {
+				last.addExpresion(node);
+			}
+			catch(e) {
+				console.error(last);
+				this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
+			}
+		}
+		else if(last instanceof Cycle) {
+			last.condition = node;
+		}
+		else if(last instanceof FunctionDeclarationParameter) {
+			last.defaultValue = node;
+		}
+		else if(last instanceof ReturnStatement) {
+			last.value = node;
+		}
+		else if(last instanceof EnumMember) {
+			// last.value = node;
+		}
+		else if(last instanceof CaseStatement || last instanceof DefaultStatement)
+		{
+			last.code = node;
+		}
+		else if(last instanceof Expression)
+		{
+			last.expresion = node;
+		}
+		else {
+			console.debug(last);
+			this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
+		}
 	}
 
 	// hier14
 	exitAssigmentExpression(ctx: AssigmentExpressionContext) {
-		
+		 if (!ctx.stop || !ctx.assigments()) {
+			return; 
+		}
+
+		const operandCount = ctx.ternaryExpression().length;
+		const operands: Expression[] = [];
+		const operators: string[] = ctx.assigments().map(op => op.text);
+
+		for (let i = 0; i < operandCount; i++) {
+			operands.unshift(this.nodes.pop() as Expression);
+		}
+
+		let right = operands.pop()!;
+		for (let i = operators.length - 1; i >= 0; i--) {
+			const left = operands.pop()!;
+			let op = new AssigmentOperator();
+			op.range = new Range(left.range.start, right.range.end);
+			op.right = right;
+			op.operator = operators[i];
+			if(!(left instanceof Variable)) {
+				const diag = PawnErrors.report(PawnErrors.Code.MustBeLValue, left.pos);
+				this.addDiagnostic(diag.message, diag.severity!, left.pos);
+			} else {
+				op.left = left;
+			}
+			right = op;
+		}
+		this.nodes.push(right);
 	}
 	exitTernaryExpression(ctx: TernaryExpressionContext) {
+		if(!ctx.stop || ctx.childCount <= 1) {
+			return; // primaryExpression уже лежит в стеке
+		}
+
+		const node = new TernarOperator();
+		node.setPos(ctx.start, ctx.stop);
+
+		node.onFalse = this.nodes.pop() as Expression;
+		node.onTrue = this.nodes.pop() as Expression;
+		node.condition = this.nodes.pop() as Expression;
 		
+		this.nodes.push(node);
 	}
 	exitLogicalOrExpression(ctx: LogicalOrExpressionContext) {
-		
+		this.evaluateBinarOperator(ctx);
 	}
 	exitLogicalAndExpression(ctx: LogicalAndExpressionContext) {
-		
+		this.evaluateBinarOperator(ctx);
 	}
 	exitEqualOrNotExpression(ctx: EqualOrNotExpressionContext) {
-		
+		this.evaluateBinarOperator(ctx);
 	}
 	exitCompareExpression(ctx: CompareExpressionContext) {
+		if(!ctx.stop || ctx.childCount <= 1) {
+			return; // primaryExpression уже лежит в стеке
+		}
+
+		const operandCount = (ctx.childCount + 1) / 2;
+		const operands: Expression[] = [];
+		for (let i = 0; i < operandCount; i++) {
+			operands.unshift(this.nodes.pop() as Expression);
+		}
 		
+		if(operandCount === 2) {
+			const node = new BinarOperator();
+			node.operator = ctx._op.text!;
+			node.left = operands[0];
+			node.right = operands[1];
+			node.operator = ctx.getChild(1).text;
+			node.setPos(ctx.start, ctx.stop);
+			this.nodes.push(node);
+			return;
+		}
+
+		const chain = new ChainedOperator();
+		chain.setPos(ctx.start, ctx.stop);
+		chain.operands = operands;
+		
+		for (let i = 1; i < ctx.childCount; i += 2) {
+			chain.pushOperator(ctx.getChild(i).text);
+		}
+
+		chain.setPos(ctx.start, ctx.stop);
+		this.nodes.push(chain);
 	}
 	exitBitOrExpression(ctx: BitOrExpressionContext) {
-		
+		this.evaluateBinarOperator(ctx);
 	}
 	exitXorExpression(ctx: XorExpressionContext) {
-		
+		this.evaluateBinarOperator(ctx);
 	}
 	exitBitAndExpression(ctx: BitAndExpressionContext) {
-		
+		this.evaluateBinarOperator(ctx);
 	}
 	exitBitShiftExpression(ctx: BitShiftExpressionContext) {
-		
+		this.evaluateBinarOperator(ctx);
 	}
 	exitAdditiveExpression(ctx: AdditiveExpressionContext) {
-		
+		this.evaluateBinarOperator(ctx);
 	}
 	exitMultiplicativeExpression(ctx: MultiplicativeExpressionContext) {
-		
+		this.evaluateBinarOperator(ctx);
 	}
 	exitPrefixExpression(ctx: PrefixExpressionContext) {
+		if(!ctx.stop || ctx.childCount <= 1) {
+			return; // primaryExpression уже лежит в стеке
+		}
+
+		const last = this.nodes.pop() as Expression;
+		if(ctx.DEFINED() || ctx.SIZEOF() || ctx.TAGOF() || ctx.STATE() || ctx.INCREMENTS() || ctx.DECREMENTS() || ctx.BIT_COMPLEMEN() || ctx.NOT() || ctx.MINUS()) {
+			const op = ctx.getChild(0).text.toLowerCase();
+			
+			let node = new UnarOperator();
+			node.operator = op;
+			node.setPos(ctx.start, ctx.stop);
+			node.value = last;
+			this.nodes.push(node);
+			return;
+		}
+
+		const tag = this.nodes.pop() as Tag;
+		last.tag = tag;
+		last.isTaged = true;
 		
+		this.nodes.push(last);
 	}
 	exitPostfixExpression(ctx: PostfixExpressionContext) {
 		if(!ctx.stop || ctx.childCount <= 1) {
@@ -605,11 +763,73 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	
-	enterFunctionOrArrayExpression(ctx: FunctionOrArrayExpressionContext) {
-		
-	}
 	exitFunctionOrArrayExpression(ctx: FunctionOrArrayExpressionContext) {
+		if(ctx.childCount <= 1) {
+			return; // в стеке уже 1 выражение
+		}
 
+		// собираем аргументы
+		const functionArgs = [];
+		const hasFunctionCall = ctx.functionCallOperator();
+		if(hasFunctionCall) {
+			const argCount = hasFunctionCall.functionArgument().length;
+			for (let j = 0; j < argCount; j++) 
+				functionArgs.unshift(this.nodes.pop() as RightValue | NamedArgument);
+			
+		}
+
+		// собираем инлексы
+		const bracketGroups = ctx.SQUARE_OPEN_BRACKET().length + ctx.CURLY_OPEN_BRACKET().length
+		const indexNodes: Expression[] = [];
+		for (let i = 0; i < bracketGroups; i++) {
+			indexNodes.unshift(this.nodes.pop() as Expression);
+		}
+
+		// получаем исходный символ
+		let currentNode = this.nodes.pop() as Expression;
+
+
+		for (let i = 1; i < ctx.childCount; i++) {
+			const child = ctx.getChild(i);
+
+			if (child instanceof TerminalNode) {
+				const tokenText = child.text;
+				
+				if (tokenText === '[' || tokenText === '{') {
+					const isChar = tokenText === '{';
+					const indexExpr = indexNodes.shift()!; // Берем следующий индекс из очереди
+					const closeBracket = ctx.getChild(i + 2) as TerminalNode;
+
+					const arrayNode = isChar ? new ArrayChar() : new ArrayIndex();
+					arrayNode.left = currentNode;
+					arrayNode.right = indexExpr;
+
+					arrayNode.range = this.calculateNodeRange(ctx.start, closeBracket.symbol);
+					
+					currentNode = arrayNode;
+					i += 2; // Пропускаем: [ , выражение , ]
+				}
+			} 
+			else if (child instanceof FunctionCallOperatorContext) {
+				const call = new FunctionCall();
+				
+				call.range = (this.calculateNodeRange(ctx.start, child.stop!));
+				functionArgs.forEach(call.pushParameter.bind(call));
+				if(currentNode instanceof Variable) {
+					call.id = currentNode.id;
+					call.setIDPos(currentNode.idPos);
+				} else {
+					const diag = PawnErrors.report(PawnErrors.Code.InvalidFunctionCall, call.idPos);
+					this.addDiagnostic(diag.message, DiagnosticSeverity.Error, call.idPos);
+				}
+				
+				currentNode = call;
+				break;
+			}
+		}
+
+		
+		this.nodes.push(currentNode);
 	}
 	exitPrimaryExpression(ctx: PrimaryExpressionContext) {
 		if(!ctx.stop) {
@@ -788,22 +1008,25 @@ export class PawnListener implements IPawnListener
 		}
 		node.setPos(ctx.start, ctx.stop);
 		const last = this.nodes.peek();
+		let resultAction: (node: NamedArgument | RightValue) => void  = (<FunctionCall>last).pushParameter.bind(last);
 		if(!(last instanceof FunctionCall)) {
-			throw new Error(`Ожидается FunctionCall, а найден ${last?.name}`);
+			if(!(last instanceof Expression)) {
+				resultAction = this.nodes.push.bind(this.nodes);
+				throw new Error(`Ожидается FunctionCall, а найден ${last?.name}`);
+			}
 		}
 
 		let id: TerminalNode;
 		if(ctx.SKIP_PARAM()) {
 			id = ctx.SKIP_PARAM()!;
-			node.id = id.text;
-			node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 			return;
 		} else {
 			const symbol = ctx.symbol();
 	
 			if(!symbol) {
-				if(node.value)
-					last.pushParameter(node.value);
+				if(node.value) {
+					resultAction(node.value);
+				}
 				return;
 			}
 			id = symbol.IDENTIFIER();
@@ -811,7 +1034,7 @@ export class PawnListener implements IPawnListener
 
 		node.id = id.text;
 		node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
-		last.pushParameter(node);
+		resultAction(node);
 	}
 
 	enterFunctionCall(ctx: FunctionCallContext): void {
@@ -1163,7 +1386,7 @@ export class PawnListener implements IPawnListener
 				const node = new BinarOperator();
 				node.setPos(ctx.start, ctx.stop);
 				node.operator = ctx.text;
-				last.push(node);
+				last.pushOperator(node.operator);
 			}
 		} else {
 			const pos = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.stop!.line - 1, ctx.stop!.charPositionInLine);
@@ -1253,10 +1476,7 @@ export class PawnListener implements IPawnListener
 	exitSymbol = (ctx: SymbolContext) => {
 		const last = this.nodes.peek();
 		const node = new Variable();
-		if(last instanceof Expression) {
-			this.nodes.push(node);
-			return;
-		}
+
 		if(ctx.stop)
 		{	
 			node.setPos(ctx.start, ctx.stop);
@@ -1275,10 +1495,10 @@ export class PawnListener implements IPawnListener
 			if(last instanceof UnarOperator) {
 				last.value = node;
 			}
-			// else if(last instanceof Lvalur)
-			// {
-			// 	last.var = declarationVar;
-			// }
+			else if(last instanceof Expression)
+			{
+				this.nodes.push(node);
+			}
 			else if(last instanceof BinarOperator)
 			{
 				last.expresion = node;
@@ -1425,5 +1645,19 @@ export class PawnListener implements IPawnListener
 		}
 
 		return new Range(start.line - 1, start.charPositionInLine,endLine - 1, endCharacter);
+	}
+
+	private evaluateBinarOperator(ctx: MultiplicativeExpressionContext | AdditiveExpressionContext | BitShiftExpressionContext | BitAndExpressionContext | XorExpressionContext | BitOrExpressionContext | EqualOrNotExpressionContext | LogicalAndExpressionContext | LogicalOrExpressionContext) {
+		if(!ctx.stop || ctx.childCount <= 1) {
+			return; // primaryExpression уже лежит в стеке
+		}
+		const node = new BinarOperator();
+		node.setPos(ctx.start, ctx.stop);
+		node.operator = ctx._op.text!;
+		
+		node.right = this.nodes.pop() as Expression;
+		node.left = this.nodes.pop() as Expression;
+
+		this.nodes.push(node);
 	}
 }
