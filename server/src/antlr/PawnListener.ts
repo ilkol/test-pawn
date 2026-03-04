@@ -348,22 +348,18 @@ export class PawnListener implements IPawnListener
 			if(last instanceof FunctionDeclarationParameter) {
 				last.addTag(node);
 			}
-			else if(last instanceof VarOrFunctionDeclaration) {
-				last.tag = node;
-			}
-			else if(last instanceof Variable) {
-				last.tag = node;
-				last.isTaged = true;
-			}
 			else if(last instanceof Expression) {
 				this.nodes.push(node);
 				// last.tag = node;
 				// last.isTaged = true;
+			} else if(last instanceof VarOrFunctionDeclaration) {
+				last.tag = node;
 			}
 			else if(last instanceof Ellipse) {
 				last.tag = node;
 			}
 			else {
+				console.log(last);
 				this.addDiagnostic(Locale.t("Unexpected tag operator"), DiagnosticSeverity.Error, node.pos);
 			}
 		
@@ -1275,14 +1271,7 @@ export class PawnListener implements IPawnListener
 			node.setIDPos(ctx._start.line, ctx._start.charPositionInLine, ctx.stop.charPositionInLine + ctx.text.length);
 			const last = this.nodes.peek();
 			
-			if(last instanceof Expression)
-			{
-				this.nodes.push(node);
-			}
-			else {
-				console.error(last);
-				this.addDiagnostic(Locale.t("Unexpected constant"), DiagnosticSeverity.Error, node.idPos);
-			}
+			this.nodes.push(node);
 		}
 	}
 
