@@ -17,7 +17,7 @@ processorLabel:		IDENTIFIER':';
 
 declaration:		(docs)*(functionDecl|operatorOverload|varDeclaration SEMI) | enum;
 
-enum:				ENUM (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA enumMember)*  COMA?)? CURLY_CLOSE_BRACKET SEMI?;
+enum:				STATIC? ENUM (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA enumMember)*  COMA?)? CURLY_CLOSE_BRACKET SEMI?;
 enumMember:			variable (ASSIGMENT expresion)?;
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
@@ -37,7 +37,7 @@ arrayIndex:			(SQUARE_OPEN_BRACKET (expresion CHAR?)? SQUARE_CLOSE_BRACKET) | (C
 funcDeclModif:		funcModif | FORWARD | NATIVE;
 funcModif:			STOCK | PUBLIC;
 
-statement:			((expresion | assert | cycleKeywords | exit | goto | sleep | return | varDeclaration) SEMI | processorLabel | compoundStatment | cycles | ifStatement | switch ) BACKSLAH?;
+statement:			(((varDeclaration | enum | goto | return | cycleKeywords | exit  | assert |  sleep /*| state | emit*/ | expresion) SEMI) | SEMI | processorLabel | compoundStatment |  ifStatement | cycles | switch ) BACKSLAH?;
 compoundStatment:   CURLY_OPEN_BRACKET (statement)* CURLY_CLOSE_BRACKET;
 assert: ASSERT expresion;
 exit: EXIT expresion;
@@ -92,7 +92,7 @@ arefmeticOperator:	PLUS | MINUS | MULTY | DIV | REMAINDE | INCREMENTS | DECREMEN
 compareOperator:	NOT | EQUAL | NOTEQUAL | LESS | LARGER | LESSEQ | LARGEREQ;
 
 
-cycles:				while | for | do;
+cycles:				while | do | for;
 do:					DO statement (WHILE condition)?;
 
 while:				WHILE condition statement;
