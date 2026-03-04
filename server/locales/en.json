@@ -2472,5 +2472,8 @@
 	"no viable alternative at input '<=c&&d!=e}' (expresion)": "no viable alternative at input '<=c&&d!=e}' (expresion)",
 	"parserErrorUnexpectedInitialization": "parserErrorUnexpectedInitialization",
 	"Unexpected var declaration": "Unexpected var declaration",
-	"Unexpected return statement": "Unexpected return statement"
+	"Unexpected return statement": "Unexpected return statement",
+	"no viable alternative at input 'reutnr' (statement)": "no viable alternative at input 'reutnr' (statement)",
+	"missing ';' at '<EOF>' (unknown rule)": "missing ';' at '<EOF>' (unknown rule)",
+	"mismatched input ')' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (prefixExpression)": "mismatched input ')' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (prefixExpression)"
 }

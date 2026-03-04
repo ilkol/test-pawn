@@ -582,155 +582,14 @@ export class Analyzer extends BaseVisitor
 	}
 
 	beforeVisitOperatorOverload(node: OperatorOverload): void {
-		
+		this.evaluateFunctionDeclaration(node, true);
 	}
 	afterVisitOperatorOverload(node: OperatorOverload): void {
-		const symbol = SymbolsFactory.createFunction(node.id, this.file.path, node.range, node.idPos);
-		this.symbolManager.add(this.file.path, symbol, true);
-		node.symbol = symbol.defenition;
-		symbol.hasImplementation = node.code !== undefined;
-
-		symbol.returnTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
-
-		this.checkOperatorTag(node.operator, symbol.returnTag, node.tag.idPos);
-
-		// like operatoradjust in pawnc
-		// this.operatorAdjust();
-		const tags: MayBeTag[] = [];
-		let count = 0;
-		node.parameters.forEach(param => {
-			if(count < 2) {
-				if(param.tags.length > 1) {
-					/* function argument may only have a single tag */
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionArgumentMayOnlyHaveSingleArgument, param.pos, count + 1));
-				}
-				else if (param.tags.length == 1) {
-					const tag = param.tags[0];
-					tags.push(this.addTag(tag.id, tag.pos, tag.idPos));
-				}
-			}
-			if(node.operator === "~" && count == 0) {
-				if(param.dimensions === 0) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeArrayArgument, param.pos, param.id));
-				}
-			} else {
-				if(param.dimensions !== 0 || param.reference) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeNonReference, param.pos, param.id));
-				}
-			}
-			if(param.defaultValue) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MayNotHaveDefaultValue, param.pos, param.id));
-			}
-			count++;
-		});
-
-		switch(node.operator) {
-			case "!":
-			case "=":
-			case "++":
-			case "--":
-				if(count !== 1) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
-				}
-				break;
-			case "-":
-				if(count !== 1 && count !== 2) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
-				}
-				break;
-			default:
-				if(count !== 2) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
-				}
-		}
-
-		if (this.isDefaultTag(tags[0].name) && ((node.operator != '=' && this.isDefaultTag(tags[1].name)) || (node.operator == '=' && this.isDefaultTag(symbol.returnTag.name))))
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
-
-		symbol.name = node.id = Analyzer.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
-
-		if(this.scopeManager.globalScope.findSymbol(node.id)) {
-			// TODO: должна быть проверка реализована функция или просто объявлена
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
-		} else {
-			this.scopeManager.globalScope.add(symbol);
-		}
+		this.restrictScope(node.code ? true : false);
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		const symbol = this.ensureFunctionSymbol(node.id, this.addTag(node.tag.id, node.tag.pos, node.tag.idPos), node.range, node.idPos);
-		if(!symbol) {
-			return;
-		}
-		if(node.hasModifier(FunctionModifire.Forward | FunctionModifire.Native)) {
-			this.createFunctionStub(node, symbol);
-		} else {
-
-			const isStocked = node.stock;
-			const isStatic = node.hasModifier(FunctionModifire.Static);
-			const isPublic = node.hasModifier(FunctionModifire.Public) || node.id[0] === '@';
-			if(isPublic && isStocked) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.idPos));
-			}
-	
-			
-			node.symbol = symbol.defenition;
-	
-			if(isPublic) {
-				symbol.addModifier(FunctionModifire.Public);
-			}
-			if(isStatic) {
-				symbol.addModifier(FunctionModifire.Static);
-			}
-	
-			if(isPublic && !symbol.hasModifier(FunctionModifire.Forward)) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.PublicBeforeForward, node.idPos, symbol.name));
-			}
-	
-			const argCount = node.parameters.length;
-			if(symbol.name === "main" || symbol.name === "entry") {
-				if(argCount) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionMaynotHaveArguments, node.pos));
-				}
-				symbol.isUsed = true;
-			}
-		
-			if(node.code === undefined) {
-				symbol.addModifier(FunctionModifire.Forward);
-				// this.file.diagnostics.push(PawnErrors.report(218, node.pos));
-			} else {
-				symbol.hasImplementation = true;
-			}
-			if(isStocked) {
-				symbol.addModifier(FunctionModifire.Stock);
-			}
-		}
-
-		this.scopeManager.globalScope.add(symbol);
-
-		symbol.returnTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
-
-		this.resolvePendingReferences(symbol);
-		
-		// if(node.assigmentFunctionID) {
-			// if(!node.native) {
-			// 	this.addDiagnostic(new DiagnosticError(Locale.t("Assignment is only possible to a native function"), node.idPos));
-			// 	return;
-			// }
-			
-			// let id = this.curScope.find(node.assigmentFunctionID);
-			// if (!id) {
-			// 	this.addDiagnostic(new DiagnosticError(Locale.t("Identifire \"%s\" not found", node.assigmentFunctionID), node.pos));
-			// }
-
-		// }
-
-		if(node.parameters.length >= Pawn.MAX_PARAMETERS_COUNt) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArguments, node.pos));
-		}
-
-		this.extendScope(node.range, symbol.defenition);
-		this.curScope.currentFunction = symbol;
+		this.evaluateFunctionDeclaration(node);
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
 		this.restrictScope(node.code ? true : false);
@@ -1033,10 +892,6 @@ export class Analyzer extends BaseVisitor
 		}
 	}
 
-	private operatorAdjust() {
-
-	}
-
 	static operatorName(operator: string, firstTag: MayBeTag, secondTag: MayBeTag, paramsCount: number, resultTag: MayBeTag): string {
 		if(operator === "=") {
 			return `${resultTag.name}=${firstTag.name}`;
@@ -1145,5 +1000,141 @@ export class Analyzer extends BaseVisitor
 		// Плюс к тому создания массива с таким же идентификатором,
 		// если функция возвращает массив
 		
+	}
+
+	private evaluateFunctionDeclaration(node: FunctionDeclaration | OperatorOverload, isOverload = false) {
+		const symbol = this.ensureFunctionSymbol(node.id, this.addTag(node.tag.id, node.tag.pos, node.tag.idPos), node.range, node.idPos);
+		if(!symbol) {
+			return;
+		}
+		symbol.returnTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
+		if(isOverload) {
+			this.checkOperatorTag((<OperatorOverload>node).operator, symbol.returnTag, node.tag.idPos);
+		}
+
+		
+		if(node.hasModifier(FunctionModifire.Forward | FunctionModifire.Native)) {
+			this.createFunctionStub(node, symbol);
+		} else {
+
+			const isStocked = node.stock;
+			const isStatic = node.hasModifier(FunctionModifire.Static);
+			const isPublic = node.hasModifier(FunctionModifire.Public) || node.id[0] === '@';
+			if(isPublic && isStocked) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.idPos));
+			}
+	
+			
+			node.symbol = symbol.defenition;
+	
+			if(isPublic) {
+				symbol.addModifier(FunctionModifire.Public);
+			}
+			if(isStatic) {
+				symbol.addModifier(FunctionModifire.Static);
+			}
+	
+			if(isPublic && !symbol.hasModifier(FunctionModifire.Forward)) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.PublicBeforeForward, node.idPos, symbol.name));
+			}
+	
+			if(isOverload) {
+				this.operatoradjust(node as OperatorOverload, symbol);
+			}
+			const argCount = node.parameters.length;
+			if(symbol.name === "main" || symbol.name === "entry") {
+				if(argCount) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionMaynotHaveArguments, node.pos));
+				}
+				symbol.isUsed = true;
+			}
+		
+			if(node.code === undefined) {
+				symbol.addModifier(FunctionModifire.Forward);
+				// this.file.diagnostics.push(PawnErrors.report(218, node.pos));
+			} else {
+				symbol.hasImplementation = true;
+			}
+			if(isStocked) {
+				symbol.addModifier(FunctionModifire.Stock);
+			}
+		}
+
+		this.scopeManager.globalScope.add(symbol);
+
+		this.resolvePendingReferences(symbol);
+
+		if(node.parameters.length >= Pawn.MAX_PARAMETERS_COUNt) {
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArguments, node.pos));
+		}
+
+		this.extendScope(node.range, symbol.defenition);
+		this.curScope.currentFunction = symbol;
+	}
+	
+	// like operatoradjust in pawnc
+	private operatoradjust(node: OperatorOverload, symbol: Symbols.Function) {
+		const tags: MayBeTag[] = [];
+		let count = 0;
+		node.parameters.forEach(param => {
+			if(count < 2) {
+				if(param.tags.length > 1) {
+					/* function argument may only have a single tag */
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionArgumentMayOnlyHaveSingleArgument, param.pos, count + 1));
+				}
+				else if (param.tags.length == 1) {
+					const tag = param.tags[0];
+					tags.push(this.addTag(tag.id, tag.pos, tag.idPos));
+				} else {
+					tags.push(SymbolsFactory.defaultTag);
+				}
+			}
+			if(node.operator === "~" && count == 0) {
+				if(param.dimensions === 0) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeArrayArgument, param.pos, param.id));
+				}
+			} else {
+				if(param.dimensions !== 0 || param.reference) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeNonReference, param.pos, param.id));
+				}
+			}
+			if(param.defaultValue) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MayNotHaveDefaultValue, param.pos, param.id));
+			}
+			count++;
+		});
+
+		switch(node.operator) {
+			case "!":
+			case "=":
+			case "++":
+			case "--":
+				if(count !== 1) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
+				}
+				break;
+			case "-":
+				if(count !== 1 && count !== 2) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
+				}
+				break;
+			default:
+				if(count !== 2) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
+				}
+		}
+
+		if (this.isDefaultTag(tags[0].name) && ((node.operator != '=' && this.isDefaultTag(tags[1].name)) || (node.operator == '=' && this.isDefaultTag(symbol.returnTag.name))))
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
+
+		symbol.name = node.id = Analyzer.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
+
+		if(this.scopeManager.globalScope.findSymbol(node.id)) {
+			// TODO: должна быть проверка реализована функция или просто объявлена
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
+		} else {
+			this.scopeManager.globalScope.add(symbol);
+		}
+
 	}
 }
