@@ -2471,5 +2471,6 @@
 	"no viable alternative at input 'res=a<b<=c&&d!=e}' (tagableExpression)": "no viable alternative at input 'res=a<b<=c&&d!=e}' (tagableExpression)",
 	"no viable alternative at input '<=c&&d!=e}' (expresion)": "no viable alternative at input '<=c&&d!=e}' (expresion)",
 	"parserErrorUnexpectedInitialization": "parserErrorUnexpectedInitialization",
-	"Unexpected var declaration": "Unexpected var declaration"
+	"Unexpected var declaration": "Unexpected var declaration",
+	"Unexpected return statement": "Unexpected return statement"
 }

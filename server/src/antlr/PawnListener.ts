@@ -898,15 +898,10 @@ export class PawnListener implements IPawnListener
 		}
 		node.setPos(ctx.start, ctx.stop);
 		const last = this.nodes.peek();
-		let resultAction: (node: NamedArgument | RightValue) => void;
-		if(!(last instanceof FunctionCall)) {
-			if(!(last instanceof Expression)) {
-				throw new Error(`Ожидается FunctionCall, а найден ${last?.name}`);
-			}
-			resultAction = this.nodes.push.bind(this.nodes);
-		} else {
-			resultAction = (<FunctionCall>last).pushParameter.bind(last);;
+		if(!(last instanceof Expression)) {
+			throw new Error(`Неожиданный аргумент (${last?.name})`);
 		}
+		let resultAction: (node: NamedArgument | RightValue) => void = this.nodes.push.bind(this.nodes);
 
 		let id: TerminalNode;
 		if(ctx.SKIP_PARAM()) {
@@ -917,7 +912,7 @@ export class PawnListener implements IPawnListener
 	
 			if(!symbol) {
 				if(node.value) {
-					resultAction(node.value);
+					this.nodes.push(node.value);
 				}
 				return;
 			}
@@ -926,7 +921,7 @@ export class PawnListener implements IPawnListener
 
 		node.id = id.text;
 		node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
-		resultAction(node);
+		this.nodes.push(node);
 	}
 
 	enterVarInit(ctx: VarInitContext):void {
