@@ -1257,13 +1257,11 @@ export class PawnListener implements IPawnListener
 			// if(last instanceof UnarOperator) {
 			// 	last.value = node;
 			// }
-			if(last instanceof Expression)
+			if(last instanceof NamedArgument)
 			{
-				this.nodes.push(node);
 			}
 			else {
-				console.error(last);
-				this.addDiagnostic(Locale.t("Unexpected symbol"), DiagnosticSeverity.Error, node.idPos);
+				this.nodes.push(node);
 			}
 		}
 	};

@@ -144,10 +144,10 @@ multiplicativeExpression : prefixExpression (op=(MULTY | DIV | REMAINDE) prefixE
 
 // hier2
 prefixExpression: 
-	(INCREMENTS | DECREMENTS | BIT_COMPLEMEN | NOT | MINUS | tag) prefixExpression |
+	((INCREMENTS | DECREMENTS | BIT_COMPLEMEN | NOT | MINUS | tag) prefixExpression) |
 	// ADDRESSOF symbol | 
 	// ADDRESSOF OPEN_PARENTHESIS symbol CLOSE_PARENTHESIS |
-	((/* ADDRESSOF |*/ DEFINED | SIZEOF | TAGOF | STATE /* | EMIT */ ) (literalOrSymbol | DEFINED OPEN_PARENTHESIS literalOrSymbol CLOSE_PARENTHESIS)) |
+	((/* ADDRESSOF |*/ DEFINED | SIZEOF | TAGOF | STATE /* | EMIT */ ) (literalOrSymbol | OPEN_PARENTHESIS literalOrSymbol CLOSE_PARENTHESIS)) |
 	postfixExpression
 ;
 
