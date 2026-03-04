@@ -63,7 +63,17 @@ export class Scope implements IScope
 			}
 		}
 		return undefined;
-	} 
+	}
+	renameSymbol(oldName: string, newName: string) {
+		const local = this._symbols.get(oldName);
+		if(local) {
+			local.name = newName;
+			this._symbols.delete(oldName);
+			this._symbols.set(newName, local);
+		} else {
+			this.parent?.renameSymbol(oldName, newName);
+		}
+	}
 
 	getLocalSymbols() {
 		return Array.from(this._symbols.values());

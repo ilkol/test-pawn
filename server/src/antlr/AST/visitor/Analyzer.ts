@@ -996,6 +996,10 @@ export class Analyzer extends BaseVisitor
 		}
 		symbol.addModifier(FunctionModifire.Forward);
 
+		if(node instanceof OperatorOverload) {
+			this.operatoradjust(node, symbol);
+		}
+
 		// TODO: дальше тут есть присвоение функции для нативок
 		// Плюс к тому создания массива с таким же идентификатором,
 		// если функция возвращает массив
@@ -1127,14 +1131,16 @@ export class Analyzer extends BaseVisitor
 		if (this.isDefaultTag(tags[0].name) && ((node.operator != '=' && this.isDefaultTag(tags[1].name)) || (node.operator == '=' && this.isDefaultTag(symbol.returnTag.name))))
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
 
-		symbol.name = node.id = Analyzer.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
-
-		if(this.scopeManager.globalScope.findSymbol(node.id)) {
+		const newName = Analyzer.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
+		if(this.scopeManager.globalScope.findSymbol(newName)) {
 			// TODO: должна быть проверка реализована функция или просто объявлена
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, newName));
 		} else {
 			this.scopeManager.globalScope.add(symbol);
 		}
+		this.curScope.renameSymbol(symbol.name, newName);
+		symbol.name = node.id  = newName;
+		
 
 	}
 }

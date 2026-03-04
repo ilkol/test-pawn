@@ -19,6 +19,7 @@ export interface IScope
 
 	add(symbol: AbstractSymbol): void;
 	findSymbol(name: string, onlyLocal?: boolean): AbstractSymbol | undefined;
+	renameSymbol(oldName: string, newName: string): void;
 
 	getAllVisibleSymbols(position: Position, result?: Map<string, AbstractSymbol>, tags?: Set<MayBeTag>): AbstractSymbol[];
 	/** Возвращает список всех объявленных символов (без тегов) */
