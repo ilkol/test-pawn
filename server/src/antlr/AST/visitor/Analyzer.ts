@@ -381,6 +381,9 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionCall(node: FunctionCall): void {
 		const symbol = this.addSymbolReference(node.id, node.pos, node.idPos, [], true);
+		if(symbol instanceof Symbols.Function) {
+			node.symbol = symbol;
+		}
 		node.inferredTag = this.tagInferer.inferTag(node);
 		
 		if(!symbol) {
