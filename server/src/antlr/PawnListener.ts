@@ -258,10 +258,6 @@ export class PawnListener implements IPawnListener
 			{
 				last.expresion = node;
 			}
-			else if(last instanceof EnumMember)
-			{
-				last.setValue(declarationVar);
-			}
 			else if(last instanceof FunctionDeclarationParameter)
 			{
 				last.variable = node;
@@ -310,11 +306,24 @@ export class PawnListener implements IPawnListener
 	}
 	exitEnumMember(ctx: EnumMemberContext): void
 	{
+		let value = ctx.ASSIGMENT() ? <Expression>this.nodes.pop() : undefined;
+		let index = ctx.SQUARE_OPEN_BRACKET() ? <Expression>this.nodes.pop() : undefined;
+		let tag = ctx.tag() ? <Tag>this.nodes.pop() : undefined;
+		
 		const node = <EnumMember>this.nodes.pop();
+		if(tag) {
+			node.tag = tag;
+		}
+		
 		if(ctx.stop)
 		{	
 			node.setPos(ctx.start, ctx.stop);
+
+
+			
+
 			const last = <EnumDeclaration>this.nodes.peek();
+			console.log(last);
 			last.pushParameter(node);
 			node.parent = last;
 		}
@@ -348,6 +357,9 @@ export class PawnListener implements IPawnListener
 			if(last instanceof FunctionDeclarationParameter) {
 				last.addTag(node);
 			} 
+			else if(last instanceof EnumMember) {
+				this.nodes.push(node);
+			}
 			else if(last instanceof EnumDeclaration) {
 				last.explicitTag = node;
 			}
@@ -547,7 +559,10 @@ export class PawnListener implements IPawnListener
 
 		const last = this.nodes.peek();
 
-		if(last instanceof VariableInit) {
+		if(last instanceof EnumMember) {
+			this.nodes.push(node);
+		}
+		else if(last instanceof VariableInit) {
 			last.rightValue = node;
 		} 
 		else if(last instanceof NamedArgument) {
@@ -590,16 +605,13 @@ export class PawnListener implements IPawnListener
 		else if(last instanceof ReturnStatement) {
 			last.value = node;
 		}
-		else if(last instanceof EnumMember) {
-			// last.value = node;
-		}
 		else if(last instanceof CaseStatement || last instanceof DefaultStatement)
 		{
 			last.code = node;
 		}
 		else if(last instanceof Expression)
 		{
-			last.expresion = node;
+			this.nodes.push(node);
 		}
 		else {
 			console.debug(last);
