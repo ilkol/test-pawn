@@ -347,6 +347,9 @@ export class PawnListener implements IPawnListener
 			let last = this.nodes.peek();
 			if(last instanceof FunctionDeclarationParameter) {
 				last.addTag(node);
+			} 
+			else if(last instanceof EnumDeclaration) {
+				last.explicitTag = node;
 			}
 			else if(last instanceof Expression) {
 				this.nodes.push(node);

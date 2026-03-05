@@ -6,6 +6,7 @@ import { Serialization } from "../../../../cache/Serialization";
 import { ASTNode } from "../ASTNode";
 import { SymbolReferance } from "../../../../SymbolSystem/Symbols/SymbolReferance";
 import { Enum } from "../../../../SymbolSystem/Symbols";
+import { Tag } from "../Tag";
 
 export class EnumDeclaration extends Declaration implements IContainsVars<EnumMember>
 {
@@ -15,6 +16,7 @@ export class EnumDeclaration extends Declaration implements IContainsVars<EnumMe
 
 	private lastIndex: number = 0;
 	private readonly _variables: EnumMember[] = [];
+	public explicitTag?: Tag;
 	
 	public constructor(instance: EnumDeclaration|undefined = undefined) {
 		super(instance);

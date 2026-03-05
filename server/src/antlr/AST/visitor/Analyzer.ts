@@ -544,8 +544,9 @@ export class Analyzer extends BaseVisitor
 		this.curScope.add(symbol);
 		node.symbol = symbol;
 		
-		if(node.id) {
-			const tag = this.addTag(node.id, node.idPos);
+		let tag = node.explicitTag ? this.addTag(node.explicitTag.id, node.explicitTag.idPos) : SymbolsFactory.defaultTag;
+		if(node.id && !node.explicitTag) {
+			tag = this.addTag(node.id, node.idPos);
 			if(tag.symbolKind !== SymbolKind.Enum) {
 				tag.getReferences().forEach(symbol.addReferance.bind(symbol));
 				tag.clearReferences();

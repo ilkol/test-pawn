@@ -17,7 +17,7 @@ processorLabel:		IDENTIFIER':';
 
 declaration:		(docs)*(functionDecl|operatorOverload|varDeclaration SEMI) | enum;
 
-enum:				STATIC? ENUM (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA enumMember)*  COMA?)? CURLY_CLOSE_BRACKET SEMI?;
+enum:				STATIC? ENUM tag? (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA enumMember)* COMA?)? CURLY_CLOSE_BRACKET SEMI?;
 enumMember:			variable (ASSIGMENT expresion)?;
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
