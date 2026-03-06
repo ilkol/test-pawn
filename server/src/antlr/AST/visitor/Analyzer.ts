@@ -235,7 +235,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
 		
-		if(node.dimensions) {
+		if(node.dimensions.length) {
 			if(node.reference) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CanBeReferenceToArray, node.pos, node.id));
 			}
