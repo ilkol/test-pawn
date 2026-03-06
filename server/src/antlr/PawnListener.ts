@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener as IPawnListener } from "./generated/pawnListener";
-import { AdditiveExpressionContext, ArrayIndexContext, ArrayInitContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, CompareExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, FunctionOrArrayExpressionContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostfixExpressionContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TernaryExpressionContext, VarDeclarationContext, VarInitContext, VarModifiresContext, VariableContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
+import { AdditiveExpressionContext, ArrayIndexContext, ArrayInitContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, CompareExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, FunctionOrArrayExpressionContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostfixExpressionContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TernaryExpressionContext, VarDeclarationContext, VarModifiresContext, VariableDeclarationContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
@@ -21,7 +21,7 @@ import { UnarOperator } from "./AST/Nodes/Operators/UnarOperator";
 import { ASTNode } from "./AST/Nodes/ASTNode";
 import { FunctionDeclaration, FunctionModifire } from "./AST/Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "./AST/Nodes/Functions/FunctionCall";
-import { VariableInit } from "./AST/Nodes/VariableInit";
+// import { VariableInit } from "./AST/Nodes/VariableInit";
 import { Variable } from "./AST/Nodes/Variable";
 import { FunctionDeclarationParameter } from "./AST/Nodes/Functions/FunctionDeclarationParameter";
 import { FloatLiteral } from "./AST/Nodes/Literals/FloatLiteral";
@@ -155,28 +155,70 @@ export class PawnListener implements IPawnListener
 	}
 	exitVarDeclaration(ctx: VarDeclarationContext): void 
 	{
+		const variablesCount = ctx.variableDeclaration().length;
+		const vriables: VarDeclaration[] = [];
+		for(let i = 0; i < variablesCount; i++) {
+			vriables.push(<VarDeclaration>this.nodes.pop());
+		}
+
 		let node = <OperatorNew>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 				
-			let last = this.nodes.peek();
-			if(last instanceof Declarations) {
-				let tmp: Declarations = last;
-				node.vars.forEach(element => {
-					tmp.declarations.push(element);
-				});
-			}
-			else if(last instanceof ForCycle) {
-				last.initialization = node;
-			}
-			else if(last instanceof Statement) {
-				last.statemnent = node;
-			}
-			else {
-				console.error(last);
-				this.addDiagnostic(Locale.t("Unexpected var declaration"), DiagnosticSeverity.Error, node.pos);	
+		}
+
+		vriables.forEach(node.pushParameter.bind(node));		
+
+		let last = this.nodes.peek();
+		if(last instanceof Declarations) {
+			let tmp: Declarations = last;
+			node.vars.forEach(element => {
+				tmp.declarations.push(element);
+			});
+		}
+		else if(last instanceof ForCycle) {
+			last.initialization = node;
+		}
+		else if(last instanceof Statement) {
+			last.statemnent = node;
+		}
+		else {
+			console.error(last);
+			this.addDiagnostic(Locale.t("Unexpected var declaration"), DiagnosticSeverity.Error, node.pos);	
+		}
+	}
+
+	exitVariableDeclaration(ctx: VariableDeclarationContext) {
+		const node = new VarDeclaration();
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+		}
+
+		if(ctx.ASSIGMENT()) {
+			node.initValue = <Expression>this.nodes.pop();
+		}
+		const indexCount = ctx.SQUARE_OPEN_BRACKET().length;
+		if(indexCount) {
+			const indexes = [];
+			for(let i = 0; i < indexCount; i++) {
+				indexes.unshift(<Expression>this.nodes.pop());
 			}
 		}
+
+		const id = ctx.IDENTIFIER();
+		node.id = id.text;
+		node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+		
+		if(ctx.tag()) {
+			node.tag = <Tag>this.nodes.pop();
+		}
+		
+		const last = this.nodes.peek();
+		if(!(last instanceof OperatorNew)) {
+			console.error(last);
+			this.addDiagnostic(Locale.t("parserErrorUnexpectedInitialization"), DiagnosticSeverity.Error, node.pos);
+		}
+		this.nodes.push(node);
 	}
 
 	exitVarModifires = (ctx: VarModifiresContext) => {
@@ -212,67 +254,67 @@ export class PawnListener implements IPawnListener
 		}
 	};
 
-	enterVariable(ctx: VariableContext): void {
-		let node = new Variable();			
-		this.nodes.push(node);
-	}
-	exitVariable(ctx: VariableContext): void {
-		let node = <Variable>this.nodes.pop();
-		if(ctx.stop)
-		{	
-			node.setPos(ctx.start, ctx.stop);
-			try {
-				let id = ctx.IDENTIFIER();
-				node.id = id.text;
-				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+	// enterVariable(ctx: VariableContext): void {
+	// 	let node = new Variable();			
+	// 	this.nodes.push(node);
+	// }
+	// exitVariable(ctx: VariableContext): void {
+	// 	let node = <Variable>this.nodes.pop();
+	// 	if(ctx.stop)
+	// 	{	
+	// 		node.setPos(ctx.start, ctx.stop);
+	// 		try {
+	// 			let id = ctx.IDENTIFIER();
+	// 			node.id = id.text;
+	// 			node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 
-			} catch(e) {
-				this.addDiagnostic(Locale.t("Variable identifire expected"), DiagnosticSeverity.Error, node.pos);
-			}
+	// 		} catch(e) {
+	// 			this.addDiagnostic(Locale.t("Variable identifire expected"), DiagnosticSeverity.Error, node.pos);
+	// 		}
 
-			// let decl = this.nodes.peek();
-			// if(decl instanceof OperatorNew)
-			// 	decl.push(node);
-			// else 
+	// 		// let decl = this.nodes.peek();
+	// 		// if(decl instanceof OperatorNew)
+	// 		// 	decl.push(node);
+	// 		// else 
 
-			const last = this.nodes.peek();
-			var declarationVar:VarDeclaration = new VarDeclaration();
-			if(node instanceof ArrayNode) {
-				declarationVar = new ArrayDeclaration();
-				(<ArrayDeclaration>declarationVar).indexes = node.indexes;
-			}
+	// 		const last = this.nodes.peek();
+	// 		var declarationVar:VarDeclaration = new VarDeclaration();
+	// 		if(node instanceof ArrayNode) {
+	// 			declarationVar = new ArrayDeclaration();
+	// 			(<ArrayDeclaration>declarationVar).indexes = node.indexes;
+	// 		}
 
-			declarationVar.setPos(ctx.start, ctx.stop);
-			declarationVar.id = node.id;
-			declarationVar.idPos = node.idPos;
-			declarationVar.tag = node.tag;
+	// 		declarationVar.setPos(ctx.start, ctx.stop);
+	// 		declarationVar.id = node.id;
+	// 		declarationVar.idPos = node.idPos;
+	// 		declarationVar.tag = node.tag;
 			
-			if(last instanceof OperatorNew) {
-				last.pushParameter(declarationVar);
-			}
-			else if(last instanceof VariableInit)
-			{
-				last.var = declarationVar;
-			}
-			else if(last instanceof Expression)
-			{
-				last.expresion = node;
-			}
-			else if(last instanceof FunctionDeclarationParameter)
-			{
-				last.variable = node;
-				// last.push(new FunctionDeclarationParameter(declarationVar));
-			}
-			else if(last instanceof CodeBlock)
-			{
-				this.addDiagnostic("warning 215: " + Locale.t("expression has no effect"), DiagnosticSeverity.Warning, node.idPos);
-			}
-			else {
-				console.error(last);
-				this.addDiagnostic(Locale.t("Unexpected variable"), DiagnosticSeverity.Error, node.idPos);
-			}
-		}
-	}
+	// 		if(last instanceof OperatorNew) {
+	// 			last.pushParameter(declarationVar);
+	// 		}
+	// 		else if(last instanceof VariableInit)
+	// 		{
+	// 			last.var = declarationVar;
+	// 		}
+	// 		else if(last instanceof Expression)
+	// 		{
+	// 			last.expresion = node;
+	// 		}
+	// 		else if(last instanceof FunctionDeclarationParameter)
+	// 		{
+	// 			last.variable = node;
+	// 			// last.push(new FunctionDeclarationParameter(declarationVar));
+	// 		}
+	// 		else if(last instanceof CodeBlock)
+	// 		{
+	// 			this.addDiagnostic("warning 215: " + Locale.t("expression has no effect"), DiagnosticSeverity.Warning, node.idPos);
+	// 		}
+	// 		else {
+	// 			console.error(last);
+	// 			this.addDiagnostic(Locale.t("Unexpected variable"), DiagnosticSeverity.Error, node.idPos);
+	// 		}
+	// 	}
+	// }
 
 	enterEnum(ctx: EnumContext): void
 	{
@@ -562,9 +604,9 @@ export class PawnListener implements IPawnListener
 		if(last instanceof EnumMember) {
 			this.nodes.push(node);
 		}
-		else if(last instanceof VariableInit) {
-			last.rightValue = node;
-		} 
+		// else if(last instanceof VariableInit) {
+		// 	last.rightValue = node;
+		// } 
 		else if(last instanceof NamedArgument) {
 			last.value = node;
 		}
@@ -599,9 +641,9 @@ export class PawnListener implements IPawnListener
 		else if(last instanceof Cycle) {
 			last.condition = node;
 		}
-		else if(last instanceof FunctionDeclarationParameter) {
-			last.defaultValue = node;
-		}
+		// else if(last instanceof FunctionDeclarationParameter) {
+		// 	last.defaultValue = node;
+		// }
 		else if(last instanceof ReturnStatement) {
 			last.value = node;
 		}
@@ -863,8 +905,8 @@ export class PawnListener implements IPawnListener
 			node.setPos(ctx.start, ctx.stop);
 			
 			let last = this.nodes.peek();
-			if(last instanceof VariableInit) {
-				last.rightValue = node;
+			if(last instanceof VarDeclaration) {
+				last.initValue = node;
 			}
 			else if(last instanceof ArrayInit) {
 				last.value.push(node);
@@ -935,24 +977,24 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 
-	enterVarInit(ctx: VarInitContext):void {
-		let node = new VariableInit();
-		this.nodes.push(node);
-	}
-	exitVarInit(ctx: VarInitContext):void {
-		const node = <VariableInit>this.nodes.pop();
-		if(ctx.stop) {
-			node.setPos(ctx.start, ctx.stop);
-			const last = this.nodes.peek();
-			if(last instanceof OperatorNew) {
-				last.pushParameter(node);
-			}
-			else {
-				console.error(last);
-				this.addDiagnostic(Locale.t("parserErrorUnexpectedInitialization"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
-	}
+	// enterVarInit(ctx: VarInitContext):void {
+	// 	let node = new VariableInit();
+	// 	this.nodes.push(node);
+	// }
+	// exitVarInit(ctx: VarInitContext):void {
+	// 	const node = <VariableInit>this.nodes.pop();
+	// 	if(ctx.stop) {
+	// 		node.setPos(ctx.start, ctx.stop);
+	// 		const last = this.nodes.peek();
+	// 		if(last instanceof OperatorNew) {
+	// 			last.pushParameter(node);
+	// 		}
+	// 		else {
+	// 			console.error(last);
+	// 			this.addDiagnostic(Locale.t("parserErrorUnexpectedInitialization"), DiagnosticSeverity.Error, node.pos);
+	// 		}
+	// 	}
+	// }
 
 	enterDeclParams(ctx: DeclParamsContext): void {
 		let node = new FunctionDeclarationParameter();	

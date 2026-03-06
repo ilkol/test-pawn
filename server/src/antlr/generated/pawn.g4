@@ -21,16 +21,15 @@ enum:				STATIC? ENUM tag? (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumM
 enumMember:			tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion SQUARE_CLOSE_BRACKET)? (ASSIGMENT expresion)?;
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
-varDeclaration:     (NEW varModifires*| varModifires+) (variable | varInit) (COMA (variable | varInit))*;
-varInit:			variable ASSIGMENT (expresion | arrayInit);
+varDeclaration:     (NEW varModifires*| varModifires+) variableDeclaration (COMA variableDeclaration)*;
+variableDeclaration: tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion SQUARE_CLOSE_BRACKET)* (ASSIGMENT (expresion | arrayInit))?;
+
 functionDecl:		(funcDeclModif)? tag? IDENTIFIER functionDeclarationParams;
 operatorOverload:	(funcDeclModif)? tag? OPERATOR canBeOverloaded functionDeclarationParams;
 functionDeclarationParams: OPEN_PARENTHESIS (declParams (COMA declParams)*)? ellipse? CLOSE_PARENTHESIS (SEMI | statement | nativeAssigment);
 nativeAssigment:	ASSIGMENT IDENTIFIER SEMI;
 tag:				IDENTIFIER COLON;
 pluralTag:			(CURLY_OPEN_BRACKET IDENTIFIER (COMA IDENTIFIER)* CURLY_CLOSE_BRACKET) COLON;
-
-variable:			tag? IDENTIFIER (arrayIndex)*;
 
 arrayIndex:			(SQUARE_OPEN_BRACKET (expresion CHAR?)? SQUARE_CLOSE_BRACKET) | (CURLY_OPEN_BRACKET (expresion CHAR?)? CURLY_CLOSE_BRACKET);
 

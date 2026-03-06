@@ -14,7 +14,6 @@ export class FunctionDeclarationParameter extends VarDeclaration
 	public symbol: Parameter | undefined = undefined;
 	private _var: Variable|undefined = undefined;
 	/** Значение по умолчанию */
-	private _value: RightValue|undefined = undefined;
 	private isRef: boolean = false;
 
 	/** Размерность массива */
@@ -40,10 +39,10 @@ export class FunctionDeclarationParameter extends VarDeclaration
 	}
 
 	public set defaultValue(v: RightValue) {
-		this._value = v;
+		this.initValue = v;
 	}
 	public get defaultValue(): RightValue|undefined {
-		return this._value;
+		return this.initValue;
 	}
 
 	public set const(v: true) {
@@ -67,7 +66,6 @@ export class FunctionDeclarationParameter extends VarDeclaration
 			...super.toJSON(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			__type: Serialization.NodeList.FunctionDeclarationParameter,
-			defaultValue: this._value?.toJSON(),
 			isReference: this.isRef,
 			variable: this._var ? this._var.toJSON() : undefined,
 			tags: this.tags.map(tag => tag.toJSON()),
@@ -81,7 +79,6 @@ export class FunctionDeclarationParameter extends VarDeclaration
 	protected prepareFromJSON(json: Serialization.Nodes.ParameterDeclaration): void {
 		super.prepareFromJSON(json);
 		this._var = Serialization.Deserialize.object(json.variable);
-		this._value = Serialization.Deserialize.object(json.defaultValue);
 		this.isRef = json.isReference;
 		this._tags = json.tags.map(tag => Serialization.Deserialize.object(tag));
 	}

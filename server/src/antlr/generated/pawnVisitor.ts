@@ -10,14 +10,13 @@ import { EnumContext } from "./pawnParser";
 import { EnumMemberContext } from "./pawnParser";
 import { EnumIteratorContext } from "./pawnParser";
 import { VarDeclarationContext } from "./pawnParser";
-import { VarInitContext } from "./pawnParser";
+import { VariableDeclarationContext } from "./pawnParser";
 import { FunctionDeclContext } from "./pawnParser";
 import { OperatorOverloadContext } from "./pawnParser";
 import { FunctionDeclarationParamsContext } from "./pawnParser";
 import { NativeAssigmentContext } from "./pawnParser";
 import { TagContext } from "./pawnParser";
 import { PluralTagContext } from "./pawnParser";
-import { VariableContext } from "./pawnParser";
 import { ArrayIndexContext } from "./pawnParser";
 import { FuncDeclModifContext } from "./pawnParser";
 import { FuncModifContext } from "./pawnParser";
@@ -145,11 +144,11 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitVarDeclaration?: (ctx: VarDeclarationContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.varInit`.
+	 * Visit a parse tree produced by `pawnParser.variableDeclaration`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitVarInit?: (ctx: VarInitContext) => Result;
+	visitVariableDeclaration?: (ctx: VariableDeclarationContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.functionDecl`.
@@ -192,13 +191,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitPluralTag?: (ctx: PluralTagContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.variable`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitVariable?: (ctx: VariableContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.arrayIndex`.

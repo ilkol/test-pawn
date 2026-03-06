@@ -11,7 +11,6 @@ export class EnumMember extends VarDeclaration
 
 	public symbol: SymbolSystem.Symbols.EnumMember | undefined = undefined;
 
-	private _value: number = 0;
 	private _parent: EnumDeclaration | undefined;
 	
 	_modifires = VariableModifire.Const;
@@ -23,13 +22,6 @@ export class EnumMember extends VarDeclaration
 		this.id = data.id;
 		this.idPos = data.idPos;
 		this.tag = data.tag;
-	}
-
-	public set value(v: number) {
-		this._value = v;
-	}
-	public get value(): number {
-		return this._value;
 	}
 
 	public get parent(): EnumDeclaration | undefined {
@@ -44,7 +36,6 @@ export class EnumMember extends VarDeclaration
 			...super.toJSON(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			__type: Serialization.NodeList.EnumMember,
-			value: this.value,
 		};
 	}
 
@@ -56,6 +47,5 @@ export class EnumMember extends VarDeclaration
 
 	protected prepareFromJSON(json: Serialization.Nodes.EnumMember): void {
 		super.prepareFromJSON(json);
-		this._value = json.value;
 	}
 }

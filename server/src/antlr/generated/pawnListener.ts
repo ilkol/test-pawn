@@ -10,14 +10,13 @@ import { EnumContext } from "./pawnParser";
 import { EnumMemberContext } from "./pawnParser";
 import { EnumIteratorContext } from "./pawnParser";
 import { VarDeclarationContext } from "./pawnParser";
-import { VarInitContext } from "./pawnParser";
+import { VariableDeclarationContext } from "./pawnParser";
 import { FunctionDeclContext } from "./pawnParser";
 import { OperatorOverloadContext } from "./pawnParser";
 import { FunctionDeclarationParamsContext } from "./pawnParser";
 import { NativeAssigmentContext } from "./pawnParser";
 import { TagContext } from "./pawnParser";
 import { PluralTagContext } from "./pawnParser";
-import { VariableContext } from "./pawnParser";
 import { ArrayIndexContext } from "./pawnParser";
 import { FuncDeclModifContext } from "./pawnParser";
 import { FuncModifContext } from "./pawnParser";
@@ -170,15 +169,15 @@ export interface pawnListener extends ParseTreeListener {
 	exitVarDeclaration?: (ctx: VarDeclarationContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `pawnParser.varInit`.
+	 * Enter a parse tree produced by `pawnParser.variableDeclaration`.
 	 * @param ctx the parse tree
 	 */
-	enterVarInit?: (ctx: VarInitContext) => void;
+	enterVariableDeclaration?: (ctx: VariableDeclarationContext) => void;
 	/**
-	 * Exit a parse tree produced by `pawnParser.varInit`.
+	 * Exit a parse tree produced by `pawnParser.variableDeclaration`.
 	 * @param ctx the parse tree
 	 */
-	exitVarInit?: (ctx: VarInitContext) => void;
+	exitVariableDeclaration?: (ctx: VariableDeclarationContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.functionDecl`.
@@ -245,17 +244,6 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitPluralTag?: (ctx: PluralTagContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.variable`.
-	 * @param ctx the parse tree
-	 */
-	enterVariable?: (ctx: VariableContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.variable`.
-	 * @param ctx the parse tree
-	 */
-	exitVariable?: (ctx: VariableContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.arrayIndex`.

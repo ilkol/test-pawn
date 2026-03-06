@@ -10,7 +10,6 @@ import { ReturnStatement } from "../Nodes/ReturnStatement";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
 import { FunctionDeclaration } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
-import { VariableInit } from "../Nodes/VariableInit";
 import { Variable } from "../Nodes/Variable";
 import { FunctionDeclarationParameter } from "../Nodes/Functions/FunctionDeclarationParameter";
 import { StringLiteral } from "../Nodes/Literals/StringLiteral";
@@ -55,7 +54,6 @@ export interface IVisitor
 	visitBoolLiteral(node: BoolLiteral): void;
 	
 	visitFunctionCall(node: FunctionCall): void;
-	visitVarInit(node: VariableInit): void;
 	visitVariable(node: Variable): void;
 	visitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void;
 	visitStringLiteral(node: StringLiteral): void;

@@ -36,7 +36,6 @@ import { UnarOperator } from "../../antlr/AST/Nodes/Operators/UnarOperator";
 import { ReturnStatement } from "../../antlr/AST/Nodes/ReturnStatement";
 import { Tag } from "../../antlr/AST/Nodes/Tag";
 import { Variable } from "../../antlr/AST/Nodes/Variable";
-import { VariableInit } from "../../antlr/AST/Nodes/VariableInit";
 import { ArrayNode } from "../../antlr/AST/Nodes/Variables/Array";
 import { ArrayDeclaration } from "../../antlr/AST/Nodes/Variables/ArrayDeclaration";
 import { VarDeclaration } from "../../antlr/AST/Nodes/Variables/VarDeclaration";
@@ -61,7 +60,6 @@ export function serializeInit(): void {
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.HexLiteral, HexLiteral);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.OperatorNew, OperatorNew);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.VariableDeclaration, VarDeclaration);
-	Serialization.Deserialize.registerSerializable(Serialization.NodeList.VariableInit, VariableInit);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayDeclaration, ArrayDeclaration);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.EnumMember, EnumMember);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Enum, EnumDeclaration);

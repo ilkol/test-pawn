@@ -1,6 +1,7 @@
 import { Serialization } from "../../../../cache/Serialization";
 import { VariableModifire } from "../../../../SymbolSystem/Symbols";
 import { IVisitor } from "../../visitor/IVisitor";
+import { RightValue } from "../RightValue";
 import { Variable } from "../Variable";
 import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
 
@@ -9,6 +10,7 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 {
 	name = "объявление переменной";
 	protected _modifires: number = VariableModifire.None;
+	private _value?: RightValue = undefined;
 
 	public references: Variable[] = [];
 
@@ -26,7 +28,13 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 		visitor.visitVariableDeclaration(this);
 	}
 
-	
+	set initValue(v: RightValue) {
+		this._value = v;
+	}
+	get initValue(): RightValue | undefined {
+		return this._value;
+	}
+
 	public get modifires() : number {
 		return this._modifires;
 	}
@@ -47,7 +55,8 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 			...super.toJSON(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			__type: Serialization.NodeList.VariableDeclaration,
-			modifires: this.modifires
+			modifires: this.modifires,
+			initValue: this._value?.toJSON()
 		};
 	}
 
@@ -60,6 +69,7 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 	protected prepareFromJSON(json: Serialization.Nodes.VarDeclaration): void {
 		super.prepareFromJSON(json);
 		this.modifires = json.modifires;
+		this._value = Serialization.Deserialize.object(json.initValue);
 	}
 
 	addModifier(modifire: VariableModifire) {

@@ -7,6 +7,7 @@ import { ASTNode } from "../ASTNode";
 import { SymbolReferance } from "../../../../SymbolSystem/Symbols/SymbolReferance";
 import { Enum } from "../../../../SymbolSystem/Symbols";
 import { Tag } from "../Tag";
+import { IntLiteral } from "../Literals/IntLiteral";
 
 export class EnumDeclaration extends Declaration implements IContainsVars<EnumMember>
 {
@@ -26,11 +27,13 @@ export class EnumDeclaration extends Declaration implements IContainsVars<EnumMe
 	}
 	
 	pushParameter(el: EnumMember): void {
-		if(el.value === 0) {
-			el.value = this.lastIndex;
+		if(!el.initValue) {
+			const lit = new IntLiteral();
+			lit.value = this.lastIndex;
+			el.initValue = lit;
 		}
 		else {
-			this.lastIndex = el.value;
+			// this.lastIndex = el.initValue;
 		}
 		this._variables.push(el);
 		this.lastIndex++;

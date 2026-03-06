@@ -10,7 +10,6 @@ import { UnarOperator } from "../Nodes/Operators/UnarOperator";
 import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { FunctionDeclaration, FunctionModifire } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
-import { VariableInit } from "../Nodes/VariableInit";
 import { IScope } from "../../Scopes/IScope";
 import { Scope } from "../../Scopes/Scope";
 import { Declaration } from "../Nodes/Declaration";
@@ -354,28 +353,28 @@ export class Analyzer extends BaseVisitor
 	}
 	private curScope: IScope;
 
-	beforeVisitVarInit(node: VariableInit): void {
+	// beforeVisitVarInit(node: VariableInit): void {
 		
 
-	}
-	afterVisitVarInit(node: VariableInit): void {
-		const modifiers: SemanticTokenModifiers[] = [];
-		if(node.isConstant) {
-			modifiers.push(SemanticTokenModifiers.readonly);
-		}
-		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
-		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
-		this.curScope.add(symbol);
-		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
-		symbol.tag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
+	// }
+	// afterVisitVarInit(node: VariableInit): void {
+	// 	const modifiers: SemanticTokenModifiers[] = [];
+	// 	if(node.isConstant) {
+	// 		modifiers.push(SemanticTokenModifiers.readonly);
+	// 	}
+	// 	const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
+	// 	this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
+	// 	this.curScope.add(symbol);
+	// 	this.curScope.currentSymbol?.childrens.push(symbol.defenition);
+	// 	symbol.tag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
 
-		if(node.rightValue) {
-			const expectedTag = symbol.tag;
-			const actualTag = node.rightValue.inferredTag;
+	// 	if(node.rightValue) {
+	// 		const expectedTag = symbol.tag;
+	// 		const actualTag = node.rightValue.inferredTag;
 			
-			this.checkTagMismatch(expectedTag, actualTag, true, node.rightValue.pos);
-		}			
-	}
+	// 		this.checkTagMismatch(expectedTag, actualTag, true, node.rightValue.pos);
+	// 	}			
+	// }
 	beforeVisitFunctionCall(node: FunctionCall): void {
 
 	}
@@ -617,15 +616,22 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitVariableDeclaration(node: VarDeclaration): void {
-		const modifiers: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
+		const modifiers: SemanticTokenModifiers[] = [node.initValue ? SemanticTokenModifiers.definition : SemanticTokenModifiers.declaration];
 		if(node.isConstant) {
 			modifiers.push(SemanticTokenModifiers.readonly);
 		}
 		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
 		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
 		this.curScope.add(symbol);
-		this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
+		symbol.tag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
+
+		if(node.initValue) {
+			const expectedTag = symbol.tag;
+			const actualTag = node.initValue.inferredTag;
+			
+			this.checkTagMismatch(expectedTag, actualTag, true, node.initValue.pos);
+		}
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration): void {
 		

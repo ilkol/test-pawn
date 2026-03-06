@@ -11,7 +11,6 @@ import { UnarOperator } from "../Nodes/Operators/UnarOperator";
 import { OperatorNew } from "../Nodes/Operators/OperatorNew";
 import { FunctionDeclaration, FunctionModifire } from "../Nodes/Functions/FunctionDeclaration";
 import { FunctionCall } from "../Nodes/Functions/FunctionCall";
-import { VariableInit } from "../Nodes/VariableInit";
 import { IContainsVars } from "../Nodes/IContainsVars";
 import { ASTNode } from "../Nodes/ASTNode";
 import { Variable } from "../Nodes/Variable";
@@ -124,12 +123,6 @@ export abstract class BaseVisitor implements IVisitor
 		this.afterVisitVariable(node);
 	}
 
-	visitVarInit(node: VariableInit): void {
-		this.beforeVisitVarInit(node);
-		if(node.rightValue)
-			node.rightValue.accept(this);
-		this.afterVisitVarInit(node);
-	}
 	visitOperatorNew(node: OperatorNew): void {
 		this.beforeVisitOperatorNew(node);
 		this.checkVars(node);
@@ -219,6 +212,7 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitVariableDeclaration(node: VarDeclaration): void {
 		this.beforeVisitVariableDeclaration(node);
+		node.initValue?.accept(this);
 		this.afterVisitVariableDeclaration(node);
 	}
 	visitDeclarations(node: Declarations): void {
@@ -301,9 +295,6 @@ export abstract class BaseVisitor implements IVisitor
 
 	abstract beforeVisitFunctionCall(node: FunctionCall): void;
 	abstract afterVisitFunctionCall(node: FunctionCall): void;
-
-	abstract beforeVisitVarInit(node: VariableInit): void;
-	abstract afterVisitVarInit(node: VariableInit): void;
 
 	abstract beforeVisitVariable(node: Variable): void;
 	abstract afterVisitVariable(node: Variable): void;
