@@ -156,9 +156,9 @@ export class PawnListener implements IPawnListener
 	exitVarDeclaration(ctx: VarDeclarationContext): void 
 	{
 		const variablesCount = ctx.variableDeclaration().length;
-		const vriables: VarDeclaration[] = [];
+		const variables: VarDeclaration[] = [];
 		for(let i = 0; i < variablesCount; i++) {
-			vriables.push(<VarDeclaration>this.nodes.pop());
+			variables.push(<VarDeclaration>this.nodes.pop());
 		}
 
 		let node = <OperatorNew>this.nodes.pop();
@@ -167,7 +167,7 @@ export class PawnListener implements IPawnListener
 				
 		}
 
-		vriables.forEach(node.pushParameter.bind(node));		
+		variables.forEach(node.pushParameter.bind(node));		
 
 		let last = this.nodes.peek();
 		if(last instanceof Declarations) {
@@ -199,9 +199,8 @@ export class PawnListener implements IPawnListener
 		}
 		const indexCount = ctx.SQUARE_OPEN_BRACKET().length;
 		if(indexCount) {
-			const indexes = [];
 			for(let i = 0; i < indexCount; i++) {
-				indexes.unshift(<Expression>this.nodes.pop());
+				node.dimensions.unshift(<Expression>this.nodes.pop());
 			}
 		}
 

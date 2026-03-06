@@ -240,7 +240,7 @@ export class Analyzer extends BaseVisitor
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CanBeReferenceToArray, node.pos, node.id));
 			}
 		}
-		if(node.dimensions >= Pawn.MAX_ARRAY_DIMENSIONS) {
+		if(node.dimensions.length >= Pawn.MAX_ARRAY_DIMENSIONS) {
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArrayDimenssions, node.pos));
 		}
 
@@ -1104,11 +1104,11 @@ export class Analyzer extends BaseVisitor
 				}
 			}
 			if(node.operator === "~" && count == 0) {
-				if(param.dimensions === 0) {
+				if(param.dimensions.length === 0) {
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeArrayArgument, param.pos, param.id));
 				}
 			} else {
-				if(param.dimensions !== 0 || param.reference) {
+				if(param.dimensions.length || param.reference) {
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeNonReference, param.pos, param.id));
 				}
 			}

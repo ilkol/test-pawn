@@ -95,9 +95,4 @@ export class FunctionDeclarationParameter extends VarDeclaration
 		this.tags.push(tag);
 	}
 
-	/** Размерность массива */
-	get dimensions(): number {
-		return this.numdim;
-	}
-
 }

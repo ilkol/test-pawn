@@ -1,16 +1,17 @@
 import { Serialization } from "../../../../cache/Serialization";
 import { VariableModifire } from "../../../../SymbolSystem/Symbols";
 import { IVisitor } from "../../visitor/IVisitor";
+import { Expression } from "../Expresion";
 import { RightValue } from "../RightValue";
 import { Variable } from "../Variable";
 import { VarOrFunctionDeclaration } from "../VarOrFunctionDeclaration";
-
 
 export class VarDeclaration extends VarOrFunctionDeclaration
 {
 	name = "объявление переменной";
 	protected _modifires: number = VariableModifire.None;
 	private _value?: RightValue = undefined;
+	public dimensions: Expression[] = [];
 
 	public references: Variable[] = [];
 
@@ -56,7 +57,8 @@ export class VarDeclaration extends VarOrFunctionDeclaration
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			__type: Serialization.NodeList.VariableDeclaration,
 			modifires: this.modifires,
-			initValue: this._value?.toJSON()
+			initValue: this._value?.toJSON(),
+			dimensions: this.dimensions.map(dim => dim.toJSON()),
 		};
 	}
 
