@@ -213,11 +213,6 @@ export class PawnListener implements IPawnListener
 			node.tag = <Tag>this.nodes.pop();
 		}
 		
-		const last = this.nodes.peek();
-		if(!(last instanceof OperatorNew)) {
-			console.error(last);
-			this.addDiagnostic(Locale.t("parserErrorUnexpectedInitialization"), DiagnosticSeverity.Error, node.pos);
-		}
 		this.nodes.push(node);
 	}
 
@@ -399,7 +394,7 @@ export class PawnListener implements IPawnListener
 			if(last instanceof FunctionDeclarationParameter) {
 				last.addTag(node);
 			} 
-			else if(last instanceof EnumMember) {
+			else if(last instanceof EnumMember || last instanceof VarDeclaration) {
 				this.nodes.push(node);
 			}
 			else if(last instanceof EnumDeclaration) {
@@ -409,7 +404,7 @@ export class PawnListener implements IPawnListener
 				this.nodes.push(node);
 				// last.tag = node;
 				// last.isTaged = true;
-			} else if(last instanceof VarOrFunctionDeclaration) {
+			} else if(last instanceof FunctionDeclaration) {
 				last.tag = node;
 			}
 			else if(last instanceof Ellipse) {
@@ -652,6 +647,10 @@ export class PawnListener implements IPawnListener
 			last.code = node;
 		}
 		else if(last instanceof Expression)
+		{
+			this.nodes.push(node);
+		}
+		else if(last instanceof OperatorNew || last instanceof VarDeclaration || last instanceof Tag)
 		{
 			this.nodes.push(node);
 		}
@@ -1001,7 +1000,12 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitDeclParams(ctx: DeclParamsContext):void {
+		const defaultValue = ctx.ASSIGMENT() ? <Expression>this.nodes.pop() : undefined;
+
 		const node = <FunctionDeclarationParameter>this.nodes.pop();
+		if(defaultValue) {
+			node.defaultValue = defaultValue;
+		}
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			
