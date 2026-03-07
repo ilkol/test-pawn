@@ -885,7 +885,7 @@ export class pawnParser extends Parser {
 				case pawnParser.RATIONAL:
 					{
 					this.state = 283;
-					this.compoundExpression();
+					this.expresion();
 					}
 					break;
 				case pawnParser.CURLY_OPEN_BRACKET:
@@ -4283,29 +4283,27 @@ export class pawnParser extends Parser {
 	public compoundExpression(): CompoundExpressionContext {
 		let _localctx: CompoundExpressionContext = new CompoundExpressionContext(this._ctx, this.state);
 		this.enterRule(_localctx, 152, pawnParser.RULE_compoundExpression);
+		let _la: number;
 		try {
-			let _alt: number;
 			this.enterOuterAlt(_localctx, 1);
 			{
 			this.state = 786;
 			this.expresion();
 			this.state = 791;
 			this._errHandler.sync(this);
-			_alt = this.interpreter.adaptivePredict(this._input, 97, this._ctx);
-			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
-				if (_alt === 1) {
-					{
-					{
-					this.state = 787;
-					this.match(pawnParser.COMA);
-					this.state = 788;
-					this.expresion();
-					}
-					}
+			_la = this._input.LA(1);
+			while (_la === pawnParser.COMA) {
+				{
+				{
+				this.state = 787;
+				this.match(pawnParser.COMA);
+				this.state = 788;
+				this.expresion();
+				}
 				}
 				this.state = 793;
 				this._errHandler.sync(this);
-				_alt = this.interpreter.adaptivePredict(this._input, 97, this._ctx);
+				_la = this._input.LA(1);
 			}
 			}
 		}
@@ -4682,7 +4680,7 @@ export class pawnParser extends Parser {
 		"\u0116\u0118\x03\x02\x02\x02\u0117\u0113\x03\x02\x02\x02\u0118\u011B\x03" +
 		"\x02\x02\x02\u0119\u0117\x03\x02\x02\x02\u0119\u011A\x03\x02\x02\x02\u011A" +
 		"\u0121\x03\x02\x02\x02\u011B\u0119\x03\x02\x02\x02\u011C\u011F\x07\f\x02" +
-		"\x02\u011D\u0120\x05\x9AN\x02\u011E\u0120\x05@!\x02\u011F\u011D\x03\x02" +
+		"\x02\u011D\u0120\x05\x9CO\x02\u011E\u0120\x05@!\x02\u011F\u011D\x03\x02" +
 		"\x02\x02\u011F\u011E\x03\x02\x02\x02\u0120\u0122\x03\x02\x02\x02\u0121" +
 		"\u011C\x03\x02\x02\x02\u0121\u0122\x03\x02\x02\x02\u0122\x11\x03\x02\x02" +
 		"\x02\u0123\u0125\x05 \x11\x02\u0124\u0123\x03\x02\x02\x02\u0124\u0125" +
@@ -5312,9 +5310,6 @@ export class VariableDeclarationContext extends ParserRuleContext {
 		}
 	}
 	public ASSIGMENT(): TerminalNode | undefined { return this.tryGetToken(pawnParser.ASSIGMENT, 0); }
-	public compoundExpression(): CompoundExpressionContext | undefined {
-		return this.tryGetRuleContext(0, CompoundExpressionContext);
-	}
 	public arrayInit(): ArrayInitContext | undefined {
 		return this.tryGetRuleContext(0, ArrayInitContext);
 	}

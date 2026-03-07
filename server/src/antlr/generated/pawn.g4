@@ -22,7 +22,7 @@ enumMember:			tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion SQUARE_CLOSE_BRACKE
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
 varDeclaration:     (NEW varModifires*| varModifires+) variableDeclaration (COMA variableDeclaration)*;
-variableDeclaration: tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion SQUARE_CLOSE_BRACKET)* (ASSIGMENT (compoundExpression | arrayInit))?;
+variableDeclaration: tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion SQUARE_CLOSE_BRACKET)* (ASSIGMENT (expresion | arrayInit))?;
 
 functionDecl:		(funcDeclModif)? tag? IDENTIFIER functionDeclarationParams;
 operatorOverload:	(funcDeclModif)? tag? OPERATOR canBeOverloaded functionDeclarationParams;
