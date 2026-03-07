@@ -1067,15 +1067,15 @@ export class PawnListener implements IPawnListener
 			node.setRange(new Position(ctx.start.line - 1, ctx.start.charPositionInLine), new Position(ctx.start.line - 1, ctx.start.charPositionInLine + ctx.text.length));
 
 			const last = this.nodes.peek();
-			if(last instanceof Expression) {
+			if(last instanceof StringLiteral) {
+				this.nodes.pop();
+				last.value += node.value;
 				this.nodes.push(node);
-			}
-			else if(last instanceof FunctionDeclarationParameter) {
+			} else if(last instanceof FunctionDeclarationParameter) {
 				last.defaultValue = node;
-			}
-			else {
-				console.debug(last);
-				this.addDiagnostic(Locale.t("Unexpected string"), DiagnosticSeverity.Error, node.pos);
+			} else {
+				this.nodes.push(node);
+				console.error("Unexpected string");
 			}
 		}
 	}
