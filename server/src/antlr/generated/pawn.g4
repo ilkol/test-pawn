@@ -285,22 +285,22 @@ SIZEOF:		'sizeof';
 TAGOF:		'tagof';
 
 //команды препроцессора
-DEFINE:		'define';
-ELSEIF:		'elseif';
-EMIT:		'emit';
-ENDIF:		'endif';
-ENDINPUT:	'endinput';
-ENDSCRIPT:	'endscript';
-// ERROR:		'error';
-FILE: 		'file';
-INCLUDE:	'include';
-PRAGMA:		'pragma';
-SECTION:	'section';
-TRYINCLUDE:	'tryinclude';
-UNDEF:		'undef';
+// DEFINE:		'define';
+// ELSEIF:		'elseif';
+// EMIT:		'emit';
+// ENDIF:		'endif';
+// ENDINPUT:	'endinput';
+// ENDSCRIPT:	'endscript';
+// // ERROR:		'error';
+// // FILE: 		'file';
+// INCLUDE:	'include';
+// PRAGMA:		'pragma';
+// SECTION:	'section';
+// TRYINCLUDE:	'tryinclude';
+// UNDEF:		'undef';
 
-DYNAMIC:	'dynamic';
-WARNING:	'warning';
+// DYNAMIC:	'dynamic';
+// WARNING:	'warning';
 // DISABLE:	'disable';
 // ENABLE:		'enable';
 

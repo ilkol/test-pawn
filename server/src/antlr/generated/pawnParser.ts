@@ -106,48 +106,34 @@ export class pawnParser extends Parser {
 	public static readonly DEFINED = 76;
 	public static readonly SIZEOF = 77;
 	public static readonly TAGOF = 78;
-	public static readonly DEFINE = 79;
-	public static readonly ELSEIF = 80;
-	public static readonly EMIT = 81;
-	public static readonly ENDIF = 82;
-	public static readonly ENDINPUT = 83;
-	public static readonly ENDSCRIPT = 84;
-	public static readonly FILE = 85;
-	public static readonly INCLUDE = 86;
-	public static readonly PRAGMA = 87;
-	public static readonly SECTION = 88;
-	public static readonly TRYINCLUDE = 89;
-	public static readonly UNDEF = 90;
-	public static readonly DYNAMIC = 91;
-	public static readonly WARNING = 92;
-	public static readonly TRUE = 93;
-	public static readonly FALSE = 94;
-	public static readonly CELLBITS = 95;
-	public static readonly CELLMAX = 96;
-	public static readonly CELLMIN = 97;
-	public static readonly CHARBITS = 98;
-	public static readonly CHARMAX = 99;
-	public static readonly CHARMIN = 100;
-	public static readonly DEBUG = 101;
-	public static readonly LINE = 102;
-	public static readonly PAWN = 103;
-	public static readonly UCHARMAX = 104;
-	public static readonly SHARPSTRING = 105;
-	public static readonly STRING = 106;
-	public static readonly CHAR_STRING = 107;
-	public static readonly IDENTIFIER = 108;
-	public static readonly SKIP_PARAM = 109;
-	public static readonly BINARY = 110;
-	public static readonly HEX = 111;
-	public static readonly INTEGER = 112;
-	public static readonly FLOAT = 113;
-	public static readonly RATIONAL = 114;
-	public static readonly BACKSLAH = 115;
-	public static readonly Whitespace = 116;
-	public static readonly Newline = 117;
-	public static readonly DocBlock = 118;
-	public static readonly BlockComment = 119;
-	public static readonly LineComment = 120;
+	public static readonly TRUE = 79;
+	public static readonly FALSE = 80;
+	public static readonly CELLBITS = 81;
+	public static readonly CELLMAX = 82;
+	public static readonly CELLMIN = 83;
+	public static readonly CHARBITS = 84;
+	public static readonly CHARMAX = 85;
+	public static readonly CHARMIN = 86;
+	public static readonly DEBUG = 87;
+	public static readonly LINE = 88;
+	public static readonly PAWN = 89;
+	public static readonly UCHARMAX = 90;
+	public static readonly SHARPSTRING = 91;
+	public static readonly STRING = 92;
+	public static readonly CHAR_STRING = 93;
+	public static readonly IDENTIFIER = 94;
+	public static readonly SKIP_PARAM = 95;
+	public static readonly BINARY = 96;
+	public static readonly HEX = 97;
+	public static readonly INTEGER = 98;
+	public static readonly FLOAT = 99;
+	public static readonly RATIONAL = 100;
+	public static readonly BACKSLAH = 101;
+	public static readonly Whitespace = 102;
+	public static readonly Newline = 103;
+	public static readonly DocBlock = 104;
+	public static readonly BlockComment = 105;
+	public static readonly LineComment = 106;
 	public static readonly RULE_file = 0;
 	public static readonly RULE_processorLabel = 1;
 	public static readonly RULE_declaration = 2;
@@ -259,13 +245,11 @@ export class pawnParser extends Parser {
 		"'new'", "'enum'", "'const'", "'static'", "'stock'", "'forward'", "'native'", 
 		"'public'", "'operator'", "'if'", "'*then'", "'else'", "'switch'", "'case'", 
 		"'default'", "'while'", "'for'", "'do'", "'continue'", "'break'", "'char'", 
-		"'defined'", "'sizeof'", "'tagof'", "'define'", "'elseif'", "'emit'", 
-		"'endif'", "'endinput'", "'endscript'", "'file'", "'include'", "'pragma'", 
-		"'section'", "'tryinclude'", "'undef'", "'dynamic'", "'warning'", "'true'", 
-		"'false'", "'cellbits'", "'cellmax'", "'cellmin'", "'charbits'", "'charmax'", 
-		"'charmin'", "'debug'", "'__line'", "'__Pawn'", "'ucharmax'", undefined, 
-		undefined, undefined, undefined, "'_'", undefined, undefined, undefined, 
-		undefined, undefined, "'\\'",
+		"'defined'", "'sizeof'", "'tagof'", "'true'", "'false'", "'cellbits'", 
+		"'cellmax'", "'cellmin'", "'charbits'", "'charmax'", "'charmin'", "'debug'", 
+		"'__line'", "'__Pawn'", "'ucharmax'", undefined, undefined, undefined, 
+		undefined, "'_'", undefined, undefined, undefined, undefined, undefined, 
+		"'\\'",
 	];
 	private static readonly _SYMBOLIC_NAMES: Array<string | undefined> = [
 		undefined, undefined, "OPEN_PARENTHESIS", "CLOSE_PARENTHESIS", "CURLY_OPEN_BRACKET", 
@@ -280,9 +264,7 @@ export class pawnParser extends Parser {
 		"EXIT", "GOTO", "SLEEP", "STATE", "RETURN", "NEW", "ENUM", "CONST", "STATIC", 
 		"STOCK", "FORWARD", "NATIVE", "PUBLIC", "OPERATOR", "IF", "THEN", "ELSE", 
 		"SWITCH", "CASE", "DEFAULT", "WHILE", "FOR", "DO", "CONTINUE", "BREAK", 
-		"CHAR", "DEFINED", "SIZEOF", "TAGOF", "DEFINE", "ELSEIF", "EMIT", "ENDIF", 
-		"ENDINPUT", "ENDSCRIPT", "FILE", "INCLUDE", "PRAGMA", "SECTION", "TRYINCLUDE", 
-		"UNDEF", "DYNAMIC", "WARNING", "TRUE", "FALSE", "CELLBITS", "CELLMAX", 
+		"CHAR", "DEFINED", "SIZEOF", "TAGOF", "TRUE", "FALSE", "CELLBITS", "CELLMAX", 
 		"CELLMIN", "CHARBITS", "CHARMAX", "CHARMIN", "DEBUG", "LINE", "PAWN", 
 		"UCHARMAX", "SHARPSTRING", "STRING", "CHAR_STRING", "IDENTIFIER", "SKIP_PARAM", 
 		"BINARY", "HEX", "INTEGER", "FLOAT", "RATIONAL", "BACKSLAH", "Whitespace", 
@@ -1229,7 +1211,7 @@ export class pawnParser extends Parser {
 				this.state = 353;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)))) !== 0) || ((((_la - 108)) & ~0x1F) === 0 && ((1 << (_la - 108)) & ((1 << (pawnParser.IDENTIFIER - 108)) | (1 << (pawnParser.BINARY - 108)) | (1 << (pawnParser.HEX - 108)) | (1 << (pawnParser.INTEGER - 108)) | (1 << (pawnParser.FLOAT - 108)) | (1 << (pawnParser.RATIONAL - 108)))) !== 0)) {
+				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)) | (1 << (pawnParser.IDENTIFIER - 76)) | (1 << (pawnParser.BINARY - 76)) | (1 << (pawnParser.HEX - 76)) | (1 << (pawnParser.INTEGER - 76)) | (1 << (pawnParser.FLOAT - 76)) | (1 << (pawnParser.RATIONAL - 76)))) !== 0)) {
 					{
 					this.state = 349;
 					this.expresion();
@@ -1260,7 +1242,7 @@ export class pawnParser extends Parser {
 				this.state = 361;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)))) !== 0) || ((((_la - 108)) & ~0x1F) === 0 && ((1 << (_la - 108)) & ((1 << (pawnParser.IDENTIFIER - 108)) | (1 << (pawnParser.BINARY - 108)) | (1 << (pawnParser.HEX - 108)) | (1 << (pawnParser.INTEGER - 108)) | (1 << (pawnParser.FLOAT - 108)) | (1 << (pawnParser.RATIONAL - 108)))) !== 0)) {
+				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)) | (1 << (pawnParser.IDENTIFIER - 76)) | (1 << (pawnParser.BINARY - 76)) | (1 << (pawnParser.HEX - 76)) | (1 << (pawnParser.INTEGER - 76)) | (1 << (pawnParser.FLOAT - 76)) | (1 << (pawnParser.RATIONAL - 76)))) !== 0)) {
 					{
 					this.state = 357;
 					this.expresion();
@@ -1550,7 +1532,7 @@ export class pawnParser extends Parser {
 			this.state = 401;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.CURLY_OPEN_BRACKET) | (1 << pawnParser.SEMI) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.ASSERT - 39)) | (1 << (pawnParser.EXIT - 39)) | (1 << (pawnParser.GOTO - 39)) | (1 << (pawnParser.SLEEP - 39)) | (1 << (pawnParser.STATE - 39)) | (1 << (pawnParser.RETURN - 39)) | (1 << (pawnParser.NEW - 39)) | (1 << (pawnParser.ENUM - 39)) | (1 << (pawnParser.CONST - 39)) | (1 << (pawnParser.STATIC - 39)) | (1 << (pawnParser.STOCK - 39)) | (1 << (pawnParser.PUBLIC - 39)) | (1 << (pawnParser.IF - 39)) | (1 << (pawnParser.SWITCH - 39)) | (1 << (pawnParser.WHILE - 39)))) !== 0) || ((((_la - 71)) & ~0x1F) === 0 && ((1 << (_la - 71)) & ((1 << (pawnParser.FOR - 71)) | (1 << (pawnParser.DO - 71)) | (1 << (pawnParser.CONTINUE - 71)) | (1 << (pawnParser.BREAK - 71)) | (1 << (pawnParser.DEFINED - 71)) | (1 << (pawnParser.SIZEOF - 71)) | (1 << (pawnParser.TAGOF - 71)) | (1 << (pawnParser.TRUE - 71)) | (1 << (pawnParser.FALSE - 71)) | (1 << (pawnParser.CELLBITS - 71)) | (1 << (pawnParser.CELLMAX - 71)) | (1 << (pawnParser.CELLMIN - 71)) | (1 << (pawnParser.CHARBITS - 71)) | (1 << (pawnParser.CHARMAX - 71)) | (1 << (pawnParser.CHARMIN - 71)) | (1 << (pawnParser.DEBUG - 71)) | (1 << (pawnParser.LINE - 71)))) !== 0) || ((((_la - 103)) & ~0x1F) === 0 && ((1 << (_la - 103)) & ((1 << (pawnParser.PAWN - 103)) | (1 << (pawnParser.UCHARMAX - 103)) | (1 << (pawnParser.SHARPSTRING - 103)) | (1 << (pawnParser.STRING - 103)) | (1 << (pawnParser.CHAR_STRING - 103)) | (1 << (pawnParser.IDENTIFIER - 103)) | (1 << (pawnParser.BINARY - 103)) | (1 << (pawnParser.HEX - 103)) | (1 << (pawnParser.INTEGER - 103)) | (1 << (pawnParser.FLOAT - 103)) | (1 << (pawnParser.RATIONAL - 103)))) !== 0)) {
+			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.CURLY_OPEN_BRACKET) | (1 << pawnParser.SEMI) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.ASSERT - 39)) | (1 << (pawnParser.EXIT - 39)) | (1 << (pawnParser.GOTO - 39)) | (1 << (pawnParser.SLEEP - 39)) | (1 << (pawnParser.STATE - 39)) | (1 << (pawnParser.RETURN - 39)) | (1 << (pawnParser.NEW - 39)) | (1 << (pawnParser.ENUM - 39)) | (1 << (pawnParser.CONST - 39)) | (1 << (pawnParser.STATIC - 39)) | (1 << (pawnParser.STOCK - 39)) | (1 << (pawnParser.PUBLIC - 39)) | (1 << (pawnParser.IF - 39)) | (1 << (pawnParser.SWITCH - 39)) | (1 << (pawnParser.WHILE - 39)))) !== 0) || ((((_la - 71)) & ~0x1F) === 0 && ((1 << (_la - 71)) & ((1 << (pawnParser.FOR - 71)) | (1 << (pawnParser.DO - 71)) | (1 << (pawnParser.CONTINUE - 71)) | (1 << (pawnParser.BREAK - 71)) | (1 << (pawnParser.DEFINED - 71)) | (1 << (pawnParser.SIZEOF - 71)) | (1 << (pawnParser.TAGOF - 71)) | (1 << (pawnParser.TRUE - 71)) | (1 << (pawnParser.FALSE - 71)) | (1 << (pawnParser.CELLBITS - 71)) | (1 << (pawnParser.CELLMAX - 71)) | (1 << (pawnParser.CELLMIN - 71)) | (1 << (pawnParser.CHARBITS - 71)) | (1 << (pawnParser.CHARMAX - 71)) | (1 << (pawnParser.CHARMIN - 71)) | (1 << (pawnParser.DEBUG - 71)) | (1 << (pawnParser.LINE - 71)) | (1 << (pawnParser.PAWN - 71)) | (1 << (pawnParser.UCHARMAX - 71)) | (1 << (pawnParser.SHARPSTRING - 71)) | (1 << (pawnParser.STRING - 71)) | (1 << (pawnParser.CHAR_STRING - 71)) | (1 << (pawnParser.IDENTIFIER - 71)) | (1 << (pawnParser.BINARY - 71)) | (1 << (pawnParser.HEX - 71)) | (1 << (pawnParser.INTEGER - 71)) | (1 << (pawnParser.FLOAT - 71)) | (1 << (pawnParser.RATIONAL - 71)))) !== 0)) {
 				{
 				{
 				this.state = 398;
@@ -1783,7 +1765,7 @@ export class pawnParser extends Parser {
 			this.state = 434;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)))) !== 0) || ((((_la - 108)) & ~0x1F) === 0 && ((1 << (_la - 108)) & ((1 << (pawnParser.IDENTIFIER - 108)) | (1 << (pawnParser.BINARY - 108)) | (1 << (pawnParser.HEX - 108)) | (1 << (pawnParser.INTEGER - 108)) | (1 << (pawnParser.FLOAT - 108)) | (1 << (pawnParser.RATIONAL - 108)))) !== 0)) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)) | (1 << (pawnParser.IDENTIFIER - 76)) | (1 << (pawnParser.BINARY - 76)) | (1 << (pawnParser.HEX - 76)) | (1 << (pawnParser.INTEGER - 76)) | (1 << (pawnParser.FLOAT - 76)) | (1 << (pawnParser.RATIONAL - 76)))) !== 0)) {
 				{
 				this.state = 433;
 				this.compoundExpression();
@@ -2901,7 +2883,7 @@ export class pawnParser extends Parser {
 			this.state = 587;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)) | (1 << (pawnParser.NEW - 39)) | (1 << (pawnParser.CONST - 39)) | (1 << (pawnParser.STATIC - 39)) | (1 << (pawnParser.STOCK - 39)) | (1 << (pawnParser.PUBLIC - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)))) !== 0) || ((((_la - 108)) & ~0x1F) === 0 && ((1 << (_la - 108)) & ((1 << (pawnParser.IDENTIFIER - 108)) | (1 << (pawnParser.BINARY - 108)) | (1 << (pawnParser.HEX - 108)) | (1 << (pawnParser.INTEGER - 108)) | (1 << (pawnParser.FLOAT - 108)) | (1 << (pawnParser.RATIONAL - 108)))) !== 0)) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)) | (1 << (pawnParser.NEW - 39)) | (1 << (pawnParser.CONST - 39)) | (1 << (pawnParser.STATIC - 39)) | (1 << (pawnParser.STOCK - 39)) | (1 << (pawnParser.PUBLIC - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)) | (1 << (pawnParser.IDENTIFIER - 76)) | (1 << (pawnParser.BINARY - 76)) | (1 << (pawnParser.HEX - 76)) | (1 << (pawnParser.INTEGER - 76)) | (1 << (pawnParser.FLOAT - 76)) | (1 << (pawnParser.RATIONAL - 76)))) !== 0)) {
 				{
 				this.state = 586;
 				_localctx._first = this.forFirstExp();
@@ -2913,7 +2895,7 @@ export class pawnParser extends Parser {
 			this.state = 591;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)))) !== 0) || ((((_la - 108)) & ~0x1F) === 0 && ((1 << (_la - 108)) & ((1 << (pawnParser.IDENTIFIER - 108)) | (1 << (pawnParser.BINARY - 108)) | (1 << (pawnParser.HEX - 108)) | (1 << (pawnParser.INTEGER - 108)) | (1 << (pawnParser.FLOAT - 108)) | (1 << (pawnParser.RATIONAL - 108)))) !== 0)) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)) | (1 << (pawnParser.IDENTIFIER - 76)) | (1 << (pawnParser.BINARY - 76)) | (1 << (pawnParser.HEX - 76)) | (1 << (pawnParser.INTEGER - 76)) | (1 << (pawnParser.FLOAT - 76)) | (1 << (pawnParser.RATIONAL - 76)))) !== 0)) {
 				{
 				this.state = 590;
 				_localctx._second = this.expresion();
@@ -2925,7 +2907,7 @@ export class pawnParser extends Parser {
 			this.state = 595;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)))) !== 0) || ((((_la - 108)) & ~0x1F) === 0 && ((1 << (_la - 108)) & ((1 << (pawnParser.IDENTIFIER - 108)) | (1 << (pawnParser.BINARY - 108)) | (1 << (pawnParser.HEX - 108)) | (1 << (pawnParser.INTEGER - 108)) | (1 << (pawnParser.FLOAT - 108)) | (1 << (pawnParser.RATIONAL - 108)))) !== 0)) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)) | (1 << (pawnParser.IDENTIFIER - 76)) | (1 << (pawnParser.BINARY - 76)) | (1 << (pawnParser.HEX - 76)) | (1 << (pawnParser.INTEGER - 76)) | (1 << (pawnParser.FLOAT - 76)) | (1 << (pawnParser.RATIONAL - 76)))) !== 0)) {
 				{
 				this.state = 594;
 				_localctx._third = this.compoundExpression();
@@ -3177,7 +3159,7 @@ export class pawnParser extends Parser {
 			{
 			this.state = 614;
 			_la = this._input.LA(1);
-			if (!(((((_la - 95)) & ~0x1F) === 0 && ((1 << (_la - 95)) & ((1 << (pawnParser.CELLBITS - 95)) | (1 << (pawnParser.CELLMAX - 95)) | (1 << (pawnParser.CELLMIN - 95)) | (1 << (pawnParser.CHARBITS - 95)) | (1 << (pawnParser.CHARMAX - 95)) | (1 << (pawnParser.CHARMIN - 95)) | (1 << (pawnParser.DEBUG - 95)) | (1 << (pawnParser.LINE - 95)) | (1 << (pawnParser.PAWN - 95)) | (1 << (pawnParser.UCHARMAX - 95)))) !== 0))) {
+			if (!(((((_la - 81)) & ~0x1F) === 0 && ((1 << (_la - 81)) & ((1 << (pawnParser.CELLBITS - 81)) | (1 << (pawnParser.CELLMAX - 81)) | (1 << (pawnParser.CELLMIN - 81)) | (1 << (pawnParser.CHARBITS - 81)) | (1 << (pawnParser.CHARMAX - 81)) | (1 << (pawnParser.CHARMIN - 81)) | (1 << (pawnParser.DEBUG - 81)) | (1 << (pawnParser.LINE - 81)) | (1 << (pawnParser.PAWN - 81)) | (1 << (pawnParser.UCHARMAX - 81)))) !== 0))) {
 			this._errHandler.recoverInline(this);
 			} else {
 				if (this._input.LA(1) === Token.EOF) {
@@ -3214,7 +3196,7 @@ export class pawnParser extends Parser {
 			{
 			this.state = 616;
 			_la = this._input.LA(1);
-			if (!(((((_la - 105)) & ~0x1F) === 0 && ((1 << (_la - 105)) & ((1 << (pawnParser.SHARPSTRING - 105)) | (1 << (pawnParser.STRING - 105)) | (1 << (pawnParser.CHAR_STRING - 105)))) !== 0))) {
+			if (!(((((_la - 91)) & ~0x1F) === 0 && ((1 << (_la - 91)) & ((1 << (pawnParser.SHARPSTRING - 91)) | (1 << (pawnParser.STRING - 91)) | (1 << (pawnParser.CHAR_STRING - 91)))) !== 0))) {
 			this._errHandler.recoverInline(this);
 			} else {
 				if (this._input.LA(1) === Token.EOF) {
@@ -4359,7 +4341,7 @@ export class pawnParser extends Parser {
 			this.state = 805;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.T__0) | (1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)))) !== 0) || ((((_la - 108)) & ~0x1F) === 0 && ((1 << (_la - 108)) & ((1 << (pawnParser.IDENTIFIER - 108)) | (1 << (pawnParser.SKIP_PARAM - 108)) | (1 << (pawnParser.BINARY - 108)) | (1 << (pawnParser.HEX - 108)) | (1 << (pawnParser.INTEGER - 108)) | (1 << (pawnParser.FLOAT - 108)) | (1 << (pawnParser.RATIONAL - 108)))) !== 0)) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << pawnParser.T__0) | (1 << pawnParser.OPEN_PARENTHESIS) | (1 << pawnParser.MINUS) | (1 << pawnParser.INCREMENTS) | (1 << pawnParser.DECREMENTS))) !== 0) || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & ((1 << (pawnParser.NOT - 39)) | (1 << (pawnParser.BIT_COMPLEMEN - 39)) | (1 << (pawnParser.STATE - 39)))) !== 0) || ((((_la - 76)) & ~0x1F) === 0 && ((1 << (_la - 76)) & ((1 << (pawnParser.DEFINED - 76)) | (1 << (pawnParser.SIZEOF - 76)) | (1 << (pawnParser.TAGOF - 76)) | (1 << (pawnParser.TRUE - 76)) | (1 << (pawnParser.FALSE - 76)) | (1 << (pawnParser.CELLBITS - 76)) | (1 << (pawnParser.CELLMAX - 76)) | (1 << (pawnParser.CELLMIN - 76)) | (1 << (pawnParser.CHARBITS - 76)) | (1 << (pawnParser.CHARMAX - 76)) | (1 << (pawnParser.CHARMIN - 76)) | (1 << (pawnParser.DEBUG - 76)) | (1 << (pawnParser.LINE - 76)) | (1 << (pawnParser.PAWN - 76)) | (1 << (pawnParser.UCHARMAX - 76)) | (1 << (pawnParser.SHARPSTRING - 76)) | (1 << (pawnParser.STRING - 76)) | (1 << (pawnParser.CHAR_STRING - 76)) | (1 << (pawnParser.IDENTIFIER - 76)) | (1 << (pawnParser.SKIP_PARAM - 76)) | (1 << (pawnParser.BINARY - 76)) | (1 << (pawnParser.HEX - 76)) | (1 << (pawnParser.INTEGER - 76)) | (1 << (pawnParser.FLOAT - 76)) | (1 << (pawnParser.RATIONAL - 76)))) !== 0)) {
 				{
 				this.state = 797;
 				this.functionArgument();
@@ -4516,7 +4498,7 @@ export class pawnParser extends Parser {
 
 	private static readonly _serializedATNSegments: number = 2;
 	private static readonly _serializedATNSegment0: string =
-		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03z\u0338\x04\x02" +
+		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03l\u0338\x04\x02" +
 		"\t\x02\x04\x03\t\x03\x04\x04\t\x04\x04\x05\t\x05\x04\x06\t\x06\x04\x07" +
 		"\t\x07\x04\b\t\b\x04\t\t\t\x04\n\t\n\x04\v\t\v\x04\f\t\f\x04\r\t\r\x04" +
 		"\x0E\t\x0E\x04\x0F\t\x0F\x04\x10\t\x10\x04\x11\t\x11\x04\x12\t\x12\x04" +
@@ -4601,7 +4583,7 @@ export class pawnParser extends Parser {
 		"\x02\x8E\x02\x90\x02\x92\x02\x94\x02\x96\x02\x98\x02\x9A\x02\x9C\x02\x9E" +
 		"\x02\xA0\x02\xA2\x02\x02\x13\x05\x02\r\r\x0F\x0F\x17\x17\x04\x02==@@\x03" +
 		"\x02\f\x17\x04\x02;=@@\x03\x02\x18\x1E\x04\x02\x1F$))\x03\x02KL\x03\x02" +
-		"_`\x03\x02aj\x03\x02km\x03\x02\x1F \x03\x02!$\x03\x02.0\x03\x02\x18\x19" +
+		"QR\x03\x02S\\\x03\x02]_\x03\x02\x1F \x03\x02!$\x03\x02.0\x03\x02\x18\x19" +
 		"\x03\x02\x1A\x1C\x04\x0277NP\x04\x02\x1D\x1EMM\x02\u036B\x02\xB2\x03\x02" +
 		"\x02\x02\x04\xB4\x03\x02\x02\x02\x06\xC5\x03\x02\x02\x02\b\xC8\x03\x02" +
 		"\x02\x02\n\xE7\x03\x02\x02\x02\f\xF4\x03\x02\x02\x02\x0E\u0105\x03\x02" +
@@ -4637,7 +4619,7 @@ export class pawnParser extends Parser {
 		"\x03\x02\x02\x02\xAE\xAC\x03\x02\x02\x02\xAE\xAF\x03\x02\x02\x02\xAF\xB1" +
 		"\x03\x02\x02\x02\xB0\xAE\x03\x02\x02\x02\xB1\xB3\x07\x02\x02\x03\xB2\xA4" +
 		"\x03\x02\x02\x02\xB2\xA8\x03\x02\x02\x02\xB3\x03\x03\x02\x02\x02\xB4\xB5" +
-		"\x07n\x02\x02\xB5\xB6\x07&\x02\x02\xB6\x05\x03\x02\x02\x02\xB7\xB9\x05" +
+		"\x07`\x02\x02\xB5\xB6\x07&\x02\x02\xB6\x05\x03\x02\x02\x02\xB7\xB9\x05" +
 		"t;\x02\xB8\xB7\x03\x02\x02\x02\xB9\xBC\x03\x02\x02\x02\xBA\xB8\x03\x02" +
 		"\x02\x02\xBA\xBB\x03\x02\x02\x02\xBB\xC2\x03\x02\x02\x02\xBC\xBA\x03\x02" +
 		"\x02\x02\xBD\xC3\x05\x12\n\x02\xBE\xC3\x05\x14\v\x02\xBF\xC0\x05\x0E\b" +
@@ -4647,7 +4629,7 @@ export class pawnParser extends Parser {
 		"\x02\xC6\x07\x03\x02\x02\x02\xC7\xC9\x07<\x02\x02\xC8\xC7\x03\x02\x02" +
 		"\x02\xC8\xC9\x03\x02\x02\x02\xC9\xCA\x03\x02\x02\x02\xCA\xCC\x07:\x02" +
 		"\x02\xCB\xCD\x05\x1A\x0E\x02\xCC\xCB\x03\x02\x02\x02\xCC\xCD\x03\x02\x02" +
-		"\x02\xCD\xCF\x03\x02\x02\x02\xCE\xD0\x07n\x02\x02\xCF\xCE\x03\x02\x02" +
+		"\x02\xCD\xCF\x03\x02\x02\x02\xCE\xD0\x07`\x02\x02\xCF\xCE\x03\x02\x02" +
 		"\x02\xCF\xD0\x03\x02\x02\x02\xD0\xD2\x03\x02\x02\x02\xD1\xD3\x05\f\x07" +
 		"\x02\xD2\xD1\x03\x02\x02\x02\xD2\xD3\x03\x02\x02\x02\xD3\xD4\x03\x02\x02" +
 		"\x02\xD4\xE0\x07\x06\x02\x02\xD5\xDA\x05\n\x06\x02\xD6\xD7\x07\n\x02\x02" +
@@ -4658,12 +4640,12 @@ export class pawnParser extends Parser {
 		"\xE0\xE1\x03\x02\x02\x02\xE1\xE2\x03\x02\x02\x02\xE2\xE4\x07\x07\x02\x02" +
 		"\xE3\xE5\x07\v\x02\x02\xE4\xE3\x03\x02\x02\x02\xE4\xE5\x03\x02\x02\x02" +
 		"\xE5\t\x03\x02\x02\x02\xE6\xE8\x05\x1A\x0E\x02\xE7\xE6\x03\x02\x02\x02" +
-		"\xE7\xE8\x03\x02\x02\x02\xE8\xE9\x03\x02\x02\x02\xE9\xEE\x07n\x02\x02" +
+		"\xE7\xE8\x03\x02\x02\x02\xE8\xE9\x03\x02\x02\x02\xE9\xEE\x07`\x02\x02" +
 		"\xEA\xEB\x07\b\x02\x02\xEB\xEC\x05\x9CO\x02\xEC\xED\x07\t\x02\x02\xED" +
 		"\xEF\x03\x02\x02\x02\xEE\xEA\x03\x02\x02\x02\xEE\xEF\x03\x02\x02\x02\xEF" +
 		"\xF2\x03\x02\x02\x02\xF0\xF1\x07\f\x02\x02\xF1\xF3\x05\x9CO\x02\xF2\xF0" +
 		"\x03\x02\x02\x02\xF2\xF3\x03\x02\x02\x02\xF3\v\x03\x02\x02\x02\xF4\xF5" +
-		"\x07\x04\x02\x02\xF5\xF6\t\x02\x02\x02\xF6\xF7\x07r\x02\x02\xF7\xF8\x07" +
+		"\x07\x04\x02\x02\xF5\xF6\t\x02\x02\x02\xF6\xF7\x07d\x02\x02\xF7\xF8\x07" +
 		"\x05\x02\x02\xF8\r\x03\x02\x02\x02\xF9\xFD\x079\x02\x02\xFA\xFC\x05L\'" +
 		"\x02\xFB\xFA\x03\x02\x02\x02\xFC\xFF\x03\x02\x02\x02\xFD\xFB\x03\x02\x02" +
 		"\x02\xFD\xFE\x03\x02\x02\x02\xFE\u0106\x03\x02\x02\x02\xFF\xFD\x03\x02" +
@@ -4675,7 +4657,7 @@ export class pawnParser extends Parser {
 		"\x02\u010B\u010E\x03\x02\x02\x02\u010C\u010A\x03\x02\x02\x02\u010C\u010D" +
 		"\x03\x02\x02\x02\u010D\x0F\x03\x02\x02\x02\u010E\u010C\x03\x02\x02\x02" +
 		"\u010F\u0111\x05\x1A\x0E\x02\u0110\u010F\x03\x02\x02\x02\u0110\u0111\x03" +
-		"\x02\x02\x02\u0111\u0112\x03\x02\x02\x02\u0112\u0119\x07n\x02\x02\u0113" +
+		"\x02\x02\x02\u0111\u0112\x03\x02\x02\x02\u0112\u0119\x07`\x02\x02\u0113" +
 		"\u0114\x07\b\x02\x02\u0114\u0115\x05\x9CO\x02\u0115\u0116\x07\t\x02\x02" +
 		"\u0116\u0118\x03\x02\x02\x02\u0117\u0113\x03\x02\x02\x02\u0118\u011B\x03" +
 		"\x02\x02\x02\u0119\u0117\x03\x02\x02\x02\u0119\u011A\x03\x02\x02\x02\u011A" +
@@ -4686,7 +4668,7 @@ export class pawnParser extends Parser {
 		"\x02\u0123\u0125\x05 \x11\x02\u0124\u0123\x03\x02\x02\x02\u0124\u0125" +
 		"\x03\x02\x02\x02\u0125\u0127\x03\x02\x02\x02\u0126\u0128\x05\x1A\x0E\x02" +
 		"\u0127\u0126\x03\x02\x02\x02\u0127\u0128\x03\x02\x02\x02\u0128\u0129\x03" +
-		"\x02\x02\x02\u0129\u012A\x07n\x02\x02\u012A\u012B\x05\x16\f\x02\u012B" +
+		"\x02\x02\x02\u0129\u012A\x07`\x02\x02\u012A\u012B\x05\x16\f\x02\u012B" +
 		"\x13\x03\x02\x02\x02\u012C\u012E\x05 \x11\x02\u012D\u012C\x03\x02\x02" +
 		"\x02\u012D\u012E\x03\x02\x02\x02\u012E\u0130\x03\x02\x02\x02\u012F\u0131" +
 		"\x05\x1A\x0E\x02\u0130\u012F\x03\x02\x02\x02\u0130\u0131\x03\x02\x02\x02" +
@@ -4701,11 +4683,11 @@ export class pawnParser extends Parser {
 		"\x02\x02\x02\u0144\u0148\x07\x05\x02\x02\u0145\u0149\x07\v\x02\x02\u0146" +
 		"\u0149\x05$\x13\x02\u0147\u0149\x05\x18\r\x02\u0148\u0145\x03\x02\x02" +
 		"\x02\u0148\u0146\x03\x02\x02\x02\u0148\u0147\x03\x02\x02\x02\u0149\x17" +
-		"\x03\x02\x02\x02\u014A\u014B\x07\f\x02\x02\u014B\u014C\x07n\x02\x02\u014C" +
-		"\u014D\x07\v\x02\x02\u014D\x19\x03\x02\x02\x02\u014E\u014F\x07n\x02\x02" +
+		"\x03\x02\x02\x02\u014A\u014B\x07\f\x02\x02\u014B\u014C\x07`\x02\x02\u014C" +
+		"\u014D\x07\v\x02\x02\u014D\x19\x03\x02\x02\x02\u014E\u014F\x07`\x02\x02" +
 		"\u014F\u0150\x07&\x02\x02\u0150\x1B\x03\x02\x02\x02\u0151\u0152\x07\x06" +
-		"\x02\x02\u0152\u0157\x07n\x02\x02\u0153\u0154\x07\n\x02\x02\u0154\u0156" +
-		"\x07n\x02\x02\u0155\u0153\x03\x02\x02\x02\u0156\u0159\x03\x02\x02\x02" +
+		"\x02\x02\u0152\u0157\x07`\x02\x02\u0153\u0154\x07\n\x02\x02\u0154\u0156" +
+		"\x07`\x02\x02\u0155\u0153\x03\x02\x02\x02\u0156\u0159\x03\x02\x02\x02" +
 		"\u0157\u0155\x03\x02\x02\x02\u0157\u0158\x03\x02\x02\x02\u0158\u015A\x03" +
 		"\x02\x02\x02\u0159\u0157\x03\x02\x02\x02\u015A\u015B\x07\x07\x02\x02\u015B" +
 		"\u015C\x03\x02\x02\x02\u015C\u015D\x07&\x02\x02\u015D\x1D\x03\x02\x02" +
@@ -4734,7 +4716,7 @@ export class pawnParser extends Parser {
 		"\x02\u018A\u0180\x03\x02\x02\x02\u018A\u0184\x03\x02\x02\x02\u018A\u0185" +
 		"\x03\x02\x02\x02\u018A\u0186\x03\x02\x02\x02\u018A\u0187\x03\x02\x02\x02" +
 		"\u018A\u0188\x03\x02\x02\x02\u018A\u0189\x03\x02\x02\x02\u018B\u018D\x03" +
-		"\x02\x02\x02\u018C\u018E\x07u\x02\x02\u018D\u018C\x03\x02\x02\x02\u018D" +
+		"\x02\x02\x02\u018C\u018E\x07g\x02\x02\u018D\u018C\x03\x02\x02\x02\u018D" +
 		"\u018E\x03\x02\x02\x02\u018E%\x03\x02\x02\x02\u018F\u0193\x07\x06\x02" +
 		"\x02\u0190\u0192\x05$\x13\x02\u0191\u0190\x03\x02\x02\x02\u0192\u0195" +
 		"\x03\x02\x02\x02\u0193\u0191\x03\x02\x02\x02\u0193\u0194\x03\x02\x02\x02" +
@@ -4774,7 +4756,7 @@ export class pawnParser extends Parser {
 		"\x07\x02\x02\u01E7A\x03\x02\x02\x02\u01E8\u01EA\x05\x1A\x0E\x02\u01E9" +
 		"\u01E8\x03\x02\x02\x02\u01E9\u01EA\x03\x02\x02\x02\u01EA\u01F4\x03\x02" +
 		"\x02\x02\u01EB\u01ED\x07\x19\x02\x02\u01EC\u01EB\x03\x02\x02\x02\u01EC" +
-		"\u01ED\x03\x02\x02\x02\u01ED\u01EE\x03\x02\x02\x02\u01EE\u01F5\x07n\x02" +
+		"\u01ED\x03\x02\x02\x02\u01ED\u01EE\x03\x02\x02\x02\u01EE\u01F5\x07`\x02" +
 		"\x02\u01EF\u01F1\x07\x19\x02\x02\u01F0\u01EF\x03\x02\x02\x02\u01F0\u01F1" +
 		"\x03\x02\x02\x02\u01F1\u01F2\x03\x02\x02\x02\u01F2\u01F5\x05N(\x02\u01F3" +
 		"\u01F5\x05r:\x02\u01F4\u01EC\x03\x02\x02\x02\u01F4\u01F0\x03\x02\x02\x02" +
@@ -4787,7 +4769,7 @@ export class pawnParser extends Parser {
 		"\x05J&\x02\u01FF\u01FE\x03\x02\x02\x02\u01FF\u0200\x03\x02\x02\x02\u0200" +
 		"\u0203\x03\x02\x02\x02\u0201\u0204\x05\x1C\x0F\x02\u0202\u0204\x05\x1A" +
 		"\x0E\x02\u0203\u0201\x03\x02\x02\x02\u0203\u0202\x03\x02\x02\x02\u0203" +
-		"\u0204\x03\x02\x02\x02\u0204\u0205\x03\x02\x02\x02\u0205\u0209\x07n\x02" +
+		"\u0204\x03\x02\x02\x02\u0204\u0205\x03\x02\x02\x02\u0205\u0209\x07`\x02" +
 		"\x02\u0206\u0208\x05\x1E\x10\x02\u0207\u0206\x03\x02\x02\x02\u0208\u020B" +
 		"\x03\x02\x02\x02\u0209\u0207\x03\x02\x02\x02\u0209\u020A\x03\x02\x02\x02" +
 		"\u020A\u0211\x03\x02\x02\x02\u020B\u0209\x03\x02\x02\x02\u020C\u020F\x07" +
@@ -4803,10 +4785,10 @@ export class pawnParser extends Parser {
 		"\u0226\x05R*\x02\u0221\u0226\x05P)\x02\u0222\u0226\x05T+\x02\u0223\u0226" +
 		"\x05V,\x02\u0224\u0226\x05X-\x02\u0225\u0220\x03\x02\x02\x02\u0225\u0221" +
 		"\x03\x02\x02\x02\u0225\u0222\x03\x02\x02\x02\u0225\u0223\x03\x02\x02\x02" +
-		"\u0225\u0224\x03\x02\x02\x02\u0226O\x03\x02\x02\x02\u0227\u0228\x07s\x02" +
-		"\x02\u0228Q\x03\x02\x02\x02\u0229\u022A\x07r\x02\x02\u022AS\x03\x02\x02" +
-		"\x02\u022B\u022C\x07q\x02\x02\u022CU\x03\x02\x02\x02\u022D\u022E\x07t" +
-		"\x02\x02\u022EW\x03\x02\x02\x02\u022F\u0230\x07p\x02\x02\u0230Y\x03\x02" +
+		"\u0225\u0224\x03\x02\x02\x02\u0226O\x03\x02\x02\x02\u0227\u0228\x07e\x02" +
+		"\x02\u0228Q\x03\x02\x02\x02\u0229\u022A\x07d\x02\x02\u022AS\x03\x02\x02" +
+		"\x02\u022B\u022C\x07c\x02\x02\u022CU\x03\x02\x02\x02\u022D\u022E\x07f" +
+		"\x02\x02\u022EW\x03\x02\x02\x02\u022F\u0230\x07b\x02\x02\u0230Y\x03\x02" +
 		"\x02\x02\u0231\u0236\x05\\/\x02\u0232\u0236\x05^0\x02\u0233\u0236\x07" +
 		"\f\x02\x02\u0234\u0236\x07-\x02\x02\u0235\u0231\x03\x02\x02\x02\u0235" +
 		"\u0232\x03\x02\x02\x02\u0235\u0233\x03\x02\x02\x02\u0235\u0234\x03\x02" +
@@ -4836,7 +4818,7 @@ export class pawnParser extends Parser {
 		"\u026B\x03\x02\x02\x02\u026D\u0270\x03\x02\x02\x02\u026E\u026C\x03\x02" +
 		"\x02\x02\u026E\u026F\x03\x02\x02\x02\u026Fs\x03\x02\x02\x02\u0270\u026E" +
 		"\x03\x02\x02\x02\u0271\u0272\x05v<\x02\u0272u\x03\x02\x02\x02\u0273\u0274" +
-		"\x07x\x02\x02\u0274w\x03\x02\x02\x02\u0275\u027B\x05z>\x02\u0276\u0277" +
+		"\x07j\x02\x02\u0274w\x03\x02\x02\x02\u0275\u027B\x05z>\x02\u0276\u0277" +
 		"\x05D#\x02\u0277\u0278\x05z>\x02\u0278\u027A\x03\x02\x02\x02\u0279\u0276" +
 		"\x03\x02\x02\x02\u027A\u027D\x03\x02\x02\x02\u027B\u0279\x03\x02\x02\x02" +
 		"\u027B\u027C\x03\x02\x02\x02\u027Cy\x03\x02\x02\x02\u027D\u027B\x03\x02" +
@@ -4916,11 +4898,11 @@ export class pawnParser extends Parser {
 		"\x02\x02\u0325\u0328\x03\x02\x02\x02\u0326\u0324\x03\x02\x02\x02\u0327" +
 		"\u031F\x03\x02\x02\x02\u0327\u0328\x03\x02\x02\x02\u0328\u0329\x03\x02" +
 		"\x02\x02\u0329\u032A\x07\x05\x02\x02\u032A\x9F\x03\x02\x02\x02\u032B\u0334" +
-		"\x07o\x02\x02\u032C\u032D\x07\x03\x02\x02\u032D\u032E\x05\xA2R\x02\u032E" +
+		"\x07a\x02\x02\u032C\u032D\x07\x03\x02\x02\u032D\u032E\x05\xA2R\x02\u032E" +
 		"\u032F\x07\f\x02\x02\u032F\u0331\x03\x02\x02\x02\u0330\u032C\x03\x02\x02" +
 		"\x02\u0330\u0331\x03\x02\x02\x02\u0331\u0332\x03\x02\x02\x02\u0332\u0334" +
 		"\x05\x9CO\x02\u0333\u032B\x03\x02\x02\x02\u0333\u0330\x03\x02\x02\x02" +
-		"\u0334\xA1\x03\x02\x02\x02\u0335\u0336\x07n\x02\x02\u0336\xA3\x03\x02" +
+		"\u0334\xA1\x03\x02\x02\x02\u0335\u0336\x07`\x02\x02\u0336\xA3\x03\x02" +
 		"\x02\x02h\xA8\xAE\xB2\xBA\xC2\xC5\xC8\xCC\xCF\xD2\xDA\xDE\xE0\xE4\xE7" +
 		"\xEE\xF2\xFD\u0103\u0105\u010C\u0110\u0119\u011F\u0121\u0124\u0127\u012D" +
 		"\u0130\u013C\u013F\u0142\u0148\u0157\u0161\u0163\u0169\u016B\u016E\u0173" +

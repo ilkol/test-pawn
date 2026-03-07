@@ -2506,5 +2506,8 @@
 	"Unexpected switch statement": "Unexpected switch statement",
 	"extraneous input '30' expecting {'const', 'static', 'stock', 'public', IDENTIFIER} (unknown rule)": "extraneous input '30' expecting {'const', 'static', 'stock', 'public', IDENTIFIER} (unknown rule)",
 	"no viable alternative at input ',INI_MAX_FILE_SIZE=65536,;' (compoundExpression)": "no viable alternative at input ',INI_MAX_FILE_SIZE=65536,;' (compoundExpression)",
-	"mismatched input ';' expecting IDENTIFIER (variableDeclaration)": "mismatched input ';' expecting IDENTIFIER (variableDeclaration)"
+	"mismatched input ';' expecting IDENTIFIER (variableDeclaration)": "mismatched input ';' expecting IDENTIFIER (variableDeclaration)",
+	"extraneous input 'ead' expecting {'}', ','} (unknown rule)": "extraneous input 'ead' expecting {'}', ','} (unknown rule)",
+	"no viable alternative at input 'fopen}' (statement)": "no viable alternative at input 'fopen}' (statement)",
+	"mismatched input 'file' expecting IDENTIFIER (variableDeclaration)": "mismatched input 'file' expecting IDENTIFIER (variableDeclaration)"
 }
