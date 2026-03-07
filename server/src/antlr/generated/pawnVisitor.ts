@@ -34,7 +34,6 @@ import { SwitchContext } from "./pawnParser";
 import { CaseContext } from "./pawnParser";
 import { DefaultContext } from "./pawnParser";
 import { Case_listContext } from "./pawnParser";
-import { RangeContext } from "./pawnParser";
 import { ArrayInitContext } from "./pawnParser";
 import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
@@ -311,13 +310,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitCase_list?: (ctx: Case_listContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.range`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitRange?: (ctx: RangeContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.arrayInit`.

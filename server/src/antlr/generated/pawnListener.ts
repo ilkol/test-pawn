@@ -34,7 +34,6 @@ import { SwitchContext } from "./pawnParser";
 import { CaseContext } from "./pawnParser";
 import { DefaultContext } from "./pawnParser";
 import { Case_listContext } from "./pawnParser";
-import { RangeContext } from "./pawnParser";
 import { ArrayInitContext } from "./pawnParser";
 import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
@@ -432,17 +431,6 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitCase_list?: (ctx: Case_listContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.range`.
-	 * @param ctx the parse tree
-	 */
-	enterRange?: (ctx: RangeContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.range`.
-	 * @param ctx the parse tree
-	 */
-	exitRange?: (ctx: RangeContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.arrayInit`.
