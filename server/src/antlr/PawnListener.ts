@@ -351,6 +351,9 @@ export class PawnListener implements IPawnListener
 		if(tag) {
 			node.tag = tag;
 		}
+		const id = ctx.IDENTIFIER();
+		node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
+		node.id = id.text;
 		
 		if(ctx.stop)
 		{	
@@ -360,7 +363,6 @@ export class PawnListener implements IPawnListener
 			
 
 			const last = <EnumDeclaration>this.nodes.peek();
-			console.log(last);
 			last.pushParameter(node);
 			node.parent = last;
 		}
