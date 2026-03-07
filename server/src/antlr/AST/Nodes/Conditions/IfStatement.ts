@@ -6,6 +6,7 @@ import { Serialization } from "../../../../cache/Serialization";
 
 export class IfStatement extends AbstractStatement
 {
+	name = "if"
 	public code?: AbstractStatement;
 	public condition?: Expression;
 	public else?: CodeBlock | AbstractStatement;

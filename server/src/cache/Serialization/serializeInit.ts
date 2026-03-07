@@ -1,5 +1,6 @@
 import { Serialization } from ".";
 import { CodeBlock } from "../../antlr/AST/Nodes/CodeBlock";
+import { CompoundExpression } from "../../antlr/AST/Nodes/CompoundExpression";
 import { IfStatement } from "../../antlr/AST/Nodes/Conditions/IfStatement";
 import { CaseStatement } from "../../antlr/AST/Nodes/Conditions/switch/CaseStatement";
 import { DefaultStatement } from "../../antlr/AST/Nodes/Conditions/switch/DefaultStatement";
@@ -85,6 +86,7 @@ export function serializeInit(): void {
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.BoolLiteral, BoolLiteral);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Break, Break);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Continue, Continue);
+	Serialization.Deserialize.registerSerializable(Serialization.NodeList.CompoundExpression, CompoundExpression);
 
 	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Define, Define);
 	Serialization.Deserialize.registerSerializable(Serialization.Preprocessor.List.Else, Else);

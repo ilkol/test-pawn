@@ -80,6 +80,7 @@ import { PostfixExpressionContext } from "./pawnParser";
 import { FunctionOrArrayExpressionContext } from "./pawnParser";
 import { PrimaryExpressionContext } from "./pawnParser";
 import { LiteralOrSymbolContext } from "./pawnParser";
+import { CompoundExpressionContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
 import { FunctionArgumentContext } from "./pawnParser";
@@ -937,6 +938,17 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitLiteralOrSymbol?: (ctx: LiteralOrSymbolContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.compoundExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterCompoundExpression?: (ctx: CompoundExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.compoundExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitCompoundExpression?: (ctx: CompoundExpressionContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.expresion`.

@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener as IPawnListener } from "./generated/pawnListener";
-import { AdditiveExpressionContext, ArrayIndexContext, ArrayInitContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, CompareExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, FunctionOrArrayExpressionContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostfixExpressionContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TernaryExpressionContext, VarDeclarationContext, VarModifiresContext, VariableDeclarationContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
+import { AdditiveExpressionContext, ArrayIndexContext, ArrayInitContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, CompareExpressionContext, CompoundExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, FunctionOrArrayExpressionContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostfixExpressionContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RangeContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TernaryExpressionContext, VarDeclarationContext, VarModifiresContext, VariableDeclarationContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
@@ -65,6 +65,7 @@ import { Token } from "antlr4ts";
 import { Interval } from "antlr4ts/misc/Interval";
 import { RightValue } from "./AST/Nodes/RightValue";
 import { PawnErrors } from "../Errors/PawnErrors";
+import { CompoundExpression } from "./AST/Nodes/CompoundExpression";
 
 export class PawnListener implements IPawnListener
 {
@@ -409,6 +410,9 @@ export class PawnListener implements IPawnListener
 			else if(last instanceof Ellipse) {
 				last.tag = node;
 			}
+			else if(last instanceof OperatorNew) {
+				this.nodes.push(node);
+			}
 			else {
 				console.log(last);
 				this.addDiagnostic(Locale.t("Unexpected tag operator"), DiagnosticSeverity.Error, node.pos);
@@ -465,7 +469,14 @@ export class PawnListener implements IPawnListener
 	}
 
 	exitCompoundStatment(ctx: CompoundStatmentContext): void {
+		const statementsCount = ctx.statement().length;
+		const statements = [];
+		for(let i = 0; i < statementsCount; i++) {
+			statements.push(<AbstractStatement>this.nodes.pop());
+		}
 		let node = <CodeBlock>this.nodes.pop();
+		statements.forEach(node.statements.push.bind(node.statements));
+		
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			let last = this.nodes.peek();
@@ -538,14 +549,11 @@ export class PawnListener implements IPawnListener
 		if(last instanceof ArrayInit) {
 			last.value.push(node);
 		}
-		else if(last instanceof Expression) {
+		else if(last instanceof Expression || last instanceof CaseStatement) {
 			this.nodes.push(node);
 		}
 		else if(last instanceof FunctionDeclarationParameter) {
 			last.defaultValue = node;
-		}
-		else if(last instanceof CaseStatement) {
-			last.condition = node;
 		}
 		else {
 			console.debug(last);
@@ -570,7 +578,11 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitReturn(ctx: ReturnContext): void {
+		const value = ctx.compoundExpression() ? <Expression>this.nodes.pop() : undefined;
 		let node = <ReturnStatement>this.nodes.pop();
+		if(value) {
+			node.value = value;
+		}
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			let last = this.nodes.peek();
@@ -589,6 +601,24 @@ export class PawnListener implements IPawnListener
 		const node = new Expression();
 		this.nodes.push(node);
 	}
+	exitCompoundExpression(ctx: CompoundExpressionContext) {
+		const expressionsCount = ctx.expresion().length;
+		let node: Expression;
+		if(expressionsCount === 1) {
+			node = <Expression>this.nodes.pop();
+		} else {
+			node = new CompoundExpression();
+			for(let i = 0; i < expressionsCount; i++) {
+				(<CompoundExpression>node).add(<Expression>this.nodes.pop());
+			}
+		}
+
+		if(ctx.stop) {
+			node.setPos(ctx.start, ctx.stop);
+		}
+
+		this.nodes.push(node);
+	}
 	exitExpresion(ctx: ExpresionContext): void {
 		let node = <Expression>this.nodes.pop();
 		this.nodes.pop(); // pop stub
@@ -604,44 +634,7 @@ export class PawnListener implements IPawnListener
 		else if(last instanceof NamedArgument) {
 			last.value = node;
 		}
-		else if(last instanceof TernarOperator) {
-			try {
-				last.pushValue(node);
-			} catch(e) {
-				this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
-		else if(last instanceof AbstractOperator) {
-			last.expresion = node;
-		}
-		else if(last instanceof Statement) {
-			last.statemnent = node;
-		}
-		else if(last instanceof IfStatement) {
-			last.condition = node;
-		}
-		else if(last instanceof SwitchStatement) {
-			last.condition = node;
-		}
-		else if(last instanceof ForCycle) {
-			try {
-				last.addExpresion(node);
-			}
-			catch(e) {
-				console.error(last);
-				this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
-			}
-		}
-		else if(last instanceof Cycle) {
-			last.condition = node;
-		}
-		// else if(last instanceof FunctionDeclarationParameter) {
-		// 	last.defaultValue = node;
-		// }
-		else if(last instanceof ReturnStatement) {
-			last.value = node;
-		}
-		else if(last instanceof CaseStatement || last instanceof DefaultStatement)
+		else if(last instanceof DefaultStatement)
 		{
 			last.code = node;
 		}
@@ -649,13 +642,23 @@ export class PawnListener implements IPawnListener
 		{
 			this.nodes.push(node);
 		}
-		else if(last instanceof OperatorNew || last instanceof VarDeclaration || last instanceof Tag)
+		else if(
+			last instanceof OperatorNew || 
+			last instanceof VarDeclaration || 
+			last instanceof Tag || 
+			last instanceof AbstractStatement || 
+			last instanceof Cycle ||
+			last instanceof Statement
+		)
 		{
 			this.nodes.push(node);
 		}
 		else {
+			this.nodes.push(node);
+			console.error("Unexpected expresion");
 			console.debug(last);
-			this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
+			console.debug(node);
+			// this.addDiagnostic(Locale.t("Unexpected expresion"), DiagnosticSeverity.Error, node.pos);
 		}
 	}
 
@@ -1070,9 +1073,6 @@ export class PawnListener implements IPawnListener
 			else if(last instanceof FunctionDeclarationParameter) {
 				last.defaultValue = node;
 			}
-			else if(last instanceof CaseStatement) {
-				last.condition = node;
-			}
 			else {
 				console.debug(last);
 				this.addDiagnostic(Locale.t("Unexpected string"), DiagnosticSeverity.Error, node.pos);
@@ -1103,7 +1103,13 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitWhile(ctx: WhileContext): void {
+		const code = <AbstractStatement>this.nodes.pop();
+		const cond = <Expression>this.nodes.pop();
 		const node = <WhileCycle>this.nodes.pop();
+
+		node.condition = cond;
+		node.code = code;
+
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			const last = this.nodes.peek();
@@ -1120,7 +1126,25 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitFor(ctx: ForContext): void {
+		const code = <AbstractStatement>this.nodes.pop();
+		const lastExp = ctx._third ? <Expression>this.nodes.pop() : undefined;
+		const cond = ctx._second ? <Expression>this.nodes.pop() : undefined;
+		const firstExp = ctx._first?.compoundExpression() ? <Expression>this.nodes.pop() : undefined;
+
+
 		const node = <ForCycle>this.nodes.pop();
+
+		if(firstExp) {
+			node.initialization = firstExp;
+		}
+		if(lastExp) {
+			node.increment = lastExp;
+		}
+		if(cond) {
+			node.condition = cond;
+		}
+		node.code = code;
+
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			const last = this.nodes.peek();
@@ -1128,6 +1152,7 @@ export class PawnListener implements IPawnListener
 				last.statemnent = node;
 			}
 			else {
+				console.log(last);
 				this.addDiagnostic(Locale.t("Unexpected for loop"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
@@ -1139,7 +1164,15 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitIfStatement(ctx: IfStatementContext): void {
+		const elseCode = ctx.elseStatement() ? <AbstractStatement>this.nodes.pop() : undefined;
+		const code = <AbstractStatement>this.nodes.pop();
+		const cond = <Expression>this.nodes.pop();
 		const node = <IfStatement>this.nodes.pop();
+		
+		node.condition = cond;
+		node.code = code;
+		node.else = elseCode;
+
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			
@@ -1159,7 +1192,19 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitSwitch(ctx: SwitchContext): void {
+		const defaultStatement = ctx.default() ? <DefaultStatement>this.nodes.pop() : undefined;
+		const caseCount = ctx.case().length;
+		const cases: CaseStatement[] = [];
+		for(let i = 0; i < caseCount; i++) {
+			cases.push(<CaseStatement>this.nodes.pop());
+		}
+		const switchExp = <Expression>this.nodes.pop();
 		const node = <SwitchStatement>this.nodes.pop();
+
+		node.condition = switchExp;
+		node.cases = cases;
+		node.default = defaultStatement;
+		
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			
@@ -1178,18 +1223,30 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitCase(ctx: CaseContext): void {
+		const statement = <AbstractStatement>this.nodes.pop();
+		const caseListCount = ctx.case_list().length;
+		const caseList: Expression[] = [];
+		for(let i = 0; i < caseListCount; i++) {
+			caseList.unshift(<Expression>this.nodes.pop());
+		}
+
 		const node = <CaseStatement>this.nodes.pop();
+		node.code = statement;
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 			
-			const last = this.nodes.peek();
-			if(last instanceof SwitchStatement) {
-				last.cases.push(node);
-			}
-			else {
-				this.addDiagnostic(Locale.t("Unexpected case statement"), DiagnosticSeverity.Error, node.pos);
-			}
+			// const last = this.nodes.peek();
+			// if(last instanceof SwitchStatement) {
+			// 	last.cases.push(node);
+			// }
+			// else {
+			// 	this.addDiagnostic(Locale.t("Unexpected case statement"), DiagnosticSeverity.Error, node.pos);
+			// }
 		}
+		this.nodes.push(node);
+	}
+	exitRange(ctx: RangeContext) {
+		this.nodes.push(new IntLiteral());
 	}
 
 	enterDefault(ctx: DefaultContext): void {
@@ -1200,15 +1257,8 @@ export class PawnListener implements IPawnListener
 		const node = <DefaultStatement>this.nodes.pop();
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
-			
-			const last = this.nodes.peek();
-			if(last instanceof SwitchStatement) {
-				last.default = node;
-			}
-			else {
-				this.addDiagnostic(Locale.t("Unexpected default statement"), DiagnosticSeverity.Error, node.pos);
-			}
 		}
+		this.nodes.push(node);
 	}
 
 	exitDocBlock(ctx: DocBlockContext)
@@ -1221,25 +1271,24 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 	exitStatement(ctx: StatementContext): void {
-		const node = <AbstractStatement>(<Statement>this.nodes.pop()).statemnent;
+		const node = ctx.compoundExpression() ? <Expression>this.nodes.pop() : <AbstractStatement>(<Statement>this.nodes.pop()).statemnent;
 		
+		if(ctx.compoundExpression()) {
+			this.nodes.pop();
+		}
+
 		let last = this.nodes.peek();
 		if(
 			last instanceof FunctionDeclaration || 
-			last instanceof IfStatement || 
-			last instanceof Cycle || 
-			last instanceof CaseStatement || 
 			last instanceof DefaultStatement
 		) {
 			last.code = node;
 		}
-		else if(last instanceof CodeBlock) {
-			last.statements.push(node);
-		}
 		else {
-			console.error(node);
-			console.error(last);
-			this.addDiagnostic(Locale.t("Unexpected code"), DiagnosticSeverity.Error, node.pos);
+			// console.error(node);
+			// console.error(last);
+			// this.addDiagnostic(Locale.t("Unexpected code"), DiagnosticSeverity.Error, node.pos);
+			this.nodes.push(node);
 		}	
 	}
 
@@ -1360,13 +1409,30 @@ export class PawnListener implements IPawnListener
 		if(!ctx.stop || ctx.childCount <= 1) {
 			return; // primaryExpression уже лежит в стеке
 		}
-		const node = new BinarOperator();
-		node.setPos(ctx.start, ctx.stop);
-		node.operator = ctx._op.text!;
-		
-		node.right = this.nodes.pop() as Expression;
-		node.left = this.nodes.pop() as Expression;
 
-		this.nodes.push(node);
+		const opCount = Math.floor(ctx.childCount / 2);
+
+		 const operands: Expression[] = [];
+		for (let i = 0; i <= opCount; i++) {
+			operands.unshift(this.nodes.pop() as Expression);
+		}
+		let leftNode = operands.shift()!;
+
+		for (let i = 0; i < opCount; i++) {
+			const rightNode = operands.shift()!;
+			
+			const operatorText = ctx.getChild(i * 2 + 1).text;
+
+			const binaryNode = new BinarOperator();
+			binaryNode.operator = operatorText;
+			binaryNode.left = leftNode;
+			binaryNode.right = rightNode;
+
+			binaryNode.range = new Range(leftNode.range.start, rightNode.range.end);
+
+			leftNode = binaryNode;
+		}
+
+		this.nodes.push(leftNode);
 	}
 }

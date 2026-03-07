@@ -28,6 +28,8 @@ export enum NodeList {
 	FunctionCall = "FunctionCall",
 	NamedArgument = "NamedArgument",
 
+	CompoundExpression = "CompoundExpression",
+
 	UnarOperator = "UnarOperator",
 	ReturnStatement = "ReturnStatement",
 	For = "ForCycle",

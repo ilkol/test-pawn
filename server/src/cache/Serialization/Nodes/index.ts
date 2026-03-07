@@ -8,6 +8,7 @@ export { ITag as Tag } from "./Tag";
 
 export { IEllipse as Ellipse } from "./Ellipse";
 export { IExpression as Expression } from "./Expression";
+export { CompoundExpression } from "./CompoundExpression";
 export { IDeclaration as Declaration } from "./Declaration";
 
 export * as Operators from "./Operators";

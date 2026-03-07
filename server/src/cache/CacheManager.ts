@@ -6,7 +6,7 @@ import { createHash } from "crypto";
 
 export class CacheManager {
 
-	static readonly VERSION = 9;
+	static readonly VERSION = 10;
 
 	/**
 	 * Хранит кэши файлов, ключом является путь к файлу.

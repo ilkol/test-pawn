@@ -7,6 +7,7 @@ import { Serialization } from "../../../../../cache/Serialization";
 
 export class SwitchStatement extends AbstractStatement
 {
+	name = "switch"
 	public condition?: Expression;
 	public cases: CaseStatement[] = [];
     public default?: DefaultStatement;

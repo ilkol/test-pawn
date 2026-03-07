@@ -80,6 +80,7 @@ import { PostfixExpressionContext } from "./pawnParser";
 import { FunctionOrArrayExpressionContext } from "./pawnParser";
 import { PrimaryExpressionContext } from "./pawnParser";
 import { LiteralOrSymbolContext } from "./pawnParser";
+import { CompoundExpressionContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
 import { FunctionArgumentContext } from "./pawnParser";
@@ -632,6 +633,13 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitLiteralOrSymbol?: (ctx: LiteralOrSymbolContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.compoundExpression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitCompoundExpression?: (ctx: CompoundExpressionContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.expresion`.

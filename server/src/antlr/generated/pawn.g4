@@ -22,7 +22,7 @@ enumMember:			tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion SQUARE_CLOSE_BRACKE
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
 varDeclaration:     (NEW varModifires*| varModifires+) variableDeclaration (COMA variableDeclaration)*;
-variableDeclaration: tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion SQUARE_CLOSE_BRACKET)* (ASSIGMENT (expresion | arrayInit))?;
+variableDeclaration: tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion SQUARE_CLOSE_BRACKET)* (ASSIGMENT (compoundExpression | arrayInit))?;
 
 functionDecl:		(funcDeclModif)? tag? IDENTIFIER functionDeclarationParams;
 operatorOverload:	(funcDeclModif)? tag? OPERATOR canBeOverloaded functionDeclarationParams;
@@ -36,20 +36,20 @@ arrayIndex:			(SQUARE_OPEN_BRACKET (expresion CHAR?)? SQUARE_CLOSE_BRACKET) | (C
 funcDeclModif:		funcModif | FORWARD | NATIVE;
 funcModif:			STOCK | PUBLIC;
 
-statement:			(((varDeclaration | enum | goto | return | cycleKeywords | exit  | assert |  sleep /*| state | emit*/ | expresion) SEMI) | SEMI | processorLabel | compoundStatment |  ifStatement | cycles | switch ) BACKSLAH?;
+statement:			(((varDeclaration | enum | goto | return | cycleKeywords | exit  | assert |  sleep /*| state | emit*/ | compoundExpression) SEMI) | SEMI | processorLabel | compoundStatment |  ifStatement | cycles | switch ) BACKSLAH?;
 compoundStatment:   CURLY_OPEN_BRACKET (statement)* CURLY_CLOSE_BRACKET;
 assert: ASSERT expresion;
-exit: EXIT expresion;
-goto: GOTO expresion;
-sleep: SLEEP expresion;
+exit: EXIT compoundExpression;
+goto: GOTO symbol;
+sleep: SLEEP compoundExpression;
 ifStatement: IF (condition | expresion THEN) statement (elseStatement)?;
 elseStatement: ELSE statement;
-return:				RETURN expresion?;
-condition: OPEN_PARENTHESIS expresion CLOSE_PARENTHESIS;
+return:				RETURN compoundExpression?;
+condition: OPEN_PARENTHESIS compoundExpression CLOSE_PARENTHESIS;
 switch:				SWITCH condition CURLY_OPEN_BRACKET (case)* default? CURLY_CLOSE_BRACKET;
 case:				CASE case_list (COMA case_list)* COLON statement;
 default:            DEFAULT COLON statement;
-case_list:			(literal|IDENTIFIER) range?;
+case_list:			(literal|symbol) range?;
 range:				PERIOD literal;
 
 arrayInit:		CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* CURLY_CLOSE_BRACKET;
@@ -95,8 +95,8 @@ cycles:				while | do | for;
 do:					DO statement (WHILE condition)?;
 
 while:				WHILE condition statement;
-for:				FOR OPEN_PARENTHESIS first=forFirstExp? SEMI second=expresion? SEMI third=expresion? CLOSE_PARENTHESIS statement;
-forFirstExp:        varDeclaration|expresion;
+for:				FOR OPEN_PARENTHESIS first=forFirstExp? SEMI second=expresion? SEMI third=compoundExpression? CLOSE_PARENTHESIS statement;
+forFirstExp:        varDeclaration|compoundExpression;
 
 
 cycleKeywords:		BREAK|CONTINUE;
@@ -169,7 +169,7 @@ primaryExpression:
 
 literalOrSymbol: symbol | literal;
 
-
+compoundExpression: expresion (COMA expresion)*;
 expresion: assigmentExpression;
 
 

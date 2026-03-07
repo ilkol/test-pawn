@@ -6,6 +6,8 @@ import { Serialization } from "../../../../../cache/Serialization";
 
 export class CaseStatement extends AbstractStatement
 {
+	name = "case"
+
 	public condition?: Expression;
 	public code?: CodeBlock | AbstractStatement;
 
