@@ -472,7 +472,7 @@ export class PawnListener implements IPawnListener
 		const statementsCount = ctx.statement().length;
 		const statements = [];
 		for(let i = 0; i < statementsCount; i++) {
-			statements.push(<AbstractStatement>this.nodes.pop());
+			statements.unshift(<AbstractStatement>this.nodes.pop());
 		}
 		let node = <CodeBlock>this.nodes.pop();
 		statements.forEach(node.statements.push.bind(node.statements));
