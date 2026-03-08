@@ -1,6 +1,5 @@
 import { Serialization } from "../../../../cache/Serialization";
 import { Function } from "../../../../SymbolSystem/Symbols";
-import { SymbolReferance } from "../../../../SymbolSystem/Symbols/SymbolReferance";
 import { IVisitor } from "../../visitor/IVisitor";
 import { AbstractStatement } from "../AbstractStatement";
 import { CodeBlock } from "../CodeBlock";
@@ -21,7 +20,7 @@ export enum FunctionModifire {
 
 export class FunctionDeclaration extends VarOrFunctionDeclaration implements IContainsVars<FunctionDeclarationParameter>
 {
-	public symbol?: SymbolReferance;
+	public symbol?: Function;
 
 	name = "объявление функции";
 	

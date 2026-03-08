@@ -621,20 +621,22 @@ export class Analyzer extends BaseVisitor
 			modifiers.push(SemanticTokenModifiers.readonly);
 		}
 		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
+		node.symbol = symbol;
 		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
 		this.curScope.add(symbol);
 		symbol.tag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 
-		if(node.initValue) {
+		
+	}
+	afterVisitVariableDeclaration(node: VarDeclaration<Symbols.Variable>): void {
+		const symbol = node.symbol;
+		if(node.initValue && symbol) {
 			const expectedTag = symbol.tag;
-			const actualTag = node.initValue.inferredTag;
+			const actualTag = node.initValue.inferredTag = this.tagInferer.inferTag(node.initValue);
 			
 			this.checkTagMismatch(expectedTag, actualTag, true, node.initValue.pos);
 		}
-	}
-	afterVisitVariableDeclaration(node: VarDeclaration): void {
-		
 	}
 
 	private extendScope(range: Range, newSymbol?: Symbols.SymbolReferance | undefined) {
@@ -981,7 +983,6 @@ export class Analyzer extends BaseVisitor
 		return symbol as Symbols.Function;
 	}
 	private createFunctionStub(node: FunctionDeclaration, symbol: Symbols.Function) {
-		const tag = SymbolsFactory.defaultTag;
 		// TODO: тут в оригинальном компиляторе есть проверка размерности...
 		const isPublic = node.hasModifier(FunctionModifire.Public) || node.id[0] === '@';
 		const isStocked = node.hasModifier(FunctionModifire.Stock);
@@ -1022,6 +1023,7 @@ export class Analyzer extends BaseVisitor
 			return;
 		}
 		symbol.returnTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
+		node.symbol = symbol;
 		if(isOverload) {
 			this.checkOperatorTag((<OperatorOverload>node).operator, symbol.returnTag, node.tag.idPos);
 		}
@@ -1037,10 +1039,7 @@ export class Analyzer extends BaseVisitor
 			if(isPublic && isStocked) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.idPos));
 			}
-	
-			
-			node.symbol = symbol.defenition;
-	
+		
 			if(isPublic) {
 				symbol.addModifier(FunctionModifire.Public);
 			}

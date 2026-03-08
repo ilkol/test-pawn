@@ -5,11 +5,9 @@ import { Serialization } from "../../../../cache/Serialization";
 import * as SymbolSystem from "../../../../SymbolSystem";
 import { VariableModifire } from "../../../../SymbolSystem/Symbols";
 
-export class EnumMember extends VarDeclaration
+export class EnumMember extends VarDeclaration<SymbolSystem.Symbols.EnumMember>
 {
 	name = "член перечисления";
-
-	public symbol: SymbolSystem.Symbols.EnumMember | undefined = undefined;
 
 	private _parent: EnumDeclaration | undefined;
 	
