@@ -702,7 +702,7 @@ export class Analyzer extends BaseVisitor
 		const lastTag = names.pop();
 		const formalTag = names.join(", ");
 		const formalTagsName = formalTag === "" ? `${lastTag},` : `${formalTag} or ${lastTag};`;
-		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, range, formalTags.length === 1 ? Locale.t("tag") : Locale.t("tags"), formalTagsName, actualTag))
+		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, range, formalTags.length === 1 ? Locale.t("tag") : Locale.t("tags"), formalTagsName, actualTag.name))
 	}	
 
 	private checkAllTags(formalTags: MayBeTag[], actualTag: MayBeTag): boolean {
