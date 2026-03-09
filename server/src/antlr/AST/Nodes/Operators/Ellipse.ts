@@ -5,13 +5,16 @@ import { Tag } from "../Tag";
 
 export class Ellipse extends ASTNode
 {
+	name = "ellipse";
+
+
 	public accept(visitor: IVisitor): void {
 		throw new Error("Method not implemented.");
 	}
-	private _tags: Tag[] | undefined = undefined;
+	private _tags: Tag[] | undefined = [];
 
-	get tags(): Tag[] | undefined {
-		return this._tags;
+	get tags(): Tag[] {
+		return this._tags ?? [];
 	}
 
 
@@ -24,12 +27,9 @@ export class Ellipse extends ASTNode
 
 	addTag(tag: Tag) {
 		if(!this._tags) {
-			this._tags = [];
+			this._tags = [tag];
 			return;
 		}
-		if(!Array.isArray(this._tags)) {
-			this._tags = [this._tags];
-		} 
 		this._tags.push(tag);
 	}
 	
