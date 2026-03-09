@@ -693,7 +693,7 @@ export class Analyzer extends BaseVisitor
 	}
 
 
-	private checkMultyTagMismatch(formalTags: string[], actualTag: string, range: Range) {
+	private checkMultyTagMismatch(formalTags: MayBeTag[], actualTag: MayBeTag, range: Range) {
 		if(this.checkAllTags(formalTags, actualTag)) {
 			return;
 		}
@@ -705,9 +705,9 @@ export class Analyzer extends BaseVisitor
 		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, range, formalTags.length === 1 ? Locale.t("tag") : Locale.t("tags"), formalTagsName, actualTag))
 	}	
 
-	private checkAllTags(formalTags: string[], actualTag: string): boolean {
+	private checkAllTags(formalTags: MayBeTag[], actualTag: MayBeTag): boolean {
 		for(const formalTag of formalTags) {
-			if(this.simpleCheckTagMismatch(formalTag, actualTag, true)) {
+			if(this.simpleCheckTagMismatch(formalTag.name, actualTag.name, true)) {
 				return true;
 			}
 		}
@@ -773,8 +773,15 @@ export class Analyzer extends BaseVisitor
 
 		for(const argument of node.vars) {
 			if(argNumber >= functionSymbol.parameters.length) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentCountMismatch, argument.pos, argNumber));
-				break;
+				if(!functionSymbol.ellipse) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentCountMismatch, argument.pos, argNumber));
+					break;
+				} 
+				const value = (<NamedArgument>argument).value;
+				if(value) {
+					const tag = value.inferredTag = this.tagInferer.inferTag(value);
+					this.checkMultyTagMismatch(functionSymbol.ellipse.validTags, tag, value.range);
+				}
 			}
 			const argSymbol =  this.curScope.findSymbol(argument.name);
 			if(argSymbol) {

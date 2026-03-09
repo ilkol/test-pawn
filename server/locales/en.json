@@ -1716,7 +1716,8 @@
 	},
 	"mismatched input '": {
 		"' expecting {'{', '[', ',', ';'} (variable)": "mismatched input '.' expecting {'{', '[', ',', ';'} (variable)",
-		"' expecting {'(', '{', '[', ',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '++', '--', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (functionOrArrayExpression)": "mismatched input '.' expecting {'(', '{', '[', ',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '++', '--', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (functionOrArrayExpression)"
+		"' expecting {'(', '{', '[', ',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '++', '--', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (functionOrArrayExpression)": "mismatched input '.' expecting {'(', '{', '[', ',', ';', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '++', '--', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (functionOrArrayExpression)",
+		"' expecting {')', ','} (functionCallOperator)": "mismatched input '.' expecting {')', ','} (functionCallOperator)"
 	},
 	"mismatched input ';' expecting '(' (functionDeclarationParams)": "mismatched input ';' expecting '(' (functionDeclarationParams)",
 	"no viable alternative at input ',5": {
@@ -2518,5 +2519,13 @@
 	"missing ';' at '{' (unknown rule)": "missing ';' at '{' (unknown rule)",
 	"extraneous input ']' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input ']' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
 	"mismatched input '}' expecting {']', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '++', '--', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (postfixExpression)": "mismatched input '}' expecting {']', '=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=', '>>=', '>>>=', '<<=', '+', '-', '*', '/', '%', '++', '--', '==', '!=', '<', '>', '<=', '>=', '?', '||', '&&', '&', '|', '^', '>>', '<<', '>>>', 'char'} (postfixExpression)",
-	"no viable alternative at input 'printf}' (statement)": "no viable alternative at input 'printf}' (statement)"
+	"no viable alternative at input 'printf}' (statement)": "no viable alternative at input 'printf}' (statement)",
+	"no viable alternative at input '{}' (functionDeclarationParams)": "no viable alternative at input '{}' (functionDeclarationParams)",
+	"no viable alternative at input '{a}": ")' (functionDeclarationParams)",
+	"no viable alternative at input '{A}": ")' (functionDeclarationParams)",
+	"no viable alternative at input '{A,}' (functionDeclarationParams)": "no viable alternative at input '{A,}' (functionDeclarationParams)",
+	"no viable alternative at input '{A,d}": ")' (functionDeclarationParams)",
+	"no viable alternative at input '{A,B,}' (functionDeclarationParams)": "no viable alternative at input '{A,B,}' (functionDeclarationParams)",
+	"no viable alternative at input '{A,B,_}": ")' (functionDeclarationParams)",
+	"extraneous input ')' expecting ';' (unknown rule)": "extraneous input ')' expecting ';' (unknown rule)"
 }
