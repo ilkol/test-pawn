@@ -551,12 +551,8 @@ export class PawnListener implements IPawnListener
 		if(last instanceof ArrayInit) {
 			last.value.push(node);
 		}
-		else if(last instanceof Expression || last instanceof CaseStatement) {
-			this.nodes.push(node);
-		}
 		else {
-			console.debug(last);
-			this.addDiagnostic(Locale.t("Unexpected literal"), DiagnosticSeverity.Error, node.pos);
+			this.nodes.push(node);
 		}
 	}
 	enterInteger(ctx: IntegerContext): void {
