@@ -1023,6 +1023,12 @@ export class Analyzer extends BaseVisitor
 			return;
 		}
 		symbol.returnTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
+		const ellipse = node.ellipse;
+		if(ellipse && ellipse.tags) {
+			symbol.ellipse = {
+				validTags: ellipse.tags.map(tag => this.addTag(tag.id, tag.pos, tag.idPos))
+			};
+		}
 		node.symbol = symbol;
 		if(isOverload) {
 			this.checkOperatorTag((<OperatorOverload>node).operator, symbol.returnTag, node.tag.idPos);

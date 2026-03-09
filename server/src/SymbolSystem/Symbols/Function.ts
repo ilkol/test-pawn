@@ -8,6 +8,11 @@ import { SymbolsFactory } from "../SymbolsFactory";
 import { Parameter } from "./Parameter";
 import { FunctionModifire } from "../../antlr/AST/Nodes/Functions/FunctionDeclaration";
 
+interface EllipseInfo {
+	readonly validTags: MayBeTag[];
+
+}
+
 export class Function extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Function;
 	public hasImplementation = false;
@@ -16,6 +21,7 @@ export class Function extends AbstractSymbol {
 	public emptyReturnsRanges: Range[] = [];
 	public shuldReturnValue: boolean = false;
 	private functionModifiers: number = FunctionModifire.None;
+	public ellipse?: EllipseInfo;
 
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range) {
 		super(
