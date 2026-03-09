@@ -8,23 +8,18 @@ export class Ellipse extends ASTNode
 	public accept(visitor: IVisitor): void {
 		throw new Error("Method not implemented.");
 	}
-	private _tags: Tag[] | Tag | undefined = undefined;
+	private _tags: Tag[] | undefined = undefined;
 
-	get tags(): Tag[] | Tag | undefined {
+	get tags(): Tag[] | undefined {
 		return this._tags;
 	}
-	set tag(value: Tag) {
-		this._tags = value;
-	}
+
 
 	get tagString(): string {
 		if(!this.tags) {
 			return "_";
 		}
-		if(Array.isArray(this.tags)) {
-			return this.tags ? this.tags.map(tag => tag.id).join(", ") : "_";
-		} 
-		return this.tags.id;
+		return this.tags ? this.tags.map(tag => tag.id).join(", ") : "_";
 	}
 
 	addTag(tag: Tag) {
@@ -41,7 +36,7 @@ export class Ellipse extends ASTNode
 	toJSON(): Serialization.Nodes.Ellipse {
 		return {
 			...super.toJSON(),
-			tags: this._tags ?( Array.isArray(this._tags) ? this._tags.map(tag => tag.toJSON()) : this._tags.toJSON()) : undefined,
+			tags: this._tags ? this._tags.map(tag => tag.toJSON()) : undefined,
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			__type: Serialization.NodeList.Ellipse,
 		};
@@ -51,11 +46,7 @@ export class Ellipse extends ASTNode
 		const instance = new Ellipse();
 		instance.prepareFromJSON(json);
 		if(json.tags) {
-			if(Array.isArray(json.tags)) {
-				instance._tags = json.tags.map(tag => Serialization.Deserialize.object(tag));
-			} else {
-				instance._tags = Serialization.Deserialize.object<Tag>(json.tags);
-			}
+			instance._tags = json.tags.map(tag => Serialization.Deserialize.object(tag));
 		} else {
 			instance._tags = undefined;
 		}
