@@ -212,6 +212,7 @@ export abstract class BaseVisitor implements IVisitor
 	}
 	visitVariableDeclaration(node: VarDeclaration): void {
 		this.beforeVisitVariableDeclaration(node);
+		node.dimensions.forEach(dim => dim.accept(this));
 		node.initValue?.accept(this);
 		this.afterVisitVariableDeclaration(node);
 	}
