@@ -694,15 +694,16 @@ export class Analyzer extends BaseVisitor
 
 
 	private checkMultyTagMismatch(formalTags: MayBeTag[], actualTag: MayBeTag, range: Range) {
-		if(this.checkAllTags(formalTags, actualTag)) {
+		const tags = formalTags.length ? formalTags : [SymbolsFactory.defaultTag];
+		if(this.checkAllTags(tags, actualTag)) {
 			return;
 		}
 
-		const names: string[] = formalTags.map((tag) =>tag.name);
+		const names: string[] = tags.map((tag) =>tag.name);
 		const lastTag = names.pop();
 		const formalTag = names.join(", ");
 		const formalTagsName = formalTag === "" ? `${lastTag},` : `${formalTag} or ${lastTag};`;
-		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, range, formalTags.length === 1 ? Locale.t("tag") : Locale.t("tags"), formalTagsName, actualTag.name))
+		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, range, tags.length === 1 ? Locale.t("tag") : Locale.t("tags"), formalTagsName, actualTag.name))
 	}	
 
 	private checkAllTags(formalTags: MayBeTag[], actualTag: MayBeTag): boolean {
