@@ -410,7 +410,7 @@ export class PawnListener implements IPawnListener
 				last.tag = node;
 			}
 			else if(last instanceof Ellipse) {
-				last.tag = node;
+				last.addTag(node);
 			}
 			else if(last instanceof OperatorNew) {
 				this.nodes.push(node);
@@ -553,9 +553,6 @@ export class PawnListener implements IPawnListener
 		}
 		else if(last instanceof Expression || last instanceof CaseStatement) {
 			this.nodes.push(node);
-		}
-		else if(last instanceof FunctionDeclarationParameter) {
-			last.defaultValue = node;
 		}
 		else {
 			console.debug(last);
@@ -1043,17 +1040,7 @@ export class PawnListener implements IPawnListener
 			node.value = +ctx.FLOAT().text;
 
 			const last = this.nodes.peek();
-			if(last instanceof Expression) {
-				this.nodes.push(node);
-				// last.expresion = node;
-			}
-			else if(last instanceof FunctionDeclarationParameter) {
-				last.defaultValue = node;
-			}
-			else {
-				console.debug(last);
-				this.addDiagnostic(Locale.t("Unexpected float literal"), DiagnosticSeverity.Error, node.pos);
-			}
+			this.nodes.push(node);			
 		}
 	}
 
@@ -1073,11 +1060,8 @@ export class PawnListener implements IPawnListener
 				this.nodes.pop();
 				last.value += node.value;
 				this.nodes.push(node);
-			} else if(last instanceof FunctionDeclarationParameter) {
-				last.defaultValue = node;
 			} else {
 				this.nodes.push(node);
-				console.error("Unexpected string");
 			}
 		}
 	}
