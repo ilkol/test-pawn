@@ -698,7 +698,7 @@ export class Analyzer extends BaseVisitor
 			return;
 		}
 
-		const names = formalTags.map((name) => `"${name}"`);
+		const names: string[] = formalTags.map((tag) =>tag.name);
 		const lastTag = names.pop();
 		const formalTag = names.join(", ");
 		const formalTagsName = formalTag === "" ? `${lastTag},` : `${formalTag} or ${lastTag};`;
@@ -777,11 +777,12 @@ export class Analyzer extends BaseVisitor
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentCountMismatch, argument.pos, argNumber));
 					break;
 				} 
-				const value = (<NamedArgument>argument).value;
+				const value = argument instanceof NamedArgument ? argument.value : argument;
 				if(value) {
 					const tag = value.inferredTag = this.tagInferer.inferTag(value);
 					this.checkMultyTagMismatch(functionSymbol.ellipse.validTags, tag, value.range);
 				}
+				continue;
 			}
 			const argSymbol =  this.curScope.findSymbol(argument.name);
 			if(argSymbol) {

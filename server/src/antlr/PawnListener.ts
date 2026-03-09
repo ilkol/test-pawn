@@ -954,7 +954,6 @@ export class PawnListener implements IPawnListener
 		if(!(last instanceof Expression)) {
 			throw new Error(`Неожиданный аргумент (${last?.name})`);
 		}
-		let resultAction: (node: NamedArgument | RightValue) => void = this.nodes.push.bind(this.nodes);
 
 		let id: TerminalNode;
 		if(ctx.SKIP_PARAM()) {
