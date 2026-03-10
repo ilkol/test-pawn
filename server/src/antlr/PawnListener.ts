@@ -813,7 +813,7 @@ export class PawnListener implements IPawnListener
 			
 		}
 
-		// собираем инлексы
+		// собираем индексы
 		const bracketGroups = ctx.SQUARE_OPEN_BRACKET().length + ctx.CURLY_OPEN_BRACKET().length
 		const indexNodes: Expression[] = [];
 		for (let i = 0; i < bracketGroups; i++) {
@@ -822,6 +822,11 @@ export class PawnListener implements IPawnListener
 
 		// получаем исходный символ
 		let currentNode = this.nodes.pop() as Expression;
+
+		if(!(currentNode instanceof Variable)) {
+			const diag = PawnErrors.report(PawnErrors.Code.ExpressionError, currentNode.pos);
+			this.addDiagnostic(diag.message, diag.severity!, currentNode.pos);
+		}
 
 
 		for (let i = 1; i < ctx.childCount; i++) {
