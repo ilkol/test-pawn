@@ -891,30 +891,17 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(new ComaOperator(nodes, this.calculateNodeRange(ctx.start, ctx.stop)))
 	}
 	
-	enterArrayInit = (ctx: ArrayInitContext) => {
-		let node = new ArrayInit();	
-		this.nodes.push(node);
-	};
 	exitArrayInit = (ctx: ArrayInitContext) => {
-		let node = <ArrayInit>this.nodes.pop();
+		let node = new ArrayInit();	
+		const membersCount = ctx.arrayInitMember().length;
+		for(let i = 0; i < membersCount; i++) {
+			this.nodes.pop();
+		}
+
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
-			
-			let last = this.nodes.peek();
-			if(last instanceof VarDeclaration) {
-				last.initValue = node;
-			}
-			else if(last instanceof ArrayInit) {
-				last.value.push(node);
-			}
-			else if(last instanceof FunctionDeclarationParameter) {
-				last.defaultValue = node;
-			}
-			else {
-				console.debug(last);
-				this.addDiagnostic(Locale.t("Unexpected array init"), DiagnosticSeverity.Error, node.pos);
-			}
 		}
+		this.nodes.push(node);
 	};
 
 	exitCycleKeywords = (ctx: CycleKeywordsContext) => {
