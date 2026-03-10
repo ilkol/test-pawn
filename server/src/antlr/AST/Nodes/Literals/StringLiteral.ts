@@ -11,6 +11,12 @@ export class StringLiteral extends Literal<string>
 		this._value = "";
 	}
 
+	public constExpr: number = 1;
+
+	public get isConstExpr(): boolean {
+		return false;
+	}
+
 	public accept(visitor: IVisitor): void {
 		visitor.visitStringLiteral(this);
 	}
