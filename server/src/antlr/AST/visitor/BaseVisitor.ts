@@ -21,7 +21,6 @@ import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { Cycle } from "../Nodes/Cycles/Cycle";
 import * as ArrayNode from "../Nodes/Variables/Array";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
-import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 import { IfStatement } from "../Nodes/Conditions/IfStatement";
 import { CaseStatement } from "../Nodes/Conditions/switch/CaseStatement";
@@ -34,6 +33,7 @@ import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 import { TernarOperator } from "../Nodes/Operators/TernarOperator";
+import { ArrayInit } from "../Nodes/Literals/ArrayInit";
 
 export abstract class BaseVisitor implements IVisitor
 {
@@ -89,10 +89,10 @@ export abstract class BaseVisitor implements IVisitor
 		this.afterVisitAssigment(node);
 
 	}
-	visitArrayDeclaration(node: ArrayDeclaration): void {
-		this.beforeVisitArrayDeclaration(node);
-		this.acceptArray(node.indexes);
-		this.afterVisitArrayDeclaration(node);
+	visitArrayInit(node: ArrayInit): void {
+		this.beforeVisitArrayInit(node);
+		this.acceptArray(node.value);
+		this.afterVisitArrayInit(node);
 	}
 
 	
@@ -310,8 +310,8 @@ export abstract class BaseVisitor implements IVisitor
 	abstract beforeVisitFor(node: ForCycle): void;
 	abstract afterVisitFor(node: ForCycle): void;
 
-	abstract beforeVisitArrayDeclaration(node: ArrayDeclaration): void;
-	abstract afterVisitArrayDeclaration(node: ArrayDeclaration): void;
+	abstract beforeVisitArrayInit(node: ArrayInit): void;
+	abstract afterVisitArrayInit(node: ArrayInit): void;
 
 	abstract beforeVisitAssigment(node: AssigmentOperator): void;
 	abstract afterVisitAssigment(node: AssigmentOperator): void;

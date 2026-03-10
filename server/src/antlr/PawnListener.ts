@@ -29,8 +29,6 @@ import { StringLiteral } from "./AST/Nodes/Literals/StringLiteral";
 import { WhileCycle } from "./AST/Nodes/Cycles/WhileCycle";
 import { Cycle } from "./AST/Nodes/Cycles/Cycle";
 import { ForCycle } from "./AST/Nodes/Cycles/ForCycle";
-import { ArrayNode } from "./AST/Nodes/Variables/Array";
-import { ArrayDeclaration } from "./AST/Nodes/Variables/ArrayDeclaration";
 import { AssigmentOperator } from "./AST/Nodes/Operators/AssigmentOperator";
 import { Ellipse } from "./AST/Nodes/Operators/Ellipse";
 import { OperatorOverload } from "./AST/Nodes/Operators/OperatorOverload";
@@ -458,9 +456,10 @@ export class PawnListener implements IPawnListener
 			// });
 			if(last instanceof FunctionDeclaration) {
 				last.ellipse = node;
-			}
+			} 
 			else {
-				this.addDiagnostic(Locale.t("Unexpected ellipse operator"), DiagnosticSeverity.Error, node.pos);
+				this.nodes.push(node);
+				// this.addDiagnostic(Locale.t("Unexpected ellipse operator"), DiagnosticSeverity.Error, node.pos);
 			}
 		}
 	}
@@ -547,13 +546,7 @@ export class PawnListener implements IPawnListener
 		}
 	};
 	private evalLiteral(node: Literal<any>) {
-		const last = this.nodes.peek();
-		if(last instanceof ArrayInit) {
-			last.value.push(node);
-		}
-		else {
-			this.nodes.push(node);
-		}
+		this.nodes.push(node);
 	}
 	enterInteger(ctx: IntegerContext): void {
 		let node = new IntLiteral();
@@ -895,7 +888,7 @@ export class PawnListener implements IPawnListener
 		let node = new ArrayInit();	
 		const membersCount = ctx.arrayInitMember().length;
 		for(let i = 0; i < membersCount; i++) {
-			this.nodes.pop();
+			node.value.unshift(this.nodes.pop());
 		}
 
 		if(ctx.stop) {

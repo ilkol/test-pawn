@@ -1,9 +1,15 @@
 import { Serialization } from "../../../../cache/Serialization";
+import { IVisitor } from "../../visitor/IVisitor";
+import { Expression } from "../Expresion";
+import { Ellipse } from "../Operators/Ellipse";
 import { Literal } from "./Literal";
 
 export class ArrayInit extends Literal<any[]> {
-	protected _value: any[] = [];	
-	
+	protected _value: (Ellipse | Expression)[] = [];	
+
+	public accept(visitor: IVisitor): void {
+		visitor.visitArrayInit(this);
+	}
 
 	toJSON(): Serialization.Nodes.Literal<any[]> {
 		return {

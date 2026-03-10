@@ -19,7 +19,6 @@ import { StringLiteral } from "../Nodes/Literals/StringLiteral";
 import { WhileCycle } from "../Nodes/Cycles/WhileCycle";
 import { ForCycle } from "../Nodes/Cycles/ForCycle";
 import { VarDeclaration } from "../Nodes/Variables/VarDeclaration";
-import { ArrayDeclaration } from "../Nodes/Variables/ArrayDeclaration";
 import { Expression } from "../Nodes/Expresion";
 import { AssigmentOperator } from "../Nodes/Operators/AssigmentOperator";
 import { ArrayNode } from "../Nodes/Variables/Array";
@@ -49,6 +48,7 @@ import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 import { Pawn } from "../../../Pawn";
 import { NamedArgument } from "../Nodes/Functions/NamedArgument";
 import { TernarOperator } from "../Nodes/Operators/TernarOperator";
+import { ArrayInit } from "../Nodes/Literals/ArrayInit";
 
 /** Состояние проверки аргумента функции при ее вызове */
 enum ArgumentState {
@@ -152,38 +152,11 @@ export class Analyzer extends BaseVisitor
 			}
 		}
 	}
-	beforeVisitArrayDeclaration(node: ArrayDeclaration): void {
+	beforeVisitArrayInit(node: ArrayInit): void {
 
 	}
-	afterVisitArrayDeclaration(node: ArrayDeclaration): void {
-		// this.checkUsed(node, (variable: VarDeclaration) => this.curScope.addVar(variable));
+	afterVisitArrayInit(node: ArrayInit): void {
 		
-		// this.tokens.addToken(node.idPos, SemanticTokens.variable, this.checkVarModifires(node.modifires).concat([SemanticTokensModifires.declaration]));
-
-		let index = -1;
-		node.indexes = node.indexes.map(el => {
-			index++;
-			if(el instanceof Expression) {
-				if(el.expresion instanceof IntLiteral) {
-					node.pushSize(index, el.expresion.value);
-					return el.expresion;
-				}
-				if(el.expresion instanceof Variable) {
-					const variable = this.curScope.findSymbol(el.expresion.id);
-					if(variable) {
-						if(!(variable instanceof EnumDeclaration)) {
-							this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expecting an integer constant or enumeration, but found \"%s\"", el.expresion.name), DiagnosticSeverity.Error, el.pos));
-						}
-						else {
-							variable.used = true;
-							// this.tokens.addToken(el.expresion.idPos, SemanticTokens.enum);
-							return variable;
-						}
-					}
-				}
-			}
-			return el;
-		});
 	}
 	beforeVisitFor(node: ForCycle): void {
 		this.extendScope(node.range);

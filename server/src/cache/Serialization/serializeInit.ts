@@ -38,7 +38,6 @@ import { ReturnStatement } from "../../antlr/AST/Nodes/ReturnStatement";
 import { Tag } from "../../antlr/AST/Nodes/Tag";
 import { Variable } from "../../antlr/AST/Nodes/Variable";
 import { ArrayNode } from "../../antlr/AST/Nodes/Variables/Array";
-import { ArrayDeclaration } from "../../antlr/AST/Nodes/Variables/ArrayDeclaration";
 import { VarDeclaration } from "../../antlr/AST/Nodes/Variables/VarDeclaration";
 import { Endinput, Error, FileLineChange, Include, Pragma } from "../../Preprocessor/Directives";
 import { Condition, Else, ElseIf, Endif } from "../../Preprocessor/Directives/Conditionals";
@@ -61,7 +60,6 @@ export function serializeInit(): void {
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.HexLiteral, HexLiteral);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.OperatorNew, OperatorNew);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.VariableDeclaration, VarDeclaration);
-	Serialization.Deserialize.registerSerializable(Serialization.NodeList.ArrayDeclaration, ArrayDeclaration);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.EnumMember, EnumMember);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Enum, EnumDeclaration);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Array, ArrayNode);
