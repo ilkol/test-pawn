@@ -51,16 +51,9 @@ case:				CASE case_list (COMA case_list)* COLON statement;
 default:            DEFAULT COLON statement;
 case_list:			expresion (PERIOD expresion)?;
 
-arrayInit:		CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* COMA? CURLY_CLOSE_BRACKET;
-arrayInitMember:	
-	ellipse | 
-	nestedIbitilizer |
-	expresion
-	
-;//tag? (MINUS? IDENTIFIER | MINUS? number | string) | (arrayInit);
-nestedIbitilizer: 
-	(CURLY_OPEN_BRACKET expresion (COMA ellipse | expresion)* COMA? CURLY_CLOSE_BRACKET)
-;
+arrayInit: CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* COMA? CURLY_CLOSE_BRACKET;
+arrayInitMember: arrayInit | ellipse | expresion;
+
 
 assigments:
     ASSIGMENT_OR |          // |=
