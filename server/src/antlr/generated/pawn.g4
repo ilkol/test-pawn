@@ -151,6 +151,7 @@ prefixExpression:
 
 postfixExpression: functionOrArrayExpression (INCREMENTS | DECREMENTS | CHAR)*;
 
+// hier1
 functionOrArrayExpression: 
 	primaryExpression 
 	(
