@@ -7,6 +7,12 @@ import { Literal } from "./Literal";
 export class ArrayInit extends Literal<any[]> {
 	protected _value: (Ellipse | Expression)[] = [];	
 
+	public constExpr: number = 1;
+
+	public get isConstExpr(): boolean {
+		return false;
+	}
+
 	public accept(visitor: IVisitor): void {
 		visitor.visitArrayInit(this);
 	}
