@@ -12,6 +12,11 @@ export class BoolLiteral extends Literal<boolean>
 		this.tag = new Tag("bool");
 	}
 
+	public set value(v : boolean) {
+		super.value = v;
+		this.constExpr = v ? 1 : 0;
+	}
+
 	public accept(visitor: IVisitor): void {
 		visitor.visitBoolLiteral(this);
 	}

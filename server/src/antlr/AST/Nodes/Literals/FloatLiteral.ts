@@ -12,6 +12,19 @@ export class FloatLiteral extends NumberLiteral<number>
 
 		super(tag);
 	}
+	public set value(v : number) {
+		super.value = v;
+		this.constExpr = this.getRowInt32();
+	}
+
+	getRowInt32(): number {
+		const buffer = new ArrayBuffer(4); // 4 байта для float32
+		const floatView = new Float32Array(buffer);
+		const intView = new Int32Array(buffer);
+
+		floatView[0] = this.value;
+		return intView[0]; 
+	}
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitLiteral(this);

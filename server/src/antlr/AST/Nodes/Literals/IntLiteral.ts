@@ -15,6 +15,12 @@ export class IntLiteral extends NumberLiteral<number>
 		visitor.visitLiteral(this);
 	}
 
+	public set value(v : number) {
+		super.value = v;
+		this.constExpr = v;
+	}	
+	
+
 	toJSON(): Serialization.Nodes.Literal<number> {
 		return {
 			...super.toJSON(),

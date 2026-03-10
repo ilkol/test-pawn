@@ -12,6 +12,21 @@ export class FixedLiteral extends NumberLiteral<string>
 		super(tag);
 	}
 
+	public set value(v : string) {
+		super.value = v;
+		this.constExpr = this.getRowInt32();
+	}
+
+	getRowInt32(): number {
+		const buffer = new ArrayBuffer(4); // 4 байта для float32
+		const floatView = new Float32Array(buffer);
+		const intView = new Int32Array(buffer);
+
+		floatView[0] = Number(this.value);
+		return intView[0]; 
+	}
+
+
 	public accept(visitor: IVisitor): void {
 
 	}

@@ -10,6 +10,11 @@ export class BinarLiteral extends NumberLiteral<string>
 		super(new DefaultTag());
 	}
 
+	public set value(v : string) {
+		super.value = v;
+		this.constExpr = parseInt(v, 2);
+	}
+
 	public accept(visitor: IVisitor): void {
 		// visitor.visitIntLiteral(this);
 	}
