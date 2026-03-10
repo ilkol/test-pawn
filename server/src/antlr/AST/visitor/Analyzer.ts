@@ -604,12 +604,29 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration<Symbols.Variable>): void {
 		const symbol = node.symbol;
-		if(node.initValue && symbol) {
+    	if (!symbol || !node.initValue) return;
+		if(!(node.initValue instanceof ArrayInit)) {
 			const expectedTag = symbol.tag;
 			const actualTag = node.initValue.inferredTag = this.tagInferer.inferTag(node.initValue);
 			
 			this.checkTagMismatch(expectedTag, actualTag, true, node.initValue.pos);
+			return;
 		}
+		const val = node.initValue;
+		for(let i = 0; i < val.value.length; i++) {
+		 	if(val.value[i] >= node.dimensions[i]) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
+			}
+		}
+
+		// for(let i = 0; i < node.dimensions.length; i++) {
+		// 	// TODO: проверка размерности массивов
+		// 	if(val.value[i] < node.dimensions[i]) {
+		// 		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArrayNotFullyInit, val.range));
+		// 	} else if(val.value[i] > node.dimensions[i]) {
+		// 		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
+		// 	}
+		// }
 	}
 
 	private extendScope(range: Range, newSymbol?: Symbols.SymbolReferance | undefined) {
