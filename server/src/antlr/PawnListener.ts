@@ -1012,7 +1012,9 @@ export class PawnListener implements IPawnListener
 		let node = <FloatLiteral>this.nodes.pop();
 		if(ctx.stop) {
 			node.range = new Range(ctx.start.line - 1, ctx.start.charPositionInLine, ctx.start.line - 1, ctx.start.charPositionInLine + ctx.FLOAT().text.length); 
-			node.value = +ctx.FLOAT().text;
+			
+			const sanitized = ctx.FLOAT().text.replace(/_/g, '');
+			node.value = Number(sanitized);
 
 			const last = this.nodes.peek();
 			this.nodes.push(node);			
