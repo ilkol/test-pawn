@@ -59,7 +59,7 @@ export class Define extends PreprocessorDirective
 		this._postPrefix = this.pattern.substring(this._prefix.length);
 	}
 	private getPrefixFromPattern(): string {
-		let match = /([a-zA-Z_@])+/.exec(this.pattern);
+		let match = /([a-zA-Z\d_@])+/.exec(this.pattern);
 		
 		return match === null ? "" : match[0];
 	}
