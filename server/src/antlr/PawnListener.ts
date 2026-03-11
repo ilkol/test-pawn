@@ -161,12 +161,16 @@ export class PawnListener implements IPawnListener
 		}
 
 		let node = <OperatorNew>this.nodes.pop();
+		
 		if(ctx.stop) {
 			node.setPos(ctx.start, ctx.stop);
 				
 		}
 
-		variables.forEach(node.pushParameter.bind(node));		
+		variables.forEach(v => {
+			v.modifires = node.modifires;
+			node.pushParameter(v);
+		});		
 
 		let last = this.nodes.peek();
 		if(last instanceof Declarations) {
@@ -826,6 +830,7 @@ export class PawnListener implements IPawnListener
 		if(!(currentNode instanceof Variable)) {
 			const diag = PawnErrors.report(PawnErrors.Code.ExpressionError, currentNode.pos);
 			this.addDiagnostic(diag.message, diag.severity!, currentNode.pos);
+			currentNode.isLValue = false;
 		}
 
 
