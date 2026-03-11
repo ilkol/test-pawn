@@ -4,6 +4,7 @@ import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
 import { EnumMember } from "./EnumMember";
+import { VariableModifire } from "./Parameter";
 
 export class Enum extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Enum;
@@ -24,5 +25,15 @@ export class Enum extends AbstractSymbol {
 				[...modifiers, SemanticTokenModifiers.declaration].map(SemanticTokensLegendManager.getTokenModifierIndex)
 			)
 		);
+	}
+
+	private _modifire: number = VariableModifire.Const;
+		
+	addModifier(modifire: VariableModifire) {
+		this._modifire |= modifire;
+	}
+
+	hasModifier(modifire: VariableModifire): boolean {
+		return (this._modifire & modifire) !== 0;
 	}
 }
