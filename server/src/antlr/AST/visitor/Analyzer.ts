@@ -432,13 +432,21 @@ export class Analyzer extends BaseVisitor
 				node.constExpr = ~node.constExpr;
 				break;
 			case "!":
-				// TODO: проверка пользовательского оператора
-				node.constExpr = +!node.constExpr;
-				node.inferredTag = SymbolsFactory.boolTag;
+				if(node.value) {
+					if(node.value.inferredTag && this.checkUserOperator(node.operator, node.value!.inferredTag, SymbolsFactory.defaultTag, 1)) {
+						node.constExpr = 0;
+					} else {
+						node.constExpr = +!node.value.constExpr;
+						node.inferredTag = SymbolsFactory.boolTag;
+					}
+				}
 				break;
 			case "-":
 				if(node.value) {
+					// TODO: проверка тега RATIONAL
 					if(node.value.isConstExpr) {
+						
+					} else if(node.value.inferredTag && this.checkUserOperator(node.operator, node.value.inferredTag, SymbolsFactory.defaultTag, 1)) {
 						
 					}
 				}
