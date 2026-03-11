@@ -103,7 +103,7 @@ export class TypeInferenceEngine {
 
 		let operatorName = Analyzer.operatorName(operator, tag1, tag2, paramsCount, tag2);
 		let symbol = this.scopeManager.globalScope.findSymbol(operatorName) as Symbols.Function;
-		if(!symbol && !this.isEqulTags(tag1, tag2) && Analyzer.isCommutativeOperation(operator)) {
+		if(!symbol && !this.isEqulTags(tag1, tag2) && operator != "=" && Analyzer.isCommutativeOperation(operator)) {
 			operatorName = Analyzer.operatorName(operator, tag2, tag1, paramsCount, tag1);
 			symbol = this.scopeManager.globalScope.findSymbol(operatorName) as Symbols.Function;
 		}
