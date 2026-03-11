@@ -17,6 +17,8 @@ export class Variable extends Expression implements IHasID
 	public symbol: Symbols.Enum | Symbols.EnumMember | Symbols.Function | Symbols.Parameter | Symbols.Variable | undefined;
 	public inferredTag: MayBeTag = SymbolsFactory.defaultTag;
 
+	public isLValue: boolean = true;
+
     constructor(instance: Variable|undefined = undefined) {
         super();
         if(instance) {

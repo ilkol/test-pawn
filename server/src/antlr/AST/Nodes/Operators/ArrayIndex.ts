@@ -10,6 +10,8 @@ export class ArrayIndex extends BinarOperator
 		visitor.visitOperatorArrayIndex(this);
 	}
 	
+	public readonly isLValue: boolean = true;
+
 	constructor() {
 		super();
 		this.operator = "[]";

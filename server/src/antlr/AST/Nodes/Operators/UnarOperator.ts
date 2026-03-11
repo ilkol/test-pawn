@@ -9,6 +9,8 @@ export class UnarOperator extends AbstractOperator
 {
 	name = "унарный операртор";
 
+	public readonly isLValue: boolean = false;
+
 	constructor() {
 		super();
 	}

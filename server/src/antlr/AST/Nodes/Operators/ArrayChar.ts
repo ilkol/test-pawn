@@ -10,6 +10,8 @@ export class ArrayChar extends BinarOperator
 		visitor.visitOperatorArrayChar(this);
 	}
 	
+	public readonly isLValue: boolean = true;
+
 	constructor() {
 		super();
 		this.operator = "{}";

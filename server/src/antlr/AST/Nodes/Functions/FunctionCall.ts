@@ -18,6 +18,8 @@ export class FunctionCall extends Expression implements IContainsVars<RightValue
 	private _idPos: Range = new Range(0,0,0,0);
 	symbol?: Function;
 
+	public readonly isLValue: boolean = false;
+
 	public accept(visitor: IVisitor): void {
 		visitor.visitFunctionCall(this);
 	}

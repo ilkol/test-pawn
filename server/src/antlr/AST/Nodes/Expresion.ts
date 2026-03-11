@@ -14,6 +14,12 @@ export class Expression extends AbstractStatement implements IHasTag {
 	protected exp: Expression|undefined = undefined;
 	public inferredTag: MayBeTag | null = null;
 
+	public constExpr: number = 0;
+	public get isConstExpr(): boolean {
+		return false;
+	}
+	public isLValue: boolean = false;
+
 	public get tag() : Tag {
 		return this._tag;
 	}
