@@ -25,6 +25,7 @@ export namespace PawnErrors {
 		MustBeLValue = 22,
 		MismatchPrototype = 26,
 		NotMatchingPreprocessorCondition = 26,
+		ExpressionError = 29,
 		UnknownDirective = 31,
 		ArgumentHasntDefaultValue = 34,
 		InvalidModifiersCombination = 42,
