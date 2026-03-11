@@ -245,6 +245,10 @@ export class Analyzer extends BaseVisitor
 			node.symbol = symbol;
 		}
 		node.inferredTag = this.tagInferer.inferTag(node);
+		if(symbol instanceof Symbols.EnumMember) {
+			// TODO: вычсиление значение перечисления
+			// node.constExpr = symbol.
+		}
 		
 		/*
 		if(variable instanceof ArrayDeclaration) {
@@ -411,9 +415,49 @@ export class Analyzer extends BaseVisitor
 	
 	}
 	beforeVisitUnarOperator(node: UnarOperator): void {
-
+		
 	}
 	afterVisitUnarOperator(node: UnarOperator): void {
+		switch(node.operator) {
+			case "++":
+			case "--":
+				if(!node.value?.isLValue) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.value?.range ?? node.range));
+				}
+				if(node.value instanceof Variable && !(node.value.symbol instanceof Symbols.Function) && node.value.symbol?.hasModifier(Symbols.VariableModifire.Const)) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.value?.range ?? node.range));
+				}
+				break;
+			case "~":
+				node.constExpr = ~node.constExpr;
+				break;
+			case "!":
+				// TODO: проверка пользовательского оператора
+				node.constExpr = +!node.constExpr;
+				node.inferredTag = SymbolsFactory.boolTag;
+				break;
+			case "-":
+				if(node.value) {
+					if(node.value.isConstExpr) {
+						
+					}
+				}
+				break;
+			case "defined":
+				// TODO: поиск символа
+				// node.constExpt = this.curScope.findSymbol(node.expresion);
+				node.constExpr = 1;
+				node.inferredTag = SymbolsFactory.boolTag;
+				break;
+			case "sizeof":
+				node.constExpr = 1;
+				// TODO: вычисление размера символа
+				break;
+			case "tagof":
+				node.constExpr = 1;
+				// TODO: вычисление тега
+				break;
+		}
 		node.inferredTag = this.tagInferer.inferTag(node);
 	}
 	beforeVisitLiteral(node: IntLiteral | FloatLiteral): void {
@@ -421,6 +465,7 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitLiteral(node: IntLiteral | FloatLiteral): void {
 		node.inferredTag = this.tagInferer.inferTag(node);
+		node.constExpr = node.value;
 	}
 	beforeVisitBinarOperator(node: BinarOperator): void {
 		
@@ -594,6 +639,9 @@ export class Analyzer extends BaseVisitor
 			modifiers.push(SemanticTokenModifiers.readonly);
 		}
 		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
+		if(node.isConstant) {
+			symbol.addModifier(Symbols.VariableModifire.Const);
+		}
 		node.symbol = symbol;
 		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
 		this.curScope.add(symbol);
@@ -918,15 +966,6 @@ export class Analyzer extends BaseVisitor
 		if(this.isDefaultTag(tag1.name) && (paramsCount === 1 || this.isDefaultTag(tag2.name))) {
 			return false;
 		}
-
-		// if(paramsCount === 2) {
-		// 	if(operator === "=") {
-		// 		// if (lval != null && (lval->ident==iARRAYCELL || lval->ident==iARRAYCHAR))
- 		// 		// 	savealt = true;
-		// 	} else {
-
-		// 	}
-		// }
 
 		let symbol = this.tagInferer.findUserOperator(operator, tag1, tag2, paramsCount);
 		if(!symbol) {
