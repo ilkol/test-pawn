@@ -5,6 +5,7 @@ import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
 import { MayBeTag } from "./MayBeTag";
 import { SymbolsFactory } from "../SymbolsFactory";
+import { VariableModifire } from "./Parameter";
 
 export class Variable extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Variable;
@@ -28,5 +29,15 @@ export class Variable extends AbstractSymbol {
 		);
 
 		this.isConst = modifiers.indexOf(SemanticTokenModifiers.readonly) !== -1;
+	}
+
+	private _modifire: number = VariableModifire.None;
+	
+	addModifier(modifire: VariableModifire) {
+		this._modifire |= modifire;
+	}
+
+	hasModifier(modifire: VariableModifire): boolean {
+		return (this._modifire & modifire) !== 0;
 	}
 }
