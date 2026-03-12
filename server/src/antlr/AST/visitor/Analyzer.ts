@@ -498,6 +498,11 @@ export class Analyzer extends BaseVisitor
 				node.constExpr = 1;
 				// TODO: вычисление тега
 				break;
+			case "char":
+				if(node.value && node.value.isConstExpr) {
+					node.constExpr = Math.floor((node.value.constExpr + 3) / 4);
+				}
+				break;
 		}
 		node.inferredTag = this.tagInferer.inferTag(node);
 	}
@@ -526,6 +531,72 @@ export class Analyzer extends BaseVisitor
 		if (!leftTag || !rightTag || !this.tagInferer.findUserOperator(node.operator, leftTag, rightTag, 2)) {
 			this.checkTagMismatch(leftTag, rightTag, false, node.range);
    		}
+
+		if(node.left.isConstExpr && node.right.isConstExpr) {
+			let modif: ((first: number, second: number) => number) | undefined = undefined;
+			switch(node.operator) {
+				case "||": 
+					modif  = (first, second) => first || second;
+					break;
+				case "&&": 
+					modif  = (first, second) => first && second;
+					break;
+				case "+": 
+					modif  = (first, second) => first + second;
+					break;
+				case "-": 
+					modif  = (first, second) => first - second;
+					break;
+				case "|": 
+					modif  = (first, second) => first | second;
+					break;
+				case "^": 
+					modif  = (first, second) => first ^ second;
+					break;
+				case "&": 
+					modif  = (first, second) => first & second;
+					break;
+				case "==": 
+					modif  = (first, second) => first == second ? 1 : 0;
+					break;
+				case "!=": 
+					modif  = (first, second) => first != second ? 1 : 0;
+					break;
+				case "<=": 
+					modif  = (first, second) => first <= second ? 1 : 0;
+					break;
+				case ">=": 
+					modif  = (first, second) => first >= second ? 1 : 0;
+					break;
+				case "<": 
+					modif  = (first, second) => first < second ? 1 : 0;
+					break;
+				case ">": 
+					modif  = (first, second) => first > second ? 1 : 0;
+					break;
+				case ">>": 
+					modif  = (first, second) => first >> second ;
+					break;
+				case "<<": 
+					modif  = (first, second) => first << second ;
+					break;
+				case "*": 
+					modif  = (first, second) => first * second ;
+					break;
+				case "/": 
+					modif  = (first, second) => first / second ;
+					break;
+				case "%": 
+					modif  = (first, second) => first % second ;
+					break;
+				default: {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ExpressionError, node.range));
+				}
+			}
+			node.constExpr = modif ? modif(node.left.constExpr, node.right.constExpr) : 0;
+		} else {
+			node.constExpr = 0;
+		}
 		
 	}
 	beforeVisitTernarOperator(node: TernarOperator): void {
