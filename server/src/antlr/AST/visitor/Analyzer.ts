@@ -447,18 +447,51 @@ export class Analyzer extends BaseVisitor
 					if(node.value.isConstExpr) {
 						
 					} else if(node.value.inferredTag && this.checkUserOperator(node.operator, node.value.inferredTag, SymbolsFactory.defaultTag, 1)) {
-						
+						node.constExpr = 0;
+					} else {
+						node.constExpr = -node.constExpr;
 					}
 				}
 				break;
 			case "defined":
 				// TODO: поиск символа
 				// node.constExpt = this.curScope.findSymbol(node.expresion);
-				node.constExpr = 1;
-				node.inferredTag = SymbolsFactory.boolTag;
+				if(node.value instanceof Variable) {
+					node.constExpr = this.curScope.findSymbol(node.value.id) !== undefined ? 1 : 0;
+					node.inferredTag = SymbolsFactory.boolTag;
+
+				}
 				break;
 			case "sizeof":
-				node.constExpr = 1;
+				if(node.value) {
+
+					if(node.value instanceof Variable) {
+						const symbol = this.curScope.findSymbol(node.value.id);
+						if(!symbol) {
+							this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, node.value.range, node.value.id));
+						}
+						
+						// TODO:
+						// if(symbol.isConstExp) {
+						// 	this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ConstSymbolHasnotSize, node.value.range));
+						// }
+						if(symbol instanceof Symbols.Function) {
+							this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionSymbolHasnotSize, node.value.range));
+						}
+						// if(!symbol.isDefined) {
+						// 	this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, node.value.range, node.value.id));
+						// }
+						node.constExpr = 1;
+						// if(symbol instanceof Symbols.Variable) {
+						// 	symbol.dimensions.forEach(dim => {
+								
+						// 	});
+						// }
+
+					} else {
+						this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidSymbolName, node.value.range, "unknown"));
+					}
+				}
 				// TODO: вычисление размера символа
 				break;
 			case "tagof":
