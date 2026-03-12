@@ -10,6 +10,7 @@ export class Enum extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Enum;
 	public members: EnumMember[] = [];
 	isConst: true = true;
+	lastValue: number = 0;
 
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[]) {
 		super(

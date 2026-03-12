@@ -664,7 +664,15 @@ export class Analyzer extends BaseVisitor
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 		this.curScope.parent?.add(symbol);
 	}
-	afterVisitEnumMember(node: EnumMember): void {			
+	afterVisitEnumMember(node: EnumMember): void {	
+		const symbol = node.symbol;
+		if(symbol) {
+			symbol.value = node.initValue ? this.getCOnstantExpression(node.initValue) : symbol.parentSymbol?.lastValue ?? 0;
+			// TODO: увелечение индекса по правилу, описанному пользователем
+			if(symbol.parentSymbol) {
+				symbol.parentSymbol.lastValue = symbol.value + 1;
+			}
+		}		
 	}
 	beforeVisitEnumDeclaration(node: EnumDeclaration): void {
 		const name = node.id || "<anonymous>";
@@ -1307,5 +1315,13 @@ export class Analyzer extends BaseVisitor
 		symbol.name = node.id  = newName;
 		
 
+	}
+
+	private getCOnstantExpression(expr: Expression): number {
+		if(!expr.isConstExpr) {
+			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, expr.range));
+			return 0;
+		}
+		return expr.constExpr;
 	}
 }

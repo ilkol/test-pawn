@@ -9,6 +9,7 @@ import { VariableModifire } from "./Parameter";
 export class EnumMember extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.EnumMember;
 	isConst: true = true;
+	value: number = 0;
 	
 	constructor(
 		id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[],
