@@ -11,6 +11,9 @@ export abstract class Literal<T> extends Expression
 	public set value(v : T) {
 		this._value = v;
 	}	
+	public get isConstExpr(): boolean {
+		 return true;
+	}
 
 	toJSON(): Serialization.Nodes.Literal<T> {
 		return {
