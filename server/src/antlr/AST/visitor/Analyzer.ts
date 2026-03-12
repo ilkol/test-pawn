@@ -667,7 +667,7 @@ export class Analyzer extends BaseVisitor
 	afterVisitEnumMember(node: EnumMember): void {	
 		const symbol = node.symbol;
 		if(symbol) {
-			symbol.value = node.initValue ? this.getCOnstantExpression(node.initValue) : symbol.parentSymbol?.lastValue ?? 0;
+			symbol.value = node.initValue ? this.getConstantExpression(node.initValue) : symbol.parentSymbol?.lastValue ?? 0;
 			// TODO: увелечение индекса по правилу, описанному пользователем
 			if(symbol.parentSymbol) {
 				symbol.parentSymbol.lastValue = symbol.value + 1;
@@ -1317,7 +1317,7 @@ export class Analyzer extends BaseVisitor
 
 	}
 
-	private getCOnstantExpression(expr: Expression): number {
+	private getConstantExpression(expr: Expression): number {
 		if(!expr.isConstExpr) {
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, expr.range));
 			return 0;
