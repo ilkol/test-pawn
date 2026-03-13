@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener as IPawnListener } from "./generated/pawnListener";
-import { AdditiveExpressionContext, ArrayIndexContext, ArrayInitContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, Case_listContext, CompareExpressionContext, CompoundExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, FunctionOrArrayExpressionContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostfixExpressionContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TernaryExpressionContext, VarDeclarationContext, VarModifiresContext, VariableDeclarationContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
+import { AdditiveExpressionContext, ArrayInitContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, Case_listContext, CompareExpressionContext, CompoundExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, FunctionOrArrayExpressionContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostfixExpressionContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TernaryExpressionContext, VarDeclarationContext, VarModifiresContext, VariableDeclarationContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
@@ -994,8 +994,28 @@ export class PawnListener implements IPawnListener
 	}
 	exitDeclParams(ctx: DeclParamsContext):void {
 		const defaultValue = ctx.ASSIGMENT() ? <Expression>this.nodes.pop() : undefined;
+		
+		const bracketGroups = ctx.SQUARE_OPEN_BRACKET();
+    	const expressionsInBrackets = ctx.expresion();
+		let exprIdx = expressionsInBrackets.length - 1;
+		const indexes: (Expression | null)[] = [];
+
+		for (let i = bracketGroups.length - 1; i >= 0; i--) {
+			const openBracket = bracketGroups[i];
+			const closeBracket = ctx.SQUARE_CLOSE_BRACKET()[i];
+
+			const hasExpression = (closeBracket.symbol.tokenIndex - openBracket.symbol.tokenIndex) > 1;
+
+			if (hasExpression) {
+				indexes.unshift(this.nodes.pop() as Expression);
+				exprIdx--;
+			} else {
+				indexes.unshift(null); 
+			}
+		}
 
 		const node = <FunctionDeclarationParameter>this.nodes.pop();
+		node.dimensions = indexes;
 		if(defaultValue) {
 			node.defaultValue = defaultValue;
 		}

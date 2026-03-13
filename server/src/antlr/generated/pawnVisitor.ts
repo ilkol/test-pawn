@@ -17,7 +17,6 @@ import { FunctionDeclarationParamsContext } from "./pawnParser";
 import { NativeAssigmentContext } from "./pawnParser";
 import { TagContext } from "./pawnParser";
 import { PluralTagContext } from "./pawnParser";
-import { ArrayIndexContext } from "./pawnParser";
 import { FuncDeclModifContext } from "./pawnParser";
 import { FuncModifContext } from "./pawnParser";
 import { StatementContext } from "./pawnParser";
@@ -191,13 +190,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitPluralTag?: (ctx: PluralTagContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.arrayIndex`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitArrayIndex?: (ctx: ArrayIndexContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.funcDeclModif`.

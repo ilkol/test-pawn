@@ -17,7 +17,6 @@ import { FunctionDeclarationParamsContext } from "./pawnParser";
 import { NativeAssigmentContext } from "./pawnParser";
 import { TagContext } from "./pawnParser";
 import { PluralTagContext } from "./pawnParser";
-import { ArrayIndexContext } from "./pawnParser";
 import { FuncDeclModifContext } from "./pawnParser";
 import { FuncModifContext } from "./pawnParser";
 import { StatementContext } from "./pawnParser";
@@ -244,17 +243,6 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitPluralTag?: (ctx: PluralTagContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.arrayIndex`.
-	 * @param ctx the parse tree
-	 */
-	enterArrayIndex?: (ctx: ArrayIndexContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.arrayIndex`.
-	 * @param ctx the parse tree
-	 */
-	exitArrayIndex?: (ctx: ArrayIndexContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.funcDeclModif`.

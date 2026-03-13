@@ -31,8 +31,6 @@ nativeAssigment:	ASSIGMENT IDENTIFIER SEMI;
 tag:				IDENTIFIER COLON;
 pluralTag:			(CURLY_OPEN_BRACKET IDENTIFIER (COMA IDENTIFIER)* CURLY_CLOSE_BRACKET) COLON;
 
-arrayIndex:			(SQUARE_OPEN_BRACKET (expresion CHAR?)? SQUARE_CLOSE_BRACKET) | (CURLY_OPEN_BRACKET (expresion CHAR?)? CURLY_CLOSE_BRACKET);
-
 funcDeclModif:		funcModif | FORWARD | NATIVE;
 funcModif:			STOCK | PUBLIC;
 
@@ -70,7 +68,7 @@ assigments:
 	ASSIGMENT             // =
 ;
 
-declParams:			(CONST)? (reference)? (pluralTag | tag)? IDENTIFIER (arrayIndex)* (ASSIGMENT (expresion|arrayInit))?;	
+declParams:			(CONST)? (reference)? (pluralTag | tag)? IDENTIFIER (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)* (ASSIGMENT (expresion|arrayInit))?;	
 ellipse:			COMA? (pluralTag | tag)? PERIOD_FUNC;
 
 reference:			BIT_AND;
