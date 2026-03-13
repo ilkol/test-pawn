@@ -96,7 +96,7 @@ export class Parser
 		// });
 		// this.prepareSignatures();
 	
-		console.log(document.AST);
+		// console.log(document.AST);
 		
 		// analyzer.functionsDeclarations.forEach((value, key) => {	
 		// 	const keyMap = this.fileManager.definitionProvider.definitions.get(key);
