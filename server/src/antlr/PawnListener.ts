@@ -675,12 +675,7 @@ export class PawnListener implements IPawnListener
 			op.range = new Range(left.range.start, right.range.end);
 			op.right = right;
 			op.operator = operators[i];
-			if(!(left instanceof Variable)) {
-				const diag = PawnErrors.report(PawnErrors.Code.MustBeLValue, left.pos);
-				this.addDiagnostic(diag.message, diag.severity!, left.pos);
-			} else {
-				op.left = left;
-			}
+			op.left = left;
 			right = op;
 		}
 		this.nodes.push(right);

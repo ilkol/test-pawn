@@ -140,16 +140,20 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitAssigment(node: AssigmentOperator): void {
 		if(node.left) {
-			const symbol = this.addSymbolReference(node.left.id, node.left.pos, node.left.idPos, [SemanticTokenModifiers.modification]);
-			if(!symbol) {
-				return;
+			if(!node.left.isLValue) {
+				console.log(node.left);
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.range));
 			}
-			if(!(symbol instanceof Symbols.Variable || symbol instanceof Symbols.Parameter || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.Macro)) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidFunctionCall, node.range));
-			}
-			else if(symbol.isConst) {					
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.left.range));
-			}
+			// const symbol = this.addSymbolReference(node.left.id, node.left.pos, node.left.idPos, [SemanticTokenModifiers.modification]);
+			// if(!symbol) {
+			// 	return;
+			// }
+			// if(!(symbol instanceof Symbols.Variable || symbol instanceof Symbols.Parameter || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.Macro)) {
+			// 	this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidFunctionCall, node.range));
+			// }
+			// else if(symbol.isConst) {					
+			// 	this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.left.range));
+			// }
 		}
 	}
 	beforeVisitArrayInit(node: ArrayInit): void {

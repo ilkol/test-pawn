@@ -8,12 +8,12 @@ export class AssigmentOperator extends BinarOperator
 {
 	name = "операртор присваения";
 
-    protected declare _left: Variable | undefined;
+    protected declare _left: Expression | undefined;
 
-    public override get left(): Variable | undefined {
+    public override get left(): Expression | undefined {
         return this._left;   
     }
-    public override set left(v: Variable | undefined) {
+    public override set left(v: Expression | undefined) {
         this._left = v;
     }
 	
