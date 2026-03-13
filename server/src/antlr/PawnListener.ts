@@ -198,12 +198,24 @@ export class PawnListener implements IPawnListener
 		}
 
 		if(ctx.ASSIGMENT()) {
-			node.initValue = <Expression>this.nodes.pop();
+			node.initValue = this.nodes.pop() as Expression;
 		}
-		const indexCount = ctx.SQUARE_OPEN_BRACKET().length;
-		if(indexCount) {
-			for(let i = 0; i < indexCount; i++) {
-				node.dimensions.unshift(<Expression>this.nodes.pop());
+
+		const bracketGroups = ctx.SQUARE_OPEN_BRACKET();
+    	const expressionsInBrackets = ctx.expresion();
+		let exprIdx = expressionsInBrackets.length - 1;
+
+		for (let i = bracketGroups.length - 1; i >= 0; i--) {
+			const openBracket = bracketGroups[i];
+			const closeBracket = ctx.SQUARE_CLOSE_BRACKET()[i];
+
+			const hasExpression = (closeBracket.symbol.tokenIndex - openBracket.symbol.tokenIndex) > 1;
+
+			if (hasExpression) {
+				node.dimensions.unshift(this.nodes.pop() as Expression);
+				exprIdx--;
+			} else {
+				node.dimensions.unshift(null); 
 			}
 		}
 

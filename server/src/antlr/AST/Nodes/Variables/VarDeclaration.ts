@@ -10,7 +10,7 @@ export class VarDeclaration<TSymbol extends AbstractSymbol = AbstractSymbol> ext
 	name = "объявление переменной";
 	protected _modifires: number = VariableModifire.None;
 	private _value?: RightValue = undefined;
-	public dimensions: Expression[] = [];
+	public dimensions: (Expression | null)[] = [];
 
 	public symbol?: TSymbol = undefined;
 
@@ -55,7 +55,7 @@ export class VarDeclaration<TSymbol extends AbstractSymbol = AbstractSymbol> ext
 			__type: Serialization.NodeList.VariableDeclaration,
 			modifires: this.modifires,
 			initValue: this._value?.toJSON(),
-			dimensions: this.dimensions.map(dim => dim.toJSON()),
+			dimensions: this.dimensions.map(dim=> dim?.toJSON() ?? null),
 		};
 	}
 

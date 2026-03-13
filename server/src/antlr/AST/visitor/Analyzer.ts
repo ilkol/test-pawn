@@ -786,7 +786,8 @@ export class Analyzer extends BaseVisitor
 		}
 		const val = node.initValue;
 		for(let i = 0; i < val.value.length; i++) {
-		 	if(val.value[i] >= node.dimensions[i]) {
+			let dim = node.dimensions[i];
+		 	if(dim && val.value[i] >= dim) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
 			}
 		}
