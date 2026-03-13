@@ -787,12 +787,17 @@ export class Analyzer extends BaseVisitor
 			return;
 		}
 		const val = node.initValue;
-		for(let i = 0; i < val.value.length; i++) {
-			let dim = node.dimensions[i];
-		 	if(dim && val.value[i] >= dim) {
+
+		for(const dim of node.dimensions) {
+			if(!dim) {
+				continue;
+			}
+			if(val.value.length >= dim.constExpr) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
 			}
 		}
+
+		
 
 		// for(let i = 0; i < node.dimensions.length; i++) {
 		// 	// TODO: проверка размерности массивов
