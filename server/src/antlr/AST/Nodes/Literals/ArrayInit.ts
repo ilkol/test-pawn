@@ -21,7 +21,8 @@ export class ArrayInit extends Literal<any[]> {
 		return {
 			...super.toJSON(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
-			__type: Serialization.NodeList.ArrayInit
+			__type: Serialization.NodeList.ArrayInit,
+			value: this.value.map(val => val.toJSON())
 		};
 	}
 
@@ -29,5 +30,10 @@ export class ArrayInit extends Literal<any[]> {
 		const instance = new ArrayInit();
 		instance.prepareFromJSON(json);
 		return instance;
+	}
+
+	protected prepareFromJSON(json: Serialization.Nodes.Literal<any[]>): void {
+		super.prepareFromJSON(json);
+		this.value = this.value.map(val => Serialization.Deserialize.object(val));
 	}
 }
