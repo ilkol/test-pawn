@@ -762,10 +762,12 @@ export class Analyzer extends BaseVisitor
 		if(node.isConstant) {
 			modifiers.push(SemanticTokenModifiers.readonly);
 		}
-		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
-		if(node.isConstant) {
-			symbol.addModifier(Symbols.VariableModifire.Const);
+		if(node.hasModifier(Symbols.VariableModifire.Static)) {
+			modifiers.push(SemanticTokenModifiers.static);
 		}
+		const symbol = SymbolsFactory.createVariable(node.id, this.file.path, node.range, node.idPos, modifiers);
+		symbol.addModifier(node.modifires);
+		
 		node.symbol = symbol;
 		this.symbolManager.add(this.file.path, symbol, this.curScope.currentSymbol === undefined);
 		this.curScope.add(symbol);
@@ -814,6 +816,9 @@ export class Analyzer extends BaseVisitor
 				}
 				if(!symbol.isUsed) {
 					if(symbol instanceof Symbols.Function && (!symbol.hasImplementation || symbol.hasModifier(FunctionModifire.Native | FunctionModifire.Stock | FunctionModifire.Public))) {
+						continue;
+					}
+					if(symbol instanceof Symbols.Variable  && symbol.hasModifier(Symbols.VariableModifire.Stock)) {
 						continue;
 					}
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, symbol.defenition.tokenRange, symbol.name));

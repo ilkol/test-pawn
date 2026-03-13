@@ -2528,5 +2528,6 @@
 	"no viable alternative at input '{A,B,}' (functionDeclarationParams)": "no viable alternative at input '{A,B,}' (functionDeclarationParams)",
 	"no viable alternative at input '{A,B,_}": ")' (functionDeclarationParams)",
 	"extraneous input ')' expecting ';' (unknown rule)": "extraneous input ')' expecting ';' (unknown rule)",
-	"no viable alternative at input 's' (declaration)": "no viable alternative at input 's' (declaration)"
+	"no viable alternative at input 's' (declaration)": "no viable alternative at input 's' (declaration)",
+	"extraneous input '#define ' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input '#define ' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER, DocBlock} (unknown rule)"
 }
