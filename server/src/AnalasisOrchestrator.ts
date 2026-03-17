@@ -23,18 +23,18 @@ export class AnalasisOrchestrator {
 		
 		try {
 			Logger.log(`Analyze ${document.path}`);
-			reporter.begin(`Анализ ${document.path}`, 0, "Инициализация...");
+			reporter.begin(`Analyzing ${document.path}`, 0, "Initializing...");
 			await this.handleCacheInitial(document);
-			reporter.report(10, "Кэш проверен");
+			reporter.report(10, "Preprocessing");
 			Logger.log(`Preprocess ${document.path}`);
 			await this.preprocessDocument(document);
-			reporter.report(40, "Препроцессинг завершен");
+			reporter.report(40, "Parsing");
 			Logger.log(`Parse ${document.path}`);
 			await this.parseDocument(document);
-            reporter.report(70, "AST построен");
+            reporter.report(70, "Analyze AST");
 			Logger.log(`Analyze ${document.path}`);
 			await this.analyzeDocumentAST(document);
-			reporter.report(100, "Готово");
+			reporter.report(100, "Complete");
 			Logger.log(`AST complete for ${document.path}`);
 
 			this.connection.sendDiagnostics({
