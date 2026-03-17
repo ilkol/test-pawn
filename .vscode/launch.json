@@ -13,7 +13,8 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceRoot}",
-				 "--inspect-brk"
+				 "--inspect-brk",
+				 "--disable-extensions"
 			],
 			"outFiles": [
 				"${workspaceRoot}/client/out/**/*.js",
@@ -22,7 +23,7 @@
 			"autoAttachChildProcesses": true,
 			"preLaunchTask": {
 				"type": "npm",
-				"script": "watch:tsc"
+				"script": "watch:esbuild"
 			}
         }
     ]
