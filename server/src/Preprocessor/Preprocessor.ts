@@ -79,7 +79,7 @@ export class Preprocessor
 		CacheManager.setFileCache(document.cache);
 	}
 
-	public async processFile(document: AbstractOpenFile, symbolManager: SymbolManager) {
+	public async processFile(document: AbstractOpenFile, symbolManager: SymbolManager, onProgress?: (percent: number) => void) {
 		const tmp = this.currentDocument;
 		this.currentDocument = document;
 		
@@ -92,7 +92,7 @@ export class Preprocessor
 			async () => this.registerSymbols(document, symbolManager),
 			async () => document.sortedIncludes = await this.sortIncludes(document),
 			async () => await this.processIncludes(document),
-			async () => document.processedCode = await this.processDefines(document.processedCode, document.defines, symbolManager)
+			async () => document.processedCode = await this.processDefines(document.processedCode, document.defines, symbolManager, onProgress)
 		]) {
 			await this.nextStep(document, action);
 		}
@@ -393,7 +393,7 @@ export class Preprocessor
 			const lastDef = define[define.length - 1];
 			lastDef.undef = directive;
 		} else {
-			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, directive.defineRange, {symbolName: directive.define}));
+			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, directive.defineRange, directive.define));
 		}
 	}
 	private handleDefine(directive: Directives.Defining.Define, defines:  Map<string, Directives.Defining.Define[]>)
@@ -1098,7 +1098,7 @@ export class Preprocessor
 		return {rest: result, fullLength: stream.curIndex};
 	}
 
-	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager)
+	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void)
 	{
 		for(let definesArray of defines.values()) {
 			for(let findinglocalDefine of definesArray) {
@@ -1125,10 +1125,21 @@ export class Preprocessor
 			}
 		}
 
+		const total = defines.size;
+		let i = 0;
+
 		for(let definesArray of defines.values()) {
+
 			for(let localDefine of definesArray) {
 				code = await this.processDefine(code, localDefine, symbolManager);
 			}
+			i++;
+			if(onProgress) {
+				onProgress((i / total) * 100);
+			}
+		}
+		if(onProgress) {
+			onProgress(100);
 		}
 
 		return code;

@@ -1,4 +1,4 @@
-import { Connection } from "vscode-languageserver";
+import { Connection, WorkDoneProgressServerReporter } from "vscode-languageserver";
 import { Preprocessor } from "./Preprocessor/Preprocessor";
 import { SymbolManager } from "./SymbolSystem";
 import { AbstractOpenFile, ParsingStep } from "./AbstractOpenFile";
@@ -25,9 +25,9 @@ export class AnalasisOrchestrator {
 			Logger.log(`Analyze ${document.path}`);
 			reporter.begin(`Analyzing ${document.path}`, 0, "Initializing...");
 			await this.handleCacheInitial(document);
-			reporter.report(10, "Preprocessing");
+			reporter.report(1, "Preprocessing");
 			Logger.log(`Preprocess ${document.path}`);
-			await this.preprocessDocument(document);
+			await this.preprocessDocument(document, reporter);
 			reporter.report(40, "Parsing");
 			Logger.log(`Parse ${document.path}`);
 			await this.parseDocument(document);
@@ -71,10 +71,17 @@ export class AnalasisOrchestrator {
 		CacheManager.setFileCache(document.cache);
     }
 
-	private async preprocessDocument(document: AbstractOpenFile) {
+	private async preprocessDocument(document: AbstractOpenFile, reporter: WorkDoneProgressServerReporter) {
 		if (document.parsinState < ParsingStep.preprocessed) {
 			this.symbolManager.resetAllFileSymbols(document.path);
-			await this.preprocessor.processFile(document, this.symbolManager);
+			let last = 0;
+			await this.preprocessor.processFile(document, this.symbolManager, localPercent => { 
+				if(localPercent - last > 1) {
+					const globalPercent = Math.round(10 + (localPercent * 0.39));
+					reporter.report(globalPercent, `Preprocessing: ${localPercent}%`);
+				}
+				last = localPercent;
+			});
 			
 			// Проверяем кэш AST после препроцессора (твоя старая логика)
 			if (document.cache?.rootAST && !document.AST) {
