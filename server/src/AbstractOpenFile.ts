@@ -288,12 +288,12 @@ export abstract class AbstractOpenFile
 
 
 
-	public isAnalysisComplete: boolean = false;
+	public isAnalyzing: boolean = false;
     private analysisPromise: Promise<void> | null = null;
     private resolveAnalysis: (() => void) | null = null;
     
     public waitForAnalysis(): Promise<void> {
-        if (this.isAnalysisComplete) {
+        if (this.isAnalyzing) {
             return Promise.resolve();
         }
         
@@ -307,7 +307,7 @@ export abstract class AbstractOpenFile
     }
     
     private markAnalysisComplete(): void {
-        this.isAnalysisComplete = true;
+        this.isAnalyzing = true;
         if (this.resolveAnalysis) {
             this.resolveAnalysis();
             this.resolveAnalysis = null;
