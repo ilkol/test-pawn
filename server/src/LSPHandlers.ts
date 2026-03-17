@@ -211,6 +211,12 @@ export class LSPHandlers {
 			return links;
 		}
 		await document.waitForAnalysis();
+		document.includes.forEach(include => {
+			links.push({
+				range: include.pathRange,
+				target: FileManager.getUriFromPath(include.absolutePath ?? include.pathText)
+			});
+		});
 
 		return links;
 	}
