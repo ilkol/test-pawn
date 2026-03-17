@@ -2,16 +2,8 @@ import {
 	createConnection,
 	ProposedFeatures,
 	InitializeParams,
-	CompletionItem,
-	TextDocumentPositionParams,
 	TextDocumentSyncKind,
 	InitializeResult,
-	DocumentDiagnosticReportKind,
-	type DocumentDiagnosticReport,
-	DocumentSymbol,
-	DocumentLink,
-	Location,
-	WorkspaceEdit,
 } from 'vscode-languageserver/node';
 
 import { Logger } from './Logger/Logger';
@@ -20,7 +12,7 @@ import { FileManager } from './Managers/FileManager';
 import { VSCode } from './VSCode';
 import { sendNotification } from './utils';
 import { Parser } from './Parser/Parser';
-import { LSPConnection, Position } from './types';
+import { LSPConnection } from './types';
 import { AbstractOpenFile, ParsingStep } from './AbstractOpenFile';
 import { Preprocessor } from './Preprocessor/Preprocessor';
 import { CacheManager } from './cache/CacheManager';
@@ -29,8 +21,8 @@ import { FileCache } from './cache/FileCache';
 import { serializeInit } from './cache/Serialization/serializeInit';
 import { ASTNode } from './antlr/AST/Nodes/ASTNode';
 import { SemanticTokensLegendManager, SymbolManager } from './SymbolSystem';
-import { DocumentUri, TextEdit } from 'vscode-languageserver-textdocument';
-import { SemanticTokensBuilder } from './SymbolSystem/SemanticTokensBuilder';
+import { LSPHandlers } from './LSPHandlers';
+import { CapabilitiesManager } from './Managers/CapabilitiesManager';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -149,237 +141,9 @@ async function main() {
 		document.completeAnalysis();
 	}
 	
+	const capabilitiesManager = new CapabilitiesManager();
 
-	let hasConfigurationCapability = false;
-	let hasWorkspaceFolderCapability = false;
-	let hasDiagnosticRelatedInformationCapability = false;
-
-	connection.onInitialize((params: InitializeParams) => {
-		const capabilities = params.capabilities;
-
-		// fileManager.currentUri = params.workspaceFolders
-		if(params.workspaceFolders) {
-			const uri = params.workspaceFolders[0];
-			if(uri) {
-				fileManager.currentUri = uri.uri;
-			}
-		}
-		if(params.locale) {
-			Locale.locale = params.locale;
-		}
-
-		hasConfigurationCapability = !!(
-			capabilities.workspace && !!capabilities.workspace.configuration
-		);
-		hasWorkspaceFolderCapability = !!(
-			capabilities.workspace && !!capabilities.workspace.workspaceFolders
-		);
-		hasDiagnosticRelatedInformationCapability = !!(
-			capabilities.textDocument &&
-			capabilities.textDocument.publishDiagnostics &&
-			capabilities.textDocument.publishDiagnostics.relatedInformation
-		);
-
-		const result: InitializeResult = {
-			capabilities: {
-				textDocumentSync: TextDocumentSyncKind.Incremental,
-				completionProvider: {
-					resolveProvider: true
-				},
-				diagnosticProvider: {
-					interFileDependencies: false,
-					workspaceDiagnostics: false
-				},
-				documentLinkProvider: {
-					workDoneProgress: true,
-				},
-				documentSymbolProvider: {
-					workDoneProgress: true
-				},
-				semanticTokensProvider: {
-					full: true,
-					legend: SemanticTokensLegendManager.getLegend(),
-					workDoneProgress: true
-				},
-				referencesProvider: {
-					workDoneProgress: true
-				},
-				definitionProvider: {
-					workDoneProgress: true
-				},
-				renameProvider: {
-					prepareProvider: true,
-					workDoneProgress: true
-				}
-			}
-		};
-		if (hasWorkspaceFolderCapability) {
-			result.capabilities.workspace = {
-				workspaceFolders: {
-					supported: true
-				}
-			};
-		}
-		return result;
-	});
-
-	connection.onPrepareRename(async (params) => {
-
-		Logger.log("Request prepare rename")
-		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
-		if(!document) {
-			return null;
-		}
-		
-		await document.waitForAnalysis();
-
-		const position = Position.fromLSP(params.position);
-		const {symbol, ref} = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager) ?? {};
-	
-		if(!symbol || !ref) {
-			return null;
-		}
-		
-		return {
-			range: ref.tokenRange,
-			placeholder: symbol.name
-		};
-	})
-
-	connection.onRenameRequest(async (params, _, __, ___) => {
-		Logger.log("Request rename")
-		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
-		if(!document) {
-			return null;
-		}
-		
-		await document.waitForAnalysis();
-
-		const position = Position.fromLSP(params.position);
-		const {symbol} = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager) ?? {};
-	
-		if(!symbol) {
-			return null;
-		}
-		
-		const changes: {
-			[uri: DocumentUri]: TextEdit[]
-		} = {};
-		
-		const newName = params.newName;
-
-		symbol.getReferences().forEach(ref => {
-			const uri = FileManager.getUriFromPath(ref.filePath);
-			if (!changes[uri]) {
-				changes[uri] = [];
-			}
-			changes[uri].push({
-				range: ref.tokenRange,
-				newText: newName,
-			} satisfies TextEdit);
-		});
-		
-		return {
-			changes
-		} satisfies WorkspaceEdit;
-	});
-
-	connection.onReferences(async (params, _, __, ___) => {
-		Logger.log("Request references")
-		const references: Location[] = [];	
-		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
-		if(!document) {
-			return references;
-		}
-		
-		await document.waitForAnalysis();
-
-		const position = Position.fromLSP(params.position);
-		const result = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager);
-		if(result) {
-			const { symbol } = result;
-			const refs = symbol.getReferences();
-
-			return refs
-				.filter(ref => params.context.includeDeclaration || !ref.tokenRange.isEqual(symbol.defenition.tokenRange))
-				.map(ref => ({
-					range: ref.tokenRange,
-					uri: FileManager.getUriFromPath(ref.filePath)
-				}));
-		}
-		
-		return [];
-	});
-
-	connection.onDefinition(async (params, _, __, ___) => {
-		Logger.log("Request defenition")
-		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
-		if(!document) {
-			return null;
-		}
-		
-		await document.waitForAnalysis();
-		const position = params.position;
-		const fileSymbols = symbolManager.getFileSymbols(document.path);
-		const symbol = fileSymbols.find(symbol => {
-			const references = symbol.getFileReferances(document.path);
-			for(const ref of references) {
-				const res = position.line === ref.tokenRange.start.line &&
-				position.character >= ref.tokenRange.start.character &&
-				position.character <= ref.tokenRange.end.character;
-				if(res) {
-					return true;
-				}
-			}
-			return false;
-		});
-		if(!symbol) {
-			return null;
-		}
-		
-		return {
-			range: symbol.defenition.tokenRange,
-			uri: FileManager.getUriFromPath(symbol.defenition.filePath)
-		};
-	});
-
-	connection.languages.semanticTokens.on(async (params, token) => {
-		Logger.log("Request semantic tokens")
-		const builder = new SemanticTokensBuilder();	
-		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
-		if(!document) {
-			return builder.build();
-
-		}
-		await document.waitForAnalysis();
-
-		const tokens: {
-			line: number;
-			char: number;
-			length: number;
-			tokenType: number;
-			tokenModifiers: number[];
-		}[] = [];
-		symbolManager.getFileSymbols(document.path).forEach((symbol) => {
-			symbol.getFileSemanticTokens(document.path).forEach(info => tokens.push(info))
-		});		
-
-		tokens.sort((a, b) => {
-			if (a.line !== b.line) return a.line - b.line;
-			return a.char - b.char;
-		}).forEach(info => {
-			builder.push(info);
-		});
-
-
-		return builder.build();
-		
-	});
+	connection.onInitialize(params => capabilitiesManager.getInitializeResult(params, fileManager));
 
 	const afterInitializing = async () => {
 		try {
@@ -397,7 +161,7 @@ async function main() {
 	}
 
 	connection.onInitialized(() => {
-		if (hasWorkspaceFolderCapability) {
+		if (capabilitiesManager.hasWorkspaceFolderCapability) {
 			connection.workspace.onDidChangeWorkspaceFolders(_event => {
 				Logger.log('Workspace folder change event received.');
 			});
@@ -406,112 +170,17 @@ async function main() {
 		afterInitializing();
 	});
 
-
-	connection.languages.diagnostics.on(async (params) => {
-		const document = fileManager.documentsManager.get(params.textDocument.uri);
-		if (document !== undefined) {
-			return {
-				kind: DocumentDiagnosticReportKind.Full,
-				items: []
-			} satisfies DocumentDiagnosticReport;
-		} else {
-			return {
-				kind: DocumentDiagnosticReportKind.Full,
-				items: []
-			} satisfies DocumentDiagnosticReport;
-		}
-	});
-	
-	connection.onDidChangeWatchedFiles(_change => {
-		
-	});
-
-	connection.onCompletion(
-		async (_params: TextDocumentPositionParams): Promise<CompletionItem[]> => {
-			let result: CompletionItem[] = [];// getDefaultCompletions();
-			const uri = _params.textDocument.uri;
-			const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
-			if(!document) {
-				return result;
-			}
-			
-			await document.waitForAnalysis();
-
-
-			const position = new Position(_params.position.line, _params.position.character)
-			const currentScope = document.scopeManager.findInnermostAt(position);
-			const symbols = currentScope.getAllVisibleSymbols(position);
-
-			const items = symbols.map(symbol => {
-				return {
-					label: symbol.name,
-					kind: symbol.completionKind,
-					data: symbol.id
-				} satisfies CompletionItem;
-			});
-			result = result.concat(items);
-
-			return result;
-		}
-	);
-
-	connection.onDocumentLinks(async (params, token, workDoneProgress, resultProgress) => {
-		Logger.log("клиент запросил список ссылок")
-		const links: DocumentLink[] = [];
-		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
-
-		if(!document) {
-			return links;
-		}
-		workDoneProgress.report("Waiting for file parsing");
-		await document.waitForAnalysis();
-		document.includes.forEach(include => {
-			links.push({
-				range: include.pathRange,
-				target: FileManager.getUriFromPath(include.absolutePath ?? include.pathText)
-			});
-		});
-		workDoneProgress.done();
-
-		return links;
-	})
-
-	
-
-	connection.onDocumentSymbol(async(params, token, wokrDoneProgress, resultProgress) => {
-		Logger.log("клиент запросил список символов")
-		const symbols: DocumentSymbol[] = [];
-		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
-		if(!document) {
-			return symbols;
-
-		}
-		await document.waitForAnalysis();
-		
-		symbolManager.getFileGlobalSymbols(document.path).forEach((symbol) => {
-			symbols.push(
-				symbol.defenition.getSymbolInfo(),
-			);
-		});
-
-		document.defines.forEach(definelist => {
-			definelist.forEach(define => {
-				if(define.symbol) {
-					symbols.push(define.symbol.defenition.getSymbolInfo());
-				}
-			})
-		})
-
-		return symbols;
-	});
-
-	connection.onCompletionResolve(
-		(item: CompletionItem): CompletionItem => {
-			return item;
-		}
-	);
+	connection.onPrepareRename(params => LSPHandlers.onPrepareRename(params, fileManager, symbolManager))
+	connection.onRenameRequest(params => LSPHandlers.onRenameRequest(params, fileManager, symbolManager));
+	connection.onReferences(params => LSPHandlers.onReferences(params, fileManager, symbolManager));
+	connection.onDefinition(params => LSPHandlers.onDefinition(params, fileManager, symbolManager));
+	connection.languages.semanticTokens.on(params => LSPHandlers.onSemanticTokens(params, fileManager, symbolManager));
+	connection.languages.diagnostics.on(params => LSPHandlers.onDiagnostics(params, fileManager));
+	connection.onDidChangeWatchedFiles(change => LSPHandlers.onDidChangeWatchedFiles(change));
+	connection.onCompletion(params => LSPHandlers.onCompletion(params, fileManager));
+	connection.onDocumentLinks(params => LSPHandlers.onDocumentLinks(params, fileManager));
+	connection.onDocumentSymbol(params => LSPHandlers.onDocumentSymbols(params, fileManager, symbolManager));
+	connection.onCompletionResolve(item => LSPHandlers.onCompletionResolve(item));
 
 	fileManager.documentsManager.listen(connection);
 	connection.listen();
