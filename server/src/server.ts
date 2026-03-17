@@ -10,15 +10,10 @@ import {
 	type DocumentDiagnosticReport,
 	DocumentSymbol,
 	DocumentLink,
-	SymbolKind,
 	Location,
 	WorkspaceEdit,
-	SemanticTokenTypes,
-	SemanticTokenModifiers,
-	CompletionItemKind
 } from 'vscode-languageserver/node';
 
-import { getDefaultCompletions } from './DefaultCompletions/DefaultCompletions';
 import { Logger } from './Logger/Logger';
 import { Locale } from './Locale';
 import { FileManager } from './Managers/FileManager';
@@ -36,7 +31,6 @@ import { ASTNode } from './antlr/AST/Nodes/ASTNode';
 import { SemanticTokensLegendManager, SymbolManager } from './SymbolSystem';
 import { DocumentUri, TextEdit } from 'vscode-languageserver-textdocument';
 import { SemanticTokensBuilder } from './SymbolSystem/SemanticTokensBuilder';
-import { Function } from './SymbolSystem/Symbols';
 
 function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFile) {
 	connection.sendDiagnostics({
@@ -48,30 +42,7 @@ function sendFileDiagnostics(connection: LSPConnection, document: AbstractOpenFi
 async function main() {
 	const connection = createConnection(ProposedFeatures.all);
 
-	[
-		SemanticTokenTypes.type,
-		SemanticTokenTypes.enum,
-		SemanticTokenTypes.parameter,
-		SemanticTokenTypes.enumMember,
-		SemanticTokenTypes.macro,
-		SemanticTokenTypes.comment,
-		SemanticTokenTypes.string,
-		SemanticTokenTypes.keyword,
-		SemanticTokenTypes.number,
-		SemanticTokenTypes.operator,
-		SemanticTokenTypes.function,
-		SemanticTokenTypes.variable
-	].forEach(SemanticTokensLegendManager.registerTokenType);
-	[
-		SemanticTokenModifiers.declaration,
-		SemanticTokenModifiers.definition,
-		SemanticTokenModifiers.readonly,
-		SemanticTokenModifiers.static,
-		SemanticTokenModifiers.deprecated,
-		SemanticTokenModifiers.documentation,
-		SemanticTokenModifiers.modification,
-		SemanticTokenModifiers.defaultLibrary,
-	].forEach(SemanticTokensLegendManager.registerTokenModifier);
+	SemanticTokensLegendManager.init();
 
 	Logger.init(connection.console);
 	Locale.init();

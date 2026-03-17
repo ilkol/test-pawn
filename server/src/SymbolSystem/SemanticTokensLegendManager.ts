@@ -1,8 +1,40 @@
+import { SemanticTokenModifiers, SemanticTokenTypes } from "vscode-languageserver";
+
 export abstract class SemanticTokensLegendManager {
 	private static tokenTypes: string[] = [];
 	private static tokenModifiers: string[] = [];
 	private static tokenTypeMap: Map<string, number> = new Map();
 	private static tokenModifierMap: Map<string, number> = new Map();
+
+	public static init() {
+			this.tokenTypes = [];
+			this.tokenModifiers = [];
+			
+			[
+				SemanticTokenTypes.type,
+				SemanticTokenTypes.enum,
+				SemanticTokenTypes.parameter,
+				SemanticTokenTypes.enumMember,
+				SemanticTokenTypes.macro,
+				SemanticTokenTypes.comment,
+				SemanticTokenTypes.string,
+				SemanticTokenTypes.keyword,
+				SemanticTokenTypes.number,
+				SemanticTokenTypes.operator,
+				SemanticTokenTypes.function,
+				SemanticTokenTypes.variable
+			].forEach(SemanticTokensLegendManager.registerTokenType);
+			[
+				SemanticTokenModifiers.declaration,
+				SemanticTokenModifiers.definition,
+				SemanticTokenModifiers.readonly,
+				SemanticTokenModifiers.static,
+				SemanticTokenModifiers.deprecated,
+				SemanticTokenModifiers.documentation,
+				SemanticTokenModifiers.modification,
+				SemanticTokenModifiers.defaultLibrary,
+			].forEach(SemanticTokensLegendManager.registerTokenModifier);
+		}
 
 	static registerTokenType(type: string): number {
 		if (!SemanticTokensLegendManager.tokenTypeMap.has(type)) {
