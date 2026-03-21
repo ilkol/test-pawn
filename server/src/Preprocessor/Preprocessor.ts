@@ -520,10 +520,12 @@ export class Preprocessor
 			let endIndex = match.index + fullMatch.length;
 			const restIndex = (whiteSpacesBeforeRest === undefined ? 0 : whiteSpacesBeforeRest.length) + rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
-			
+			let multyLine = 0;
 			if(directive === "define") {
 				let res = this.findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
 				rest = res.rest;
+				
+				multyLine = rest.match(/\n/g)?.length ?? 0;
 				endIndex = restIndex + res.fullLength;
 			}
 
@@ -531,11 +533,15 @@ export class Preprocessor
 			if(directiveInstance) {
 				directives.push(directiveInstance);
 			}
+			let test = leadingWhitespace + "#" + leadingWhitespaceAfterSharp + directive + whiteSpacesBeforeRest + rest;
+			console.log(test.length, JSON.stringify(test));
+			let res = ' '.repeat(endIndex - directiveIndex -  (multyLine ? multyLine + 1 : 0)) + '\n'.repeat(multyLine);
+			console.log(res.length, JSON.stringify(res));
 
 			changes.push({
 				start: directiveIndex,
 				end: endIndex,
-				replacement: ' '.repeat(endIndex - directiveIndex),
+				replacement: ' '.repeat(endIndex - directiveIndex - (multyLine ? multyLine + 1 : 0)) + '\n'.repeat(multyLine),
 			});
 		}		
 		
