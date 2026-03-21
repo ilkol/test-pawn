@@ -108,8 +108,8 @@
 		],
 		"commands": [
 			{
-				"command": "pawnlanguage.openParsed",
-				"title": "Открыть распаршенный файл"
+				"command": "pawnlanguage.openPreprocessed",
+				"title": "Open preprocessed code"
 			},
 			{
 				"command": "pawnlanguage.parseCurrnetFile",

@@ -87,7 +87,7 @@ export class AnalasisOrchestrator {
 			if (document.cache?.rootAST && !document.AST) {
 				document.AST = Serialization.Deserialize.object<ASTNode>(document.cache.rootAST);
 				document.parsinState = ParsingStep.parsed;
-				document.processedCode = "";
+				// document.processedCode = "";
 			} else {
 				document.parsinState = ParsingStep.preprocessed;
 			}

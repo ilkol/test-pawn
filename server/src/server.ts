@@ -77,6 +77,17 @@ async function main() {
 	connection.onDocumentSymbol(params => LSPHandlers.onDocumentSymbols(params, fileManager, symbolManager));
 	connection.onCompletionResolve(item => LSPHandlers.onCompletionResolve(item));
 
+	connection.onRequest('pawn/getPreprocessed', async (uriStr: string) => {
+		// Извлекаем путь к файлу из URI (pawn-preprocessed://...)
+		const document = fileManager.getOpenedFile(uriStr);
+		if (document) {
+			// Убеждаемся, что препроцессинг завершен
+			await document.waitForAnalysis(); 
+			return document.processedCode; // Та самая строка после всех замен
+		}
+		return "// Ошибка: Файл не найден или еще не проанализирован";
+	});
+
 	fileManager.documentsManager.listen(connection);
 	connection.listen();
 }

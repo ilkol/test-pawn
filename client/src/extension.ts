@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import {
 	LanguageClient,
 	LanguageClientOptions,
+	RequestType,
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient/node';
@@ -32,6 +33,7 @@ export function activate(context: ExtensionContext) {
 			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
 		}
 	};
+
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('pawnlanguage.showAST', async () => {
@@ -124,6 +126,45 @@ export function activate(context: ExtensionContext) {
 		clientOptions
 	);
 
+	const GetPreprocessedRequest = new RequestType<string, string, void>('pawn/getPreprocessed');
+
+	const myProvider = new class implements vscode.TextDocumentContentProvider {
+        onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
+        onDidChange = this.onDidChangeEmitter.event;
+
+        async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
+			// Извлекаем оригинальный URI файла (убираем нашу схему pawn-preprocessed)
+			const originalUri = uri.query; // Или другой способ передачи, напр. через путь
+			
+			console.log(originalUri);
+			try {
+				// Отправляем кастомный запрос напрямую серверу
+				return await client.sendRequest(GetPreprocessedRequest, originalUri);
+			} catch (err) {
+				return `// Ошибка запроса к серверу: ${err}`;
+			}
+		}
+    };
+
+    context.subscriptions.push(
+        vscode.workspace.registerTextDocumentContentProvider('pawn-preprocessed', myProvider)
+    );
+
+    // Команда для пользователя
+    context.subscriptions.push(
+        vscode.commands.registerCommand('pawnlanguage.openPreprocessed', async () => {
+            const editor = vscode.window.activeTextEditor;
+			if (!editor) return;
+
+			const originalUri = editor.document.uri.fsPath;
+			// Создаем URI для провайдера, передавая оригинальный URI в query или путь
+			const virtualUri = vscode.Uri.parse(`pawn-preprocessed://view/file.pwn?${originalUri}`);
+			
+			const doc = await vscode.workspace.openTextDocument(virtualUri);
+			await vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside);
+        })
+    );
+
 	client.start();
 }
 
@@ -133,49 +174,4 @@ export function deactivate() {
 		return undefined;
 	}
 	return client.stop();
-}
-
-function getWebviewContent(ast: any) {
-    // Сериализуем AST обратно в строку для вставки в скрипт, 
-    // но удаляем 'parent', чтобы не было циклических ссылок
-    const astString = JSON.stringify(ast, (key, value) => {
-        if (key === 'parent' || key === 'context') return undefined;
-        return value;
-    });
-
-    return `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net">
-            <style>
-                body { background-color: var(--vscode-editor-background); color: var(--vscode-editor-foreground); padding: 10px; }
-                #search { margin-bottom: 10px; width: 100%; padding: 5px; background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); }
-                .json-viewer { background-color: transparent !important; }
-            </style>
-        </head>
-        <body>
-            <input type="text" id="search" placeholder="Поиск по типу узла (например, BinarOperator)...">
-            <div id="json-renderer"></div>
-
-            <script src="https://cdn.jsdelivr.net"></script>
-            <script>
-                const data = ${astString};
-                const container = document.getElementById('json-renderer');
-                const viewer = new JsonViewer({ 
-                    container: container, 
-                    data: data,
-                    theme: 'dark', // или подстраивай под VS Code тему
-                    expand: 2      // Сразу раскрываем на 2 уровня вглубь
-                });
-
-                // Мини-поиск для отладки
-                document.getElementById('search').addEventListener('input', (e) => {
-                    const term = e.target.value.toLowerCase();
-                    // Тут можно добавить логику фильтрации, если дерево будет слишком большим
-                });
-            </script>
-        </body>
-        </html>
-    `;
 }
