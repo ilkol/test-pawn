@@ -523,7 +523,7 @@ export class Preprocessor
 			let multyLine = 0;
 			if(directive === "define") {
 				let res = this.findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
-				rest = res.rest;
+				rest = res.rest.replaceAll(/\\[\n\r]/g, "  ");
 				
 				multyLine = rest.match(/\n/g)?.length ?? 0;
 				endIndex = restIndex + res.fullLength;
