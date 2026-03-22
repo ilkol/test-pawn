@@ -81,7 +81,12 @@ cycles:				while | do | for;
 do:					DO statement (WHILE condition)?;
 
 while:				WHILE condition statement;
-for:				FOR OPEN_PARENTHESIS first=forFirstExp? SEMI second=expresion? SEMI third=compoundExpression? CLOSE_PARENTHESIS statement;
+for:				
+	FOR 
+		((OPEN_PARENTHESIS first=forFirstExp? SEMI second=expresion? SEMI third=compoundExpression? CLOSE_PARENTHESIS) 
+		| (first=forFirstExp? SEMI second=expresion? SEMI third=compoundExpression? DO) )
+	statement
+;
 forFirstExp:        varDeclaration|compoundExpression;
 
 

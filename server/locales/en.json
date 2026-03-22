@@ -2621,5 +2621,8 @@
 		"', '(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, '_', BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionArgument)": "mismatched input '/' expecting {'.', '(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, '_', BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionArgument)"
 	},
 	"extraneous input '\", \"' expecting {')', ','} (unknown rule)": "extraneous input '\", \"' expecting {')', ','} (unknown rule)",
-	"no viable alternative at input '((((newkeys&(9))==(9))&&((oldkeys&(9))!' (ifStatement)": "no viable alternative at input '((((newkeys&(9))==(9))&&((oldkeys&(9))!' (ifStatement)"
+	"no viable alternative at input '((((newkeys&(9))==(9))&&((oldkeys&(9))!' (ifStatement)": "no viable alternative at input '((((newkeys&(9))==(9))&&((oldkeys&(9))!' (ifStatement)",
+	"no viable alternative at input 'days_of_month={' (statement)": "no viable alternative at input 'days_of_month={' (statement)",
+	"no viable alternative at input '31,29,31,30,31,30,31,31,30,31,30,31}' (statement)": "no viable alternative at input '31,29,31,30,31,30,31,31,30,31,30,31}' (statement)",
+	"no viable alternative at input '31,28,31,30,31,30,31,31,30,31,30,31}' (statement)": "no viable alternative at input '31,28,31,30,31,30,31,31,30,31,30,31}' (statement)"
 }
