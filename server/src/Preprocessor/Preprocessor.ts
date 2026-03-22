@@ -848,6 +848,7 @@ export class Preprocessor
 
 	private isStringStrating(stream: LikeCCharStream): boolean
 	{
+		const startIndex = stream.curIndex;
 		let c = stream.char;
 		if (c === '\"' || c === '\'') {
 			return true;                        /* "..." */
@@ -879,6 +880,7 @@ export class Preprocessor
 		// 	}
 		// }
 		
+		stream.curIndex = startIndex;
 		return false;
 	}
 	private getString(stream: LikeCCharStream)
