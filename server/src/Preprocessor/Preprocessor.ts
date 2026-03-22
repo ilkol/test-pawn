@@ -1417,7 +1417,7 @@ export class Preprocessor
 					if (this.isStringStrating(e)) { // пропуск строки
 						e =this. skipstring(e);
 					}              
-					else if (/\(\{\[/.exec(e.char)) { // пропуск групп
+					else if (/[\(\{\[]/.exec(e.char)) { // пропуск групп
 						
 						e = this.skippgroup(e);
 					}

@@ -2596,5 +2596,13 @@
 	"extraneous input '}' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)": "extraneous input '}' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)",
 	"extraneous input 'return' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)": "extraneous input 'return' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)",
 	"extraneous input 'else' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)": "extraneous input 'else' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)",
-	"no viable alternative at input 'SendSyntaxMessage}' (statement)": "no viable alternative at input 'SendSyntaxMessage}' (statement)"
+	"no viable alternative at input 'SendSyntaxMessage}' (statement)": "no viable alternative at input 'SendSyntaxMessage}' (statement)",
+	"extraneous input '#define' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)": "extraneous input '#define' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)",
+	"mismatched input '%' expecting {')', '{', ',', '&', '": {
+		"": {
+			"": {
+				"', 'const', IDENTIFIER} (functionDeclarationParams)": "mismatched input '%' expecting {')', '{', ',', '&', '...', 'const', IDENTIFIER} (functionDeclarationParams)"
+			}
+		}
+	}
 }
