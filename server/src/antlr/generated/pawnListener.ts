@@ -59,8 +59,6 @@ import { LiteralContext } from "./pawnParser";
 import { Bool_constContext } from "./pawnParser";
 import { PredefinedConstantsContext } from "./pawnParser";
 import { StringContext } from "./pawnParser";
-import { DocsContext } from "./pawnParser";
-import { DocBlockContext } from "./pawnParser";
 import { AssigmentExpressionContext } from "./pawnParser";
 import { TernaryExpressionContext } from "./pawnParser";
 import { LogicalOrExpressionContext } from "./pawnParser";
@@ -705,28 +703,6 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitString?: (ctx: StringContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.docs`.
-	 * @param ctx the parse tree
-	 */
-	enterDocs?: (ctx: DocsContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.docs`.
-	 * @param ctx the parse tree
-	 */
-	exitDocs?: (ctx: DocsContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.docBlock`.
-	 * @param ctx the parse tree
-	 */
-	enterDocBlock?: (ctx: DocBlockContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.docBlock`.
-	 * @param ctx the parse tree
-	 */
-	exitDocBlock?: (ctx: DocBlockContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.assigmentExpression`.

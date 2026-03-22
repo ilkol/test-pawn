@@ -2589,5 +2589,11 @@
 	"mismatched input '}' expecting {')', ','} (functionCallOperator)": "mismatched input '}' expecting {')', ','} (functionCallOperator)",
 	"mismatched input ';' expecting {'": {
 		"', '(', ')', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, '_', BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionCallOperator)": "mismatched input ';' expecting {'.', '(', ')', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, '_', BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionCallOperator)"
-	}
+	},
+	"no viable alternative at input '((((newkeys&(8))==(8))&&((oldkeys&(8))!' (ifStatement)": "no viable alternative at input '((((newkeys&(8))==(8))&&((oldkeys&(8))!' (ifStatement)",
+	"no viable alternative at input '((((newkeys&(8))!' (ifStatement)": "no viable alternative at input '((((newkeys&(8))!' (ifStatement)",
+	"extraneous input 'if' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)": "extraneous input 'if' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)",
+	"extraneous input '}' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)": "extraneous input '}' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)",
+	"extraneous input 'return' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)": "extraneous input 'return' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)",
+	"extraneous input 'else' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)": "extraneous input 'else' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)"
 }

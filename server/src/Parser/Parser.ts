@@ -49,7 +49,7 @@ export class Parser
 		const parserErrorListener = new ParserErrorListener(document);
 		parser.addErrorListener(parserErrorListener);
 		const ruleContext = parser.file();
-		const listener: IPawnListener = new PawnListener();
+		const listener: IPawnListener = new PawnListener(tokenStream);
 		
 		ParseTreeWalker.DEFAULT.walk(listener, ruleContext);
 	

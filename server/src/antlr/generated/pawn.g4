@@ -1,21 +1,10 @@
 grammar pawn;
 
-/*
-Объявление переменной может быть произведенно:
- * В любомй позиции, где стейтмент был бы валидным
- * Везде, где будет валидна имплементация или декларация функций
- * В первом стейтменте цикла for
-
-Если переменная объявлена с помощь static внутри блока, то переменная будет работать и после окончания выполнения этого блока.
-Если же statis перменная - глобальная, то она станет видна только в текущем файле.
- */
-
-/* Содержание файла */
-file:				processorLabel|((docs)*(declaration)*) EOF;
+file:				processorLabel|((declaration)*) EOF;
 
 processorLabel:		IDENTIFIER':';
 
-declaration:		(docs)*(functionDecl|operatorOverload|varDeclaration SEMI) | enum;
+declaration:		(functionDecl|operatorOverload|varDeclaration SEMI) | enum;
 
 enum:				STATIC? ENUM tag? (IDENTIFIER)? enumIterator? CURLY_OPEN_BRACKET (enumMember (COMA enumMember)* COMA?)? CURLY_CLOSE_BRACKET SEMI?;
 enumMember:			tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion SQUARE_CLOSE_BRACKET)? (ASSIGMENT expresion)?;
@@ -105,9 +94,6 @@ predefinedConstants: CELLBITS | CELLMAX | CELLMIN | CHARBITS | CHARMAX | CHARMIN
 
 string:				(STRING | CHAR_STRING | SHARPSTRING) (string)*;
 
-docs: docBlock;
-
-docBlock: DocBlock;
 // docLine: DocLine;
 // hier14
 assigmentExpression: ternaryExpression (assigments ternaryExpression)*;
@@ -357,7 +343,7 @@ Whitespace: [ \t]+ -> skip;
 
 Newline: ('\r' '\n'? | '\n') -> skip;
 
-DocBlock: '/**' .*? '*/';
+DocBlock: '/**' .*? '*/' -> channel(HIDDEN);
 // DocLine: '///' ~ [\r\n]*;
 
 BlockComment: '/*' .*? '*/' -> skip;

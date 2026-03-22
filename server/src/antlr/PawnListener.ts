@@ -4,7 +4,7 @@ import { DiagnosticMessage } from "./diagnostic/DiagnosticMessage";
 import { Declarations } from "./AST/Nodes/Declarations";
 import { Stack } from "./Stack/Stack";
 import { pawnListener as IPawnListener } from "./generated/pawnListener";
-import { AdditiveExpressionContext, ArrayInitContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, Case_listContext, CompareExpressionContext, CompoundExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, DocBlockContext, EllipseContext, ElseStatementContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, FunctionOrArrayExpressionContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostfixExpressionContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TernaryExpressionContext, VarDeclarationContext, VarModifiresContext, VariableDeclarationContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
+import { AdditiveExpressionContext, ArrayInitContext, AssigmentExpressionContext, BinaryContext, BitAndExpressionContext, BitOrExpressionContext, BitShiftExpressionContext, Bool_constContext, CaseContext, Case_listContext, CompareExpressionContext, CompoundExpressionContext, CompoundStatmentContext, CycleKeywordsContext, DeclParamsContext, DefaultContext, EllipseContext, EnumContext, EnumMemberContext, EqualOrNotExpressionContext, ExpresionContext, FileContext, FloatContext, ForContext, FuncDeclModifContext, FunctionArgumentContext, FunctionCallOperatorContext, FunctionDeclContext, FunctionDeclarationParamsContext, FunctionOrArrayExpressionContext, HexContext, IfStatementContext, IntegerContext, LogicalAndExpressionContext, LogicalOrExpressionContext, MultiplicativeExpressionContext, NativeAssigmentContext, OperatorOverloadContext, PluralTagContext, PostfixExpressionContext, PredefinedConstantsContext, PrefixExpressionContext, PrimaryExpressionContext, RationalContext, ReturnContext, StatementContext, StringContext, SwitchContext, SymbolContext, TagContext, TernaryExpressionContext, VarDeclarationContext, VarModifiresContext, VariableDeclarationContext, WhileContext, XorExpressionContext } from "./generated/pawnParser";
 import { VarDeclaration } from "./AST/Nodes/Variables/VarDeclaration";
 import { OperatorNew } from "./AST/Nodes/Operators/OperatorNew";
 import { EnumDeclaration } from "./AST/Nodes/enum/EnumDeclaration";
@@ -59,7 +59,7 @@ import { TerminalNode } from "antlr4ts/tree/TerminalNode";
 import { VariableModifire } from "../SymbolSystem/Symbols";
 import { TernarOperator } from "./AST/Nodes/Operators/TernarOperator";
 import { ComaOperator } from "./AST/Nodes/Operators/ComaOperator";
-import { Token } from "antlr4ts";
+import { BufferedTokenStream, ParserRuleContext, Token, TokenStream } from "antlr4ts";
 import { Interval } from "antlr4ts/misc/Interval";
 import { RightValue } from "./AST/Nodes/RightValue";
 import { PawnErrors } from "../Errors/PawnErrors";
@@ -71,6 +71,8 @@ export class PawnListener implements IPawnListener
 	private docs: Stack<Docs> = new Stack<Docs>();
 	private root: Declarations | null = null;
 	public readonly diagnostics: DiagnosticMessage[] = [];
+
+	constructor(private tokenStream: BufferedTokenStream) {}
 	
 	public get Root() : Declarations | null {
 		return this.root;
@@ -126,7 +128,9 @@ export class PawnListener implements IPawnListener
 	}
 	enterFunctionDecl(ctx: FunctionDeclContext): void {
 		let node = new FunctionDeclaration();	
-		node.docs = this.docs.pop();
+		// node.docs = this.docs.pop();
+		const comment = this.getDocForContext(ctx);
+    	console.log(`Функция: ${ctx.IDENTIFIER().text}, Дока: ${comment}`);
 		(<Declarations>this.nodes.peek()).declarations.push(node);
 		this.nodes.push(node);
 	}
@@ -1265,11 +1269,6 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(node);
 	}
 
-	exitDocBlock(ctx: DocBlockContext)
-	{
-		this.docs.push(new Docs(ctx.text));
-	}
-
 	enterStatement(ctx: StatementContext): void {
 		const node = new Statement();
 		this.nodes.push(node);
@@ -1438,5 +1437,21 @@ export class PawnListener implements IPawnListener
 		}
 
 		this.nodes.push(leftNode);
+	}
+
+	private getDocForContext(ctx: ParserRuleContext): string {
+		// Получаем индекс первого токена текущего правила
+		const stopIndex = ctx.start.tokenIndex;
+		
+		// Ищем все скрытые токены СЛЕВА от текущего токена
+		// 1 — это индекс канала (HIDDEN в ANTLR обычно равен 1)
+		const hiddenTokens = this.tokenStream.getHiddenTokensToLeft(stopIndex, Token.HIDDEN_CHANNEL);
+
+		if (hiddenTokens && hiddenTokens.length > 0) {
+			// Собираем текст всех найденных блоков документации
+			return hiddenTokens.map(t => t.text).join("\n");
+		}
+		
+		return "";
 	}
 }
