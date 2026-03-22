@@ -902,7 +902,7 @@ export class Preprocessor
 		result += stream.char;
 		stream.curIndex++;
 		while (stream.char !== endquote && !this.isFileEnd(stream.char)) {
-			result += stream.char;
+			// result += stream.char;
 			const charCode = this.litchar(stream, flags);
 			result += charCode.str;
 
