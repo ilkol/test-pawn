@@ -317,10 +317,11 @@ PAWN:       '__Pawn';
 UCHARMAX:   'ucharmax';
 
 
-SHARPSTRING:		HASHTAG CHARS* HASHTAG?;
+SHARPSTRING:		HASHTAG END_STRINGIZED*;
 STRING:				'"' CHARS* '"';
 CHAR_STRING:				'\'' CCHARS* '\'';
 
+fragment END_STRINGIZED: ~ [ \t\r\n,);}:]+;
 fragment CCHARS:				~ ['\\\r\n] | ESCAPESEQUENCE ;
 fragment CHARS:				~ ["\\\r\n] | ESCAPESEQUENCE ;
 fragment SCHARS:				~ [>\\\r\n];
