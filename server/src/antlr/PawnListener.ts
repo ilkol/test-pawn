@@ -130,7 +130,9 @@ export class PawnListener implements IPawnListener
 		let node = new FunctionDeclaration();	
 		// node.docs = this.docs.pop();
 		const comment = this.getDocForContext(ctx);
-    	console.log(`Функция: ${ctx.IDENTIFIER().text}, Дока: ${comment}`);
+		if(comment) {
+			node.docs = new Docs(comment);
+		}
 		(<Declarations>this.nodes.peek()).declarations.push(node);
 		this.nodes.push(node);
 	}
@@ -1439,7 +1441,7 @@ export class PawnListener implements IPawnListener
 		this.nodes.push(leftNode);
 	}
 
-	private getDocForContext(ctx: ParserRuleContext): string {
+	private getDocForContext(ctx: ParserRuleContext): string | null {
 		// Получаем индекс первого токена текущего правила
 		const stopIndex = ctx.start.tokenIndex;
 		
@@ -1452,6 +1454,6 @@ export class PawnListener implements IPawnListener
 			return hiddenTokens.map(t => t.text).join("\n");
 		}
 		
-		return "";
+		return null;
 	}
 }
