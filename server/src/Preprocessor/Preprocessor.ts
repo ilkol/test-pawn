@@ -534,9 +534,7 @@ export class Preprocessor
 				directives.push(directiveInstance);
 			}
 			let test = leadingWhitespace + "#" + leadingWhitespaceAfterSharp + directive + whiteSpacesBeforeRest + rest;
-			console.log(test.length, JSON.stringify(test));
 			let res = ' '.repeat(endIndex - directiveIndex -  (multyLine ? multyLine + 1 : 0)) + '\n'.repeat(multyLine);
-			console.log(res.length, JSON.stringify(res));
 
 			changes.push({
 				start: directiveIndex,
@@ -1241,10 +1239,6 @@ export class Preprocessor
 		try {
 			this.substindex.clear(); // очищаем индекс макросов
 			this.substindex.set(define.prefix[0], [define]); // добавляем в массив макрос с ключом равным первому символу макроса
-		
-			if(this.currentDocument?.path === "d:\\SA-MP 0.3.7 Windows Server\\gamemodes\\test.pwn" && define.pattern === "KEY_FIRE" && code.length > 10) {
-				console.log(code);				
-			}
 			
 			return this.substallpatterns(code, changes);
 		} catch(e) {
