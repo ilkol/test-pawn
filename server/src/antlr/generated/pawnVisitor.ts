@@ -33,8 +33,6 @@ import { SwitchContext } from "./pawnParser";
 import { CaseContext } from "./pawnParser";
 import { DefaultContext } from "./pawnParser";
 import { Case_listContext } from "./pawnParser";
-import { ArrayInitContext } from "./pawnParser";
-import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
 import { DeclParamsContext } from "./pawnParser";
 import { EllipseContext } from "./pawnParser";
@@ -55,7 +53,6 @@ import { WhileContext } from "./pawnParser";
 import { ForContext } from "./pawnParser";
 import { ForFirstExpContext } from "./pawnParser";
 import { CycleKeywordsContext } from "./pawnParser";
-import { LiteralContext } from "./pawnParser";
 import { Bool_constContext } from "./pawnParser";
 import { PredefinedConstantsContext } from "./pawnParser";
 import { StringContext } from "./pawnParser";
@@ -76,6 +73,9 @@ import { PostfixExpressionContext } from "./pawnParser";
 import { FunctionOrArrayExpressionContext } from "./pawnParser";
 import { PrimaryExpressionContext } from "./pawnParser";
 import { LiteralOrSymbolContext } from "./pawnParser";
+import { LiteralContext } from "./pawnParser";
+import { ArrayInitContext } from "./pawnParser";
+import { ArrayInitMemberContext } from "./pawnParser";
 import { CompoundExpressionContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
@@ -302,20 +302,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitCase_list?: (ctx: Case_listContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.arrayInit`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitArrayInit?: (ctx: ArrayInitContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `pawnParser.arrayInitMember`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitArrayInitMember?: (ctx: ArrayInitMemberContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `pawnParser.assigments`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -456,13 +442,6 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	visitCycleKeywords?: (ctx: CycleKeywordsContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `pawnParser.literal`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitLiteral?: (ctx: LiteralContext) => Result;
-
-	/**
 	 * Visit a parse tree produced by `pawnParser.bool_const`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -601,6 +580,27 @@ export interface pawnVisitor<Result> extends ParseTreeVisitor<Result> {
 	 * @return the visitor result
 	 */
 	visitLiteralOrSymbol?: (ctx: LiteralOrSymbolContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.literal`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitLiteral?: (ctx: LiteralContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.arrayInit`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitArrayInit?: (ctx: ArrayInitContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `pawnParser.arrayInitMember`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitArrayInitMember?: (ctx: ArrayInitMemberContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `pawnParser.compoundExpression`.

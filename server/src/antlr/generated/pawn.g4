@@ -11,7 +11,7 @@ enumMember:			tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion SQUARE_CLOSE_BRACKE
 enumIterator:		OPEN_PARENTHESIS (ASSIGMENT_PLUS | ASSIGMENT_MULT | ASSIGMENT_LEFT) INTEGER CLOSE_PARENTHESIS;
 
 varDeclaration:     (NEW varModifires*| varModifires+) variableDeclaration (COMA variableDeclaration)*;
-variableDeclaration: tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)* (ASSIGMENT (expresion | arrayInit))?;
+variableDeclaration: tag? IDENTIFIER (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)* (ASSIGMENT (expresion))?;
 
 functionDecl:		(funcDeclModif)? tag? IDENTIFIER functionDeclarationParams;
 operatorOverload:	(funcDeclModif)? tag? OPERATOR canBeOverloaded functionDeclarationParams;
@@ -38,9 +38,6 @@ case:				CASE case_list (COMA case_list)* COLON statement;
 default:            DEFAULT COLON statement;
 case_list:			expresion (PERIOD expresion)?;
 
-arrayInit: CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* COMA? CURLY_CLOSE_BRACKET;
-arrayInitMember: arrayInit | ellipse | expresion;
-
 
 assigments:
     ASSIGMENT_OR |          // |=
@@ -57,7 +54,7 @@ assigments:
 	ASSIGMENT             // =
 ;
 
-declParams:			(CONST)? (reference)? (pluralTag | tag)? IDENTIFIER (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)* (ASSIGMENT (expresion|arrayInit))?;	
+declParams:			(CONST)? (reference)? (pluralTag | tag)? IDENTIFIER (SQUARE_OPEN_BRACKET expresion? SQUARE_CLOSE_BRACKET)* (ASSIGMENT (expresion))?;	
 ellipse:			COMA? (pluralTag | tag)? PERIOD_FUNC;
 
 reference:			BIT_AND;
@@ -93,7 +90,6 @@ forFirstExp:        varDeclaration|compoundExpression;
 cycleKeywords:		BREAK|CONTINUE;
 
 
-literal:			(string | number | bool_const | predefinedConstants);
 bool_const:			TRUE | FALSE;
 predefinedConstants: CELLBITS | CELLMAX | CELLMIN | CHARBITS | CHARMAX | CHARMIN | DEBUG | LINE | PAWN | UCHARMAX;
 
@@ -140,6 +136,7 @@ prefixExpression:
 
 postfixExpression: functionOrArrayExpression (INCREMENTS | DECREMENTS | CHAR)*;
 
+
 // hier1
 functionOrArrayExpression: 
 	primaryExpression 
@@ -157,6 +154,9 @@ primaryExpression:
 ;
 
 literalOrSymbol: symbol | literal;
+literal:			string | number | bool_const | predefinedConstants | arrayInit;
+arrayInit: CURLY_OPEN_BRACKET arrayInitMember (COMA arrayInitMember)* COMA? CURLY_CLOSE_BRACKET;
+arrayInitMember: arrayInit | ellipse | expresion;
 
 compoundExpression: expresion (COMA expresion)*;
 expresion: assigmentExpression;

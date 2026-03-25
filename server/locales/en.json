@@ -320,7 +320,8 @@
 	"no viable alternative at input ',!\"\"SERVER' (expresion)": "no viable alternative at input ',!\"\"SERVER' (expresion)",
 	"extraneous input 'return' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)": "extraneous input 'return' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (unknown rule)",
 	"extraneous input '": {
-		"' expecting ';' (unknown rule)": "extraneous input '.' expecting ';' (unknown rule)"
+		"' expecting ';' (unknown rule)": "extraneous input '.' expecting ';' (unknown rule)",
+		"' expecting {')', ','} (unknown rule)": "extraneous input '.' expecting {')', ','} (unknown rule)"
 	},
 	"extraneous input '\"/dj\"' expecting {')', '{', ',', '&', '": {
 		"": {
@@ -2463,7 +2464,8 @@
 	"no viable alternative at input 'memcpy' (expresion)": "no viable alternative at input 'memcpy' (expresion)",
 	"extraneous input ')' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input ')' expecting {'(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)",
 	"mismatched input ')' expecting {'": {
-		"', '(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, '_', BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionArgument)": "mismatched input ')' expecting {'.', '(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, '_', BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionArgument)"
+		"', '(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, '_', BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionArgument)": "mismatched input ')' expecting {'.', '(', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, '_', BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionArgument)",
+		"', '(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, '_', BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionArgument)": "mismatched input ')' expecting {'.', '(', '{', '-', '++', '--', '!', '~', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, '_', BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionArgument)"
 	},
 	"no viable alternative at input ',from": {
 		"' (expresion)": "no viable alternative at input ',from.' (expresion)"
@@ -2624,5 +2626,15 @@
 	"no viable alternative at input '((((newkeys&(9))==(9))&&((oldkeys&(9))!' (ifStatement)": "no viable alternative at input '((((newkeys&(9))==(9))&&((oldkeys&(9))!' (ifStatement)",
 	"no viable alternative at input 'days_of_month={' (statement)": "no viable alternative at input 'days_of_month={' (statement)",
 	"no viable alternative at input '31,29,31,30,31,30,31,31,30,31,30,31}' (statement)": "no viable alternative at input '31,29,31,30,31,30,31,31,30,31,30,31}' (statement)",
-	"no viable alternative at input '31,28,31,30,31,30,31,31,30,31,30,31}' (statement)": "no viable alternative at input '31,28,31,30,31,30,31,31,30,31,30,31}' (statement)"
+	"no viable alternative at input '31,28,31,30,31,30,31,31,30,31,30,31}' (statement)": "no viable alternative at input '31,28,31,30,31,30,31,31,30,31,30,31}' (statement)",
+	"no viable alternative at input 'ewpublic' (file)": "no viable alternative at input 'ewpublic' (file)",
+	"no viable alternative at input ',400' (functionDeclarationParams)": "no viable alternative at input ',400' (functionDeclarationParams)",
+	"missing ';' at 'public' (unknown rule)": "missing ';' at 'public' (unknown rule)",
+	"extraneous input ';' expecting ']' (unknown rule)": "extraneous input ';' expecting ']' (unknown rule)",
+	"mismatched input '\\' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (file)": "mismatched input '\\' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (file)",
+	"extraneous input 'new' expecting {'(', '{', IDENTIFIER} (unknown rule)": "extraneous input 'new' expecting {'(', '{', IDENTIFIER} (unknown rule)",
+	"no viable alternative at input 'BizzInfo[' (enum)": "no viable alternative at input 'BizzInfo[' (enum)",
+	"extraneous input '#' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)": "extraneous input '#' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)",
+	"no viable alternative at input '{floattes' (statement)": "no viable alternative at input '{floattes' (statement)",
+	"no viable alternative at input '{Float": "test=}' (statement)"
 }

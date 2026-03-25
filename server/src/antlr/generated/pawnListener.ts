@@ -33,8 +33,6 @@ import { SwitchContext } from "./pawnParser";
 import { CaseContext } from "./pawnParser";
 import { DefaultContext } from "./pawnParser";
 import { Case_listContext } from "./pawnParser";
-import { ArrayInitContext } from "./pawnParser";
-import { ArrayInitMemberContext } from "./pawnParser";
 import { AssigmentsContext } from "./pawnParser";
 import { DeclParamsContext } from "./pawnParser";
 import { EllipseContext } from "./pawnParser";
@@ -55,7 +53,6 @@ import { WhileContext } from "./pawnParser";
 import { ForContext } from "./pawnParser";
 import { ForFirstExpContext } from "./pawnParser";
 import { CycleKeywordsContext } from "./pawnParser";
-import { LiteralContext } from "./pawnParser";
 import { Bool_constContext } from "./pawnParser";
 import { PredefinedConstantsContext } from "./pawnParser";
 import { StringContext } from "./pawnParser";
@@ -76,6 +73,9 @@ import { PostfixExpressionContext } from "./pawnParser";
 import { FunctionOrArrayExpressionContext } from "./pawnParser";
 import { PrimaryExpressionContext } from "./pawnParser";
 import { LiteralOrSymbolContext } from "./pawnParser";
+import { LiteralContext } from "./pawnParser";
+import { ArrayInitContext } from "./pawnParser";
+import { ArrayInitMemberContext } from "./pawnParser";
 import { CompoundExpressionContext } from "./pawnParser";
 import { ExpresionContext } from "./pawnParser";
 import { FunctionCallOperatorContext } from "./pawnParser";
@@ -419,28 +419,6 @@ export interface pawnListener extends ParseTreeListener {
 	exitCase_list?: (ctx: Case_listContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `pawnParser.arrayInit`.
-	 * @param ctx the parse tree
-	 */
-	enterArrayInit?: (ctx: ArrayInitContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.arrayInit`.
-	 * @param ctx the parse tree
-	 */
-	exitArrayInit?: (ctx: ArrayInitContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `pawnParser.arrayInitMember`.
-	 * @param ctx the parse tree
-	 */
-	enterArrayInitMember?: (ctx: ArrayInitMemberContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.arrayInitMember`.
-	 * @param ctx the parse tree
-	 */
-	exitArrayInitMember?: (ctx: ArrayInitMemberContext) => void;
-
-	/**
 	 * Enter a parse tree produced by `pawnParser.assigments`.
 	 * @param ctx the parse tree
 	 */
@@ -661,17 +639,6 @@ export interface pawnListener extends ParseTreeListener {
 	exitCycleKeywords?: (ctx: CycleKeywordsContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `pawnParser.literal`.
-	 * @param ctx the parse tree
-	 */
-	enterLiteral?: (ctx: LiteralContext) => void;
-	/**
-	 * Exit a parse tree produced by `pawnParser.literal`.
-	 * @param ctx the parse tree
-	 */
-	exitLiteral?: (ctx: LiteralContext) => void;
-
-	/**
 	 * Enter a parse tree produced by `pawnParser.bool_const`.
 	 * @param ctx the parse tree
 	 */
@@ -890,6 +857,39 @@ export interface pawnListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitLiteralOrSymbol?: (ctx: LiteralOrSymbolContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.literal`.
+	 * @param ctx the parse tree
+	 */
+	enterLiteral?: (ctx: LiteralContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.literal`.
+	 * @param ctx the parse tree
+	 */
+	exitLiteral?: (ctx: LiteralContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.arrayInit`.
+	 * @param ctx the parse tree
+	 */
+	enterArrayInit?: (ctx: ArrayInitContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.arrayInit`.
+	 * @param ctx the parse tree
+	 */
+	exitArrayInit?: (ctx: ArrayInitContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `pawnParser.arrayInitMember`.
+	 * @param ctx the parse tree
+	 */
+	enterArrayInitMember?: (ctx: ArrayInitMemberContext) => void;
+	/**
+	 * Exit a parse tree produced by `pawnParser.arrayInitMember`.
+	 * @param ctx the parse tree
+	 */
+	exitArrayInitMember?: (ctx: ArrayInitMemberContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `pawnParser.compoundExpression`.

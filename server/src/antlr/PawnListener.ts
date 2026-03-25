@@ -1064,25 +1064,21 @@ export class PawnListener implements IPawnListener
 		}
 	}
 
-	enterString(ctx: StringContext): void {
-		const node = new StringLiteral();
-		this.nodes.push(node);
-	}
 	exitString(ctx: StringContext): void {
 		
-		let node = <StringLiteral>this.nodes.pop();
+		let node = new StringLiteral();
 		if(ctx.stop) {
 			node.value = ctx.text;
 			node.setRange(new Position(ctx.start.line - 1, ctx.start.charPositionInLine), new Position(ctx.start.line - 1, ctx.start.charPositionInLine + ctx.text.length));
 
-			const last = this.nodes.peek();
-			if(last instanceof StringLiteral) {
-				this.nodes.pop();
-				last.value += node.value;
-				this.nodes.push(node);
-			} else {
-				this.nodes.push(node);
+			if(ctx.string().length) {
+				for(let i = 0; i < ctx.string().length; i++) {
+					const tmp = this.nodes.pop() as StringLiteral;
+					node.value += tmp.value;
+				}
 			}
+
+			this.nodes.push(node);
 		}
 	}
 	exitFuncDeclModif(ctx: FuncDeclModifContext): void {
