@@ -163,7 +163,7 @@ export class PawnListener implements IPawnListener
 		const variablesCount = ctx.variableDeclaration().length;
 		const variables: VarDeclaration[] = [];
 		for(let i = 0; i < variablesCount; i++) {
-			variables.push(<VarDeclaration>this.nodes.pop());
+			variables.unshift(<VarDeclaration>this.nodes.pop());
 		}
 
 		let node = <OperatorNew>this.nodes.pop();
