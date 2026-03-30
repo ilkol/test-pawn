@@ -135,13 +135,6 @@ export abstract class AbstractOpenFile
 	 */
 	protected _file?: TextDocument;
 
-	get file(): TextDocument | undefined {
-		return this._file;
-	}
-	set file(value: TextDocument) {
-		this._file = value;
-		this.path = FileManager.getPathFromURI(value.uri);
-	}
 
 	private _cache?: FileCache;
 
@@ -183,12 +176,19 @@ export abstract class AbstractOpenFile
 		return this.document.uri;
 	}
 	protected _path: string;
+	protected _relativePath: string;
 
 	get path(): string {
 		return this._path;
 	}
 	set path(value: string) {
 		this._path = value;
+	}
+	get relativePath(): string {
+		return this._relativePath;
+	}
+	set relativePath(value: string) {
+		this._relativePath = value;
 	}
 
 	private _processedCode: string;
@@ -219,7 +219,7 @@ export abstract class AbstractOpenFile
 	}
 
 	constructor(protected document: TextDocument) {
-		this._path = FileManager.getPathFromURI(document.uri);
+		this._relativePath = this._path = FileManager.getAbsolutePathFromURI(document.uri);
 		this._processedCode = document.getText();
 	}
 

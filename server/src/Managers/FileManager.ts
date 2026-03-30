@@ -1,6 +1,6 @@
-import { TextDocumentChangeEvent, TextDocuments, URI  } from "vscode-languageserver";
+import { TextDocuments, URI  } from "vscode-languageserver";
 import { URI as Uri } from "vscode-uri";
-import { AbstractOpenFile, ParsingStep } from "../AbstractOpenFile";
+import { AbstractOpenFile } from "../AbstractOpenFile";
 import { join, relative } from "path";
 import { access, readFile, stat } from "fs/promises";
 import { Logger } from "../Logger/Logger";
@@ -83,7 +83,7 @@ export class FileManager {
 	 * URI корня текущей рабочей области
 	 */
 	set currentUri(value: URI) {
-		this._currentWorkspacePath = FileManager.getPathFromURI(value);
+		this._currentWorkspacePath = FileManager.getAbsolutePathFromURI(value);
 	}
 
 	private textDocuments: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -157,10 +157,9 @@ export class FileManager {
 		}
 	}
 
-	public static getPathFromURI(uri: URI): string {
+	public static getAbsolutePathFromURI(uri: URI): string {
 		return join(Uri.parse(uri).path.slice(1), "");
 	}
-
 	public static getUriFromPath(path: string): URI {
 		return Uri.file(path).toString();
 	}
@@ -183,7 +182,7 @@ export class FileManager {
 	}
 
 	private async onDidSaveDocument(document: TextDocument) {
-		const path = FileManager.getPathFromURI(document.uri);
+		const path = FileManager.getAbsolutePathFromURI(document.uri);
 		let openedFile = this.getOpenedFile(path);
 		if(!openedFile || (CacheManager.hashText(document.getText()) !== openedFile.cache.texttHash)) {
 			await this.createOpenedFile(document);
@@ -192,12 +191,13 @@ export class FileManager {
 
 	private async createOpenedFile(document: TextDocument) {
 		const openedFile = new AntlrOpenedFile(document);
+		openedFile.relativePath = this.getRelativePath(openedFile.path);
 		this.openedFiles.set(openedFile.path, openedFile);
 		await this._onFileManagerOpenFileListener?.(openedFile);
 	}
 
 	private async onDidOpenDocument(document: TextDocument) {
-		const path = FileManager.getPathFromURI(document.uri);
+		const path = FileManager.getAbsolutePathFromURI(document.uri);
 		let openedFile = this.getOpenedFile(path);
 		if(!openedFile) {
 			await this.createOpenedFile(document);

@@ -22,20 +22,20 @@ export class AnalasisOrchestrator {
 		const reporter = await this.connection.window.createWorkDoneProgress();
 		
 		try {
-			Logger.log(`Analyze ${document.path}`);
-			reporter.begin(`Analyzing ${document.path}`, 0, "Initializing...");
+			Logger.log(`Analyze ${document.relativePath}`);
+			reporter.begin(`Analyzing ${document.relativePath}`, 0, "Initializing...");
 			await this.handleCacheInitial(document);
 			reporter.report(1, "Preprocessing");
-			Logger.log(`Preprocess ${document.path}`);
+			Logger.log(`Preprocess ${document.relativePath}`);
 			await this.preprocessDocument(document, reporter);
 			reporter.report(40, "Parsing");
-			Logger.log(`Parse ${document.path}`);
+			Logger.log(`Parse ${document.relativePath}`);
 			await this.parseDocument(document);
             reporter.report(70, "Analyze AST");
-			Logger.log(`Analyze ${document.path}`);
+			Logger.log(`Analyze ${document.relativePath}`);
 			await this.analyzeDocumentAST(document);
 			reporter.report(100, "Complete");
-			Logger.log(`AST complete for ${document.path}`);
+			Logger.log(`AST complete for ${document.relativePath}`);
 
 			this.connection.sendDiagnostics({
 				uri: document.URI,
@@ -76,11 +76,7 @@ export class AnalasisOrchestrator {
 			this.symbolManager.resetAllFileSymbols(document.path);
 			let last = 0;
 			await this.preprocessor.processFile(document, this.symbolManager, localPercent => { 
-				if(localPercent - last > 1) {
-					const globalPercent = Math.round(10 + (localPercent * 0.39));
-					reporter.report(globalPercent, `Preprocessing: ${localPercent}%`);
-				}
-				last = localPercent;
+				reporter.report(10, `Preprocessing: ${Math.round(localPercent)}%`);
 			});
 			
 			// Проверяем кэш AST после препроцессора (твоя старая логика)

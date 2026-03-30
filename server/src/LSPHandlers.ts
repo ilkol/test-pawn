@@ -7,7 +7,7 @@ import { SemanticTokensBuilder } from "./SymbolSystem/SemanticTokensBuilder";
 
 export class LSPHandlers {
 	public static async onCompletion(params: TextDocumentPositionParams, fileManager: FileManager): Promise<CompletionItem[]>  {
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(params.textDocument.uri));
+		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(params.textDocument.uri));
 		if(!document) {
 			return [];
 		}
@@ -35,7 +35,7 @@ export class LSPHandlers {
 	public static async onDefinition(params: TextDocumentPositionParams, fileManager: FileManager, symbolManager: SymbolManager) {
 		Logger.log("Request defenition")
 		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
 		if(!document) {
 			return null;
 		}
@@ -68,7 +68,7 @@ export class LSPHandlers {
 	public static async onPrepareRename(params: PrepareRenameParams, fileManager: FileManager, symbolManager: SymbolManager) {
 		Logger.log("Request prepare rename")
 		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
 		if(!document) {
 			return null;
 		}
@@ -90,7 +90,7 @@ export class LSPHandlers {
 	public static async onRenameRequest(params: RenameParams, fileManager: FileManager, symbolManager: SymbolManager) {
 		Logger.log("Request rename")
 		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
 		if(!document) {
 			return null;
 		}
@@ -129,7 +129,7 @@ export class LSPHandlers {
 		Logger.log("Request references")
 		const references: Location[] = [];	
 		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
 		if(!document) {
 			return references;
 		}
@@ -156,7 +156,7 @@ export class LSPHandlers {
 		Logger.log("Request semantic tokens")
 		const builder = new SemanticTokensBuilder();	
 		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
 		if(!document) {
 			return builder.build();
 
@@ -205,7 +205,7 @@ export class LSPHandlers {
 		Logger.log("клиент запросил список ссылок")
 		const links: DocumentLink[] = [];
 		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
 
 		if(!document) {
 			return links;
@@ -224,7 +224,7 @@ export class LSPHandlers {
 		Logger.log("клиент запросил список символов")
 		const symbols: DocumentSymbol[] = [];
 		const uri = params.textDocument.uri;
-		const document = fileManager.getOpenedFile(FileManager.getPathFromURI(uri));
+		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
 		if(!document) {
 			return symbols;
 
