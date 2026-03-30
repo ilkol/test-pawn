@@ -19,6 +19,9 @@ export class IntLiteral extends NumberLiteral<number>
 		super.value = v;
 		this.constExpr = v;
 	}	
+	public get value(): number {
+		return super.value;
+	}	
 	
 
 	toJSON(): Serialization.Nodes.Literal<number> {
