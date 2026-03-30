@@ -2636,5 +2636,22 @@
 	"no viable alternative at input 'BizzInfo[' (enum)": "no viable alternative at input 'BizzInfo[' (enum)",
 	"extraneous input '#' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)": "extraneous input '#' expecting {<EOF>, 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', 'operator', IDENTIFIER} (unknown rule)",
 	"no viable alternative at input '{floattes' (statement)": "no viable alternative at input '{floattes' (statement)",
-	"no viable alternative at input '{Float": "test=}' (statement)"
+	"no viable alternative at input '{Float": "test=}' (statement)",
+	"no viable alternative at input '{sif' (statement)": "no viable alternative at input '{sif' (statement)",
+	"no viable alternative at input '{stif' (statement)": "no viable alternative at input '{stif' (statement)",
+	"no viable alternative at input 'tesmain' (enum)": "no viable alternative at input 'tesmain' (enum)",
+	"extraneous input '}' expecting {'(', '{', ',', '-', '++', '--', '!', '~', '": {
+		"": {
+			"": {
+				"', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)": "extraneous input '}' expecting {'(', '{', ',', '-', '++', '--', '!', '~', '...', 'state', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (unknown rule)"
+			}
+		}
+	},
+	"extraneous input '{' expecting {'}', ','} (unknown rule)": "extraneous input '{' expecting {'}', ','} (unknown rule)",
+	"no viable alternative at input '{}' (arrayInitMember)": "no viable alternative at input '{}' (arrayInitMember)",
+	"no viable alternative at input 'Playersforward' (declaration)": "no viable alternative at input 'Playersforward' (declaration)",
+	"no viable alternative at input 'Players[' (declaration)": "no viable alternative at input 'Players[' (declaration)",
+	"no viable alternative at input 'ne' (declaration)": "no viable alternative at input 'ne' (declaration)",
+	"no viable alternative at input '{AllTuningComponentsInfo[]' (statement)": "no viable alternative at input '{AllTuningComponentsInfo[]' (statement)",
+	"no viable alternative at input '{AllTuningComponentsInfo[2][]' (statement)": "no viable alternative at input '{AllTuningComponentsInfo[2][]' (statement)"
 }

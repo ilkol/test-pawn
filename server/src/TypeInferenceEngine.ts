@@ -52,7 +52,7 @@ export class TypeInferenceEngine {
 			return SymbolsFactory.boolTag;
 		}
 		if(!leftTag || !rightTag ) {
-			console.error("Undefined tag");
+			console.error("Undefined tag", node.left?.name, node.right?.name);
 			return SymbolsFactory.defaultTag;
 		}
 
