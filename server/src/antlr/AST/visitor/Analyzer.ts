@@ -49,6 +49,7 @@ import { Pawn } from "../../../Pawn";
 import { NamedArgument } from "../Nodes/Functions/NamedArgument";
 import { TernarOperator } from "../Nodes/Operators/TernarOperator";
 import { ArrayInit } from "../Nodes/Literals/ArrayInit";
+import { Ellipse } from "../Nodes/Operators/Ellipse";
 
 /** Состояние проверки аргумента функции при ее вызове */
 enum ArgumentState {
@@ -786,18 +787,8 @@ export class Analyzer extends BaseVisitor
 			this.checkTagMismatch(expectedTag, actualTag, true, node.initValue.pos);
 			return;
 		}
-		const val = node.initValue;
 
-		for(const dim of node.dimensions) {
-			if(!dim) {
-				continue;
-			}
-			if(val.value.length >= dim.constExpr) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
-			}
-		}
-
-		
+		this.checkInitArraySize([node.initValue], node.dimensions);
 
 		// for(let i = 0; i < node.dimensions.length; i++) {
 		// 	// TODO: проверка размерности массивов
@@ -807,6 +798,39 @@ export class Analyzer extends BaseVisitor
 		// 		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
 		// 	}
 		// }
+	}
+
+	private checkInitArraySize(values: (Ellipse | Expression)[], dims: (Expression | null)[], depth: number = 0) {
+		const dim = dims[depth];
+		if(!dim) {
+			return;
+		}
+		let declaredSize = dim.constExpr;
+		console.log(dim, declaredSize);
+		if(dim instanceof Variable) {
+			const enumRoot = this.curScope.findSymbol(dim.id);
+			console.log(enumRoot);
+			if(!(enumRoot instanceof Symbols.Enum)) {
+				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, dim.range));
+				return;
+			}
+			declaredSize = enumRoot.members.length;
+		}
+
+		for(const val of values) {
+			if(val instanceof Ellipse) {
+				continue;
+			}
+			if(val instanceof ArrayInit) {
+				console.log(val.value.length, declaredSize);
+				if(val.value.length > declaredSize) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
+				} else if(val.value.length < declaredSize) {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArrayNotFullyInit, val.range));
+				}
+				this.checkInitArraySize(val.value, dims, depth + 1);
+			}
+		}
 	}
 
 	private extendScope(range: Range, newSymbol?: Symbols.SymbolReferance | undefined) {
