@@ -26,7 +26,7 @@ interface ConditionStackElement {
 }
 
 class FindedDefine {
-	constructor(public readonly start: number, public readonly length: number, public readonly shift: number) {
+	constructor(public readonly start: number, public readonly length: number, public shift: number, public define: Directives.Defining.Define) {
 
 	}
 }
@@ -1106,49 +1106,57 @@ export class Preprocessor
 
 	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void)
 	{
-		for(let definesArray of defines.values()) {
-			for(let findinglocalDefine of definesArray) {
-				const start = findinglocalDefine.endIndex;
-				const stop = findinglocalDefine.undef ?  findinglocalDefine.undef.startIndex : -1;
-				for(let definesArray of defines.values()) {
-					for(let localDefine of definesArray) {
-						let inRange = false;
-						if(localDefine.startIndex > start) {
-							if(stop !== -1) {
-								if(localDefine.startIndex < stop) {
-									inRange = true;
-								}
-							}
-							else {
-								inRange = true;
-							}
-						}
-						if(inRange) {
-							localDefine.replacement = await this.substringrReplacingOnChank(localDefine.replacement, findinglocalDefine, localDefine.startIndex, `${findinglocalDefine.prefix} in ${localDefine.prefix}`, symbolManager);
-						}
-					}
-				}
-			}
-		}
+		// for(let definesArray of defines.values()) {
+		// 	for(let findinglocalDefine of definesArray) {
+		// 		const start = findinglocalDefine.endIndex;
+		// 		const stop = findinglocalDefine.undef ?  findinglocalDefine.undef.startIndex : -1;
+		// 		for(let definesArray of defines.values()) {
+		// 			for(let localDefine of definesArray) {
+		// 				let inRange = false;
+		// 				if(localDefine.startIndex > start) {
+		// 					if(stop !== -1) {
+		// 						if(localDefine.startIndex < stop) {
+		// 							inRange = true;
+		// 						}
+		// 					}
+		// 					else {
+		// 						inRange = true;
+		// 					}
+		// 				}
+		// 				if(inRange) {
+		// 					localDefine.replacement = await this.substringrReplacingOnChank(localDefine.replacement, findinglocalDefine, localDefine.startIndex, `${findinglocalDefine.prefix} in ${localDefine.prefix}`, symbolManager);
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 
-		const total = defines.size;
-		let i = 0;
+		// const total = defines.size;
+		// let i = 0;
 
-		for(let definesArray of defines.values()) {
+		
+		code = await this.newprocessDefine(code, defines, symbolManager, onProgress);
 
-			for(let localDefine of definesArray) {
-				code = await this.processDefine(code, localDefine, symbolManager);
-			}
-			i++;
-			if(onProgress) {
-				onProgress((i / total) * 100);
-			}
-		}
-		if(onProgress) {
-			onProgress(100);
-		}
+		// for(let definesArray of defines.values()) {
+
+		// 	for(let localDefine of definesArray) {
+		// 		code = await this.processDefine(code, localDefine, symbolManager);
+		// 	}
+		// 	i++;
+		// 	if(onProgress) {
+		// 		onProgress((i / total) * 100);
+		// 	}
+		// }
+		// if(onProgress) {
+		// 	onProgress(100);
+		// }
 
 		return code;
+	}
+
+	private async newprocessDefine(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void)
+	{
+		return await this.substringrReplacing(code, defines, symbolManager, onProgress);
 	}
 
 	private async processDefine(code: string, define: Directives.Defining.Define, symbolManager: SymbolManager)
@@ -1176,6 +1184,38 @@ export class Preprocessor
 
 	private codeMapper: CodeMapper = new CodeMapper();
 
+	private async substringrReplacing(str: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void): Promise<string>
+	{
+		const changes: FindedDefine[] = [];
+		const res = this.globaltestPreprocess(str, defines, changes, onProgress);
+		
+		let startPos: number, originalStartPos: number;
+		const filePath = this.currentDocument!.path;
+		// if(changes.length > 0) {
+		// 	define.used = true;
+		// 	symbolManager.addSymbolToFile(filePath, define.symbol!);
+		// }
+		let preShift = 0;
+		changes.forEach(change => {
+			startPos = change.start + preShift;
+			originalStartPos = this.codeMapper.getOriginalPos(startPos);
+			this.codeMapper.addChange({
+				originalStartPos: originalStartPos,
+				startIndex: startPos,
+				changeLength: change.shift
+			});
+			const startPosition = this.currentDocument?.positionAt(originalStartPos);
+			const endTokenPosition = this.currentDocument?.positionAt(originalStartPos + change.define.pattern.length);
+			const endPosition = this.currentDocument?.positionAt(originalStartPos + change.length);
+			if(startPosition && endPosition && endTokenPosition) {
+				change.define.symbol?.addReferance(new SymbolReferance(filePath, new Range(startPosition, endPosition), new Range(startPosition, endTokenPosition)));
+			}
+			// this.tokensManager.addToken(range, SemanticTokens.macro);
+			preShift -= change.shift;
+		});
+		
+		return res;
+	}
 	private async substringrReplacingOnChank(str: string, define: Directives.Defining.Define, preShift: number, title: string = "Processing replacements...", symbolManager: SymbolManager): Promise<string>
 	{
 		const changes: FindedDefine[] = [];
@@ -1205,38 +1245,30 @@ export class Preprocessor
 			preShift -= change.shift;
 		});
 		
-		// define.setFileReferences(this.currentDocument!.path, referenaces);
 		return res;
-		// return await vscode.window.withProgress(
-		// 	{
-		// 		location: vscode.ProgressLocation.Window,	
-		// 		title: title,
-		// 		cancellable: true,
-		// 	},
-		// 	async (progress, token) => {
-		// 		const changes: FindedDefine[] = [];
-		// 		const res = testPreprocess(str, define, changes);
-				
-		// 		let startPos: number, originalStartPos: number;
-		// 		changes.forEach(change => {
-		// 			startPos = change.start + preShift;
-		// 			originalStartPos = this.codeMapper.getOriginalPos(startPos);
-		// 			this.codeMapper.addChange({
-		// 				originalStartPos: originalStartPos,
-		// 				startIndex: startPos,
-		// 				changeLength: change.shift
-		// 			});
-		// 			const range = new Range(this.file.positionAt(originalStartPos), this.file.positionAt(originalStartPos + change.length));
-		// 			this.tokensManager.addToken(range, SemanticTokens.macro);
-		// 			preShift -= change.shift;
-		// 		});
-		// 		return res;
-		// 	}
-		// );
 	}
 
-	private readonly substindex = new Map<string, Directives.Defining.Define[]>();;
+	private readonly substindex = new Map<string, Directives.Defining.Define[]>();
 
+	private globaltestPreprocess(code: string, defines: Map<string, Directives.Defining.Define[]>, changes: FindedDefine[], onProgress?: (percent: number) => void) {
+		try {
+			this.substindex.clear(); // очищаем индекс макросов
+			defines.forEach((val, key) => {
+				this.substindex.set(val[0].prefix, val); // добавляем в массив макрос с ключом равным первому символу макроса
+			});
+
+			console.log(this.substindex);
+
+			// сортировочка
+			for (const versions of this.substindex.values()) {
+				versions.sort((a, b) => a.curEndIndex - b.curEndIndex);
+			}
+			return this.substallpatterns(code, changes, onProgress);
+		} catch(e) {
+			console.error(e);
+		}
+		return "";
+	}
 	private testPreprocess(code: string, define: Directives.Defining.Define, changes: FindedDefine[]) {
 		try {
 			this.substindex.clear(); // очищаем индекс макросов
@@ -1249,7 +1281,7 @@ export class Preprocessor
 		return "";
 	}
 
-	private substallpatterns(line: string, changes: FindedDefine[]) {
+	private substallpatterns(line: string, changes: FindedDefine[], onProgress?: (percent: number) => void) {
 		let 
 			start: number,
 			end: number,
@@ -1265,6 +1297,10 @@ export class Preprocessor
 		 * Стрим для работы с входной строкой
 		 */
 		let stream = new LikeCCharStream(line);
+		let currentMappingRootOriginalPos = -1; 
+		let currentMappingRootEndInCurrentSource = -1;
+		const totalSize = line.length;
+    	let lastReportedPercent = 0;
 
 		// Обход строки до ее конца
 		while(!this.isFileEnd(stream.char)) {
@@ -1285,6 +1321,16 @@ export class Preprocessor
 			}
 			if (this.isFileEnd(stream.char)) {
 				break; /* abort loop on error */
+			}
+
+			if (onProgress) {
+				const originalPos = stream.curIndex - shift;
+				const currentPercent = Math.floor((originalPos / totalSize) * 100);
+				
+				if (currentPercent > lastReportedPercent) {
+					onProgress(currentPercent);
+					lastReportedPercent = currentPercent;
+				}
 			}
 			
 			/* if matching the operator "defined", skip it plus the symbol behind it */
@@ -1312,6 +1358,7 @@ export class Preprocessor
 			
 			subst = this.findSubstr(stream, prefixlen);
 			if (subst !== null) {
+				const currentPos = stream.curIndex;
 				let replaceData: ReplaceInfo = { shift: 0};
 				const mappingInfo = { findedLength: 0, replacingLength: 0 };
 				/* properly match the pattern and substitute */
@@ -1319,8 +1366,37 @@ export class Preprocessor
 					stream.curIndex += prefixlen;      /* match failed, skip this prefix */
 				}
 				else {
-					changes.push(new FindedDefine(stream.curIndex + shift, prefixlen, mappingInfo.findedLength - mappingInfo.replacingLength));
+					const isRecursive = currentPos < currentMappingRootEndInCurrentSource;
+
+					if (!isRecursive) {
+						// Это макрос прямо из исходного кода
+						const originalPos = currentPos - shift; 
+						currentMappingRootOriginalPos = originalPos;
+						// Запоминаем, до какой поры в новой строке будет идти "рекурсивный" текст
+						currentMappingRootEndInCurrentSource = currentPos + mappingInfo.replacingLength;
+
+						changes.push(new FindedDefine(
+							currentPos, // Позиция в новой строке (с учетом всех предыдущих замен)
+							mappingInfo.findedLength,
+							replaceData.shift,
+							subst
+						));
+					} else {
+						// Это рекурсия (как TEST внутри a(TEST))
+						// Мы ОБНОВЛЯЕМ ПРЕДЫДУЩИЙ change.
+						// Почему? Потому что для маппера a(TEST) - это ОДИН кусок, 
+						// пришедший на смену VERY_LONG_PPATERN_NAME.
+						const lastChange = changes[changes.length - 1];
+						if (lastChange) {
+							lastChange.shift += replaceData.shift;
+							// Сдвигаем границу "рекурсивной зоны", так как строка внутри изменилась
+							currentMappingRootEndInCurrentSource += replaceData.shift;
+						}
+					}
 					shift += replaceData.shift;
+
+					// changes.push(new FindedDefine(stream.curIndex + shift, prefixlen, mappingInfo.findedLength - mappingInfo.replacingLength, subst));
+					// shift += replaceData.shift;
 				}
 				
 				/* match succeeded: do not update "start", because the substitution text
@@ -1332,6 +1408,7 @@ export class Preprocessor
 			}
 		}
 
+		onProgress?.(100);
 		return stream.source;
 	}
 
@@ -1368,16 +1445,39 @@ export class Preprocessor
 	}
 	private findSubstr(stream: LikeCCharStream, len: number)
 	{
-		let item = this.substindex.get(stream.char);
-		return item ? this.findStringpair(item, stream, len) : null;
+		const word = stream.source.substring(stream.curIndex, stream.curIndex + len);
+		const versions = this.substindex.get(word);
+		
+		if (!versions || versions.length === 0) return null;
+
+		// 1. Берем самую первую версию из списка
+		let current = versions[0];
+
+		// 2. Если текущий индекс СТРОГО БОЛЬШЕ конца области видимости макроса (#undef или конец файла)
+		// Значит, этот макрос БОЛЬШЕ НИКОГДА не будет валиден в этом проходе.
+		while (current && stream.curIndex >= (current.undef?.curStartIndex ?? Infinity)) {
+			versions.shift(); // Удаляем «протухший» макрос из начала очереди (O(1) в современных движках для малых массивов)
+			current = versions[0];
+		}
+
+		// 3. Теперь проверяем, вошли ли мы в область видимости первого в очереди макроса
+		if (current && stream.curIndex >= current.curEndIndex) {
+			return current;
+		}
+
+		return null;
+		// let item = this.substindex.get(stream.char);
+		// return item ? this.findStringpair(item, stream, len) : null;
 	}
 	private findStringpair(array: Directives.Defining.Define[], stream: LikeCCharStream, matchlength: number): Directives.Defining.Define|null
 	{
+		// stream.curIndex
 		for(let define of array) {
 			if (matchlength !== define.prefixLen) {
 				continue;
 			}
 			if (stream.compare(define.prefix)) {
+				define.undef
 				return define;
 			}
 		};
