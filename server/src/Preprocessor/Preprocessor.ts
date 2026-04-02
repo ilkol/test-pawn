@@ -1,7 +1,7 @@
 import { join } from "path";
 import { AbstractOpenFile } from "../AbstractOpenFile"
 import { FileManager } from "../Managers/FileManager";
-import { Range } from "../types";
+import { Position, Range } from "../types";
 import * as Directives from "./Directives"
 import { Condition } from "./Directives/Conditionals";
 import { PreprocessorDirective } from "./Directives/PreprocessorDirective";
@@ -17,6 +17,7 @@ import { SymbolManager } from "../SymbolSystem";
 import { SymbolsFactory } from "../SymbolSystem/SymbolsFactory";
 import { SymbolReferance } from "../SymbolSystem/Symbols/SymbolReferance";
 import { IScope } from "../antlr/Scopes/IScope";
+import { ConstExprParser, tokenize } from "./ConstExpParser";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -359,7 +360,7 @@ export class Preprocessor
 				this.handleElseIf(element, ifStack, defines);
 			}
 			else if(element instanceof Directives.Conditionals.Condition) {
-				this.handleCondition(element, ifStack);					
+				this.handleCondition(element, ifStack, defines);					
 			}
 			else if(element instanceof Directives.Conditionals.Endif) {
 				code = this.handleEndIf(code, element, ifStack);	
@@ -369,7 +370,7 @@ export class Preprocessor
 					cur.skip = true;
 					continue;
 				}
-				this.handleElse(element, ifStack);
+				code = this.handleElse(code, element, ifStack);
 			}
 			
 		}
@@ -429,6 +430,31 @@ export class Preprocessor
 		return false;
 	}
 
+	private calcSkipIfRange(currentIf: Directives.Conditionals.Condition) : { start: number; end: number; startPos: Position; endPos: Position; } | undefined {
+		const directive = currentIf.endIf!;
+		if(currentIf.conditionResult) {
+			if(currentIf.elseBlock) {
+				if(currentIf.elseBlock instanceof Directives.Conditionals.Condition) {
+					return this.calcSkipIfRange(currentIf.elseBlock);
+				}
+				return {
+					start: currentIf.elseBlock.endIndex,
+					end: directive.startIndex,
+					startPos: currentIf.elseBlock.range.end,
+					endPos: directive.range.start,
+				}
+			}
+
+		} else {
+			return {
+				start: currentIf.endIndex,
+				end: (currentIf.elseBlock ? currentIf.elseBlock : directive).startIndex,
+				startPos: currentIf.range.end,
+				endPos: (currentIf.elseBlock ? currentIf.elseBlock : directive).range.start,
+			};
+		}
+	}
+
 	private handleEndIf(code: string, directive: Directives.Conditionals.Endif, ifStack: ConditionStack): string
 	{
 		if (ifStack.length === 0) {
@@ -446,39 +472,57 @@ export class Preprocessor
 		if(ifStack.length !== 0) {
 			const currentIf = ifStack.pop()!;
 			currentIf.directive.endIf = directive;
-			code = 
-				code.substring(0, currentIf.directive.endIndex) + 
-				code.substring(currentIf.directive.endIndex, directive.startIndex).replace(/[^\s]/g, " ") + 
-				code.substring(directive.startIndex)
-			;
-			if(currentIf.directive.range && directive.range) {
-				const range = new Range(
-					currentIf.directive.range.end,
-					directive.range.start
-				);
-				this.currentDocument?.diagnostics.push({
-					message: Locale.t("Non-executable code"),
-					range: range,
-					severity: DiagnosticSeverity.Hint,
-					source: "pawn-lsp",
-					tags: [DiagnosticTag.Unnecessary]
-				});				
+			const {start, startPos, end, endPos } = this.calcSkipIfRange(currentIf.directive) ?? {};
+			if(start && end && startPos && endPos) {
+
+				code = 
+					code.substring(0, start) + 
+					code.substring(start, directive.startIndex).replace(/[^\s]/g, " ") + 
+					code.substring(end)
+				;
+				if(currentIf.directive.range && directive.range) {
+					const range = new Range(
+						startPos,
+						endPos
+					);
+					this.currentDocument?.diagnostics.push({
+						message: Locale.t("Non-executable code"),
+						range: range,
+						severity: DiagnosticSeverity.Hint,
+						source: "pawn-lsp",
+						tags: [DiagnosticTag.Unnecessary]
+					});				
+				}
 			}
 		}
 		return code;
 	}
-	private handleElse(directive: Directives.Conditionals.Else, ifStack: ConditionStack): void
+
+	private recursivElse(curIf: Directives.Conditionals.Condition, directive: Directives.Conditionals.Else) {
+		if(curIf.elseBlock) {
+			if(!(curIf.elseBlock instanceof Directives.Conditionals.Condition)) {
+				this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, directive.range));
+			}
+			else this.recursivElse(curIf.elseBlock, directive);
+
+		} else {
+			curIf.elseBlock = directive;
+		}
+	}
+	private handleElse(code: string, directive: Directives.Conditionals.Else, ifStack: ConditionStack): string
 	{
 		if (ifStack.length === 0) {
 			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, directive.range));
-			return;
+			return code;
 			throw new Error("Unexpected #else");
 		}
 		const currentIf = ifStack[ifStack.length - 1];
 	
-		currentIf.directive.elseBlock = directive;
+		this.recursivElse(currentIf.directive, directive);
 
 		currentIf.skip = currentIf.directive.conditionResult;
+
+		return code;
 	}
 	private handleElseIf(directive: Directives.Conditionals.ElseIf, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>): void
 	{
@@ -489,19 +533,27 @@ export class Preprocessor
 	
 		const currentIf = ifStack[ifStack.length - 1];
 	
-		currentIf.directive.elseBlock = directive;
+		this.recursivElse(currentIf.directive, directive);
 
-		const conditionResult = directive.checkCondition(this.isDefined.bind(this));
+		const conditionResult = this.evaluateCondition(directive.conditionalString, directive.startIndex, defines);
 		directive.conditionResult = conditionResult;
 		currentIf.skip = !conditionResult; // Если условие истинно, то пропускаем остаток блока if
 		
 		ifStack.push({directive: directive, skip: !directive.conditionResult});
 	}
-	private handleCondition(directive: Condition, ifStack: ConditionStack)
+	private handleCondition(directive: Condition, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>)
 	{
-		const conditionResult = directive.checkCondition(this.isDefined.bind(this));
+		const conditionResult = this.evaluateCondition(directive.conditionalString, directive.startIndex, defines);
 		ifStack.push({ directive: directive, skip: !conditionResult }); // Важно: сохраняем состояние пропуска
 		directive.conditionResult = conditionResult;
+	}
+
+	private evaluateCondition(conditionStr: string, pos: number, defines: Map<string, Directives.Defining.Define[]>): boolean {
+		const tokens = tokenize(conditionStr);
+		const parser = new ConstExprParser(tokens, defines);
+		const result = parser.parse(); 	
+
+		return result === 1;
 	}
 
 
@@ -1256,8 +1308,6 @@ export class Preprocessor
 			defines.forEach((val, key) => {
 				this.substindex.set(val[0].prefix, val); // добавляем в массив макрос с ключом равным первому символу макроса
 			});
-
-			console.log(this.substindex);
 
 			// сортировочка
 			for (const versions of this.substindex.values()) {
