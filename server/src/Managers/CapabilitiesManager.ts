@@ -38,6 +38,7 @@ export class CapabilitiesManager {
 			capabilities: {
 				textDocumentSync: TextDocumentSyncKind.Incremental,
 				completionProvider: {
+					triggerCharacters: ['#'],
 					resolveProvider: true
 				},
 				diagnosticProvider: {

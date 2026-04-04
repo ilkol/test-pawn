@@ -1,35 +1,37 @@
-import { CompletionItem, DidChangeWatchedFilesParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportKind, DocumentLink, DocumentLinkParams, DocumentSymbol, DocumentSymbolParams, DocumentUri, Location, PrepareRenameParams, ReferenceParams, RenameParams, SemanticTokensParams, TextDocumentPositionParams, TextEdit, WorkspaceEdit } from "vscode-languageserver";
+import { CompletionItem, CompletionItemKind, DidChangeWatchedFilesParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportKind, DocumentLink, DocumentLinkParams, DocumentSymbol, DocumentSymbolParams, DocumentUri, Location, PrepareRenameParams, ReferenceParams, RenameParams, SemanticTokensParams, TextDocumentPositionParams, TextEdit, WorkspaceEdit } from "vscode-languageserver";
 import { FileManager } from "./Managers/FileManager";
-import { Position } from "./types";
+import { Position, Range } from "./types";
 import { Logger } from "./Logger/Logger";
 import { SymbolManager } from "./SymbolSystem";
 import { SemanticTokensBuilder } from "./SymbolSystem/SemanticTokensBuilder";
+import { Locale } from "./Locale";
+import { ICompletionProvider } from "./Completions/ICompletionProvider";
+import { PreprocessorDirectivesCompletionsProvider } from "./Completions/PreprocessorDirectivesCompletionsProvider";
+import { SymbolCompletionsProvider } from "./Completions/SymbolCompletionsProvider";
 
 export class LSPHandlers {
+	private static completionsProviders: ICompletionProvider[] = [ 
+		new PreprocessorDirectivesCompletionsProvider(), 
+		new SymbolCompletionsProvider()
+	];
 	public static async onCompletion(params: TextDocumentPositionParams, fileManager: FileManager): Promise<CompletionItem[]>  {
 		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(params.textDocument.uri));
 		if(!document) {
 			return [];
 		}
+
+		const lineTillCursor = document.getText(new Range(
+			new Position(params.position.line, 0), 
+			new Position(params.position.line, params.position.character))
+		);
+
+		for(const provider of this.completionsProviders) {
+			if(provider.checkContext(lineTillCursor, params)) {
+				return provider.getCompletions(params, document);
+			}
+		}
 		
-		let result: CompletionItem[] = [];// getDefaultCompletions();
-		await document.waitForAnalysis();
-
-
-		const position = new Position(params.position.line, params.position.character)
-		const currentScope = document.scopeManager.findInnermostAt(position);
-		const symbols = currentScope.getAllVisibleSymbols(position);
-
-		const items = symbols.map(symbol => {
-			return {
-				label: symbol.name,
-				kind: symbol.completionKind,
-				data: symbol.id
-			} satisfies CompletionItem;
-		});
-		result = result.concat(items);
-
-		return result;
+		return [];
 	}
 
 	public static async onDefinition(params: TextDocumentPositionParams, fileManager: FileManager, symbolManager: SymbolManager) {
