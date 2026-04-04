@@ -6,12 +6,12 @@ import { SymbolManager } from "./SymbolSystem";
 import { SemanticTokensBuilder } from "./SymbolSystem/SemanticTokensBuilder";
 import { Locale } from "./Locale";
 import { ICompletionProvider } from "./Completions/ICompletionProvider";
-import { PreprocessorDirectivesCompletionsProvider } from "./Completions/PreprocessorDirectivesCompletionsProvider";
+import { PreprocessorCompletionsProvider } from "./Completions/PreprocessorDirectivesCompletionsProvider";
 import { SymbolCompletionsProvider } from "./Completions/SymbolCompletionsProvider";
 
 export class LSPHandlers {
 	private static completionsProviders: ICompletionProvider[] = [ 
-		new PreprocessorDirectivesCompletionsProvider(), 
+		new PreprocessorCompletionsProvider(), 
 		new SymbolCompletionsProvider()
 	];
 	public static async onCompletion(params: TextDocumentPositionParams, fileManager: FileManager): Promise<CompletionItem[]>  {
@@ -27,7 +27,7 @@ export class LSPHandlers {
 
 		for(const provider of this.completionsProviders) {
 			if(provider.checkContext(lineTillCursor, params)) {
-				return provider.getCompletions(params, document);
+				return provider.getCompletions(lineTillCursor, params, document);
 			}
 		}
 		

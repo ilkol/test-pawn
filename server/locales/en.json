@@ -2665,5 +2665,11 @@
 	"Includes file.": "Includes file.",
 	"Define some pattern to replace in code": "Define some pattern to replace in code",
 	"Setting compiler.": "Setting compiler.",
-	"Preprocessing condition.": "Preprocessing condition."
+	"Preprocessing condition.": "Preprocessing condition.",
+	"AMX Memory limit": "AMX Memory limit",
+	"Code page": "Code page",
+	"Stack/heap size.": "Stack/heap size.",
+	"Tabulation size": {
+		"\nDefault": "Tabulation size.\nDefault"
+	}
 }

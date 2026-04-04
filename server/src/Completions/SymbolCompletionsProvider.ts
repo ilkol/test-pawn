@@ -7,7 +7,7 @@ export class SymbolCompletionsProvider implements ICompletionProvider {
 	checkContext(lineTillCursor: string, params: TextDocumentPositionParams): boolean {
 		return true;
 	}
-	async getCompletions(params: TextDocumentPositionParams, document: AbstractOpenFile): Promise<CompletionItem[]> {
+	async getCompletions(lineTillCursor: string, params: TextDocumentPositionParams, document: AbstractOpenFile): Promise<CompletionItem[]> {
 		let result: CompletionItem[] = [];// getDefaultCompletions();
 		await document.waitForAnalysis();
 
