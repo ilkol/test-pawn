@@ -254,5 +254,6 @@
 		"mismatched_input": "Input mismatch '{{offending}}'. Expected: {{expected}} (rule: {{rule}})",
 		"no_viable_alt": "No viable alternative at input '{{offending}}'"
 	},
-	"token recognition error at": " '№'"
+	"token recognition error at": " '№'",
+	"Unexpected return statement": "Unexpected return statement"
 }

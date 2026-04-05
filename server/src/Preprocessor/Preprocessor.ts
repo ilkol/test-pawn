@@ -477,10 +477,10 @@ export class Preprocessor
 			currentIf.directive.endIf = directive;
 			const {start, startPos, end, endPos } = this.calcSkipIfRange(currentIf.directive) ?? {};
 			if(start && end && startPos && endPos) {
-
+				
 				code = 
 					code.substring(0, start) + 
-					code.substring(start, directive.startIndex).replace(/[^\s]/g, " ") + 
+					code.substring(start, end).replace(/[^\s]/g, " ") + 
 					code.substring(end)
 				;
 				if(currentIf.directive.range && directive.range) {
@@ -575,12 +575,19 @@ export class Preprocessor
 			let endIndex = match.index + fullMatch.length;
 			const restIndex = (whiteSpacesBeforeRest === undefined ? 0 : whiteSpacesBeforeRest.length) + rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
+			let testShift = 0;
+			if(rest) {
+				testShift += rest.length;
+			}
+
+			let test = fullMatch.substring(leadingWhitespace.length, fullMatch.length - testShift);
+
 			let multyLine = 0;
 			if(directive === "define") {
 				let res = this.findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
-				rest = res.rest.replaceAll(/\\[\n\r]/g, "  ");
+				multyLine = res.rest.match(/\n/g)?.length ?? 0;
+				rest = res.rest;//.replaceAll(/\\[\n\r]/g, "  ");
 				
-				multyLine = rest.match(/\n/g)?.length ?? 0;
 				endIndex = restIndex + res.fullLength;
 			}
 
@@ -591,12 +598,16 @@ export class Preprocessor
 			if(whiteSpacesBeforeRest) {
 				multyLine += whiteSpacesBeforeRest.match(/\n/g)?.length ?? 0;
 			}
-			let res = ' '.repeat(endIndex - directiveIndex -  (multyLine ? multyLine + 1 : 0)) + '\n'.repeat(multyLine);
+			let res = ' '.repeat(endIndex - directiveIndex - (multyLine ? multyLine + 1 : 0)) + '\n'.repeat(multyLine);
+			if(rest) {
+				test += rest;
+			}
+			res = `/*${test.substring(2, test.length - 2)}*/`;
 
 			changes.push({
 				start: directiveIndex,
 				end: endIndex,
-				replacement: ' '.repeat(endIndex - directiveIndex - (multyLine ? multyLine + 1 : 0)) + '\n'.repeat(multyLine),
+				replacement: res,
 			});
 		}		
 		
@@ -962,9 +973,9 @@ export class Preprocessor
 		stream.curIndex++;
 		while (stream.char !== endquote && !this.isFileEnd(stream.char)) {
 			// result += stream.char;
-			const charCode = this.litchar(stream, flags);
-			result += charCode.str;
-
+			// const charCode = this.litchar(stream, flags);
+			result += stream.char;
+			stream.curIndex++;
 		}
 		return result;
 	}
@@ -1490,7 +1501,8 @@ export class Preprocessor
 		// Пропускаем открывающую ковычку
 		stream.curIndex++;
 		while (stream.char !== endquote && !this.isFileEnd(stream.char)) {
-			this.litchar(stream, flags);
+			// this.litchar(stream, flags);
+			stream.curIndex++;
 		}
 		return stream;
 	}
