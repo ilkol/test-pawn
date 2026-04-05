@@ -11,6 +11,11 @@ interface PatternInfo
 	range: Range
 }
 
+export interface Visibility {
+	from: number;
+	until?: number;
+}
+
 export class Define extends PreprocessorDirective
 {
 	private _prefix: string;
@@ -64,20 +69,15 @@ export class Define extends PreprocessorDirective
 		return match === null ? "" : match[0];
 	}
 
-	// prepareDoc(): MarkdownString
-	// {
-	// 	return new MarkdownString("").appendCodeblock(`#define ${this.pattern} ${this.replacement}`, "pawn");
-	// }
+	private includingPos: Map<string, Visibility> = new Map();
 
-	private includingPos: Map<string, number> = new Map();
-
-	getFilePos(filePath: string): number | undefined {
+	getFilePos(filePath: string): Visibility | undefined {
 		return this.includingPos.get(filePath);
 	}
 	
 	includeToFile(filePath: string, includePos: number)
 	{
-		this.includingPos.set(filePath, includePos);
+		this.includingPos.set(filePath, { from: includePos });
 	}
 
 	static fromJSON(json: Serialization.Preprocessor.DefineCache): Define {

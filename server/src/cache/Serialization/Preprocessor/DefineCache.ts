@@ -1,4 +1,5 @@
 import { Serialization } from "..";
+import { Visibility } from "../../../Preprocessor/Directives/Defining";
 import { DirectiveCache } from "./DirectivsCache";
 
 export interface DefineCache extends DirectiveCache {
@@ -11,5 +12,5 @@ export interface DefineCache extends DirectiveCache {
 	used: boolean;
 
 	references?: {[key: string]: Serialization.Range[]};
-	includingPos?: {[key: string]: number};
+	includingPos?: {[key: string]: Visibility};
 }

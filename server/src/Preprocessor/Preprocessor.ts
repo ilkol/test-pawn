@@ -1229,7 +1229,7 @@ export class Preprocessor
 
 	private async processDefine(code: string, define: Directives.Defining.Define, symbolManager: SymbolManager)
 	{
-		const fileStartPos = define.getFilePos(this.currentDocument!.path);
+		const fileStartPos = define.getFilePos(this.currentDocument!.path)?.from;
 		let lastindex = undefined;
 		if(define.undef) {
 			lastindex = define.undef.curStartIndex;
@@ -1528,8 +1528,11 @@ export class Preprocessor
 		}
 
 		// 3. Теперь проверяем, вошли ли мы в область видимости первого в очереди макроса
-		if (current && stream.curIndex >= current.curEndIndex) {
-			return current;
+		if (current) {
+			const filePos = current.getFilePos(this.currentDocument!.path);
+			if(filePos && stream.curIndex >= filePos.from && (!filePos.until || filePos.until > stream.curIndex)) {
+				return current;
+			}
 		}
 
 		return null;
