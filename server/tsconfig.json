@@ -6,6 +6,7 @@
 			"ES2024"
 		],
 		"module": "commonjs",
+		"ignoreDeprecations": "6.0",
 		"moduleResolution": "node",
 		"sourceMap": true,
 		"strict": true,
