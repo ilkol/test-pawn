@@ -2892,6 +2892,7 @@
 	"no viable alternative at input 'ne' (declaration)": "no viable alternative at input 'ne' (declaration)",
 	"no viable alternative at input '{AllTuningComponentsInfo[]' (statement)": "no viable alternative at input '{AllTuningComponentsInfo[]' (statement)",
 	"no viable alternative at input '{AllTuningComponentsInfo[2][]' (statement)": "no viable alternative at input '{AllTuningComponentsInfo[2][]' (statement)",
+<<<<<<< HEAD
 	"no viable alternative at input '{foreach(i){' (statement)": "no viable alternative at input '{foreach(i){' (statement)",
 	"no viable alternative at input 'car_coord[' (declaration)": "no viable alternative at input 'car_coord[' (declaration)",
 	"extraneous input 'TABLE_ACCOUNTS' expecting {')', ','} (unknown rule)": "extraneous input 'TABLE_ACCOUNTS' expecting {')', ','} (unknown rule)",
@@ -30185,4 +30186,24 @@
 	"no viable alternative at input 'CMD' (declaration)": "no viable alternative at input 'CMD' (declaration)",
 	"no viable alternative at input 'C' (declaration)": "no viable alternative at input 'C' (declaration)",
 	"no viable alternative at input 'MAXCMD' (declaration)": "no viable alternative at input 'MAXCMD' (declaration)"
+=======
+	"no viable alternative at input 'CMD' (declaration)": "no viable alternative at input 'CMD' (declaration)",
+	"mismatched input '<EOF>' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'enum', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionDeclarationParams)": "mismatched input '<EOF>' expecting {'(', '{', ';', '=', '-', '++', '--', '!', '~', 'assert', 'exit', 'goto', 'sleep', 'state', 'return', 'new', 'enum', 'const', 'static', 'stock', 'public', 'if', 'switch', 'while', 'for', 'do', 'continue', 'break', 'defined', 'sizeof', 'tagof', 'true', 'false', 'cellbits', 'cellmax', 'cellmin', 'charbits', 'charmax', 'charmin', 'debug', '__line', '__Pawn', 'ucharmax', SHARPSTRING, STRING, CHAR_STRING, IDENTIFIER, BINARY, HEX, INTEGER, FLOAT, RATIONAL} (functionDeclarationParams)",
+	"no viable alternative at input '{reutnr0' (statement)": "no viable alternative at input '{reutnr0' (statement)",
+	"no viable alternative at input '{re0' (statement)": "no viable alternative at input '{re0' (statement)",
+	"no viable alternative at input 'd' (declaration)": "no viable alternative at input 'd' (declaration)",
+	"no viable alternative at input 'm' (declaration)": "no viable alternative at input 'm' (declaration)",
+	"no viable alternative at input 'fo' (declaration)": "no viable alternative at input 'fo' (declaration)",
+	"no viable alternative at input 'f' (declaration)": "no viable alternative at input 'f' (declaration)",
+	"Includes file.": "Includes file.",
+	"Define some pattern to replace in code": "Define some pattern to replace in code",
+	"Setting compiler.": "Setting compiler.",
+	"Preprocessing condition.": "Preprocessing condition.",
+	"AMX Memory limit": "AMX Memory limit",
+	"Code page": "Code page",
+	"Stack/heap size.": "Stack/heap size.",
+	"Tabulation size": {
+		"\nDefault": "Tabulation size.\nDefault"
+	}
+>>>>>>> 0b44b5520161cd85c5defdcd3006f9027a121a98
 }

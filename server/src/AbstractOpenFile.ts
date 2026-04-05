@@ -1,7 +1,7 @@
 import { CompletionItem, Diagnostic, DocumentLink, ParameterInformation, SignatureHelp, SignatureInformation, URI } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { FileManager } from "./Managers/FileManager";
-import { Position } from "./types";
+import { Position, Range } from "./types";
 import { PreprocessorDirective } from "./Preprocessor/Directives/PreprocessorDirective";
 import { Include } from "./Preprocessor/Directives";
 import { Define } from "./Preprocessor/Directives/Defining";
@@ -210,6 +210,9 @@ export abstract class AbstractOpenFile
 	
 	get text(): string {
 		return this.document.getText();
+	}
+	getText(range?: Range): string {
+		return this.document.getText(range);
 	}
 
 	protected _diagnostics: Diagnostic[] = [];

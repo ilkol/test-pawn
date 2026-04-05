@@ -31,6 +31,9 @@ export function activate(context: ExtensionContext) {
 		documentSelector: [{ scheme: 'file', language: 'pawn' }],
 		synchronize: {
 			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
+		},
+		initializationOptions: {
+			triggerCharacters: ["#"]
 		}
 	};
 
