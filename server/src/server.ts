@@ -1,5 +1,6 @@
 import {
 	createConnection,
+	DidChangeConfigurationNotification,
 	ProposedFeatures,
 } from 'vscode-languageserver/node';
 
@@ -15,6 +16,9 @@ import { SemanticTokensLegendManager, SymbolManager } from './SymbolSystem';
 import { LSPHandlers } from './LSPHandlers';
 import { CapabilitiesManager } from './Managers/CapabilitiesManager';
 import { AnalasisOrchestrator } from './AnalasisOrchestrator';
+import { SettingsManager } from './Settings/SettingsManager';
+import { PathResolver } from './PathResolver';
+import { URI } from 'vscode-uri';
 
 async function main() {
 	const connection = createConnection(ProposedFeatures.all);
@@ -28,6 +32,8 @@ async function main() {
 	serializeInit();
 
 	const symbolManager = new SymbolManager();
+	const pathResolver = new PathResolver();
+	const settingsManager = new SettingsManager(connection);
 
 	const orchestrator = new AnalasisOrchestrator(connection, preprocessor, symbolManager);
 	
@@ -38,11 +44,22 @@ async function main() {
 	
 	const capabilitiesManager = new CapabilitiesManager();
 
-	connection.onInitialize(params => capabilitiesManager.getInitializeResult(params, fileManager));
+	connection.onInitialize(params => {
+		let workspaceRoot: string | undefined = undefined;
+		if (params.workspaceFolders && params.workspaceFolders.length > 0) {
+			workspaceRoot = URI.parse(params.workspaceFolders[0].uri).fsPath;
+		}
+		pathResolver.workspaceRoot = workspaceRoot;
+
+		return capabilitiesManager.getInitializeResult(params, fileManager);
+	});
 
 	const afterInitializing = async () => {
 		try {
-			await fileManager.findPawnDir();
+			const settings = await settingsManager.refresh();
+			await fileManager.setup(pathResolver, settings);
+
+
 			await CacheManager.init(fileManager);
 			fileManager.init();
 		} catch(e) {
@@ -61,6 +78,9 @@ async function main() {
 				Logger.log('Workspace folder change event received.');
 			});
 		}
+		if(capabilitiesManager.hasConfigurationCapability) {
+			connection.client.register(DidChangeConfigurationNotification.type);
+		}
 		Logger.log(Locale.t('LSP server initialized.'));
 		afterInitializing();
 	});
@@ -76,6 +96,7 @@ async function main() {
 	connection.onDocumentLinks(params => LSPHandlers.onDocumentLinks(params, fileManager));
 	connection.onDocumentSymbol(params => LSPHandlers.onDocumentSymbols(params, fileManager, symbolManager));
 	connection.onCompletionResolve(item => LSPHandlers.onCompletionResolve(item));
+	// connection.onDidChangeConfiguration(change => LSPHandlers.onDidChangeConfiguration(capabilitiesManager.hasConfigurationCapability, connection, settingsManager));
 
 	connection.onRequest('pawn/getPreprocessed', async (uriStr: string) => {
 		// Извлекаем путь к файлу из URI (pawn-preprocessed://...)

@@ -352,5 +352,8 @@
 	"Stack/heap size.": "Stack/heap size.",
 	"Tabulation size": {
 		"\nDefault": "Tabulation size.\nDefault"
-	}
+	},
+	"missing ';' at '<EOF>' (unknown rule)": "missing ';' at '<EOF>' (unknown rule)",
+	"AMX Memory limit for code + data or only code": "AMX Memory limit for code + data or only code",
+	"AMX data size limit": "AMX data size limit"
 }

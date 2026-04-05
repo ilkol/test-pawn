@@ -29,31 +29,28 @@
 	],
 	"l10n": "./l10n",
 	"contributes": {
-		"configuration": [
-			{
-				"title": "Pawn Language",
-				"properties": {
-					"PawnLanguage.clearOnBuild": {
-						"type": "boolean",
-						"default": true,
-						"description": "%configuration.clearOnBuild.description%"
-					}
-				}
-			},
-			{
-				"languageServerExample.trace.server": {
-					"scope": "window",
+		"configuration": {
+			"type": "object",
+			"title": "The Pawn Language",
+			"properties": {
+				"pawnlanguage.compilerPath": {
 					"type": "string",
-					"enum": [
-						"off",
-						"messages",
-						"verbose"
-					],
-					"default": "verbose",
-					"description": "Traces the communication between VS Code and the language server."
+					"default": "",
+					"description": "%configuration.compilerPath%"
+				},
+				"pawnlanguage.includePaths": {
+					"type": "array",
+					"items": { "type": "string" },
+					"default": [],
+					"description": "%configuration.includePaths%"
+				},
+				"PawnLanguage.clearOnBuild": {
+					"type": "boolean",
+					"default": true,
+					"description": "%configuration.clearOnBuild.description%"
 				}
 			}
-		],
+		},
 		"keybindings": [
 			{
 				"key": "F5",

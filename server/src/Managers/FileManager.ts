@@ -9,6 +9,8 @@ import { Locale } from "../Locale";
 import { constants } from "fs";
 import { AntlrOpenedFile } from "../AntrlOpenedFile";
 import { CacheManager } from "../cache/CacheManager";
+import { PathResolver } from "../PathResolver";
+import { PawnSettings } from "../Settings";
 
 export type OnFileManagerOpenFileListener = (document: AbstractOpenFile) => (Promise<void> | void);
 
@@ -50,11 +52,18 @@ export class FileManager {
 	 * URI директории с инклудами компилятора Pawn
 	 */
 	private _pawnIncludePath?: string = undefined;
+	private _pawnIncludePaths: string[] = [];
 	/**
 	 * URI директории с инклудами компилятора Pawn
 	 */
 	get includePath(): string | undefined {
 		return this._pawnIncludePath;
+	}
+	set includePaths(v: string[]) {
+		this._pawnIncludePaths = v;
+	}
+	get includePaths(): string[] {
+		return this._pawnIncludePaths;
 	}
 	
 	/**
@@ -89,6 +98,12 @@ export class FileManager {
 	private textDocuments: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
 	constructor() {
+	}
+
+	async setup(resolver: PathResolver, settings: PawnSettings) {
+		const result = await resolver.resolve(settings);
+        this.includePaths = result.includes;
+        this._pawnPath = result.compiler;
 	}
 
 	init() {

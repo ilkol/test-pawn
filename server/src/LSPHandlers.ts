@@ -1,4 +1,4 @@
-import { CompletionItem, CompletionItemKind, DidChangeWatchedFilesParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportKind, DocumentLink, DocumentLinkParams, DocumentSymbol, DocumentSymbolParams, DocumentUri, Location, PrepareRenameParams, ReferenceParams, RenameParams, SemanticTokensParams, TextDocumentPositionParams, TextEdit, WorkspaceEdit } from "vscode-languageserver";
+import { CompletionItem, CompletionItemKind, DidChangeConfigurationParams, DidChangeWatchedFilesParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportKind, DocumentLink, DocumentLinkParams, DocumentSymbol, DocumentSymbolParams, DocumentUri, Location, PrepareRenameParams, ReferenceParams, RenameParams, SemanticTokensParams, TextDocumentPositionParams, TextEdit, WorkspaceEdit } from "vscode-languageserver";
 import { FileManager } from "./Managers/FileManager";
 import { Position, Range } from "./types";
 import { Logger } from "./Logger/Logger";
@@ -8,6 +8,8 @@ import { Locale } from "./Locale";
 import { ICompletionProvider } from "./Completions/ICompletionProvider";
 import { PreprocessorCompletionsProvider } from "./Completions/PreprocessorDirectivesCompletionsProvider";
 import { SymbolCompletionsProvider } from "./Completions/SymbolCompletionsProvider";
+import { SettingsManager } from "./Settings/SettingsManager";
+import { ClientConnection } from "./ClientConnection";
 
 export class LSPHandlers {
 	private static completionsProviders: ICompletionProvider[] = [ 
@@ -251,5 +253,11 @@ export class LSPHandlers {
 	}
 	public static async onCompletionResolve(item: CompletionItem) {
 		return item;
+	}
+	public static async onDidChangeConfiguration(hasConfigurationCapability: boolean, connection: ClientConnection, settingsManager: SettingsManager) {
+		if(!hasConfigurationCapability) {
+			return;
+		}
+		await settingsManager.refresh();
 	}
 }
