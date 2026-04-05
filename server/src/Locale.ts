@@ -1,7 +1,5 @@
 import { I18n } from "i18n";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
-import { _, RemoteConsole } from "vscode-languageserver";
+import { join } from "path";
 
 export class Locale {
 
