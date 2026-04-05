@@ -235,7 +235,6 @@
 			"202": "warning 202: number of arguments does not match definition. Expected %d parameters, but passed %d"
 		}
 	},
-	"mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)": "mismatched input '#include ' expecting {<EOF>, '{', 'new', 'enum', 'const', 'static', 'stock', 'forward', 'native', 'public', IDENTIFIER, DocBlock} (file)",
 	"tag": "tag",
 	"tags": "tags",
 	"Parameter": "Parameter",
@@ -248,5 +247,12 @@
 	"Setting compiler.": "Setting compiler.",
 	"Preprocessing condition.": "Preprocessing condition.",
 	"AMX Memory limit": "AMX Memory limit",
-	"Code page": "Code page"
+	"Code page": "Code page",
+	"errors": {
+		"generic": "Syntax error: {{offending}} (in rule: {{rule}})",
+		"extraneous_input": "Extraneous input '{{offending}}'. Expected: {{expected}}",
+		"mismatched_input": "Input mismatch '{{offending}}'. Expected: {{expected}} (rule: {{rule}})",
+		"no_viable_alt": "No viable alternative at input '{{offending}}'"
+	},
+	"token recognition error at": " '№'"
 }
