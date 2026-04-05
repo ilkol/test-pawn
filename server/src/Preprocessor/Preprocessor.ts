@@ -586,12 +586,12 @@ export class Preprocessor
 			if(directive === "define") {
 				let res = this.findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
 				multyLine = res.rest.match(/\n/g)?.length ?? 0;
-				rest = res.rest;//.replaceAll(/\\[\n\r]/g, "  ");
+				rest = res.rest;
 				
 				endIndex = restIndex + res.fullLength;
 			}
 
-			const directiveInstance = this.createDirective(directive, rest, directiveIndex, restIndex, endIndex);
+			const directiveInstance = this.createDirective(directive, rest?.replaceAll(/\\[\n\r]/g, "  "), directiveIndex, restIndex, endIndex);
 			if(directiveInstance) {
 				directives.push(directiveInstance);
 			}
