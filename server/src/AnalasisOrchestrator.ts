@@ -42,6 +42,7 @@ export class AnalasisOrchestrator {
 				diagnostics: document.diagnostics
 			});
 		} catch(e) {
+			console.error(e);
 			Logger.error(`Ошибка в пайплайне для ${document.path}: ${e}`);
 		} finally {
             document.isAnalyzing = false;
