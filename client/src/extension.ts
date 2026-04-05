@@ -147,6 +147,10 @@ export function activate(context: ExtensionContext) {
 				return `// Ошибка запроса к серверу: ${err}`;
 			}
 		}
+
+		public refresh(uri: vscode.Uri) {
+			this.onDidChangeEmitter.fire(uri);
+		}
     };
 
     context.subscriptions.push(
@@ -162,6 +166,8 @@ export function activate(context: ExtensionContext) {
 			const originalUri = editor.document.uri.fsPath;
 			// Создаем URI для провайдера, передавая оригинальный URI в query или путь
 			const virtualUri = vscode.Uri.parse(`pawn-preprocessed://view/file.pwn?${originalUri}`);
+
+			myProvider.refresh(virtualUri);
 			
 			const doc = await vscode.workspace.openTextDocument(virtualUri);
 			await vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside);

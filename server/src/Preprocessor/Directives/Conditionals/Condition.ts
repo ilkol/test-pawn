@@ -24,6 +24,11 @@ export class Condition extends PreprocessorDirective
 		super(range, startIndex, endIndex);
 
 	}
+
+	public get conditionalString(): string {
+		return this.rest;
+	}
+
 	public checkCondition(checkFunc: (pattern: string, pos: number, defines: Map<string, Define[]>) => boolean)
 	{
 		return false;
