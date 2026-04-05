@@ -588,7 +588,9 @@ export class Preprocessor
 			if(directiveInstance) {
 				directives.push(directiveInstance);
 			}
-			multyLine += whiteSpacesBeforeRest.match(/\n/g)?.length ?? 0;
+			if(whiteSpacesBeforeRest) {
+				multyLine += whiteSpacesBeforeRest.match(/\n/g)?.length ?? 0;
+			}
 			let res = ' '.repeat(endIndex - directiveIndex -  (multyLine ? multyLine + 1 : 0)) + '\n'.repeat(multyLine);
 
 			changes.push({
