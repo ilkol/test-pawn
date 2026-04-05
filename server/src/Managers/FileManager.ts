@@ -51,14 +51,8 @@ export class FileManager {
 	/**
 	 * URI директории с инклудами компилятора Pawn
 	 */
-	private _pawnIncludePath?: string = undefined;
 	private _pawnIncludePaths: string[] = [];
-	/**
-	 * URI директории с инклудами компилятора Pawn
-	 */
-	get includePath(): string | undefined {
-		return this._pawnIncludePath;
-	}
+
 	set includePaths(v: string[]) {
 		this._pawnIncludePaths = v;
 	}
@@ -124,23 +118,6 @@ export class FileManager {
 		});
 	}
 
-	/**
-	 * Функционя занимается поиском в директории рабочей области директории компилятора,
-	 * а также инклудов
-	 */
-	public async findPawnDir(): Promise<void> {
-		if(!this._currentWorkspacePath) {
-			throw new Error(Locale.t("Workspace path not found"));
-		}
-
-		const pawnoPath = join(this._currentWorkspacePath, 'pawno');
-		await this.checkFolderExists(pawnoPath, "pawno");
-		this._pawnPath = pawnoPath;
-
-		const includePath = join(pawnoPath, 'include');
-		await this.checkFolderExists(includePath, "pawn include");
-		this._pawnIncludePath = includePath;
-	}
 	/**
 	 * Проверяет наличие доступа к директории
 	 * @param path путь до директории, который необходимо проверить

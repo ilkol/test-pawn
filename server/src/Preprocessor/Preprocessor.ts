@@ -264,8 +264,11 @@ export class Preprocessor
 			}
 			return result ? this.fileManager.getAbsolutePath(result) : result;
 		} 
-		if(this.fileManager.includePath){
-			return await this.plungeFile(join(this.fileManager.includePath, path));
+		for(const incpath of this.fileManager.includePaths) {
+			const res = await this.plungeFile(join(incpath, path));
+			if(res) {
+				return res;
+			}
 		}
 		return undefined;
 	}
