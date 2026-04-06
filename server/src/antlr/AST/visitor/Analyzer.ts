@@ -822,7 +822,9 @@ export class Analyzer extends BaseVisitor
 			}
 			if(val instanceof ArrayInit) {
 				if(val.value.length > declaredSize) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
+					if(declaredSize !== 0) {
+						this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
+					}
 				} else if(val.value.length < declaredSize) {
 					if(depth === dims.length - 1) {
 						this.file.diagnostics.push(LSPPawnErrors.reportCustom(
