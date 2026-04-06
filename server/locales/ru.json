@@ -300,5 +300,6 @@
 		"mismatched_input": "Неверный ввод '%s'. Ожидалось: %s",
 		"no_viable_alt": "Не удалось распознать конструкцию на символе '%s'",
 		"unknown": "Ошибка синтаксиса: %s"
-	}
+	},
+	"Vector partially initialized. Remaining %s elements will be 0.": "Вектори иницилизирован частично. Оставшиеся %s элементов будут равны 0."
 }

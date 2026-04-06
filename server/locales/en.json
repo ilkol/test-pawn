@@ -255,5 +255,6 @@
 		"no_viable_alt": "No viable alternative at input '{{offending}}'"
 	},
 	"token recognition error at": " '№'",
-	"Unexpected return statement": "Unexpected return statement"
+	"Unexpected return statement": "Unexpected return statement",
+	"Vector partially initialized. Remaining %s elements will be 0.": "Vector partially initialized. Remaining %s elements will be 0."
 }

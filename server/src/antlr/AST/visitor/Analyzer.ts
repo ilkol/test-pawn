@@ -806,10 +806,9 @@ export class Analyzer extends BaseVisitor
 			return;
 		}
 		let declaredSize = dim.constExpr;
-		console.log(dim, declaredSize);
+		
 		if(dim instanceof Variable) {
 			const enumRoot = this.curScope.findSymbol(dim.id);
-			console.log(enumRoot);
 			if(!(enumRoot instanceof Symbols.Enum)) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, dim.range));
 				return;
@@ -822,11 +821,19 @@ export class Analyzer extends BaseVisitor
 				continue;
 			}
 			if(val instanceof ArrayInit) {
-				console.log(val.value.length, declaredSize);
 				if(val.value.length > declaredSize) {
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
 				} else if(val.value.length < declaredSize) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArrayNotFullyInit, val.range));
+					if(depth === dims.length - 1) {
+						this.file.diagnostics.push(LSPPawnErrors.reportCustom(
+							Locale.t("Vector partially initialized. Remaining %s elements will be 0.", declaredSize - val.value.length), 
+							DiagnosticSeverity.Hint, 
+							val.range
+						));
+					}
+					else {
+						this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArrayNotFullyInit, val.range));
+					}
 				}
 				this.checkInitArraySize(val.value, dims, depth + 1);
 			}
