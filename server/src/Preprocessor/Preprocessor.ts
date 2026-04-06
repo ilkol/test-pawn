@@ -395,7 +395,11 @@ export class Preprocessor
 		const define = defines.get(directive.define);
 		if(define) {
 			const lastDef = define[define.length - 1];
-			lastDef.undef = directive;
+			// lastDef.undef = directive;
+			const pos = lastDef.getFilePos(this.currentDocument!.path);
+			if(pos) {
+				pos.until = directive.endIndex;
+			}
 		} else {
 			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, directive.defineRange, directive.define));
 		}
@@ -594,6 +598,9 @@ export class Preprocessor
 			const directiveInstance = this.createDirective(directive, rest?.replaceAll(/\\[\n\r]/g, "  "), directiveIndex, restIndex, endIndex);
 			if(directiveInstance) {
 				directives.push(directiveInstance);
+				if(directiveInstance instanceof Directives.Defining.Define) {
+					directiveInstance.includeToFile(this.currentDocument!.path, directiveIndex);
+				}
 			}
 			if(whiteSpacesBeforeRest) {
 				multyLine += whiteSpacesBeforeRest.match(/\n/g)?.length ?? 0;
@@ -1202,7 +1209,6 @@ export class Preprocessor
 		// const total = defines.size;
 		// let i = 0;
 
-		
 		code = await this.newprocessDefine(code, defines, symbolManager, onProgress);
 
 		// for(let definesArray of defines.values()) {

@@ -139,7 +139,6 @@ export function activate(context: ExtensionContext) {
 			// Извлекаем оригинальный URI файла (убираем нашу схему pawn-preprocessed)
 			const originalUri = uri.query; // Или другой способ передачи, напр. через путь
 			
-			console.log(originalUri);
 			try {
 				// Отправляем кастомный запрос напрямую серверу
 				return await client.sendRequest(GetPreprocessedRequest, originalUri);
