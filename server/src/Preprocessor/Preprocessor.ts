@@ -307,6 +307,10 @@ export class Preprocessor
 				cur = ifStack[ifStack.length - 1];
 			}
 
+			if(cur && cur.skip) {
+				continue;
+			}
+
 			if(element instanceof Directives.Defining.Define) {
 				if(cur && cur.skip) {
 					continue;
