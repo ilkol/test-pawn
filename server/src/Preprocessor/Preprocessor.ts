@@ -307,10 +307,6 @@ export class Preprocessor
 				cur = ifStack[ifStack.length - 1];
 			}
 
-			if(cur && cur.skip) {
-				continue;
-			}
-
 			if(element instanceof Directives.Defining.Define) {
 				if(cur && cur.skip) {
 					continue;
@@ -325,6 +321,9 @@ export class Preprocessor
 			}
 			else if(element instanceof Directives.Defining.Undef)
 			{
+				if(cur && cur.skip) {
+					continue;
+				}
 				this.handleUndef(element, defines);
 			}
 			else if(element instanceof Directives.Endinput) {
@@ -345,6 +344,9 @@ export class Preprocessor
 				});				
 			}
 			else if(element instanceof Directives.Error) {
+				if(cur && cur.skip) {
+					continue;
+				}
 				document.diagnostics.push(PawnErrors.report(
 					element.type === Directives.Error.Type.Error ? PawnErrors.Code.UserError : PawnErrors.Code.UserWarning, 
 					element.range, 
@@ -352,6 +354,9 @@ export class Preprocessor
 				));
 			}
 			else if(element instanceof Directives.FileLineChange) {
+				if(cur && cur.skip) {
+					continue;
+				}
 				document.diagnostics.push({
 					message: element.hintMessage,
 					range: element.range,
@@ -367,6 +372,9 @@ export class Preprocessor
 				this.handleElseIf(element, ifStack, defines);
 			}
 			else if(element instanceof Directives.Conditionals.Condition) {
+				if(cur && cur.skip) {
+					continue;
+				}
 				this.handleCondition(element, ifStack, defines);					
 			}
 			else if(element instanceof Directives.Conditionals.Endif) {
