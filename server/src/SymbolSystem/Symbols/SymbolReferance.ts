@@ -33,7 +33,7 @@ export class SymbolReferance {
 			name: this.parent?.name ?? "Error",
 			kind: this.parent?.symbolKind ?? SymbolKind.Variable,
 			range: this.range,
-			selectionRange: this.tokenRange,
+			selectionRange: this.tokenRange.isEmpty ? this.range : this.tokenRange,
 			tags: [],
 			children: this.childrens.map(child => {return child.getSymbolInfo()})
 		}

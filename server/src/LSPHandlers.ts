@@ -248,7 +248,6 @@ export class LSPHandlers {
 				}
 			})
 		})
-
 		return symbols;
 	}
 	public static async onCompletionResolve(item: CompletionItem) {
