@@ -789,15 +789,6 @@ export class Analyzer extends BaseVisitor
 		}
 
 		this.checkInitArraySize([node.initValue], node.dimensions);
-
-		// for(let i = 0; i < node.dimensions.length; i++) {
-		// 	// TODO: проверка размерности массивов
-		// 	if(val.value[i] < node.dimensions[i]) {
-		// 		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArrayNotFullyInit, val.range));
-		// 	} else if(val.value[i] > node.dimensions[i]) {
-		// 		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
-		// 	}
-		// }
 	}
 
 	private checkInitArraySize(values: (Ellipse | Expression)[], dims: (Expression | null)[], depth: number = 0) {
