@@ -21,6 +21,9 @@ export class TypeInferenceEngine {
 		if(node.isTaged) {
 			return this.addTag(node.tag.id, node.tag.pos, node.tag.idPos); 
 		}
+		if(node.inferredTag) {
+			return node.inferredTag;
+		}
 		if (node instanceof Literal) return this.evaluateLiteral(node);
         if (node instanceof FunctionCall) return this.evaluateCall(node);
         if (node instanceof TernarOperator) return this.evaluateTernar(node);

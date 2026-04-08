@@ -65,6 +65,9 @@ export class Analyzer extends BaseVisitor
 {
 	public declaraedFunctions: Map<string, Tag> = new Map();
 	private tagInferer: TypeInferenceEngine;
+
+
+
 	constructor(
 		protected file: AbstractOpenFile,
 		scope: IScope,
@@ -368,12 +371,13 @@ export class Analyzer extends BaseVisitor
 		node.inferredTag = this.tagInferer.inferTag(node);
 		
 		if(!symbol) {
-			const func = this.declaraedFunctions.get(node.id);
-			if(func) {
-				const resultTag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
+			const tag = this.declaraedFunctions.get(node.id);
+			if(tag) {
+				const resultTag = this.addTag(tag.id, tag.pos, tag.idPos);
 				if(resultTag !== SymbolsFactory.defaultTag) {
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionWithTagUsedBeforeDeclaration, node.idPos));
 				}
+				node.inferredTag = resultTag;
 			}
 			this.addPendingReference(node.id, node);
 			return;
