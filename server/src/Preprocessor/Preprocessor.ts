@@ -300,6 +300,7 @@ export class Preprocessor
 		const includes: Directives.Include[] = [];
 	
 		const ifStack: ConditionStack = [];
+		let skipedIf = 0;
 		for(let element of document.directives) {
 
 			let cur;
@@ -373,11 +374,16 @@ export class Preprocessor
 			}
 			else if(element instanceof Directives.Conditionals.Condition) {
 				if(cur && cur.skip) {
+					skipedIf++;
 					continue;
 				}
 				this.handleCondition(element, ifStack, defines);					
 			}
 			else if(element instanceof Directives.Conditionals.Endif) {
+				if(skipedIf) {
+					skipedIf--;
+					continue;
+				}
 				code = this.handleEndIf(code, element, ifStack);	
 			}
 			else if(element instanceof Directives.Conditionals.Else) {
@@ -570,7 +576,7 @@ export class Preprocessor
 	private evaluateCondition(conditionStr: string, pos: number, defines: Map<string, Directives.Defining.Define[]>): boolean {
 		const tokens = tokenize(conditionStr);
 		const parser = new ConstExprParser(tokens, defines);
-		const result = parser.parse(); 	
+		const result = parser.parse();
 
 		return result === 1;
 	}
