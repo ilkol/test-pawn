@@ -742,12 +742,6 @@ export class Analyzer extends BaseVisitor
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		node.parameters.forEach(parameter => {
-			const modifires: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
-			if(parameter.const) {
-				modifires.push(SemanticTokenModifiers.readonly);
-			}
-		})
 		this.evaluateFunctionDeclaration(node);
 	}
 	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
