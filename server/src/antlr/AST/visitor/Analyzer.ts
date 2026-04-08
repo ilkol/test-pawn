@@ -735,30 +735,31 @@ export class Analyzer extends BaseVisitor
 		this.evaluateFunctionDeclaration(node, true);
 	}
 	afterVisitOperatorOverload(node: OperatorOverload): void {
+		if(node.symbol) {
+			this.resolvePendingReferences(node.symbol);
+		}
 		this.restrictScope(node.code ? true : false);
 	}
 	
 	beforeVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		this.evaluateFunctionDeclaration(node);
-	}
-	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
-		this.restrictScope(node.code ? true : false);
-
 		node.parameters.forEach(parameter => {
 			const modifires: SemanticTokenModifiers[] = [SemanticTokenModifiers.definition];
 			if(parameter.const) {
 				modifires.push(SemanticTokenModifiers.readonly);
 			}
 		})
+		this.evaluateFunctionDeclaration(node);
+	}
+	afterVisitFunctionDeclaration(node: FunctionDeclaration): void {
+		if(node.symbol) {
+			this.resolvePendingReferences(node.symbol);
+		}
+		this.restrictScope(node.code ? true : false);
 		
-		
-		// const modif = [SemanticTokensModifires.declaration];
 		if(node.code !== undefined) {
 			node.symbol?.modifiers;
 		}
 			
-
-		// this.tokens.addToken(node.idPos, SemanticTokens.function, modif);		
 		this.addFunctionSignature(node);	
 	}
 	
@@ -1281,8 +1282,6 @@ export class Analyzer extends BaseVisitor
 		}
 
 		this.scopeManager.globalScope.add(symbol);
-
-		this.resolvePendingReferences(symbol);
 
 		if(node.parameters.length >= Pawn.MAX_PARAMETERS_COUNt) {
 			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArguments, node.pos));
