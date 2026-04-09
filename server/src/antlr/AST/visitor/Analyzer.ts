@@ -117,6 +117,12 @@ export class Analyzer extends BaseVisitor
 
 	}
 	afterVisitOperatorArrayIndex(node: ArrayChar): void {
+		if(node.left instanceof Variable) {
+			const symbol = node.left.symbol;
+			if(symbol instanceof Symbols.Variable) {
+				symbol.
+			}
+		}
 
 	}
 	beforeVisitOperatorArrayChar(node: ArrayChar): void {
@@ -788,6 +794,23 @@ export class Analyzer extends BaseVisitor
 		}
 
 		this.checkInitArraySize([node.initValue], node.dimensions);
+		for(const dim of node.dimensions) {
+			if(!dim) {
+				symbol.dimensions.push({
+					tag: SymbolsFactory.defaultTag,
+					value: 0
+				});
+				continue;
+			}
+			if(dim instanceof EnumDeclaration && dim.symbol) {
+				symbol.dimensions.push(dim.symbol);
+			} else {
+				symbol.dimensions.push({
+					tag: this.addTag(dim.tag.id, dim.tag.pos, dim.tag.idPos),
+					value: dim.constExpr
+				});
+			}
+		}
 	}
 
 	private checkInitArraySize(values: (Ellipse | Expression)[], dims: (Expression | null)[], depth: number = 0) {

@@ -6,12 +6,20 @@ import { SymbolReferance } from "./SymbolReferance";
 import { MayBeTag } from "./MayBeTag";
 import { SymbolsFactory } from "../SymbolsFactory";
 import { VariableModifire } from "./Parameter";
+import { Enum } from "./Enum";
+
+type DimensionInfo = {
+	tag: MayBeTag;
+	value: number;
+} | Enum;
 
 export class Variable extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Variable;
 	
 	public readonly isConst: boolean;
 	public tag: MayBeTag = SymbolsFactory.defaultTag;
+
+	public dimensions: DimensionInfo[] = [];
 
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[]) {
 		super(
