@@ -4,24 +4,21 @@ import { EnumDeclaration } from "./EnumDeclaration";
 import { Serialization } from "../../../../cache/Serialization";
 import * as SymbolSystem from "../../../../SymbolSystem";
 import { VariableModifire } from "../../../../SymbolSystem/Symbols";
+import { MayBeTag } from "../../../../SymbolSystem/Symbols/MayBeTag";
+import { SymbolsFactory } from "../../../../SymbolSystem/SymbolsFactory";
 
 export class EnumMember extends VarDeclaration<SymbolSystem.Symbols.EnumMember>
 {
 	name = "член перечисления";
 
 	private _parent: EnumDeclaration | undefined;
-	
+	public memberTag: MayBeTag = SymbolsFactory.defaultTag;
+
 	_modifires = VariableModifire.Const;
 
 	public accept(visitor: IVisitor): void {
 		visitor.visitEnumMember(this);
 	}
-	public setValue(data: VarDeclaration): void {
-		this.id = data.id;
-		this.idPos = data.idPos;
-		this.tag = data.tag;
-	}
-
 	public get parent(): EnumDeclaration | undefined {
 		return 	this._parent;
 	}

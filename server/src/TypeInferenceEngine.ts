@@ -3,6 +3,7 @@ import { FunctionCall } from "./antlr/AST/Nodes/Functions/FunctionCall";
 import { BoolLiteral } from "./antlr/AST/Nodes/Literals/BoolLiteral";
 import { FloatLiteral } from "./antlr/AST/Nodes/Literals/FloatLiteral";
 import { Literal } from "./antlr/AST/Nodes/Literals/Literal";
+import { ArrayIndex } from "./antlr/AST/Nodes/Operators/ArrayIndex";
 import { BinarOperator } from "./antlr/AST/Nodes/Operators/BinarOperator";
 import { TernarOperator } from "./antlr/AST/Nodes/Operators/TernarOperator";
 import { UnarOperator } from "./antlr/AST/Nodes/Operators/UnarOperator";
@@ -27,7 +28,8 @@ export class TypeInferenceEngine {
 		if (node instanceof Literal) return this.evaluateLiteral(node);
         if (node instanceof FunctionCall) return this.evaluateCall(node);
         if (node instanceof TernarOperator) return this.evaluateTernar(node);
-       	if (node instanceof BinarOperator) return this.evaluateBinary(node);
+       	// if (node instanceof ArrayIndex) return this.evaluateArrayIndex(node);
+        if (node instanceof BinarOperator) return this.evaluateBinary(node);
         if (node instanceof UnarOperator) return this.evaluateUnary(node);
 		if (node instanceof Variable) return this.evaluateVariable(node);
 
@@ -118,6 +120,9 @@ export class TypeInferenceEngine {
 		const symbol = node.symbol;
 		if(!symbol) {
 			return SymbolsFactory.defaultTag;
+		}
+		if(symbol instanceof Symbols.EnumMember) {
+			return symbol.indexTag;
 		}
 		if(symbol instanceof Symbols.Variable) {
 			return symbol.tag;

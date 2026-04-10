@@ -5,10 +5,18 @@ import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
 import { EnumMember } from "./EnumMember";
 import { VariableModifire } from "./Parameter";
+import { MayBeTag } from "./MayBeTag";
+import { SymbolsFactory } from "../SymbolsFactory";
 
 export class Enum extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Enum;
 	public members: EnumMember[] = [];
+	/**
+	 * Тэг, на базе которого строится перечисление
+	 * Если при декларации не указывается, значит тег создастся на основе названия перечисления.
+	 * Если перечисление не имеет названия, то устанавливается стандартный тэг.
+	 */
+	public tag: MayBeTag = SymbolsFactory.defaultTag;
 	isConst: true = true;
 	lastValue: number = 0;
 

@@ -11,7 +11,7 @@ import { Enum } from "./Enum";
 type DimensionInfo = {
 	tag: MayBeTag;
 	value: number;
-} | Enum;
+};
 
 export class Variable extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Variable;

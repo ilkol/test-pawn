@@ -5,11 +5,15 @@ import { AbstractSymbol } from "./AbstractSymbol";
 import { SymbolReferance } from "./SymbolReferance";
 import { Enum } from "./Enum";
 import { VariableModifire } from "./Parameter";
+import { MayBeTag } from "./MayBeTag";
+import { SymbolsFactory } from "../SymbolsFactory";
 
 export class EnumMember extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.EnumMember;
 	isConst: true = true;
 	value: number = 0;
+	indexTag: MayBeTag;
+	valuTag: MayBeTag = SymbolsFactory.defaultTag;
 	
 	constructor(
 		id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[],
@@ -28,6 +32,8 @@ export class EnumMember extends AbstractSymbol {
 				[...modifiers, SemanticTokenModifiers.declaration].map(SemanticTokensLegendManager.getTokenModifierIndex)
 			)
 		);
+
+		this.indexTag = this.parentSymbol ? this.parentSymbol.tag : SymbolsFactory.defaultTag;
 	}
 
 	private _modifire: number = VariableModifire.Const;

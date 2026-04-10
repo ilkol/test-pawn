@@ -348,10 +348,6 @@ export class PawnListener implements IPawnListener
 				node.id = id.text;
 				node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 			}
-
-			node.vars.forEach(element => {
-				element.tag = new Tag(node.id);
-			});
 		}
 	}
 	

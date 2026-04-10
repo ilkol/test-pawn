@@ -50,6 +50,7 @@ import { NamedArgument } from "../Nodes/Functions/NamedArgument";
 import { TernarOperator } from "../Nodes/Operators/TernarOperator";
 import { ArrayInit } from "../Nodes/Literals/ArrayInit";
 import { Ellipse } from "../Nodes/Operators/Ellipse";
+import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
 
 /** Состояние проверки аргумента функции при ее вызове */
 enum ArgumentState {
@@ -113,17 +114,50 @@ export class Analyzer extends BaseVisitor
 	afterVisitWDohile(node: DoWhileCycle): void {
 
 	}
-	beforeVisitOperatorArrayIndex(node: ArrayChar): void {
-
+	beforeVisitOperatorArrayIndex(node: ArrayIndex): void {
+		
 	}
-	afterVisitOperatorArrayIndex(node: ArrayChar): void {
-		if(node.left instanceof Variable) {
-			const symbol = node.left.symbol;
-			if(symbol instanceof Symbols.Variable) {
-				symbol.
+	afterVisitOperatorArrayIndex(node: ArrayIndex): void {
+		let arraySymbol: Symbols.Enum | Symbols.EnumMember | Symbols.Function | Symbols.Parameter | Symbols.Variable | undefined;
+		if(node.left instanceof ArrayIndex) {
+			node.depth = node.left.depth + 1;
+			arraySymbol = node.left.symbol;
+		}
+		else if(node.left instanceof Variable) {
+			arraySymbol = node.left.symbol;
+		}
+		
+		node.symbol = arraySymbol;
+
+		if(arraySymbol instanceof Symbols.Variable) {
+			const dim = arraySymbol.dimensions[node.depth]
+			if(!dim) {
+				if(arraySymbol.dimensions.length === node.depth) {
+					const lastDim = arraySymbol.dimensions[node.depth - 1];
+					if(lastDim && lastDim.tag instanceof Symbols.Enum) {
+						// TODO: обработку члена перечисления-массива
+					}
+				} else {
+					console.error("Undefined array index");
+					return;
+				}
+				return;
+			}
+			let tag: MayBeTag;
+			if(dim instanceof Symbols.Enum) {
+				tag = dim;
+			} else {
+				tag = dim.tag;
+			}
+			const actualTag = node.right ? this.tagInferer.inferTag(node.right) : SymbolsFactory.defaultTag;
+			this.checkTagMismatch(tag, actualTag, true, node.right?.range ?? node.range);
+			node.inferredTag = actualTag;
+			if(node.right instanceof Variable) {
+				if(node.right.symbol instanceof Symbols.EnumMember) {
+					node.inferredTag = node.right.symbol.valuTag;
+				}
 			}
 		}
-
 	}
 	beforeVisitOperatorArrayChar(node: ArrayChar): void {
 		
@@ -678,6 +712,7 @@ export class Analyzer extends BaseVisitor
 		node.parent?.symbol?.members.push(symbol);
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 		this.curScope.parent?.add(symbol);
+		symbol.valuTag = this.addTag(node.tag.id, node.tag.idPos);
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
 		const symbol = node.symbol;
@@ -705,6 +740,7 @@ export class Analyzer extends BaseVisitor
 				this.curScope.replaceTag(symbol);
 			}
 		}
+		symbol.tag = tag;
 
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 		this.extendScope(node.range, symbol.defenition);
@@ -784,7 +820,33 @@ export class Analyzer extends BaseVisitor
 	}
 	afterVisitVariableDeclaration(node: VarDeclaration<Symbols.Variable>): void {
 		const symbol = node.symbol;
-    	if (!symbol || !node.initValue) return;
+    	if (!symbol) return;
+		
+		for(const dim of node.dimensions) {
+			
+			if(!dim) {
+				symbol.dimensions.push({
+					tag: SymbolsFactory.defaultTag,
+					value: 0
+				});
+				continue;
+			}
+			if(dim instanceof EnumDeclaration && dim.symbol) {
+				symbol.dimensions.push({
+					tag: dim.symbol.tag,
+					value: dim.symbol.lastValue + 1
+				});
+			} else {
+				const tag = this.tagInferer.inferTag(dim);
+				symbol.dimensions.push({
+					tag: tag,
+					value: dim.constExpr
+				});
+			}
+		}
+
+		if(!node.initValue) return;
+
 		if(!(node.initValue instanceof ArrayInit)) {
 			const expectedTag = symbol.tag;
 			const actualTag = node.initValue.inferredTag = this.tagInferer.inferTag(node.initValue);
@@ -794,23 +856,7 @@ export class Analyzer extends BaseVisitor
 		}
 
 		this.checkInitArraySize([node.initValue], node.dimensions);
-		for(const dim of node.dimensions) {
-			if(!dim) {
-				symbol.dimensions.push({
-					tag: SymbolsFactory.defaultTag,
-					value: 0
-				});
-				continue;
-			}
-			if(dim instanceof EnumDeclaration && dim.symbol) {
-				symbol.dimensions.push(dim.symbol);
-			} else {
-				symbol.dimensions.push({
-					tag: this.addTag(dim.tag.id, dim.tag.pos, dim.tag.idPos),
-					value: dim.constExpr
-				});
-			}
-		}
+		
 	}
 
 	private checkInitArraySize(values: (Ellipse | Expression)[], dims: (Expression | null)[], depth: number = 0) {
