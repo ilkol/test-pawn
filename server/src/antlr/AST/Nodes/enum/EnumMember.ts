@@ -6,13 +6,14 @@ import * as SymbolSystem from "../../../../SymbolSystem";
 import { VariableModifire } from "../../../../SymbolSystem/Symbols";
 import { MayBeTag } from "../../../../SymbolSystem/Symbols/MayBeTag";
 import { SymbolsFactory } from "../../../../SymbolSystem/SymbolsFactory";
+import { Expression } from "../Expresion";
 
 export class EnumMember extends VarDeclaration<SymbolSystem.Symbols.EnumMember>
 {
 	name = "член перечисления";
 
 	private _parent: EnumDeclaration | undefined;
-	public memberTag: MayBeTag = SymbolsFactory.defaultTag;
+	public index: Expression | undefined;
 
 	_modifires = VariableModifire.Const;
 
@@ -31,6 +32,7 @@ export class EnumMember extends VarDeclaration<SymbolSystem.Symbols.EnumMember>
 			...super.toJSON(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			__type: Serialization.NodeList.EnumMember,
+			index: this.index?.toJSON(),
 		};
 	}
 
@@ -42,5 +44,6 @@ export class EnumMember extends VarDeclaration<SymbolSystem.Symbols.EnumMember>
 
 	protected prepareFromJSON(json: Serialization.Nodes.EnumMember): void {
 		super.prepareFromJSON(json);
+		this.index = Serialization.Deserialize.object(json.index);
 	}
 }

@@ -370,6 +370,10 @@ export class PawnListener implements IPawnListener
 		const id = ctx.IDENTIFIER();
 		node.setIDPos(id.symbol.line, id.symbol.charPositionInLine, id.symbol.charPositionInLine + id.text.length);
 		node.id = id.text;
+		if(value) {
+			node.initValue = value;
+		}
+		node.index = index;
 		
 		if(ctx.stop)
 		{	
