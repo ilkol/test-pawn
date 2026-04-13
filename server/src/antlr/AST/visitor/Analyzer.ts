@@ -167,19 +167,26 @@ export class Analyzer extends BaseVisitor
 				}
 				return;
 			}
-			let tag: MayBeTag;
+			let indexTag: MayBeTag;
 			if(dim instanceof Symbols.Enum) {
-				tag = dim;
+				indexTag = dim;
 			} else {
-				tag = dim.tag;
+				indexTag = dim.tag;
 			}
-			const actualTag = node.right ? this.tagInferer.inferTag(node.right) : SymbolsFactory.defaultTag;
-			this.checkTagMismatch(tag, actualTag, true, node.right?.range ?? node.range);
-			node.inferredTag = actualTag;
+			const actualIndexTag = node.right ? this.tagInferer.inferTag(node.right) : SymbolsFactory.defaultTag;
+			this.checkTagMismatch(indexTag, actualIndexTag, true, node.right?.range ?? node.range);
+			
+			
+			
+
 			if(node.right instanceof Variable) {
 				if(node.right.symbol instanceof Symbols.EnumMember) {
 					node.inferredTag = node.right.symbol.valuTag;
+				} else {
+					node.inferredTag = node.left?.inferredTag || SymbolsFactory.defaultTag;
 				}
+			} else {
+				node.inferredTag = node.left?.inferredTag || SymbolsFactory.defaultTag;
 			}
 		}
 	}
@@ -318,8 +325,7 @@ export class Analyzer extends BaseVisitor
 		}
 		node.inferredTag = this.tagInferer.inferTag(node);
 		if(symbol instanceof Symbols.EnumMember) {
-			// TODO: вычсиление значение перечисления
-			// node.constExpr = symbol.
+			node.constExpr = symbol.value;
 		}
 		
 		/*
