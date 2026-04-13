@@ -602,7 +602,7 @@ export class Analyzer extends BaseVisitor
 		const rightTag = node.right.inferredTag;
 
 		if (!leftTag || !rightTag || !this.tagInferer.findUserOperator(node.operator, leftTag, rightTag, 2)) {
-			this.checkTagMismatch(leftTag, rightTag, false, node.range);
+			this.checkTagMismatch(leftTag, rightTag, false, node.right.range);
    		}
 
 		if(node.left.isConstExpr && node.right.isConstExpr) {
