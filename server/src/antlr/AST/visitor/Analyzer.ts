@@ -570,17 +570,20 @@ export class Analyzer extends BaseVisitor
 					} else {
 						this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidSymbolName, node.value.range, "unknown"));
 					}
+					node.inferredTag = SymbolsFactory.defaultTag;
 				}
 				// TODO: вычисление размера символа
 				break;
 			case "tagof":
 				node.constExpr = 1;
+				node.inferredTag = SymbolsFactory.defaultTag;
 				// TODO: вычисление тега
 				break;
 			case "char":
 				if(node.value && node.value.isConstExpr) {
 					node.constExpr = Math.floor((node.value.constExpr + 3) / 4);
 				}
+				node.inferredTag = SymbolsFactory.defaultTag;
 				break;
 		}
 		node.inferredTag = this.tagInferer.inferTag(node);
@@ -607,7 +610,9 @@ export class Analyzer extends BaseVisitor
 		const leftTag = node.left.inferredTag;
 		const rightTag = node.right.inferredTag;
 
-		if (!leftTag || !rightTag || !this.tagInferer.findUserOperator(node.operator, leftTag, rightTag, 2)) {
+		if(node.operator === "||" || node.operator === "&&") {
+			node.inferredTag = SymbolsFactory.boolTag;
+		} else if (!leftTag || !rightTag || !this.tagInferer.findUserOperator(node.operator, leftTag, rightTag, 2)) {
 			this.checkTagMismatch(leftTag, rightTag, false, node.right.range);
    		}
 
@@ -1032,6 +1037,7 @@ export class Analyzer extends BaseVisitor
 			return true;
 		}
 
+		console.log(allowCoerce, this.isDefaultTag(formalTag), !this.isTagFixed(actualTag));
 		// Если необходимый тэг - дефолтный, а проверяемый не "fixed", то проверяемый приводиться к дефолтному
 		return allowCoerce && this.isDefaultTag(formalTag) && !this.isTagFixed(actualTag);
 	}
