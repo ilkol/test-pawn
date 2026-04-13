@@ -334,7 +334,7 @@ fragment SIMPLEESCAPESEQUENCE:
 ;
 
 IDENTIFIER:		[@a-zA-Z_][@a-zA-Z0-9_]*;
-SKIP_PARAM: '_';
+SKIP_PARAM: 	'_';
 
 BINARY:			'0b'[01_]+;
 HEX:			'0x'[a-fA-F0-9_]+;

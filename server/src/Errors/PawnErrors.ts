@@ -28,6 +28,7 @@ export namespace PawnErrors {
 		NotMatchingPreprocessorCondition = 26,
 		ExpressionError = 29,
 		UnknownDirective = 31,
+		ArrayIndexOutOfRange = 32,
 		ArgumentHasntDefaultValue = 34,
 		ConstSymbolHasnotSize = 39,
 		InvalidModifiersCombination = 42,
