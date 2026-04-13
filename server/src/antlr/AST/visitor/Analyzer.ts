@@ -130,13 +130,37 @@ export class Analyzer extends BaseVisitor
 		node.symbol = arraySymbol;
 
 		if(arraySymbol instanceof Symbols.Variable) {
+			const index = node.right
 			const dim = arraySymbol.dimensions[node.depth]
 			if(!dim) {
 				if(arraySymbol.dimensions.length === node.depth) {
 					const lastDim = arraySymbol.dimensions[node.depth - 1];
-					if(lastDim && lastDim.tag instanceof Symbols.Enum) {
-						// TODO: обработку члена перечисления-массива
+					const lastIndexOperator = node.left;
+					if(lastIndexOperator instanceof ArrayIndex) {
+						const lastIndex = lastIndexOperator.right;
+						if(lastDim && lastDim.tag instanceof Symbols.Enum && lastIndex instanceof Variable) {
+							const member = lastDim.tag.members.find(member => member.name === lastIndex.id);
+							if(member) {
+								node.inferredTag = member.valuTag;
+								if(member.index) {
+									if(node.right?.isConstExpr) {
+										if(member.index <= node.right.constExpr) {
+											this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArrayIndexOutOfRange, node.right.range, arraySymbol.name));
+										}
+									}
+								} else {
+									this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArrayIndexOutOfRange, (node.right ? node.right : node).range, arraySymbol.name));
+								}
+							} else {
+								this.file.diagnostics.push(LSPPawnErrors.reportCustom(
+									Locale.t("Member %s not found in enum %s", lastIndex.id, lastDim.tag.name), 
+									DiagnosticSeverity.Error, 
+									lastIndex.range
+								));
+							}
+						}
 					}
+					
 				} else {
 					console.error("Undefined array index");
 					return;
@@ -713,6 +737,9 @@ export class Analyzer extends BaseVisitor
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 		this.curScope.parent?.add(symbol);
 		symbol.valuTag = this.addTag(node.tag.id, node.tag.idPos);
+		if(node.index) {
+			symbol.index = node.index.constExpr;
+		}
 	}
 	afterVisitEnumMember(node: EnumMember): void {	
 		const symbol = node.symbol;

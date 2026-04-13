@@ -14,6 +14,7 @@ export class EnumMember extends AbstractSymbol {
 	value: number = 0;
 	indexTag: MayBeTag;
 	valuTag: MayBeTag = SymbolsFactory.defaultTag;
+	index: number | undefined;
 	
 	constructor(
 		id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[],
