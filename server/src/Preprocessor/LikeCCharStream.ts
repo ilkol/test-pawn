@@ -18,11 +18,11 @@ export class LikeCCharStream {
 	}
 
 	public compare(str: string) {
-		for(let i = 0, index = this.curIndex; i < str.length; i++, index++) {
-			if(this._source.length <= index) {
+		for (let i = 0, index = this.curIndex; i < str.length; i++, index++) {
+			if (this._source.length <= index) {
 				return false;
 			}
-			if(this._source[index] !== str[i]) {
+			if (this._source[index] !== str[i]) {
 				return false;
 			}
 		}
@@ -30,8 +30,8 @@ export class LikeCCharStream {
 	}
 
 	public strdel(length: number) {
-		const preStr = this._source.substring(0,this.curIndex);
-		if(length >= this._source.length) {
+		const preStr = this._source.substring(0, this.curIndex);
+		if (length >= this._source.length) {
 			this._source = preStr;
 		}
 		else {
@@ -40,14 +40,14 @@ export class LikeCCharStream {
 		}
 	}
 	public strIns(str: string, shift: number = 0) {
-		const preStr = this._source.substring(0,this.curIndex + shift);
+		const preStr = this._source.substring(0, this.curIndex + shift);
 		const postStr = this._source.substring(this.curIndex + shift);
 		this._source = preStr + str + postStr;
 	}
 
 	public getShiftChar(shift: number = 0) {
 		let index = this.curIndex + shift;
-		if(this._source.length <= index) {
+		if (this._source.length <= index) {
 			return LikeCCharStream.FILE_END_CHAR;
 		}
 		return this._source[index];
@@ -55,5 +55,13 @@ export class LikeCCharStream {
 
 	public constructor(private _source: string) {
 
+	}
+
+	public replaceRange(start: number, length: number, newStr: string) {
+		// Делаем ОДНУ конкатенацию вместо сотен
+		this._source =
+			this._source.substring(0, start) +
+			newStr +
+			this._source.substring(start + length);
 	}
 }

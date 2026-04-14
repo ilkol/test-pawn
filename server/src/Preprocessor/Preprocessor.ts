@@ -55,9 +55,9 @@ interface ReplaceInfo {
 
 export type OnFileProcessedListener = (file: AbstractOpenFile) => (Promise<void> | void);
 
-export class Preprocessor
-{
+export class Preprocessor {
 	private static readonly needSemicolon = true;
+	private static profilePatternReplacing = 0;
 
 	/**
 	 * Фукнция, которая вызывается после окончания обработки препроцессором файла
@@ -67,12 +67,12 @@ export class Preprocessor
 	set onFileProcessedListener(value: OnFileProcessedListener) {
 		this._onFileProcessedListener = value;
 	}
-	
+
 	constructor(private readonly fileManager: FileManager) {
 
 	}
 
-	private currentDocument?: AbstractOpenFile; 
+	private currentDocument?: AbstractOpenFile;
 
 	private async nextStep(document: AbstractOpenFile, curentAction: Function) {
 		await curentAction();
@@ -83,11 +83,11 @@ export class Preprocessor
 	public async processFile(document: AbstractOpenFile, symbolManager: SymbolManager, onProgress?: (percent: number) => void) {
 		const tmp = this.currentDocument;
 		this.currentDocument = document;
-		
+
 		document.processedCode = document.text;
 
 
-		for(const action of [
+		for (const action of [
 			async () => await this.findAndReplaceDirectives(document),
 			async () => await this.processFileDirectives(document),
 			async () => this.registerSymbols(document, symbolManager),
@@ -109,11 +109,11 @@ export class Preprocessor
 				symbolManager.add(documnt.path, define.symbol, true);
 			});
 		});
-	} 
+	}
 
-	private async findAndReplaceDirectives(document: AbstractOpenFile) { 
-		
-		if(document.cache.directives) {
+	private async findAndReplaceDirectives(document: AbstractOpenFile) {
+
+		if (document.cache.directives) {
 			// document.processedCode = document.cache.processCode;
 
 			const definesRelations: Map<string, Directives.Defining.Define> = new Map();
@@ -125,15 +125,15 @@ export class Preprocessor
 			document.directives = document.cache.directives.map(d => {
 				const instance = Serialization.Deserialize.object<PreprocessorDirective>(d);
 				instance.id = d.id;
-				if(instance instanceof Directives.Defining.Define) {
+				if (instance instanceof Directives.Defining.Define) {
 					const undef = (d as Serialization.Preprocessor.DefineCache).undef;
-					if(undef) {
+					if (undef) {
 						definesRelations.set(undef, instance);
 					}
-				} else if(instance instanceof Directives.Conditionals.Condition) {
+				} else if (instance instanceof Directives.Conditionals.Condition) {
 					const elseDir = (d as Serialization.Preprocessor.IfCache).else;
 					const endIf = (d as Serialization.Preprocessor.IfCache).endIf;
-					if(elseDir || endIf) {
+					if (elseDir || endIf) {
 						conditionRelations.set({
 							else: elseDir,
 							endIf: endIf
@@ -142,15 +142,15 @@ export class Preprocessor
 				}
 				return instance;
 			}).filter(i => !!i) as PreprocessorDirective[];
-			
-			for(const [undefId, define] of definesRelations) {
+
+			for (const [undefId, define] of definesRelations) {
 				define.undef = document.directives.find(d => d.id === undefId) as Directives.Defining.Undef;
 			}
-			for(const [relation, condition] of conditionRelations) {
-				if(relation.else) {
+			for (const [relation, condition] of conditionRelations) {
+				if (relation.else) {
 					condition.elseBlock = document.directives.find(d => d.id === relation.else) as Directives.Conditionals.Else | Directives.Conditionals.ElseIf;
 				}
-				if(relation.endIf) {
+				if (relation.endIf) {
 					condition.endIf = document.directives.find(d => d.id === relation.endIf) as Directives.Conditionals.Endif;
 				}
 			}
@@ -158,34 +158,34 @@ export class Preprocessor
 
 			return;
 		}
-		const {code, directives } = await this.findDirectives(document);
+		const { code, directives } = await this.findDirectives(document);
 		document.processedCode = code;
 		document.directives = directives;
 		document.cache.directives = directives.map(d => d.toJSON());
 	}
 
 	private async sortIncludes(document: AbstractOpenFile) {
-		if(document.cache.sortedIncludes) {
+		if (document.cache.sortedIncludes) {
 			return document.cache.sortedIncludes;
 		}
 		await this.buildDependencyGraph(document);
-	
+
 		const depManager = new DependencyManager();
 		return await depManager.topologicalSort(this.dependencyGraph, document.path);
 	}
 
 	private async processIncludes(document: AbstractOpenFile) {
-		for(const includePath of document.sortedIncludes ) {
-			if(includePath === document.path) {
+		for (const includePath of document.sortedIncludes) {
+			if (includePath === document.path) {
 				continue;
 			}
 			await this.fileManager.openFile(includePath);
 			const include = this.fileManager.getOpenedFile(includePath);
-			if(!include) {
+			if (!include) {
 				continue;
 			}
 			const inc = document.includes.find(i => i.absolutePath === includePath);
-			if(!inc) {
+			if (!inc) {
 			} else {
 				this.mergeDefines(inc, document.defines, include.defines);
 				document.globalScope.includedScopes.push(include.globalScope);
@@ -194,21 +194,21 @@ export class Preprocessor
 	}
 
 	private mergeDefines(include: Directives.Include, main: Map<string, Directives.Defining.Define[]>, added: Map<string, Directives.Defining.Define[]>) {
-		for(const [key, list] of added) {
+		for (const [key, list] of added) {
 			const last = list[list.length - 1];
 			const defines = main.get(key) ?? [];
-			if(!main.has(key)) {
+			if (!main.has(key)) {
 				main.set(key, defines);
 				const lastDefine = defines[defines.length - 1];
-				if(lastDefine) {
-					if(lastDefine.curEndIndex < include.curEndIndex) {
-						
+				if (lastDefine) {
+					if (lastDefine.curEndIndex < include.curEndIndex) {
+
 					}
 				}
 			}
 			defines.push(last)
 			last.includeToFile(this.currentDocument!.path, include.curEndIndex);
-			
+
 		}
 	}
 
@@ -223,30 +223,30 @@ export class Preprocessor
 	 * @param openedFile Файл, для которого нужно построить граф зависимостей
 	 */
 	private async buildDependencyGraph(openedFile: AbstractOpenFile): Promise<void> {
-		if(!this.fileManager.currentPath) {
+		if (!this.fileManager.currentPath) {
 			return;
 		}
 		const path = openedFile.path; // Получаем URI файла
 
 		const dependencies: Set<string> = new Set();
 		const includes = openedFile.includes; // Получаем инклуды
-	
+
 		for (const includePath of includes) {
 			// Получаем URI инклуда
 			includePath.absolutePath = await this.plungeInclude(includePath, this.fileManager.currentPath);
-			if(!includePath.absolutePath) { // Если путь не найден, то пропускаем
-				if(!includePath.silent) {
+			if (!includePath.absolutePath) { // Если путь не найден, то пропускаем
+				if (!includePath.silent) {
 					openedFile.diagnostics.push(PawnErrors.report(PawnErrors.Code.CannotReadFromFile, includePath.pathRange, includePath.pathText));
 				}
 				continue;
-			} 
+			}
 			includePath.exist = true;
 			dependencies.add(includePath.absolutePath);
 		}
 
 		this.dependencyGraph.set(path, dependencies);
 
-    }
+	}
 
 	/**
 	 * Погружение в инклуд для получения его URI.
@@ -256,17 +256,17 @@ export class Preprocessor
 	 */
 	private async plungeInclude(include: Directives.Include, currentPath: string): Promise<string | undefined> {
 		const path = include.pathText;
-		
-		if(include.type === Directives.IncludeType.default) {
+
+		if (include.type === Directives.IncludeType.default) {
 			let result = await this.plungeFile(path);
-			if(!result) {
+			if (!result) {
 				result = await this.plungeFile(join(currentPath, path));
 			}
 			return result ? this.fileManager.getAbsolutePath(result) : result;
-		} 
-		for(const incpath of this.fileManager.includePaths) {
+		}
+		for (const incpath of this.fileManager.includePaths) {
 			const res = await this.plungeFile(join(incpath, path));
-			if(res) {
+			if (res) {
 				return res;
 			}
 		}
@@ -276,7 +276,7 @@ export class Preprocessor
 	private async plungeFile(path: string) {
 		const extenisions = ["", ".inc", ".p", ".pawn"];
 		for (const ext of extenisions) {
-			if(await this.fileManager.isFileExist(path + ext)) {
+			if (await this.fileManager.isFileExist(path + ext)) {
 				return path + ext;
 			}
 		}
@@ -284,11 +284,11 @@ export class Preprocessor
 	}
 
 	private async processFileDirectives(document: AbstractOpenFile) {
-		if(document.cache.includes) {
+		if (document.cache.includes) {
 			// document.processedCode = document.cache.processCode;
 			document.includes = document.cache.includes.map(include => document.directives.find(d => d instanceof Directives.Include && d.id === include) as Directives.Include).filter(i => !!i) as Directives.Include[];
 			document.defines = new Map();
-			for(const key of Object.keys(document.cache.defines ?? {})) {
+			for (const key of Object.keys(document.cache.defines ?? {})) {
 				const value = document.cache.defines![key];
 				document.defines!.set(key, value.map(v => document.directives.find(d => d instanceof Directives.Defining.Define && d.id === v) as Directives.Defining.Define).filter(i => !!i) as Directives.Defining.Define[]);
 			}
@@ -298,37 +298,36 @@ export class Preprocessor
 
 		const defines: Map<string, Directives.Defining.Define[]> = new Map();
 		const includes: Directives.Include[] = [];
-	
+
 		const ifStack: ConditionStack = [];
 		let skipedIf = 0;
-		for(let element of document.directives) {
+		for (let element of document.directives) {
 
 			let cur;
-			if(ifStack.length !== 0) {
+			if (ifStack.length !== 0) {
 				cur = ifStack[ifStack.length - 1];
 			}
 
-			if(element instanceof Directives.Defining.Define) {
-				if(cur && cur.skip) {
+			if (element instanceof Directives.Defining.Define) {
+				if (cur && cur.skip) {
 					continue;
 				}
 				this.handleDefine(element, defines);
 			}
-			else if(element instanceof Directives.Include) {
-				if(cur && cur.skip) {
+			else if (element instanceof Directives.Include) {
+				if (cur && cur.skip) {
 					continue;
 				}
 				this.handleInclude(element, includes);
 			}
-			else if(element instanceof Directives.Defining.Undef)
-			{
-				if(cur && cur.skip) {
+			else if (element instanceof Directives.Defining.Undef) {
+				if (cur && cur.skip) {
 					continue;
 				}
 				this.handleUndef(element, defines);
 			}
-			else if(element instanceof Directives.Endinput) {
-				if(cur && cur.skip) {
+			else if (element instanceof Directives.Endinput) {
+				if (cur && cur.skip) {
 					continue;
 				}
 				code = code.substring(0, element.curEndIndex);
@@ -342,20 +341,20 @@ export class Preprocessor
 					severity: DiagnosticSeverity.Hint,
 					source: "pawn-lsp",
 					tags: [DiagnosticTag.Unnecessary]
-				});				
+				});
 			}
-			else if(element instanceof Directives.Error) {
-				if(cur && cur.skip) {
+			else if (element instanceof Directives.Error) {
+				if (cur && cur.skip) {
 					continue;
 				}
 				document.diagnostics.push(PawnErrors.report(
-					element.type === Directives.Error.Type.Error ? PawnErrors.Code.UserError : PawnErrors.Code.UserWarning, 
-					element.range, 
+					element.type === Directives.Error.Type.Error ? PawnErrors.Code.UserError : PawnErrors.Code.UserWarning,
+					element.range,
 					element.message
 				));
 			}
-			else if(element instanceof Directives.FileLineChange) {
-				if(cur && cur.skip) {
+			else if (element instanceof Directives.FileLineChange) {
+				if (cur && cur.skip) {
 					continue;
 				}
 				document.diagnostics.push({
@@ -363,37 +362,37 @@ export class Preprocessor
 					range: element.range,
 					severity: DiagnosticSeverity.Hint,
 					source: "pawn-lsp"
-				});		
+				});
 			}
-			else if(element instanceof Directives.Conditionals.ElseIf) {
-				if(cur && cur.directive.conditionResult) {
+			else if (element instanceof Directives.Conditionals.ElseIf) {
+				if (cur && cur.directive.conditionResult) {
 					cur.skip = true;
 					continue;
 				}
 				this.handleElseIf(element, ifStack, defines);
 			}
-			else if(element instanceof Directives.Conditionals.Condition) {
-				if(cur && cur.skip) {
+			else if (element instanceof Directives.Conditionals.Condition) {
+				if (cur && cur.skip) {
 					skipedIf++;
 					continue;
 				}
-				this.handleCondition(element, ifStack, defines);					
+				this.handleCondition(element, ifStack, defines);
 			}
-			else if(element instanceof Directives.Conditionals.Endif) {
-				if(skipedIf) {
+			else if (element instanceof Directives.Conditionals.Endif) {
+				if (skipedIf) {
 					skipedIf--;
 					continue;
 				}
-				code = this.handleEndIf(code, element, ifStack);	
+				code = this.handleEndIf(code, element, ifStack);
 			}
-			else if(element instanceof Directives.Conditionals.Else) {
-				if(cur && cur.directive.conditionResult) {
+			else if (element instanceof Directives.Conditionals.Else) {
+				if (cur && cur.directive.conditionResult) {
 					cur.skip = true;
 					continue;
 				}
 				code = this.handleElse(code, element, ifStack);
 			}
-			
+
 		}
 
 
@@ -402,48 +401,44 @@ export class Preprocessor
 		document.defines = defines;
 
 		document.cache.includes = includes.map(include => include.id);
-		document.cache.defines = {};	
+		document.cache.defines = {};
 		document.defines.forEach((value, key) => {
 			document.cache.defines![key] = value.map(v => v.id);
 		});
 	}
 
-	private handleUndef(directive: Directives.Defining.Undef, defines:  Map<string, Directives.Defining.Define[]>)
-	{
+	private handleUndef(directive: Directives.Defining.Undef, defines: Map<string, Directives.Defining.Define[]>) {
 		const define = defines.get(directive.define);
-		if(define) {
+		if (define) {
 			const lastDef = define[define.length - 1];
 			// lastDef.undef = directive;
 			const pos = lastDef.getFilePos(this.currentDocument!.path);
-			if(pos) {
+			if (pos) {
 				pos.until = directive.endIndex;
 			}
 		} else {
 			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, directive.defineRange, directive.define));
 		}
 	}
-	private handleDefine(directive: Directives.Defining.Define, defines:  Map<string, Directives.Defining.Define[]>)
-	{
+	private handleDefine(directive: Directives.Defining.Define, defines: Map<string, Directives.Defining.Define[]>) {
 		if (!defines.has(directive.pattern)) {
-            defines.set(directive.pattern, []);
-        }
-        defines.get(directive.pattern)!.push(directive);	
+			defines.set(directive.pattern, []);
+		}
+		defines.get(directive.pattern)!.push(directive);
 	}
-	private handleInclude(directive: Directives.Include, includes: Directives.Include[])
-	{
+	private handleInclude(directive: Directives.Include, includes: Directives.Include[]) {
 		includes.push(directive);
 	}
-	private isDefined(pattern: string, pos: number, defines: Map<string, Directives.Defining.Define[]>)
-	{
+	private isDefined(pattern: string, pos: number, defines: Map<string, Directives.Defining.Define[]>) {
 		const defineInfo = defines.get(pattern);
 		if (!defineInfo) {
 			return false; // Макрос не определен ни разу
 		}
 
 		for (const define of defineInfo) {
-			if(define.endIndex <= pos) {
-				if(define.undef) {
-					if(define.undef.startIndex >= pos) {
+			if (define.endIndex <= pos) {
+				if (define.undef) {
+					if (define.undef.startIndex >= pos) {
 						return true;
 					}
 				}
@@ -455,11 +450,11 @@ export class Preprocessor
 		return false;
 	}
 
-	private calcSkipIfRange(currentIf: Directives.Conditionals.Condition) : { start: number; end: number; startPos: Position; endPos: Position; } | undefined {
+	private calcSkipIfRange(currentIf: Directives.Conditionals.Condition): { start: number; end: number; startPos: Position; endPos: Position; } | undefined {
 		const directive = currentIf.endIf!;
-		if(currentIf.conditionResult) {
-			if(currentIf.elseBlock) {
-				if(currentIf.elseBlock instanceof Directives.Conditionals.Condition) {
+		if (currentIf.conditionResult) {
+			if (currentIf.elseBlock) {
+				if (currentIf.elseBlock instanceof Directives.Conditionals.Condition) {
 					return this.calcSkipIfRange(currentIf.elseBlock);
 				}
 				return {
@@ -480,32 +475,31 @@ export class Preprocessor
 		}
 	}
 
-	private handleEndIf(code: string, directive: Directives.Conditionals.Endif, ifStack: ConditionStack): string
-	{
+	private handleEndIf(code: string, directive: Directives.Conditionals.Endif, ifStack: ConditionStack): string {
 		if (ifStack.length === 0) {
 			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, directive.range));
 			return code;
 			throw new Error("Unexpected #endif");
 		}
 		let ifBlock = ifStack[ifStack.length - 1];
-		while(ifBlock.directive instanceof Directives.Conditionals.ElseIf) {
+		while (ifBlock.directive instanceof Directives.Conditionals.ElseIf) {
 			ifStack.pop();
-			if(ifStack.length !== 0) {
+			if (ifStack.length !== 0) {
 				ifBlock = ifStack[ifStack.length - 1];
 			}
 		}
-		if(ifStack.length !== 0) {
+		if (ifStack.length !== 0) {
 			const currentIf = ifStack.pop()!;
 			currentIf.directive.endIf = directive;
-			const {start, startPos, end, endPos } = this.calcSkipIfRange(currentIf.directive) ?? {};
-			if(start && end && startPos && endPos) {
-				
-				code = 
-					code.substring(0, start) + 
-					code.substring(start, end).replace(/[^\s]/g, " ") + 
+			const { start, startPos, end, endPos } = this.calcSkipIfRange(currentIf.directive) ?? {};
+			if (start && end && startPos && endPos) {
+
+				code =
+					code.substring(0, start) +
+					code.substring(start, end).replace(/[^\s]/g, " ") +
 					code.substring(end)
-				;
-				if(currentIf.directive.range && directive.range) {
+					;
+				if (currentIf.directive.range && directive.range) {
 					const range = new Range(
 						startPos,
 						endPos
@@ -516,7 +510,7 @@ export class Preprocessor
 						severity: DiagnosticSeverity.Hint,
 						source: "pawn-lsp",
 						tags: [DiagnosticTag.Unnecessary]
-					});				
+					});
 				}
 			}
 		}
@@ -524,8 +518,8 @@ export class Preprocessor
 	}
 
 	private recursivElse(curIf: Directives.Conditionals.Condition, directive: Directives.Conditionals.Else) {
-		if(curIf.elseBlock) {
-			if(!(curIf.elseBlock instanceof Directives.Conditionals.Condition)) {
+		if (curIf.elseBlock) {
+			if (!(curIf.elseBlock instanceof Directives.Conditionals.Condition)) {
 				this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, directive.range));
 			}
 			else this.recursivElse(curIf.elseBlock, directive);
@@ -534,40 +528,37 @@ export class Preprocessor
 			curIf.elseBlock = directive;
 		}
 	}
-	private handleElse(code: string, directive: Directives.Conditionals.Else, ifStack: ConditionStack): string
-	{
+	private handleElse(code: string, directive: Directives.Conditionals.Else, ifStack: ConditionStack): string {
 		if (ifStack.length === 0) {
 			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, directive.range));
 			return code;
 			throw new Error("Unexpected #else");
 		}
 		const currentIf = ifStack[ifStack.length - 1];
-	
+
 		this.recursivElse(currentIf.directive, directive);
 
 		currentIf.skip = currentIf.directive.conditionResult;
 
 		return code;
 	}
-	private handleElseIf(directive: Directives.Conditionals.ElseIf, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>): void
-	{
+	private handleElseIf(directive: Directives.Conditionals.ElseIf, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>): void {
 		if (ifStack.length === 0) {
 			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, directive.range));
 			return;
 		}
-	
+
 		const currentIf = ifStack[ifStack.length - 1];
-	
+
 		this.recursivElse(currentIf.directive, directive);
 
 		const conditionResult = this.evaluateCondition(directive.conditionalString, directive.startIndex, defines);
 		directive.conditionResult = conditionResult;
 		currentIf.skip = !conditionResult; // Если условие истинно, то пропускаем остаток блока if
-		
-		ifStack.push({directive: directive, skip: !directive.conditionResult});
+
+		ifStack.push({ directive: directive, skip: !directive.conditionResult });
 	}
-	private handleCondition(directive: Condition, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>)
-	{
+	private handleCondition(directive: Condition, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>) {
 		const conditionResult = this.evaluateCondition(directive.conditionalString, directive.startIndex, defines);
 		ifStack.push({ directive: directive, skip: !conditionResult }); // Важно: сохраняем состояние пропуска
 		directive.conditionResult = conditionResult;
@@ -593,38 +584,38 @@ export class Preprocessor
 		while ((match = reg.exec(code)) !== null) {
 			let [fullMatch, leadingWhitespace, leadingWhitespaceAfterSharp, directive, whiteSpacesBeforeRest, rest] = match;
 			// Координата начала директивы (#)
-  			const directiveIndex = match.index + leadingWhitespace.length;
+			const directiveIndex = match.index + leadingWhitespace.length;
 			let endIndex = match.index + fullMatch.length;
 			const restIndex = (whiteSpacesBeforeRest === undefined ? 0 : whiteSpacesBeforeRest.length) + rest ? match.index + fullMatch.indexOf(rest) : endIndex;
 
 			let testShift = 0;
-			if(rest) {
+			if (rest) {
 				testShift += rest.length;
 			}
 
 			let test = fullMatch.substring(leadingWhitespace.length, fullMatch.length - testShift);
 
 			let multyLine = 0;
-			if(directive === "define") {
+			if (directive === "define") {
 				let res = this.findFullMultyLineDerictive(rest + code.substring(match.index + fullMatch.length));
 				multyLine = res.rest.match(/\n/g)?.length ?? 0;
 				rest = res.rest;
-				
+
 				endIndex = restIndex + res.fullLength;
 			}
 
 			const directiveInstance = this.createDirective(directive, rest?.replaceAll(/\\[\n\r]/g, "  "), directiveIndex, restIndex, endIndex);
-			if(directiveInstance) {
+			if (directiveInstance) {
 				directives.push(directiveInstance);
-				if(directiveInstance instanceof Directives.Defining.Define) {
+				if (directiveInstance instanceof Directives.Defining.Define) {
 					directiveInstance.includeToFile(this.currentDocument!.path, directiveIndex);
 				}
 			}
-			if(whiteSpacesBeforeRest) {
+			if (whiteSpacesBeforeRest) {
 				multyLine += whiteSpacesBeforeRest.match(/\n/g)?.length ?? 0;
 			}
 			let res = ' '.repeat(endIndex - directiveIndex - (multyLine ? multyLine + 1 : 0)) + '\n'.repeat(multyLine);
-			if(rest) {
+			if (rest) {
 				test += rest;
 			}
 			res = `/*${test.substring(2, test.length - 2)}*/`;
@@ -634,13 +625,13 @@ export class Preprocessor
 				end: endIndex,
 				replacement: res,
 			});
-		}		
-		
+		}
+
 
 		let codeWithoutDirectives = code;
 		changes.sort((a, b) => b.start - a.start);
 		for (const change of changes) {
-			codeWithoutDirectives = codeWithoutDirectives.substring(0, change.start) + change.replacement + codeWithoutDirectives.substring(change.end	);
+			codeWithoutDirectives = codeWithoutDirectives.substring(0, change.start) + change.replacement + codeWithoutDirectives.substring(change.end);
 		}
 
 		return {
@@ -669,13 +660,13 @@ export class Preprocessor
 			};
 		}
 
-		
-				
+
+
 
 		return {
 			text: "",
 			replacement: "",
-			range: new Range(0,0,0,0)
+			range: new Range(0, 0, 0, 0)
 		};
 	}
 
@@ -687,13 +678,13 @@ export class Preprocessor
 		let path = "";
 
 		if (match) {
-			if(match[1] == "<") {
+			if (match[1] == "<") {
 				type = Directives.IncludeType.system;
 			}
-			if(match[1])
+			if (match[1])
 				delLength = 1;
 			path = match[2] ? match[2] : match[3];
-		} 
+		}
 
 		const end = restIndex + rest.length - delLength;
 		const file = this.currentDocument!;
@@ -701,7 +692,7 @@ export class Preprocessor
 			file.positionAt(end - path.length),
 			file.positionAt(end)
 		);
-		
+
 		return {
 			type,
 			path,
@@ -717,7 +708,7 @@ export class Preprocessor
 
 		if (match) {
 			define = match[0];
-		} 
+		}
 
 		const end = restIndex + define.length;
 		const defineRange = new Range(
@@ -737,12 +728,12 @@ export class Preprocessor
 			file.positionAt(endIndex)
 		);
 		const directiveText = directive.toLowerCase();
-		
-		switch (directiveText) {				
+
+		switch (directiveText) {
 			case "define": {
 				return new Directives.Defining.Define(directiveRange, this.matchDefinePattern(rest, restIndex), startIndex, endIndex);
 			}
-			case "undef": { 
+			case "undef": {
 				return new Directives.Defining.Undef(directiveRange, this.prepareUndefInfo(rest, restIndex), startIndex, endIndex);
 			}
 			case "tryinclude":
@@ -758,20 +749,20 @@ export class Preprocessor
 			case "if":
 				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, endIndex);
 			case "endif": {
-				return new Directives.Conditionals.Endif(directiveRange, startIndex,endIndex);
+				return new Directives.Conditionals.Endif(directiveRange, startIndex, endIndex);
 			}
 			case "elseif": {
 				return new Directives.Conditionals.ElseIf(directiveRange, rest, startIndex, endIndex);
 			}
 			case "else": {
-				return new Directives.Conditionals.Else(directiveRange, startIndex,endIndex);
+				return new Directives.Conditionals.Else(directiveRange, startIndex, endIndex);
 			}
-				
+
 			case "enscript":
 			case "endinput":
 				return new Directives.Endinput(directiveRange, startIndex, endIndex);
 			case "emit":
-			case "assert":{
+			case "assert": {
 				this.currentDocument?.diagnostics.push({
 					message: Locale.t("This directive is not yet supported by the extension."),
 					range: directiveRange,
@@ -783,21 +774,21 @@ export class Preprocessor
 			case "line":
 			case "file": {
 				return new Directives.FileLineChange(
-					directiveRange, 
-					directiveText === "file" 
+					directiveRange,
+					directiveText === "file"
 						? Locale.t("Changes the name of the compiling file")
-						: Locale.t("Changes the number of the compiling line"), 
-					startIndex, 
+						: Locale.t("Changes the number of the compiling line"),
+					startIndex,
 					endIndex
 				);
 			}
 			case "warning":
 			case "error": {
 				return new Directives.Error(
-					directiveRange, 
-					rest, 
-					directiveText === "error" ? Directives.Error.Type.Error : Directives.Error.Type.Wawrning , 
-					startIndex, 
+					directiveRange,
+					rest,
+					directiveText === "error" ? Directives.Error.Type.Error : Directives.Error.Type.Wawrning,
+					startIndex,
 					endIndex
 				);
 			}
@@ -853,7 +844,7 @@ export class Preprocessor
 		let ignore: boolean = dbase ? false : true;
 
 		// Process fractional part
-		for(;ptr < inputString.length && (Preprocessor.isDigit(inputString[ptr]) || inputString[ptr] === '_'); ptr++) {
+		for (; ptr < inputString.length && (Preprocessor.isDigit(inputString[ptr]) || inputString[ptr] === '_'); ptr++) {
 			if (inputString[ptr] === '_') {
 				continue;
 			}
@@ -867,15 +858,15 @@ export class Preprocessor
 			}
 		}
 
-		
+
 
 		// Combine integer and fractional parts
 		fnum += ffrac * fmult;
 
-		if(rationaPrecision === undefined) {
+		if (rationaPrecision === undefined) {
 			// this.currentDocument?.diagnostics.push(PawnErrors.report(70))
 			return undefined;
-		} else if(!rationaPrecision) {
+		} else if (!rationaPrecision) {
 			// симуляция потери данных
 			const value: number = fnum;
 			const buffer = new ArrayBuffer(4);
@@ -902,34 +893,34 @@ export class Preprocessor
 
 	private isCommentStarting(stream: LikeCCharStream): boolean {
 		let c = stream.char;
-		if(c !== '/') {
+		if (c !== '/') {
 			return false;
 		}
 		c = stream.getShiftChar(1)
 		return c === "/" || c === "*";
 	}
 	private skipCommit(stream: LikeCCharStream) {
-		if(!this.isCommentStarting(stream)) {
+		if (!this.isCommentStarting(stream)) {
 			return;
 		}
 		stream.curIndex++;
 		const isMultyLine = stream.char === '*' ? true : false;
 		stream.curIndex++;
-		while(!this.isFileEnd(stream.char)) {
-			if(isMultyLine) {
-				while(stream.char !== '*') {
+		while (!this.isFileEnd(stream.char)) {
+			if (isMultyLine) {
+				while (stream.char !== '*') {
 					stream.curIndex++;
 				}
 				let ch = stream.getShiftChar(1);
-				if(ch === '/') {
+				if (ch === '/') {
 					stream.curIndex++;
 					return;
-				} 
+				}
 				stream.curIndex++;
 			} else {
-				while(stream.char !== '\r' && stream.char !== '\n') {
+				while (stream.char !== '\r' && stream.char !== '\n') {
 					stream.curIndex++;
-					if(this.isFileEnd(stream.char)) {
+					if (this.isFileEnd(stream.char)) {
 						return;
 					}
 				}
@@ -939,14 +930,13 @@ export class Preprocessor
 		}
 	}
 
-	private isStringStrating(stream: LikeCCharStream): boolean
-	{
+	private isStringStrating(stream: LikeCCharStream): boolean {
 		const startIndex = stream.curIndex;
 		let c = stream.char;
 		if (c === '\"' || c === '\'') {
 			return true;                        /* "..." */
 		}
-		
+
 		if (c === '!') {
 			stream.curIndex++;
 			if (stream.char === '\"' || stream.char === '\'') {
@@ -972,13 +962,12 @@ export class Preprocessor
 		// 		}
 		// 	}
 		// }
-		
+
 		stream.curIndex = startIndex;
 		return false;
 	}
-	private getString(stream: LikeCCharStream)
-	{
-		let 
+	private getString(stream: LikeCCharStream) {
+		let
 			flags: number = 0,
 			result = "";
 		;
@@ -991,7 +980,7 @@ export class Preprocessor
 			stream.curIndex++;
 		}
 
-		let endquote : string = stream.char;
+		let endquote: string = stream.char;
 
 		// Пропускаем открывающую ковычку
 		result += stream.char;
@@ -1005,17 +994,16 @@ export class Preprocessor
 		return result;
 	}
 
-	private litchar(lptr: LikeCCharStream, flags: number): {charCode: number, str: string}
-	{
+	private litchar(lptr: LikeCCharStream, flags: number): { charCode: number, str: string } {
 		let c = 0;
 		let str = "";
 		let cptr: LikeCCharStream = new LikeCCharStream(lptr.source);
 		cptr.curIndex = lptr.curIndex;
 
 		if ((flags & 1) !== 0 || cptr.char !== '\\') {  /* no escape character */
-				c = cptr.char.charCodeAt(0);
-				str += cptr.char;
-				cptr.curIndex += 1;
+			c = cptr.char.charCodeAt(0);
+			str += cptr.char;
+			cptr.curIndex += 1;
 		}
 		else {
 			cptr.curIndex += 1;
@@ -1026,167 +1014,165 @@ export class Preprocessor
 			}
 			else {
 				switch (cptr.getChar()) {
-				case 'a':         /* \a == audible alarm */
-					c = 7;
-					str += cptr.char;
-					cptr.curIndex += 1;
-					break;
-				case 'b':         /* \b == backspace */
-					c = 8;
-					str += cptr.char;
-					cptr.curIndex += 1;
-					break;
-				case 'e':         /* \e == escape */
-					c = 27;
-					str += cptr.char;
-					cptr.curIndex += 1;
-					break;
-				case 'f':         /* \f == form feed */
-					c = 12;
-					str += cptr.char;
-					cptr.curIndex += 1;
-					break;
-				case 'n':         /* \n == NewLine character */
-					c = 10;
-					str += cptr.char;
-					cptr.curIndex += 1;
-					break;
-				case 'r':         /* \r == carriage return */
-					c = 13;
-					str += cptr.char;
-					cptr.curIndex += 1;
-					break;
-				case 't':         /* \t == horizontal TAB */
-					c = 9;
-					str += cptr.char;
-					cptr.curIndex += 1;
-					break;
-				case 'v':         /* \v == vertical TAB */
-					c = 11;
-					str += cptr.char;
-					cptr.curIndex += 1;
-					break;
-				case 'x':
-					cptr.curIndex += 1;
-					c = 0;
-					while (this.ishex(cptr.getChar())) {
-						if (Preprocessor.isDigit(cptr.getChar())) {
-							c = (c << 4) + (cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0));
-						}
-						else {
-							c = (c << 4) + (cptr.getChar().toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0) + 10);
-						}
-						str += cptr.char;
-						cptr.curIndex++;
-					}
-					if (cptr.getChar() === ';') {
-						str += cptr.char;
-						cptr.curIndex++;       /* swallow a trailing ';' */
-					}
-					break;
-				case '\'':        /* \' == ' (single quote) */
-				case '"':         /* \" == " (single quote) */
-				case '%':         /* \% == % (percent) */
-					c = cptr.getChar().charCodeAt(0);
-					str += cptr.char;
-					cptr.curIndex += 1;
-					break;
-				case '#':
-				case ',':
-				case ';':
-				case ')':
-				case '}':
-					if (flags & 4) {
-						c = cptr.getChar().charCodeAt(0);
+					case 'a':         /* \a == audible alarm */
+						c = 7;
 						str += cptr.char;
 						cptr.curIndex += 1;
-					}
-					else {
-						throw new Error("27"); /* invalid character constant - only valid in stringize */
-					}
-					break;
-				case '\r':
-					c = 13;
-					str += cptr.char;
-					break;
-				case '\n':
-					c = 10;
-					str += cptr.char;
-					break;
-				default:
-					if (Preprocessor.isDigit(cptr.getChar())) {   /* \ddd */
+						break;
+					case 'b':         /* \b == backspace */
+						c = 8;
+						str += cptr.char;
+						cptr.curIndex += 1;
+						break;
+					case 'e':         /* \e == escape */
+						c = 27;
+						str += cptr.char;
+						cptr.curIndex += 1;
+						break;
+					case 'f':         /* \f == form feed */
+						c = 12;
+						str += cptr.char;
+						cptr.curIndex += 1;
+						break;
+					case 'n':         /* \n == NewLine character */
+						c = 10;
+						str += cptr.char;
+						cptr.curIndex += 1;
+						break;
+					case 'r':         /* \r == carriage return */
+						c = 13;
+						str += cptr.char;
+						cptr.curIndex += 1;
+						break;
+					case 't':         /* \t == horizontal TAB */
+						c = 9;
+						str += cptr.char;
+						cptr.curIndex += 1;
+						break;
+					case 'v':         /* \v == vertical TAB */
+						c = 11;
+						str += cptr.char;
+						cptr.curIndex += 1;
+						break;
+					case 'x':
+						cptr.curIndex += 1;
 						c = 0;
-						while (cptr.getChar() >= '0' && cptr.getChar() <= '9') {  /* decimal! */
-							c = c * 10 + cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0);
+						while (this.ishex(cptr.getChar())) {
+							if (Preprocessor.isDigit(cptr.getChar())) {
+								c = (c << 4) + (cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0));
+							}
+							else {
+								c = (c << 4) + (cptr.getChar().toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0) + 10);
+							}
 							str += cptr.char;
 							cptr.curIndex++;
 						}
 						if (cptr.getChar() === ';') {
 							str += cptr.char;
-							cptr.curIndex++; /* swallow a trailing ';' */
+							cptr.curIndex++;       /* swallow a trailing ';' */
 						}
-					}
-					else {
-						throw new Error("27");    /* invalid character constant */
-					}
+						break;
+					case '\'':        /* \' == ' (single quote) */
+					case '"':         /* \" == " (single quote) */
+					case '%':         /* \% == % (percent) */
+						c = cptr.getChar().charCodeAt(0);
+						str += cptr.char;
+						cptr.curIndex += 1;
+						break;
+					case '#':
+					case ',':
+					case ';':
+					case ')':
+					case '}':
+						if (flags & 4) {
+							c = cptr.getChar().charCodeAt(0);
+							str += cptr.char;
+							cptr.curIndex += 1;
+						}
+						else {
+							throw new Error("27"); /* invalid character constant - only valid in stringize */
+						}
+						break;
+					case '\r':
+						c = 13;
+						str += cptr.char;
+						break;
+					case '\n':
+						c = 10;
+						str += cptr.char;
+						break;
+					default:
+						if (Preprocessor.isDigit(cptr.getChar())) {   /* \ddd */
+							c = 0;
+							while (cptr.getChar() >= '0' && cptr.getChar() <= '9') {  /* decimal! */
+								c = c * 10 + cptr.getChar().charCodeAt(0) - '0'.charCodeAt(0);
+								str += cptr.char;
+								cptr.curIndex++;
+							}
+							if (cptr.getChar() === ';') {
+								str += cptr.char;
+								cptr.curIndex++; /* swallow a trailing ';' */
+							}
+						}
+						else {
+							throw new Error("27");    /* invalid character constant */
+						}
 				}
 			}
 		}
 		lptr.curIndex = cptr.curIndex;
-		if(!(c >= 0)) {
+		if (!(c >= 0)) {
 			throw new Error("");
 		}
-		return {charCode: c, str};
+		return { charCode: c, str };
 	}
 
-	private ishex(c: string): boolean
-	{
+	private ishex(c: string): boolean {
 		return /[0-9a-fA-F]/.test(c);
 		// return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
 	}
-	private static isDigit(c: string): boolean
-	{
+	private static isDigit(c: string): boolean {
 		return /\d/.test(c);
 	}
 
-		
+
 	private findFullMultyLineDerictive(input: string) {
 		let stream = new LikeCCharStream(input);
-			
-		while(stream.char === ' ') {
+
+		while (stream.char === ' ') {
 			stream.curIndex++;
 		}
-		if(this.isFileEnd(stream.char)) {
-			return {rest: "", fullLength: 0};
+		if (this.isFileEnd(stream.char)) {
+			return { rest: "", fullLength: 0 };
 		}
 
 		let result = "";
 		let char;
-			
-		while(!this.isFileEnd(stream.getChar())) {
+
+		while (!this.isFileEnd(stream.getChar())) {
 			char = stream.getChar();
-			
+
 			// Если строка, то полностью ее включаем в паттерн
 			if (this.isStringStrating(stream)) {
 				result += this.getString(stream);
 				if (this.isFileEnd(stream.char)) {
-					break;        
+					break;
 				}
 			}
 			// Если начало комментария
-			if(char === '/') {
-				if(stream.getShiftChar(1) === '/' || stream.getShiftChar(1) === '*') {
+			if (char === '/') {
+				if (stream.getShiftChar(1) === '/' || stream.getShiftChar(1) === '*') {
 					break;
 				}
 			}
 			// если перенос строки
-			else if(char === "\n") {
-				if(stream.getShiftChar(-1) !== '\\' && stream.getShiftChar(-1) !== '\r') {
+			else if (char === "\n") {
+				if (stream.getShiftChar(-1) !== '\\' && stream.getShiftChar(-1) !== '\r') {
 					break;
 				}
 			}
-			else if(char === "\r") {
-				if(stream.getShiftChar(-1) !== '\\') {
+			else if (char === "\r") {
+				if (stream.getShiftChar(-1) !== '\\') {
 					break;
 				}
 			}
@@ -1194,11 +1180,10 @@ export class Preprocessor
 			stream.curIndex++;
 		}
 
-		return {rest: result, fullLength: stream.curIndex};
+		return { rest: result, fullLength: stream.curIndex };
 	}
 
-	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void)
-	{
+	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void) {
 		// for(let definesArray of defines.values()) {
 		// 	for(let findinglocalDefine of definesArray) {
 		// 		const start = findinglocalDefine.endIndex;
@@ -1246,41 +1231,38 @@ export class Preprocessor
 		return code;
 	}
 
-	private async newprocessDefine(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void)
-	{
+	private async newprocessDefine(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void) {
 		return await this.substringrReplacing(code, defines, symbolManager, onProgress);
 	}
 
-	private async processDefine(code: string, define: Directives.Defining.Define, symbolManager: SymbolManager)
-	{
+	private async processDefine(code: string, define: Directives.Defining.Define, symbolManager: SymbolManager) {
 		const fileStartPos = define.getFilePos(this.currentDocument!.path)?.from;
 		let lastindex = undefined;
-		if(define.undef) {
+		if (define.undef) {
 			lastindex = define.undef.curStartIndex;
 		}
 		const startPos = fileStartPos ?? define.curEndIndex;
 		let stoptPos: number;
-		if(lastindex && fileStartPos === undefined) {
+		if (lastindex && fileStartPos === undefined) {
 			stoptPos = lastindex;
 		}
 		else {
-			stoptPos =  code.length;
+			stoptPos = code.length;
 		}
-	
+
 		let preCode = code.substring(0, startPos);
 		let postCode = code.substring(stoptPos);
 
 		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, startPos, `Process ${define.prefix} in ${this.currentDocument?.path}`, symbolManager) + postCode;
-		
+
 	}
 
 	private codeMapper: CodeMapper = new CodeMapper();
 
-	private async substringrReplacing(str: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void): Promise<string>
-	{
+	private async substringrReplacing(str: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void): Promise<string> {
 		const changes: FindedDefine[] = [];
 		const res = this.globaltestPreprocess(str, defines, changes, onProgress);
-		
+
 		let startPos: number, originalStartPos: number;
 		const filePath = this.currentDocument!.path;
 		// if(changes.length > 0) {
@@ -1299,23 +1281,22 @@ export class Preprocessor
 			const startPosition = this.currentDocument?.positionAt(originalStartPos);
 			const endTokenPosition = this.currentDocument?.positionAt(originalStartPos + change.define.pattern.length);
 			const endPosition = this.currentDocument?.positionAt(originalStartPos + change.length);
-			if(startPosition && endPosition && endTokenPosition) {
+			if (startPosition && endPosition && endTokenPosition) {
 				change.define.symbol?.addReferance(new SymbolReferance(filePath, new Range(startPosition, endPosition), new Range(startPosition, endTokenPosition)));
 			}
 			// this.tokensManager.addToken(range, SemanticTokens.macro);
 			preShift -= change.shift;
 		});
-		
+
 		return res;
 	}
-	private async substringrReplacingOnChank(str: string, define: Directives.Defining.Define, preShift: number, title: string = "Processing replacements...", symbolManager: SymbolManager): Promise<string>
-	{
+	private async substringrReplacingOnChank(str: string, define: Directives.Defining.Define, preShift: number, title: string = "Processing replacements...", symbolManager: SymbolManager): Promise<string> {
 		const changes: FindedDefine[] = [];
 		const res = this.testPreprocess(str, define, changes);
-		
+
 		let startPos: number, originalStartPos: number;
 		const filePath = this.currentDocument!.path;
-		if(changes.length > 0) {
+		if (changes.length > 0) {
 			define.used = true;
 			symbolManager.addSymbolToFile(filePath, define.symbol!);
 		}
@@ -1330,13 +1311,13 @@ export class Preprocessor
 			const startPosition = this.currentDocument?.positionAt(originalStartPos);
 			const endTokenPosition = this.currentDocument?.positionAt(originalStartPos + define.pattern.length);
 			const endPosition = this.currentDocument?.positionAt(originalStartPos + change.length);
-			if(startPosition && endPosition && endTokenPosition) {
+			if (startPosition && endPosition && endTokenPosition) {
 				define.symbol?.addReferance(new SymbolReferance(filePath, new Range(startPosition, endPosition), new Range(startPosition, endTokenPosition)));
 			}
 			// this.tokensManager.addToken(range, SemanticTokens.macro);
 			preShift -= change.shift;
 		});
-		
+
 		return res;
 	}
 
@@ -1354,7 +1335,7 @@ export class Preprocessor
 				versions.sort((a, b) => a.curEndIndex - b.curEndIndex);
 			}
 			return this.substallpatterns(code, changes, onProgress);
-		} catch(e) {
+		} catch (e) {
 			console.error(e);
 		}
 		return "";
@@ -1363,37 +1344,39 @@ export class Preprocessor
 		try {
 			this.substindex.clear(); // очищаем индекс макросов
 			this.substindex.set(define.prefix[0], [define]); // добавляем в массив макрос с ключом равным первому символу макроса
-			
+
 			return this.substallpatterns(code, changes);
-		} catch(e) {
+		} catch (e) {
 			console.error(e);
 		}
 		return "";
 	}
 
 	private substallpatterns(line: string, changes: FindedDefine[], onProgress?: (percent: number) => void) {
-		let 
+		let
 			start: number,
 			end: number,
 			/**
 			 * Длина префикса макроса, который мы ищем в строке
 			 */
 			prefixlen: number,
-			subst: Directives.Defining.Define|null = null,
+			subst: Directives.Defining.Define | null = null,
 			shift = 0
-		;
-		
+			;
+
 		/**
 		 * Стрим для работы с входной строкой
 		 */
 		let stream = new LikeCCharStream(line);
-		let currentMappingRootOriginalPos = -1; 
+		let currentMappingRootOriginalPos = -1;
 		let currentMappingRootEndInCurrentSource = -1;
 		const totalSize = line.length;
-    	let lastReportedPercent = 0;
+		let lastReportedPercent = 0;
 
+		const startTime = Date.now();
+		Preprocessor.profilePatternReplacing = 0;
 		// Обход строки до ее конца
-		while(!this.isFileEnd(stream.char)) {
+		while (!this.isFileEnd(stream.char)) {
 			// Поиск начала префикса макроса
 			while (!this.isAlphabeticSymbol(stream.char) && !this.isFileEnd(stream.char)) {
 				// Пропуск строк
@@ -1416,13 +1399,13 @@ export class Preprocessor
 			if (onProgress) {
 				const originalPos = stream.curIndex - shift;
 				const currentPercent = Math.floor((originalPos / totalSize) * 100);
-				
+
 				if (currentPercent > lastReportedPercent) {
 					onProgress(currentPercent);
 					lastReportedPercent = currentPercent;
 				}
 			}
-			
+
 			/* if matching the operator "defined", skip it plus the symbol behind it */
 			if (stream.compare("defined") && stream.getShiftChar(7) <= ' ') {
 				stream.curIndex += 7; /* skip "defined" */
@@ -1441,15 +1424,15 @@ export class Preprocessor
 			prefixlen = 0;
 			while (this.alphanum(stream.getShiftChar(prefixlen))) {
 				prefixlen++;
-			} 
-			if(prefixlen <= 0) {
+			}
+			if (prefixlen <= 0) {
 				throw new Error("");
 			}
-			
+
 			subst = this.findSubstr(stream, prefixlen, shift);
 			if (subst !== null) {
 				const currentPos = stream.curIndex;
-				let replaceData: ReplaceInfo = { shift: 0};
+				let replaceData: ReplaceInfo = { shift: 0 };
 				const mappingInfo = { findedLength: 0, replacingLength: 0 };
 				/* properly match the pattern and substitute */
 				if (!this.substpattern(stream, subst, replaceData, mappingInfo)) {
@@ -1460,7 +1443,7 @@ export class Preprocessor
 
 					if (!isRecursive) {
 						// Это макрос прямо из исходного кода
-						const originalPos = currentPos - shift; 
+						const originalPos = currentPos - shift;
 						currentMappingRootOriginalPos = originalPos;
 						// Запоминаем, до какой поры в новой строке будет идти "рекурсивный" текст
 						currentMappingRootEndInCurrentSource = currentPos + mappingInfo.replacingLength;
@@ -1488,7 +1471,7 @@ export class Preprocessor
 					// changes.push(new FindedDefine(stream.curIndex + shift, prefixlen, mappingInfo.findedLength - mappingInfo.replacingLength, subst));
 					// shift += replaceData.shift;
 				}
-				
+
 				/* match succeeded: do not update "start", because the substitution text
 				* may be matched by other macros
 				*/
@@ -1498,20 +1481,21 @@ export class Preprocessor
 			}
 		}
 
+		const time = Date.now() - startTime;
+		console.log(time, Preprocessor.profilePatternReplacing, Preprocessor.profilePatternReplacing / time);
+
 		onProgress?.(100);
 		return stream.source;
 	}
 
-	private isAlphabeticSymbol(c: string): boolean
-	{
+	private isAlphabeticSymbol(c: string): boolean {
 		return /[a-zA-Z_@]/.test(c);
 	}
 
-	private skipstring(stream: LikeCCharStream)
-	{
-		let 
+	private skipstring(stream: LikeCCharStream) {
+		let
 			flags: number = 0
-		;
+			;
 
 		while (stream.char === '!' || stream.char === '\\') {
 			if (stream.char === '\\') {
@@ -1520,7 +1504,7 @@ export class Preprocessor
 			stream.curIndex++;
 		}
 
-		let endquote : string = stream.char;
+		let endquote: string = stream.char;
 
 		// Пропускаем открывающую ковычку
 		stream.curIndex++;
@@ -1530,15 +1514,13 @@ export class Preprocessor
 		}
 		return stream;
 	}
-	private alphanum(c: string): boolean
-	{	
+	private alphanum(c: string): boolean {
 		return (this.isAlphabeticSymbol(c) || Preprocessor.isDigit(c));
 	}
-	private findSubstr(stream: LikeCCharStream, len: number, shift: number)
-	{
+	private findSubstr(stream: LikeCCharStream, len: number, shift: number) {
 		const word = stream.source.substring(stream.curIndex, stream.curIndex + len);
 		const versions = this.substindex.get(word);
-		
+
 		if (!versions || versions.length === 0) return null;
 
 		// 1. Берем самую первую версию из списка
@@ -1555,7 +1537,7 @@ export class Preprocessor
 
 		// 3. Теперь проверяем, вошли ли мы в область видимости первого в очереди макроса
 		if (current) {
-			if(filePos && stream.curIndex + shift >= filePos.from && (!filePos.until || filePos.until > stream.curIndex)) {
+			if (filePos && stream.curIndex + shift >= filePos.from && (!filePos.until || filePos.until > stream.curIndex)) {
 				return current;
 			}
 		}
@@ -1564,10 +1546,9 @@ export class Preprocessor
 		// let item = this.substindex.get(stream.char);
 		// return item ? this.findStringpair(item, stream, len) : null;
 	}
-	private findStringpair(array: Directives.Defining.Define[], stream: LikeCCharStream, matchlength: number): Directives.Defining.Define|null
-	{
+	private findStringpair(array: Directives.Defining.Define[], stream: LikeCCharStream, matchlength: number): Directives.Defining.Define | null {
 		// stream.curIndex
-		for(let define of array) {
+		for (let define of array) {
 			if (matchlength !== define.prefixLen) {
 				continue;
 			}
@@ -1578,8 +1559,7 @@ export class Preprocessor
 		};
 		return null;
 	}
-	private substpattern(stream: LikeCCharStream, define: Directives.Defining.Define, replaceData: ReplaceInfo, mappingInfo: MappingInfo)
-	{
+	private substpattern(stream: LikeCCharStream, define: Directives.Defining.Define, replaceData: ReplaceInfo, mappingInfo: MappingInfo) {
 		let instring: number;
 
 		/* pattern prefix matches; match the rest of the pattern, gather
@@ -1599,38 +1579,40 @@ export class Preprocessor
 					continue;
 				}
 				arg = +pattern.getChar(); // получаем номер параметра
-				
-				if(!(arg >= 0 && arg <= 9)) { // если номер параметра не в диапазоне от 0 до 9
+
+				if (!(arg >= 0 && arg <= 9)) { // если номер параметра не в диапазоне от 0 до 9
 					throw new Error(""); // выбрасываем исключение
 				}
 				pattern.curIndex++;	// берём следующий символ после номера параметра
-				if(this.isFileEnd(pattern.getChar())) {
+				if (this.isFileEnd(pattern.getChar())) {
 					throw new Error("");	// файл закончился, а паттерн не закончился
 				}
 
-				let e = new LikeCCharStream(stream.source); // создаем копию основного стрима
-				e.curIndex = stream.curIndex + sourceShift; // сдвигаем его на позицию, где мы ищем параметр
-				while (e.char !== pattern.char && !this.isFileEnd(e.char) && e.char !== '\n') { // пока символ не совпал с паттерном и это не конец файла или строки
-					if (this.isStringStrating(e)) { // пропуск строки
-						e =this. skipstring(e);
-					}              
-					else if (/[\(\{\[]/.exec(e.char)) { // пропуск групп
-						
-						e = this.skippgroup(e);
+				const startIndex = stream.curIndex;
+				stream.curIndex += sourceShift; // сдвигаем его на позицию, где мы ищем параметр
+				while (stream.char !== pattern.char && !this.isFileEnd(stream.char) && stream.char !== '\n') { // пока символ не совпал с паттерном и это не конец файла или строки
+					if (this.isStringStrating(stream)) { // пропуск строки
+						stream = this.skipstring(stream);
 					}
-					if (!this.isFileEnd(e.char)) {
-						e.curIndex++;      /* skip non-alphapetic character (or closing quote of
+					else if (/[\(\{\[]/.exec(stream.char)) { // пропуск групп
+
+						stream = this.skippgroup(stream);
+					}
+					if (!this.isFileEnd(stream.char)) {
+						stream.curIndex++;      /* skip non-alphapetic character (or closing quote of
 											* a string, or the closing paranthese of a group) */
 					}
 				}
 				/* store the parameter (overrule any earlier) */
-				let len = e.curIndex - stream.curIndex; // длина найденного параметра
+				let len = stream.curIndex - startIndex; // длина найденного параметра
+				const shift = stream.curIndex - startIndex;
+				stream.curIndex = startIndex
 				args[arg] = stream.substr(len - sourceShift, sourceShift); // сохраняем параметр в массив
 				/* character behind the pattern was matched too */
-				if (e.char === pattern.char) { // если символ совпал с паттерном
+				if (stream.getShiftChar(shift) === pattern.char) { // если символ совпал с паттерном
 					sourceShift = len + 1;
 				}
-				else if (e.char === '\n' && pattern.getChar() === ';' && this.isFileEnd(pattern.getShiftChar(1)) && !Preprocessor.needSemicolon) {
+				else if (stream.getShiftChar(shift) === '\n' && pattern.getChar() === ';' && this.isFileEnd(pattern.getShiftChar(1)) && !Preprocessor.needSemicolon) {
 					sourceShift = len;    /* allow a trailing ; in the pattern match to end of line */
 				}
 				else {
@@ -1658,14 +1640,14 @@ export class Preprocessor
 						sourceShift++;                  /* skip white space */
 					}
 				}
-				const {charCode: ch} = this.litchar(pattern, 0);         /* this increments "p" */
+				const { charCode: ch } = this.litchar(pattern, 0);         /* this increments "p" */
 				if (stream.getShiftChar(sourceShift).charCodeAt(0) !== ch) {
 					match = 0;
 				}
 				else {
 					sourceShift++;                    /* this character matches */
 				}
-			} 
+			}
 		}
 		mappingInfo.findedLength = sourceShift;
 
@@ -1680,81 +1662,63 @@ export class Preprocessor
 		}
 
 		if (match) {
-			/* calculate the length of the substituted string */
-			instring = 0;
-			for (let e = new LikeCCharStream(define.replacement), len = 0; !this.isFileEnd(e.char); e.curIndex++) {
-				if (e.getChar() === '%' && Preprocessor.isDigit(e.getShiftChar(1)) && !instring) {
-					let argNum = +e.getShiftChar(1);
-					let arg = args[argNum];
-					len += arg ? arg.length : 2;
-					e.curIndex++;          /* skip %, digit is skipped later */
-				}
-				else {
-					if (e.getChar() === '"') {
-						instring = instring > 0 ? 0 : 1;
-					}
-					len++;
-				}
-			}
-			/* substitute pattern */
-			instring = 0;
-			stream.strdel(sourceShift);
-			const lengthBeforeReplace = sourceShift;
-			
-			sourceShift = 0;
-			for (let e = new LikeCCharStream(define.replacement); !this.isFileEnd(e.char); e.curIndex++) {
-				if (e.getChar() === '%' && Preprocessor.isDigit(e.getShiftChar(1)) && !instring) {
-					let argNum = +e.getShiftChar(1);
-					let arg = args.at(argNum);
-					if (arg !== undefined) {
+			// 1. Сборка строки замены без мутации основного файла
+			let replacementResult = "";
+			let instring = false;
 
-						stream.strIns(arg, sourceShift);
-						sourceShift += arg.length;
+			// Вместо нового стрима работаем со строкой напрямую
+			const replText = define.replacement;
+			for (let i = 0; i < replText.length; i++) {
+				const ch = replText[i];
+
+				if (ch === '%' && Preprocessor.isDigit(replText[i + 1]) && !instring) {
+					const argNum = parseInt(replText[i + 1]);
+					const argVal = args[argNum];
+
+					if (argVal !== undefined) {
+						replacementResult += argVal;
+					} else {
+						replacementResult += ch + replText[i + 1];
 					}
-					else {
-						throw new Error(`236 on ${stream.curIndex}`); /* parameter does not exist, incorrect #define pattern */
-						stream.strIns(e.substr(2), sourceShift);
-						sourceShift += 2;
-					} /* if */
-					e.curIndex++;          /* skip %, digit is skipped later */
-				}
-				else {
-					if (e.char === '"') {
-						instring = instring > 0 ? 0 : 1;
-					}
-					stream.strIns(e.substr(1), sourceShift);
-					sourceShift++;
+					i++; // Пропускаем цифру
+				} else {
+					if (ch === '"') instring = !instring;
+					replacementResult += ch;
 				}
 			}
-			replaceData.shift = lengthBeforeReplace - sourceShift;
-			mappingInfo.replacingLength = sourceShift;
+
+			const lengthToDelete = sourceShift; // Сколько оригинальных символов "съел" паттерн
+			const newContentLength = replacementResult.length;
+
+			// 2. ОДНА ОПЕРАЦИЯ на весь макрос
+			stream.replaceRange(stream.curIndex, lengthToDelete, replacementResult);
+
+			replaceData.shift = lengthToDelete - newContentLength;
+			mappingInfo.replacingLength = newContentLength;
 		}
-
-		
 
 		return match;
 	}
-	private skippgroup(stream: LikeCCharStream): LikeCCharStream
-	{
+	private skippgroup(stream: LikeCCharStream): LikeCCharStream {
 		let nest = 0;
 		let open = stream.char;
 		let close;
 
 		switch (open) {
-		case '(':
-			close = ')';
-			break;
-		case '{':
-			close = '}';
-			break;
-		case '[':
-			close = ']';
-			break;
-		case '<':
-			close = '>';
-			break;
-		default:
-			throw new Error();
+			case '(':
+				close = ')';
+				break;
+			case '{':
+				close = '}';
+				break;
+			case '[':
+				close = ']';
+				break;
+			case '<':
+				close = '>';
+				break;
+			default:
+				throw new Error();
 		}/* switch */
 
 		stream.curIndex++;
