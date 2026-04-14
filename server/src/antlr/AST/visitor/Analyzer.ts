@@ -793,7 +793,7 @@ export class Analyzer extends BaseVisitor
 		// else {
 		// 	this.functionsDeclarations.set(node.id, [el]);
 		// }
-			
+		this.restrictScope(false);
 	}
 	
 	beforeVisitDeclarations(declaration: Declarations): void {
@@ -946,7 +946,7 @@ export class Analyzer extends BaseVisitor
 	private restrictScope(checkUsed: boolean = true, skipConstatns: boolean = false) {
 		if(checkUsed) {
 			for(const symbol of this.curScope.getLocalSymbols()) {
-				if(skipConstatns && symbol instanceof Symbols.Variable && symbol.isConst) {
+				if(skipConstatns && (symbol instanceof Symbols.Variable || symbol instanceof Symbols.Enum || symbol instanceof Symbols.EnumMember) && symbol.isConst) {
 					continue;
 				}
 				if(!symbol.isUsed) {
@@ -1037,7 +1037,6 @@ export class Analyzer extends BaseVisitor
 			return true;
 		}
 
-		console.log(allowCoerce, this.isDefaultTag(formalTag), !this.isTagFixed(actualTag));
 		// Если необходимый тэг - дефолтный, а проверяемый не "fixed", то проверяемый приводиться к дефолтному
 		return allowCoerce && this.isDefaultTag(formalTag) && !this.isTagFixed(actualTag);
 	}
