@@ -1446,7 +1446,7 @@ export class Preprocessor
 				throw new Error("");
 			}
 			
-			subst = this.findSubstr(stream, prefixlen);
+			subst = this.findSubstr(stream, prefixlen, shift);
 			if (subst !== null) {
 				const currentPos = stream.curIndex;
 				let replaceData: ReplaceInfo = { shift: 0};
@@ -1534,7 +1534,7 @@ export class Preprocessor
 	{	
 		return (this.isAlphabeticSymbol(c) || Preprocessor.isDigit(c));
 	}
-	private findSubstr(stream: LikeCCharStream, len: number)
+	private findSubstr(stream: LikeCCharStream, len: number, shift: number)
 	{
 		const word = stream.source.substring(stream.curIndex, stream.curIndex + len);
 		const versions = this.substindex.get(word);
@@ -1546,15 +1546,16 @@ export class Preprocessor
 
 		// 2. Если текущий индекс СТРОГО БОЛЬШЕ конца области видимости макроса (#undef или конец файла)
 		// Значит, этот макрос БОЛЬШЕ НИКОГДА не будет валиден в этом проходе.
-		while (current && stream.curIndex >= (current.undef?.curStartIndex ?? Infinity)) {
+		let filePos = current.getFilePos(this.currentDocument!.path);
+		while (current && stream.curIndex + shift >= (filePos?.until ?? Infinity)) {
 			versions.shift(); // Удаляем «протухший» макрос из начала очереди (O(1) в современных движках для малых массивов)
 			current = versions[0];
+			filePos = current.getFilePos(this.currentDocument!.path);
 		}
 
 		// 3. Теперь проверяем, вошли ли мы в область видимости первого в очереди макроса
 		if (current) {
-			const filePos = current.getFilePos(this.currentDocument!.path);
-			if(filePos && stream.curIndex >= filePos.from && (!filePos.until || filePos.until > stream.curIndex)) {
+			if(filePos && stream.curIndex + shift >= filePos.from && (!filePos.until || filePos.until > stream.curIndex)) {
 				return current;
 			}
 		}
@@ -1711,7 +1712,7 @@ export class Preprocessor
 						sourceShift += arg.length;
 					}
 					else {
-						throw new Error("236"); /* parameter does not exist, incorrect #define pattern */
+						throw new Error(`236 on ${stream.curIndex}`); /* parameter does not exist, incorrect #define pattern */
 						stream.strIns(e.substr(2), sourceShift);
 						sourceShift += 2;
 					} /* if */
