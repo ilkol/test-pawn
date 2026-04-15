@@ -34,6 +34,7 @@ import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 import { TernarOperator } from "../Nodes/Operators/TernarOperator";
 import { ArrayInit } from "../Nodes/Literals/ArrayInit";
+import { HexLiteral } from "../Nodes/Literals/HexLiteral";
 
 export abstract class BaseVisitor implements IVisitor
 {
@@ -133,7 +134,7 @@ export abstract class BaseVisitor implements IVisitor
 		node.value?.accept(this);
 		this.afterVisitUnarOperator(node);
 	}
-	visitLiteral(node: IntLiteral | FloatLiteral): void {
+	visitLiteral(node: IntLiteral | FloatLiteral | HexLiteral): void {
 		this.beforeVisitLiteral(node);
 		this.afterVisitLiteral(node);
 	}
@@ -283,8 +284,8 @@ export abstract class BaseVisitor implements IVisitor
 	abstract beforeVisitTernarOperator(node: TernarOperator): void;
 	abstract afterVisitTernarOperator(node: TernarOperator): void;
 
-	abstract beforeVisitLiteral(node: IntLiteral | FloatLiteral): void;
-	abstract afterVisitLiteral(node: IntLiteral | FloatLiteral): void;
+	abstract beforeVisitLiteral(node: IntLiteral | FloatLiteral | HexLiteral): void;
+	abstract afterVisitLiteral(node: IntLiteral | FloatLiteral | HexLiteral): void;
 
 	abstract beforeVisitBoolLiteral(node: BoolLiteral): void;
 	abstract afterVisitBoolLiteral(node: BoolLiteral): void;

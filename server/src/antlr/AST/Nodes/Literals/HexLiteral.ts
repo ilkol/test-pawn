@@ -16,7 +16,7 @@ export class HexLiteral extends NumberLiteral<string>
 	}
 
 	public accept(visitor: IVisitor): void {
-		// visitor.visitIntLiteral(this);
+		visitor.visitLiteral(this);
 	}
 	
 	toJSON(): Serialization.Nodes.Literal<string> {

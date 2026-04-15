@@ -51,6 +51,7 @@ import { TernarOperator } from "../Nodes/Operators/TernarOperator";
 import { ArrayInit } from "../Nodes/Literals/ArrayInit";
 import { Ellipse } from "../Nodes/Operators/Ellipse";
 import { ArrayIndex } from "../Nodes/Operators/ArrayIndex";
+import { HexLiteral } from "../Nodes/Literals/HexLiteral";
 
 /** Состояние проверки аргумента функции при ее вызове */
 enum ArgumentState {
@@ -588,12 +589,12 @@ export class Analyzer extends BaseVisitor
 		}
 		node.inferredTag = this.tagInferer.inferTag(node);
 	}
-	beforeVisitLiteral(node: IntLiteral | FloatLiteral): void {
+	beforeVisitLiteral(node: IntLiteral | FloatLiteral | HexLiteral): void {
 	
 	}
-	afterVisitLiteral(node: IntLiteral | FloatLiteral): void {
+	afterVisitLiteral(node: IntLiteral | FloatLiteral | HexLiteral): void {
 		node.inferredTag = this.tagInferer.inferTag(node);
-		node.constExpr = node.value;
+		// node.constExpr = node.value;
 	}
 	beforeVisitBinarOperator(node: BinarOperator): void {
 		

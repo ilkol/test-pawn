@@ -29,6 +29,7 @@ import { FloatLiteral } from "../Nodes/Literals/FloatLiteral";
 import { OperatorOverload } from "../Nodes/Operators/OperatorOverload";
 import { TernarOperator } from "../Nodes/Operators/TernarOperator";
 import { ArrayInit } from "../Nodes/Literals/ArrayInit";
+import { HexLiteral } from "../Nodes/Literals/HexLiteral";
 
 export interface IVisitor
 {
@@ -50,7 +51,7 @@ export interface IVisitor
 	visitOperatorOverload(node: OperatorOverload): void;
 	visitVariableDeclaration(node: VarDeclaration): void;
 
-	visitLiteral(node: IntLiteral | FloatLiteral): void;
+	visitLiteral(node: IntLiteral | FloatLiteral | HexLiteral): void;
 	visitBoolLiteral(node: BoolLiteral): void;
 	
 	visitFunctionCall(node: FunctionCall): void;
