@@ -8,7 +8,7 @@ export abstract class PreprocessorDirective
 	public curStartIndex: number;
 	public curEndIndex: number;
 
-	constructor(public readonly range: Range, readonly startIndex: number, readonly endIndex: number) {
+	constructor(public readonly range: Range, readonly startIndex: number, readonly endIndex: number, public readonly text: string) {
 		this.curStartIndex = startIndex;
 		this.curEndIndex = endIndex;
 	}
@@ -35,7 +35,8 @@ export abstract class PreprocessorDirective
 			id: this.id,
 			startIndex: this.curStartIndex,
 			endIndex: this.curEndIndex,
-			range: Serialization.Serialize.range(this.range)
+			range: Serialization.Serialize.range(this.range),
+			text: this.text,
 		}
 	}
 

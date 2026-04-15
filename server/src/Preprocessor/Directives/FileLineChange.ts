@@ -3,8 +3,8 @@ import { Range } from "../../types";
 import { PreprocessorDirective } from "./PreprocessorDirective";
 
 export class FileLineChange extends PreprocessorDirective {
-	constructor(range: Range, public readonly hintMessage: string, startIndex: number, endIndex: number) {
-		super(range, startIndex, endIndex);
+	constructor(range: Range, public readonly hintMessage: string, startIndex: number, endIndex: number, text: string) {
+		super(range, startIndex, endIndex, text);
 	}
 
 	static fromJSON(cache: Serialization.Preprocessor.FileLineChangeCache): FileLineChange {
@@ -12,7 +12,8 @@ export class FileLineChange extends PreprocessorDirective {
 			Serialization.Deserialize.range(cache.range),
 			cache.hintMessage,
 			cache.startIndex,
-			cache.endIndex
+			cache.endIndex,
+			cache.text,
 		);
 	}
 

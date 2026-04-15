@@ -4,8 +4,8 @@ import { PreprocessorDirective } from "./PreprocessorDirective";
 
 export class Error extends PreprocessorDirective
 {
-	constructor(range: Range, public readonly message: string, public readonly type: Error.Type, startIndex: number, endIndex: number) {
-		super(range, startIndex, endIndex);
+	constructor(range: Range, public readonly message: string, public readonly type: Error.Type, startIndex: number, endIndex: number, text: string) {
+		super(range, startIndex, endIndex, text);
 	}
 
 	toJSON(): Serialization.Preprocessor.ErrorCache {
@@ -23,7 +23,8 @@ export class Error extends PreprocessorDirective
 			cache.message,
 			cache.type,
 			cache.startIndex,
-			cache.endIndex
+			cache.endIndex,
+			cache.text,
 		);
 	}
 }

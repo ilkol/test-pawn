@@ -22,8 +22,8 @@ export class Include extends PreprocessorDirective
 	public exist: boolean = false;
 	public silent: boolean = false;
 
-	constructor(range: Range, pathInfo: IncludePathInfo, startIndex: number, endIndex: number) {
-		super(range, startIndex, endIndex);
+	constructor(range: Range, pathInfo: IncludePathInfo, startIndex: number, endIndex: number, text: string) {
+		super(range, startIndex, endIndex, text);
 
 		this.pathText = pathInfo.path;
 		this.pathRange = pathInfo.range;
@@ -39,7 +39,8 @@ export class Include extends PreprocessorDirective
 				range: Serialization.Deserialize.range(cache.pathRange)
 			},
 			cache.startIndex,
-			cache.endIndex
+			cache.endIndex,
+			cache.text
 		);
 		instance.absolutePath = cache.absolutePath;
 		instance.exist = cache.exist;

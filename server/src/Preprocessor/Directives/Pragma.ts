@@ -26,8 +26,8 @@ export enum PragmaVariations {
 
 export class Pragma extends PreprocessorDirective
 {
-	constructor(range: Range, readonly rest: string, startIndex: number, endIndex: number) {
-		super(range, startIndex, endIndex);
+	constructor(range: Range, readonly rest: string, startIndex: number, endIndex: number, text: string) {
+		super(range, startIndex, endIndex, text);
 	}
 
 	static fromJSON(json: Serialization.Preprocessor.PragmaCache): Pragma {
@@ -36,6 +36,7 @@ export class Pragma extends PreprocessorDirective
 			json.rest,
 			json.startIndex,
 			json.endIndex,
+			json.text,
 		);
 	}
 

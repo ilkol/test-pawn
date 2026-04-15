@@ -49,6 +49,9 @@ export class TypeInferenceEngine {
 		return node.onTrue?.inferredTag || SymbolsFactory.defaultTag;
 	}
 	private evaluateBinary(node: BinarOperator) {
+		if(!node.left) {
+			console.log(node, node.range);
+		}
 		const leftTag = node.left!.inferredTag;
 		const rightTag = node.right!.inferredTag;
 		const op = node.operator;

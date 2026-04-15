@@ -257,5 +257,6 @@
 	"token recognition error at": " '№'",
 	"Unexpected return statement": "Unexpected return statement",
 	"Vector partially initialized. Remaining %s elements will be 0.": "Vector partially initialized. Remaining %s elements will be 0.",
-	"Member %s not found in enum %s": "Member %s not found in enum %s"
+	"Member %s not found in enum %s": "Member %s not found in enum %s",
+	"Unexpected condition statement": "Unexpected condition statement"
 }

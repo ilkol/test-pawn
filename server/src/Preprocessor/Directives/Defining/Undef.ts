@@ -13,8 +13,8 @@ export class Undef extends PreprocessorDirective
 	readonly defineRange: Range;
 	
 
-	constructor(range: Range, defineInfo: UndefInfo, startIndex: number, endIndex: number) {
-		super(range, startIndex, endIndex);
+	constructor(range: Range, defineInfo: UndefInfo, startIndex: number, endIndex: number, text: string) {
+		super(range, startIndex, endIndex, text);
 
 		this.define = defineInfo.text;
 		this.defineRange = defineInfo.range;
@@ -29,6 +29,7 @@ export class Undef extends PreprocessorDirective
 			},
 			json.startIndex,
 			json.endIndex,
+			json.text,
 		);
 	}
 

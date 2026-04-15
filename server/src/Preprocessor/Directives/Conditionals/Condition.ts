@@ -19,9 +19,9 @@ export class Condition extends PreprocessorDirective
 	public elseRange?: Range;
 	public conditionResult: boolean = false;
 
-	constructor(range: Range, private rest: string, startIndex: number, endIndex: number)
+	constructor(range: Range, private rest: string, startIndex: number, endIndex: number, text: string)
 	{
-		super(range, startIndex, endIndex);
+		super(range, startIndex, endIndex, text);
 
 	}
 
@@ -78,7 +78,8 @@ export class Condition extends PreprocessorDirective
 			Serialization.Deserialize.range(json.range),
 			json.rest,
 			json.startIndex,
-			json.endIndex
+			json.endIndex,
+			json.text,
 		);	
 
 		return instance;

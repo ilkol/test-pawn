@@ -17,4 +17,6 @@ export interface DirectiveCache {
 	 * Позиция подключения
 	 */
 	range: Serialization.Range;
+
+	text: string;
 }

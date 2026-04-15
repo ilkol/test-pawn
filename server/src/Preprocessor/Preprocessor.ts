@@ -112,7 +112,7 @@ export class Preprocessor {
 	}
 
 	private async findAndReplaceDirectives(document: AbstractOpenFile) {
-
+		let changes: { start: number; end: number; replacement: string }[] = [];
 		if (document.cache.directives) {
 			// document.processedCode = document.cache.processCode;
 
@@ -156,12 +156,33 @@ export class Preprocessor {
 			}
 
 
-			return;
+			for(const dirictive of document.directives) {
+				let multyLine = dirictive.text.match(/\n/g)?.length ?? 0;
+				let res = ' '.repeat(dirictive.endIndex - dirictive.startIndex - (multyLine ? multyLine + 1 : 0)) + '\n'.repeat(multyLine);
+
+				res = `/*${dirictive.text.substring(2, dirictive.text.length - 2)}*/`;
+
+				changes.unshift({
+					start: dirictive.startIndex,
+					end: dirictive.endIndex,
+					replacement: res,
+				});
+			}
+
+		} else {
+			const { changes: changes_, directives } = await this.findDirectives(document);
+			changes = changes_;
+			document.directives = directives;
+			document.cache.directives = directives.map(d => d.toJSON());
 		}
-		const { code, directives } = await this.findDirectives(document);
-		document.processedCode = code;
-		document.directives = directives;
-		document.cache.directives = directives.map(d => d.toJSON());
+
+		let codeWithoutDirectives = document.text;
+		changes.sort((a, b) => b.start - a.start);
+		for (const change of changes) {
+			codeWithoutDirectives = codeWithoutDirectives.substring(0, change.start) + change.replacement + codeWithoutDirectives.substring(change.end);
+		}
+
+		document.processedCode = codeWithoutDirectives;
 	}
 
 	private async sortIncludes(document: AbstractOpenFile) {
@@ -184,6 +205,7 @@ export class Preprocessor {
 			if (!include) {
 				continue;
 			}
+			await include.waitForAnalysis();
 			const inc = document.includes.find(i => i.absolutePath === includePath);
 			if (!inc) {
 			} else {
@@ -604,13 +626,6 @@ export class Preprocessor {
 				endIndex = restIndex + res.fullLength;
 			}
 
-			const directiveInstance = this.createDirective(directive, rest?.replaceAll(/\\[\n\r]/g, "  "), directiveIndex, restIndex, endIndex);
-			if (directiveInstance) {
-				directives.push(directiveInstance);
-				if (directiveInstance instanceof Directives.Defining.Define) {
-					directiveInstance.includeToFile(this.currentDocument!.path, directiveIndex);
-				}
-			}
 			if (whiteSpacesBeforeRest) {
 				multyLine += whiteSpacesBeforeRest.match(/\n/g)?.length ?? 0;
 			}
@@ -620,6 +635,15 @@ export class Preprocessor {
 			}
 			res = `/*${test.substring(2, test.length - 2)}*/`;
 
+
+			const directiveInstance = this.createDirective(directive, rest?.replaceAll(/\\[\n\r]/g, "  "), directiveIndex, restIndex, endIndex, test);
+			if (directiveInstance) {
+				directives.push(directiveInstance);
+				if (directiveInstance instanceof Directives.Defining.Define) {
+					directiveInstance.includeToFile(this.currentDocument!.path, directiveIndex);
+				}
+			}
+
 			changes.push({
 				start: directiveIndex,
 				end: endIndex,
@@ -628,15 +652,11 @@ export class Preprocessor {
 		}
 
 
-		let codeWithoutDirectives = code;
-		changes.sort((a, b) => b.start - a.start);
-		for (const change of changes) {
-			codeWithoutDirectives = codeWithoutDirectives.substring(0, change.start) + change.replacement + codeWithoutDirectives.substring(change.end);
-		}
+		
 
 		return {
 			directives,
-			code: codeWithoutDirectives
+			changes
 		}
 	}
 
@@ -721,7 +741,7 @@ export class Preprocessor {
 		};
 	}
 
-	private createDirective(directive: string, rest: string, startIndex: number, restIndex: number, endIndex: number): PreprocessorDirective | undefined {
+	private createDirective(directive: string, rest: string, startIndex: number, restIndex: number, endIndex: number, text: string): PreprocessorDirective | undefined {
 		const file = this.currentDocument!;
 		const directiveRange = new Range(
 			file.positionAt(startIndex),
@@ -731,36 +751,36 @@ export class Preprocessor {
 
 		switch (directiveText) {
 			case "define": {
-				return new Directives.Defining.Define(directiveRange, this.matchDefinePattern(rest, restIndex), startIndex, endIndex);
+				return new Directives.Defining.Define(directiveRange, this.matchDefinePattern(rest, restIndex), startIndex, endIndex, text);
 			}
 			case "undef": {
-				return new Directives.Defining.Undef(directiveRange, this.prepareUndefInfo(rest, restIndex), startIndex, endIndex);
+				return new Directives.Defining.Undef(directiveRange, this.prepareUndefInfo(rest, restIndex), startIndex, endIndex, text);
 			}
 			case "tryinclude":
 			case "include": {
-				const directiveInstance = new Directives.Include(directiveRange, this.matchIncludePath(rest, restIndex), startIndex, endIndex);
+				const directiveInstance = new Directives.Include(directiveRange, this.matchIncludePath(rest, restIndex), startIndex, endIndex, text);
 				directiveInstance.silent = directiveText === "tryinclude";
 				return directiveInstance;
 			}
 			case "pragma": {
 				this.parsePragma(rest);
-				return new Directives.Pragma(directiveRange, rest, startIndex, endIndex);
+				return new Directives.Pragma(directiveRange, rest, startIndex, endIndex, text);
 			}
 			case "if":
-				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, endIndex);
+				return new Directives.Conditionals.Condition(directiveRange, rest, startIndex, endIndex, text);
 			case "endif": {
-				return new Directives.Conditionals.Endif(directiveRange, startIndex, endIndex);
+				return new Directives.Conditionals.Endif(directiveRange, startIndex, endIndex, text);
 			}
 			case "elseif": {
-				return new Directives.Conditionals.ElseIf(directiveRange, rest, startIndex, endIndex);
+				return new Directives.Conditionals.ElseIf(directiveRange, rest, startIndex, endIndex, text);
 			}
 			case "else": {
-				return new Directives.Conditionals.Else(directiveRange, startIndex, endIndex);
+				return new Directives.Conditionals.Else(directiveRange, startIndex, endIndex, text);
 			}
 
 			case "enscript":
 			case "endinput":
-				return new Directives.Endinput(directiveRange, startIndex, endIndex);
+				return new Directives.Endinput(directiveRange, startIndex, endIndex, text);
 			case "emit":
 			case "assert": {
 				this.currentDocument?.diagnostics.push({
@@ -779,7 +799,8 @@ export class Preprocessor {
 						? Locale.t("Changes the name of the compiling file")
 						: Locale.t("Changes the number of the compiling line"),
 					startIndex,
-					endIndex
+					endIndex,
+					text
 				);
 			}
 			case "warning":
@@ -789,7 +810,7 @@ export class Preprocessor {
 					rest,
 					directiveText === "error" ? Directives.Error.Type.Error : Directives.Error.Type.Wawrning,
 					startIndex,
-					endIndex
+					endIndex, text
 				);
 			}
 			default:
@@ -1373,7 +1394,6 @@ export class Preprocessor {
 		const totalSize = line.length;
 		let lastReportedPercent = 0;
 
-		const startTime = Date.now();
 		Preprocessor.profilePatternReplacing = 0;
 		// Обход строки до ее конца
 		while (!this.isFileEnd(stream.char)) {
@@ -1481,8 +1501,6 @@ export class Preprocessor {
 			}
 		}
 
-		const time = Date.now() - startTime;
-		console.log(time, Preprocessor.profilePatternReplacing, Preprocessor.profilePatternReplacing / time);
 
 		onProgress?.(100);
 		return stream.source;

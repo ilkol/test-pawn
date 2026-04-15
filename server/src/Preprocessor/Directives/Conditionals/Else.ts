@@ -7,15 +7,16 @@ export class Else extends PreprocessorDirective
 {
 	public elseif?: Condition;
 	
-	constructor(range: Range, startIndex: number, endIndex: number) {
-		super(range, startIndex, endIndex);
+	constructor(range: Range, startIndex: number, endIndex: number, text: string) {
+		super(range, startIndex, endIndex, text);
 	}
 
 	static fromJSON(json: Serialization.Preprocessor.ElseCache): Else {
 		return new Else(
 			Serialization.Deserialize.range(json.range),
 			json.startIndex,
-			json.endIndex
+			json.endIndex,
+			json.text
 		);
 	}
 

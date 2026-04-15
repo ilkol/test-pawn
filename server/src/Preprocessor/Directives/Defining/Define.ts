@@ -1,3 +1,4 @@
+import { text } from "stream/consumers";
 import { Serialization } from "../../../cache/Serialization";
 import { Macro } from "../../../SymbolSystem/Symbols";
 import { Range } from "../../../types";
@@ -50,8 +51,8 @@ export class Define extends PreprocessorDirective
 	}
 
 
-	constructor(range: Range, patternInfo: PatternInfo, startIndex: number, endIndex: number) {
-		super(range, startIndex, endIndex);
+	constructor(range: Range, patternInfo: PatternInfo, startIndex: number, endIndex: number, text: string) {
+		super(range, startIndex, endIndex, text);
 
 		this.pattern = patternInfo.text;
 		this.replacement = patternInfo.replacement;
@@ -90,6 +91,7 @@ export class Define extends PreprocessorDirective
 			},
 			json.startIndex,
 			json.endIndex,
+			json.text,
 		);	
 		instance.used = json.used;
 		if(json.references) {

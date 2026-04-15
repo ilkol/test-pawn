@@ -4,8 +4,8 @@ import { Serialization } from "../../../cache/Serialization";
 
 export class Endif extends PreprocessorDirective
 {
-	constructor(range: Range, startIndex: number, endIndex: number) {
-		super(range, startIndex, endIndex);
+	constructor(range: Range, startIndex: number, endIndex: number, text: string) {
+		super(range, startIndex, endIndex, text);
 	}
 
 	static fromJSON(json: Serialization.Preprocessor.EndifCache): Endif {
@@ -13,6 +13,7 @@ export class Endif extends PreprocessorDirective
 			Serialization.Deserialize.range(json.range),
 			json.startIndex,
 			json.endIndex,
+			json.text,
 		);
 	}
 	toJSON(): Serialization.Preprocessor.EndifCache {
