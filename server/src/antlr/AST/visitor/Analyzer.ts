@@ -894,8 +894,9 @@ export class Analyzer extends BaseVisitor
 		if(!(node.initValue instanceof ArrayInit)) {
 			const expectedTag = symbol.tag;
 			const actualTag = node.initValue.inferredTag = this.tagInferer.inferTag(node.initValue);
-			
-			this.checkTagMismatch(expectedTag, actualTag, true, node.initValue.pos);
+			let tmp  = { tag: actualTag };
+			this.checkUserOperator("=", actualTag, expectedTag, 2, tmp);
+			this.checkTagMismatch(expectedTag, tmp.tag, true, node.initValue.pos);
 			return;
 		}
 
@@ -1233,7 +1234,7 @@ export class Analyzer extends BaseVisitor
 	}
 
 	/** Аналог check_userop pawnc. Выполняет существует ли пользовательская перегрузка оператора */
-	private checkUserOperator(operator: string, tag1: MayBeTag, tag2: MayBeTag, paramsCount: number) {
+	private checkUserOperator(operator: string, tag1: MayBeTag, tag2: MayBeTag, paramsCount: number, option?: { tag: MayBeTag }) {
 		if(this.isDefaultTag(tag1.name) && (paramsCount === 1 || this.isDefaultTag(tag2.name))) {
 			return false;
 		}
@@ -1248,6 +1249,9 @@ export class Analyzer extends BaseVisitor
 		}
 
 		symbol.isUsed = true;
+		if(option) {
+			option.tag = symbol.returnTag;
+		}
 		return true;
 	}
 
