@@ -162,7 +162,7 @@ export class Analyzer extends BaseVisitor
 					}
 					
 				} else {
-					console.error("Undefined array index");
+					console.error("Unefined array index");
 					return;
 				}
 				return;
@@ -953,7 +953,7 @@ export class Analyzer extends BaseVisitor
 					if(symbol instanceof Symbols.Function && (!symbol.hasImplementation || symbol.hasModifier(FunctionModifire.Native | FunctionModifire.Stock | FunctionModifire.Public))) {
 						continue;
 					}
-					if(symbol instanceof Symbols.Variable  && symbol.hasModifier(Symbols.VariableModifire.Stock)) {
+					if(symbol instanceof Symbols.Variable  && symbol.hasModifier(Symbols.VariableModifire.Stock | Symbols.VariableModifire.Public)) {
 						continue;
 					}
 					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, symbol.defenition.tokenRange, symbol.name));
@@ -1356,7 +1356,7 @@ export class Analyzer extends BaseVisitor
 				symbol.addModifier(FunctionModifire.Static);
 			}
 	
-			if(isPublic && !symbol.hasModifier(FunctionModifire.Forward)) {
+			if(isPublic && !symbol.hasModifier(FunctionModifire.Forward) && node.code) {
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.PublicBeforeForward, node.idPos, symbol.name));
 			}
 	
