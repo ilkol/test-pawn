@@ -220,16 +220,13 @@ export class Analyzer extends BaseVisitor
 				console.log(node.left);
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.range));
 			}
-			// const symbol = this.addSymbolReference(node.left.id, node.left.pos, node.left.idPos, [SemanticTokenModifiers.modification]);
-			// if(!symbol) {
-			// 	return;
-			// }
-			// if(!(symbol instanceof Symbols.Variable || symbol instanceof Symbols.Parameter || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.EnumMember || symbol instanceof Symbols.Macro)) {
-			// 	this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidFunctionCall, node.range));
-			// }
-			// else if(symbol.isConst) {					
-			// 	this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.left.range));
-			// }
+			if(node.right) {
+				let leftTag = this.tagInferer.inferTag(node.left);
+				let rightTag = this.tagInferer.inferTag(node.right);
+				let tmp = { tag: rightTag }
+				this.checkUserOperator("=", rightTag, leftTag, 2, tmp);
+				node.right.inferredTag = tmp.tag;
+			}
 		}
 	}
 	beforeVisitArrayInit(node: ArrayInit): void {
