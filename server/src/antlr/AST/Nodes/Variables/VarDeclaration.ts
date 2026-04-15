@@ -69,6 +69,7 @@ export class VarDeclaration<TSymbol extends AbstractSymbol = AbstractSymbol> ext
 		super.prepareFromJSON(json);
 		this.modifires = json.modifires;
 		this._value = Serialization.Deserialize.object(json.initValue);
+		this.dimensions = json.dimensions.map(dim => dim ? Serialization.Deserialize.object(dim) : null);
 	}
 
 	addModifier(modifire: VariableModifire) {
