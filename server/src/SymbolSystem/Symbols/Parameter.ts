@@ -13,11 +13,18 @@ export enum VariableModifire {
 	Const = 1 << 5,
 }
 
+type DimensionInfo = {
+	tag: MayBeTag;
+	value: number;
+};
+
+
 export class Parameter extends AbstractSymbol {
 	public readonly completionKind = CompletionItemKind.Variable;
 	public readonly validTags: MayBeTag[] = [];
 	public hasDefaultValue: boolean = false;
 	public isConst: boolean = false;
+	public dimensions: DimensionInfo[] = [];
 	
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range, modifiers: SemanticTokenModifiers[]) {
 		super(

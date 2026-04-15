@@ -60,6 +60,8 @@ export class TypeInferenceEngine {
 			return SymbolsFactory.boolTag;
 		}
 		if(!leftTag || !rightTag ) {
+			console.error(node.left?.range, node.right?.range);
+			console.error(node.left?.inferredTag, node.right?.inferredTag);
 			console.error("Undefined tag", node.left?.name, node.right?.name);
 			return SymbolsFactory.defaultTag;
 		}

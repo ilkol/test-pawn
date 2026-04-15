@@ -130,9 +130,9 @@ export class Analyzer extends BaseVisitor
 		
 		node.symbol = arraySymbol;
 
-		if(arraySymbol instanceof Symbols.Variable) {
+		if(arraySymbol instanceof Symbols.Variable || arraySymbol instanceof Symbols.Parameter) {
 			const index = node.right
-			const dim = arraySymbol.dimensions[node.depth]
+			const dim = arraySymbol.dimensions[node.depth];
 			if(!dim) {
 				if(arraySymbol.dimensions.length === node.depth) {
 					const lastDim = arraySymbol.dimensions[node.depth - 1];
@@ -166,17 +166,17 @@ export class Analyzer extends BaseVisitor
 					console.error("Unefined array index");
 					return;
 				}
-				return;
-			}
-			let indexTag: MayBeTag;
-			if(dim instanceof Symbols.Enum) {
-				indexTag = dim;
 			} else {
-				indexTag = dim.tag;
+				let indexTag: MayBeTag;
+				if(dim instanceof Symbols.Enum) {
+					indexTag = dim;
+				} else {
+					indexTag = dim.tag;
+				}
+				const actualIndexTag = node.right ? this.tagInferer.inferTag(node.right) : SymbolsFactory.defaultTag;
+				this.checkTagMismatch(indexTag, actualIndexTag, true, node.right?.range ?? node.range);
+				
 			}
-			const actualIndexTag = node.right ? this.tagInferer.inferTag(node.right) : SymbolsFactory.defaultTag;
-			this.checkTagMismatch(indexTag, actualIndexTag, true, node.right?.range ?? node.range);
-			
 			
 			
 
@@ -281,9 +281,11 @@ export class Analyzer extends BaseVisitor
 
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
 		this.curScope.currentFunction?.parameters.push(symbol);
+		
 
 		node.symbol = symbol;
 
+		this.addVariableDimensions(node.dimensions, symbol);
 		
 	}
 	afterVisitFunctionDeclarationParameter(node: FunctionDeclarationParameter): void {
@@ -854,21 +856,18 @@ export class Analyzer extends BaseVisitor
 		this.curScope.add(symbol);
 		symbol.tag = this.addTag(node.tag.id, node.tag.pos, node.tag.idPos);
 		this.curScope.currentSymbol?.childrens.push(symbol.defenition);
-
+		
 		
 	}
-	afterVisitVariableDeclaration(node: VarDeclaration<Symbols.Variable>): void {
-		const symbol = node.symbol;
-    	if (!symbol) return;
+	private addVariableDimensions(dims: (Expression | null)[], symbol: Symbols.Variable | Symbols.Parameter) {
 		
-		for(const dim of node.dimensions) {
-			
+		for(const dim of dims) {
 			if(!dim) {
 				symbol.dimensions.push({
 					tag: SymbolsFactory.defaultTag,
 					value: 0
 				});
-				continue;
+				return;
 			}
 			if(dim instanceof EnumDeclaration && dim.symbol) {
 				symbol.dimensions.push({
@@ -883,6 +882,12 @@ export class Analyzer extends BaseVisitor
 				});
 			}
 		}
+	}
+	afterVisitVariableDeclaration(node: VarDeclaration<Symbols.Variable>): void {
+		const symbol = node.symbol;
+    	if (!symbol) return;
+		
+		this.addVariableDimensions(node.dimensions, symbol);
 
 		if(!node.initValue) return;
 
