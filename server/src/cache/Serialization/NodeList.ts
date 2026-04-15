@@ -24,6 +24,7 @@ export enum NodeList {
 	ArrayDeclaration = "ArrayDeclaration",
 	Array = "Array",
 	BinarOperator = "BinarOperator",
+	TernarOperator = "TernarOperator",
 	
 	FunctionCall = "FunctionCall",
 	NamedArgument = "NamedArgument",

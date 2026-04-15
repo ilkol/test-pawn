@@ -33,6 +33,7 @@ import { ChainedOperator } from "../../antlr/AST/Nodes/Operators/ChainedOperator
 import { Ellipse } from "../../antlr/AST/Nodes/Operators/Ellipse";
 import { OperatorNew } from "../../antlr/AST/Nodes/Operators/OperatorNew";
 import { OperatorOverload } from "../../antlr/AST/Nodes/Operators/OperatorOverload";
+import { TernarOperator } from "../../antlr/AST/Nodes/Operators/TernarOperator";
 import { UnarOperator } from "../../antlr/AST/Nodes/Operators/UnarOperator";
 import { ReturnStatement } from "../../antlr/AST/Nodes/ReturnStatement";
 import { Tag } from "../../antlr/AST/Nodes/Tag";
@@ -64,6 +65,7 @@ export function serializeInit(): void {
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Enum, EnumDeclaration);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.Array, ArrayNode);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.BinarOperator, BinarOperator);
+	Serialization.Deserialize.registerSerializable(Serialization.NodeList.TernarOperator, TernarOperator);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.FunctionCall, FunctionCall);
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.UnarOperator, UnarOperator );
 	Serialization.Deserialize.registerSerializable(Serialization.NodeList.ReturnStatement, ReturnStatement );

@@ -41,7 +41,7 @@ export class TernarOperator extends AbstractOperator
 		this.expresion = v;
 	}
 
-	static fromJSON(json: Serialization.Nodes.Operators.Binar): TernarOperator {
+	static fromJSON(json: Serialization.Nodes.Operators.Ternar): TernarOperator {
 		let instance: TernarOperator = new TernarOperator();
 		instance.prepareFromJSON(json);
 		return instance;
@@ -57,7 +57,7 @@ export class TernarOperator extends AbstractOperator
 		return {
 			...super.toJSON(),
 			// eslint-disable-next-line @typescript-eslint/naming-convention
-			__type: Serialization.NodeList.BinarOperator,
+			__type: Serialization.NodeList.TernarOperator,
 			onTrue: this.onTrue?.toJSON(),
 			onFalse: this.onFalse?.toJSON(),
 		};
