@@ -93,7 +93,7 @@ export class Preprocessor {
 			async () => this.registerSymbols(document, symbolManager),
 			async () => document.sortedIncludes = await this.sortIncludes(document),
 			async () => await this.processIncludes(document),
-			async () => document.processedCode = await this.processDefines(document.processedCode, document.defines, symbolManager, onProgress)
+			async () => document.processedCode = await this.substringrReplacing(document.processedCode, document.defines, symbolManager, onProgress)
 		]) {
 			await this.nextStep(document, action);
 		}
@@ -1204,79 +1204,6 @@ export class Preprocessor {
 		return { rest: result, fullLength: stream.curIndex };
 	}
 
-	private async processDefines(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void) {
-		// for(let definesArray of defines.values()) {
-		// 	for(let findinglocalDefine of definesArray) {
-		// 		const start = findinglocalDefine.endIndex;
-		// 		const stop = findinglocalDefine.undef ?  findinglocalDefine.undef.startIndex : -1;
-		// 		for(let definesArray of defines.values()) {
-		// 			for(let localDefine of definesArray) {
-		// 				let inRange = false;
-		// 				if(localDefine.startIndex > start) {
-		// 					if(stop !== -1) {
-		// 						if(localDefine.startIndex < stop) {
-		// 							inRange = true;
-		// 						}
-		// 					}
-		// 					else {
-		// 						inRange = true;
-		// 					}
-		// 				}
-		// 				if(inRange) {
-		// 					localDefine.replacement = await this.substringrReplacingOnChank(localDefine.replacement, findinglocalDefine, localDefine.startIndex, `${findinglocalDefine.prefix} in ${localDefine.prefix}`, symbolManager);
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
-
-		// const total = defines.size;
-		// let i = 0;
-
-		code = await this.newprocessDefine(code, defines, symbolManager, onProgress);
-
-		// for(let definesArray of defines.values()) {
-
-		// 	for(let localDefine of definesArray) {
-		// 		code = await this.processDefine(code, localDefine, symbolManager);
-		// 	}
-		// 	i++;
-		// 	if(onProgress) {
-		// 		onProgress((i / total) * 100);
-		// 	}
-		// }
-		// if(onProgress) {
-		// 	onProgress(100);
-		// }
-
-		return code;
-	}
-
-	private async newprocessDefine(code: string, defines: Map<string, Directives.Defining.Define[]>, symbolManager: SymbolManager, onProgress?: (percent: number) => void) {
-		return await this.substringrReplacing(code, defines, symbolManager, onProgress);
-	}
-
-	private async processDefine(code: string, define: Directives.Defining.Define, symbolManager: SymbolManager) {
-		const fileStartPos = define.getFilePos(this.currentDocument!.path)?.from;
-		let lastindex = undefined;
-		if (define.undef) {
-			lastindex = define.undef.curStartIndex;
-		}
-		const startPos = fileStartPos ?? define.curEndIndex;
-		let stoptPos: number;
-		if (lastindex && fileStartPos === undefined) {
-			stoptPos = lastindex;
-		}
-		else {
-			stoptPos = code.length;
-		}
-
-		let preCode = code.substring(0, startPos);
-		let postCode = code.substring(stoptPos);
-
-		return preCode + await this.substringrReplacingOnChank(code.substring(startPos, stoptPos), define, startPos, `Process ${define.prefix} in ${this.currentDocument?.path}`, symbolManager) + postCode;
-
-	}
 
 	private codeMapper: CodeMapper = new CodeMapper();
 
@@ -1304,36 +1231,6 @@ export class Preprocessor {
 			const endPosition = this.currentDocument?.positionAt(originalStartPos + change.length);
 			if (startPosition && endPosition && endTokenPosition) {
 				change.define.symbol?.addReferance(new SymbolReferance(filePath, new Range(startPosition, endPosition), new Range(startPosition, endTokenPosition)));
-			}
-			// this.tokensManager.addToken(range, SemanticTokens.macro);
-			preShift -= change.shift;
-		});
-
-		return res;
-	}
-	private async substringrReplacingOnChank(str: string, define: Directives.Defining.Define, preShift: number, title: string = "Processing replacements...", symbolManager: SymbolManager): Promise<string> {
-		const changes: FindedDefine[] = [];
-		const res = this.testPreprocess(str, define, changes);
-
-		let startPos: number, originalStartPos: number;
-		const filePath = this.currentDocument!.path;
-		if (changes.length > 0) {
-			define.used = true;
-			symbolManager.addSymbolToFile(filePath, define.symbol!);
-		}
-		changes.forEach(change => {
-			startPos = change.start + preShift;
-			originalStartPos = this.codeMapper.getOriginalPos(startPos);
-			this.codeMapper.addChange({
-				originalStartPos: originalStartPos,
-				startIndex: startPos,
-				changeLength: change.shift
-			});
-			const startPosition = this.currentDocument?.positionAt(originalStartPos);
-			const endTokenPosition = this.currentDocument?.positionAt(originalStartPos + define.pattern.length);
-			const endPosition = this.currentDocument?.positionAt(originalStartPos + change.length);
-			if (startPosition && endPosition && endTokenPosition) {
-				define.symbol?.addReferance(new SymbolReferance(filePath, new Range(startPosition, endPosition), new Range(startPosition, endTokenPosition)));
 			}
 			// this.tokensManager.addToken(range, SemanticTokens.macro);
 			preShift -= change.shift;
@@ -1564,19 +1461,6 @@ export class Preprocessor {
 		// let item = this.substindex.get(stream.char);
 		// return item ? this.findStringpair(item, stream, len) : null;
 	}
-	private findStringpair(array: Directives.Defining.Define[], stream: LikeCCharStream, matchlength: number): Directives.Defining.Define | null {
-		// stream.curIndex
-		for (let define of array) {
-			if (matchlength !== define.prefixLen) {
-				continue;
-			}
-			if (stream.compare(define.prefix)) {
-				define.undef
-				return define;
-			}
-		};
-		return null;
-	}
 	private substpattern(stream: LikeCCharStream, define: Directives.Defining.Define, replaceData: ReplaceInfo, mappingInfo: MappingInfo) {
 		let instring: number;
 
@@ -1758,15 +1642,4 @@ export class Preprocessor {
 		return stream;
 	}
 
-	private parsePreprocExpr(input: string) {
-		input = this.substallpatterns(input, []);
-		const val = this.parseConstExpr(input);
-	}
-
-	private parseConstExpr(input: string) {
-		const expr = this.parseExpression(input);
-	}
-	private parseExpression(input: string) {
-
-	}
 }
