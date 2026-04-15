@@ -8,7 +8,7 @@ import { PreprocessorDirective } from "./Directives/PreprocessorDirective";
 import { DependencyManager } from "../DependencyManager";
 import { Locale } from "../Locale";
 import { DiagnosticSeverity, DiagnosticTag } from "vscode-languageserver";
-import { LikeCCharStream } from "./LikeCCharStream";
+import { LikeCCharChunkStream as LikeCCharStream, LikeCCharStream as OldLikeCCharStream } from "./LikeCCharStream";
 import { CodeMapper } from "./CodeMapper";
 import { PawnErrors } from "../Errors/PawnErrors";
 import { CacheManager } from "../cache/CacheManager";
@@ -911,6 +911,9 @@ export class Preprocessor {
 	private isFileEnd(char: string): boolean {
 		return char === LikeCCharStream.FILE_END_CHAR;
 	}
+	private isFileEndCharCode(code: number): boolean {
+		return code === 0 || Number.isNaN(code);
+	}
 
 	private isCommentStarting(stream: LikeCCharStream): boolean {
 		let c = stream.char;
@@ -1015,10 +1018,10 @@ export class Preprocessor {
 		return result;
 	}
 
-	private litchar(lptr: LikeCCharStream, flags: number): { charCode: number, str: string } {
+	private litchar(lptr: OldLikeCCharStream, flags: number): { charCode: number, str: string } {
 		let c = 0;
 		let str = "";
-		let cptr: LikeCCharStream = new LikeCCharStream(lptr.source);
+		let cptr: OldLikeCCharStream = new OldLikeCCharStream(lptr.source);
 		cptr.curIndex = lptr.curIndex;
 
 		if ((flags & 1) !== 0 || cptr.char !== '\\') {  /* no escape character */
@@ -1170,8 +1173,8 @@ export class Preprocessor {
 		let result = "";
 		let char;
 
-		while (!this.isFileEnd(stream.getChar())) {
-			char = stream.getChar();
+		while (!this.isFileEnd(stream.char)) {
+			char = stream.char;
 
 			// Если строка, то полностью ее включаем в паттерн
 			if (this.isStringStrating(stream)) {
@@ -1293,9 +1296,19 @@ export class Preprocessor {
 
 		Preprocessor.profilePatternReplacing = 0;
 		// Обход строки до ее конца
-		while (!this.isFileEnd(stream.char)) {
+		let asd = false;
+		if(stream.length > 3232322) {
+			console.profile('MyPerformanceTest');
+			asd = true;
+		}
+
+		
+		let curIndex = stream.curIndex;
+		let charCode = stream.charCodeAt(curIndex);
+		while (!this.isFileEndCharCode(stream.charCodeAt(curIndex))) {
 			// Поиск начала префикса макроса
-			while (!this.isAlphabeticSymbol(stream.char) && !this.isFileEnd(stream.char)) {
+			charCode = stream.charCodeAt(curIndex);
+			while (!this.isAlphabeticSymbolCharCode(charCode) && !this.isFileEndCharCode(charCode)) {
 				// Пропуск строк
 				if (this.isStringStrating(stream)) {
 					stream = this.skipstring(stream);
@@ -1307,8 +1320,10 @@ export class Preprocessor {
 				if (this.isFileEnd(stream.char)) {
 					break;        /* abort loop on error */
 				}
-				stream.curIndex++;          /* skip non-alphapetic character (or closing quote of a string) */
+				curIndex = ++stream.curIndex;          /* skip non-alphapetic character (or closing quote of a string) */
+				charCode = stream.charCodeAt(curIndex);
 			}
+			
 			if (this.isFileEnd(stream.char)) {
 				break; /* abort loop on error */
 			}
@@ -1327,11 +1342,11 @@ export class Preprocessor {
 			if (stream.compare("defined") && stream.getShiftChar(7) <= ' ') {
 				stream.curIndex += 7; /* skip "defined" */
 				/* skip white space & parantheses */
-				while ((stream.getChar() <= ' ' && !this.isFileEnd(stream.getChar())) || stream.getChar() === '(') {
+				while ((stream.char <= ' ' && !this.isFileEnd(stream.char)) || stream.char === '(') {
 					stream.curIndex++;
 				}
 				/* skip the symbol behind it */
-				while (this.alphanum(stream.getChar())) {
+				while (this.alphanum(stream.char)) {
 					stream.curIndex++;
 				}
 				/* drop back into the main loop */
@@ -1339,8 +1354,11 @@ export class Preprocessor {
 			}
 			/* get the prefix (length), look for a matching definition */
 			prefixlen = 0;
-			while (this.alphanum(stream.getShiftChar(prefixlen))) {
+			charCode = stream.charCodeAt(curIndex);
+			while ((charCode >= 48 && charCode <= 57) || (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122) || charCode === 95 || charCode === 64) 
+			{
 				prefixlen++;
+				charCode = stream.charCodeAt(curIndex + prefixlen);
 			}
 			if (prefixlen <= 0) {
 				throw new Error("");
@@ -1396,13 +1414,19 @@ export class Preprocessor {
 			else {
 				stream.curIndex += prefixlen;        /* no macro with this prefix, skip this prefix */
 			}
+			curIndex = stream.curIndex;
+		}
+		if(asd) {
+			console.profileEnd('MyPerformanceTest');
 		}
 
-
 		onProgress?.(100);
-		return stream.source;
+		return stream.buildString;
 	}
 
+	private isAlphabeticSymbolCharCode(charCode: number): boolean {
+		return (charCode >= 48 && charCode <= 57) || (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122) || charCode === 95 || charCode === 64;
+	}
 	private isAlphabeticSymbol(c: string): boolean {
 		return /[a-zA-Z_@]/.test(c);
 	}
@@ -1433,7 +1457,7 @@ export class Preprocessor {
 		return (this.isAlphabeticSymbol(c) || Preprocessor.isDigit(c));
 	}
 	private findSubstr(stream: LikeCCharStream, len: number, shift: number) {
-		const word = stream.source.substring(stream.curIndex, stream.curIndex + len);
+		const word = stream.substr(len);
 		const versions = this.substindex.get(word);
 
 		if (!versions || versions.length === 0) return null;
@@ -1470,7 +1494,7 @@ export class Preprocessor {
 		let args = [];
 		let arg = 0;
 		let sourceShift = define.prefixLen;
-		let pattern = new LikeCCharStream(define.postPrefix);
+		let pattern = new OldLikeCCharStream(define.postPrefix);
 		let match = 1;         /* so far, pattern matches */
 
 		while (match && !this.isFileEnd(stream.getShiftChar(sourceShift)) && !this.isFileEnd(pattern.char)) {
