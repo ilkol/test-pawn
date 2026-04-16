@@ -23,7 +23,9 @@ import { ConstExprParser, tokenize } from "./ConstExpParser";
 type ConditionStack = ConditionStackElement[];
 interface ConditionStackElement {
 	directive: Condition;
-	skip: boolean;
+	currentlyActive: boolean;
+	parentActive: boolean,
+	anyBranchExecuted: boolean
 }
 
 class FindedDefine {
@@ -156,7 +158,7 @@ export class Preprocessor {
 			}
 
 
-			for(const dirictive of document.directives) {
+			for (const dirictive of document.directives) {
 				let multyLine = dirictive.text.match(/\n/g)?.length ?? 0;
 				let res = ' '.repeat(dirictive.endIndex - dirictive.startIndex - (multyLine ? multyLine + 1 : 0)) + '\n'.repeat(multyLine);
 
@@ -320,99 +322,90 @@ export class Preprocessor {
 
 		const defines: Map<string, Directives.Defining.Define[]> = new Map();
 		const includes: Directives.Include[] = [];
-
 		const ifStack: ConditionStack = [];
-		let skipedIf = 0;
+
 		for (let element of document.directives) {
 
-			let cur;
-			if (ifStack.length !== 0) {
-				cur = ifStack[ifStack.length - 1];
+			let cur = ifStack[ifStack.length - 1];
+			const isVisible = cur ? cur.currentlyActive : true;
+
+			if (isVisible) {
+				if (element instanceof Directives.Defining.Define) {
+					this.handleDefine(element, defines);
+					continue;
+				}
+				if (element instanceof Directives.Include) {
+					this.handleInclude(element, includes);
+					continue;
+				}
+				if (element instanceof Directives.Defining.Undef) {
+					this.handleUndef(element, defines);
+					continue;
+				}
+				if (element instanceof Directives.Endinput) {
+					code = code.substring(0, element.curEndIndex);
+					const range = new Range(
+						element.range.end,
+						document.positionAt(document.text.length)
+					);
+					document.diagnostics.push({
+						message: Locale.t("Non-executable code"),
+						range: range,
+						severity: DiagnosticSeverity.Hint,
+						source: "pawn-lsp",
+						tags: [DiagnosticTag.Unnecessary]
+					});
+					continue;
+				}
+				if (element instanceof Directives.Error) {
+					document.diagnostics.push(PawnErrors.report(
+						element.type === Directives.Error.Type.Error ? PawnErrors.Code.UserError : PawnErrors.Code.UserWarning,
+						element.range,
+						element.message
+					));
+					continue;
+				}
+				if (element instanceof Directives.FileLineChange) {
+					document.diagnostics.push({
+						message: element.hintMessage,
+						range: element.range,
+						severity: DiagnosticSeverity.Hint,
+						source: "pawn-lsp"
+					});
+					continue;
+				}
 			}
 
-			if (element instanceof Directives.Defining.Define) {
-				if (cur && cur.skip) {
-					continue;
-				}
-				this.handleDefine(element, defines);
-			}
-			else if (element instanceof Directives.Include) {
-				if (cur && cur.skip) {
-					continue;
-				}
-				this.handleInclude(element, includes);
-			}
-			else if (element instanceof Directives.Defining.Undef) {
-				if (cur && cur.skip) {
-					continue;
-				}
-				this.handleUndef(element, defines);
-			}
-			else if (element instanceof Directives.Endinput) {
-				if (cur && cur.skip) {
-					continue;
-				}
-				code = code.substring(0, element.curEndIndex);
-				const range = new Range(
-					element.range.end,
-					document.positionAt(document.text.length)
-				);
-				document.diagnostics.push({
-					message: Locale.t("Non-executable code"),
-					range: range,
-					severity: DiagnosticSeverity.Hint,
-					source: "pawn-lsp",
-					tags: [DiagnosticTag.Unnecessary]
-				});
-			}
-			else if (element instanceof Directives.Error) {
-				if (cur && cur.skip) {
-					continue;
-				}
-				document.diagnostics.push(PawnErrors.report(
-					element.type === Directives.Error.Type.Error ? PawnErrors.Code.UserError : PawnErrors.Code.UserWarning,
-					element.range,
-					element.message
-				));
-			}
-			else if (element instanceof Directives.FileLineChange) {
-				if (cur && cur.skip) {
-					continue;
-				}
-				document.diagnostics.push({
-					message: element.hintMessage,
-					range: element.range,
-					severity: DiagnosticSeverity.Hint,
-					source: "pawn-lsp"
-				});
+
+			if (element instanceof Directives.Conditionals.Condition) {
+				this.handleCondition(element, ifStack, defines, isVisible);
 			}
 			else if (element instanceof Directives.Conditionals.ElseIf) {
-				if (cur && cur.directive.conditionResult) {
-					cur.skip = true;
+				if (!cur) {
+					this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, element.range));
 					continue;
 				}
-				this.handleElseIf(element, ifStack, defines);
-			}
-			else if (element instanceof Directives.Conditionals.Condition) {
-				if (cur && cur.skip) {
-					skipedIf++;
-					continue;
-				}
-				this.handleCondition(element, ifStack, defines);
-			}
-			else if (element instanceof Directives.Conditionals.Endif) {
-				if (skipedIf) {
-					skipedIf--;
-					continue;
-				}
-				code = this.handleEndIf(code, element, ifStack);
+				const canExecute = cur.parentActive && !cur.anyBranchExecuted;
+				const result = canExecute ? this.evaluateCondition(element.conditionalString, element.startIndex, defines) : false;
+
+				cur.directive.elseBlock = element;
+				element.conditionResult = result;
+				if (result) cur.anyBranchExecuted = true;
+				cur.currentlyActive = canExecute && result;
 			}
 			else if (element instanceof Directives.Conditionals.Else) {
-				if (cur && cur.directive.conditionResult) {
-					cur.skip = true;
+				if (!cur) {
+					this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, element.range));
 					continue;
 				}
-				code = this.handleElse(code, element, ifStack);
+
+				cur.directive.elseBlock = element;
+				const canExecute = cur.parentActive && !cur.anyBranchExecuted;
+				cur.currentlyActive = canExecute;
+				cur.anyBranchExecuted = true; // После else ничего не сработает
+			}
+			else if (element instanceof Directives.Conditionals.Endif) {
+				code = this.handleEndIf(code, element, ifStack);
 			}
 
 		}
@@ -503,39 +496,32 @@ export class Preprocessor {
 			return code;
 			throw new Error("Unexpected #endif");
 		}
-		let ifBlock = ifStack[ifStack.length - 1];
-		while (ifBlock.directive instanceof Directives.Conditionals.ElseIf) {
-			ifStack.pop();
-			if (ifStack.length !== 0) {
-				ifBlock = ifStack[ifStack.length - 1];
-			}
-		}
-		if (ifStack.length !== 0) {
-			const currentIf = ifStack.pop()!;
-			currentIf.directive.endIf = directive;
-			const { start, startPos, end, endPos } = this.calcSkipIfRange(currentIf.directive) ?? {};
-			if (start && end && startPos && endPos) {
 
-				code =
-					code.substring(0, start) +
-					code.substring(start, end).replace(/[^\s]/g, " ") +
-					code.substring(end)
-					;
-				if (currentIf.directive.range && directive.range) {
-					const range = new Range(
-						startPos,
-						endPos
-					);
-					this.currentDocument?.diagnostics.push({
-						message: Locale.t("Non-executable code"),
-						range: range,
-						severity: DiagnosticSeverity.Hint,
-						source: "pawn-lsp",
-						tags: [DiagnosticTag.Unnecessary]
-					});
-				}
+		const currentIf = ifStack.pop()!;
+		currentIf.directive.endIf = directive;
+		const { start, startPos, end, endPos } = this.calcSkipIfRange(currentIf.directive) ?? {};
+		if (start && end && startPos && endPos) {
+
+			code =
+				code.substring(0, start) +
+				code.substring(start, end).replace(/[^\s]/g, " ") +
+				code.substring(end)
+				;
+			if (currentIf.directive.range && directive.range) {
+				const range = new Range(
+					startPos,
+					endPos
+				);
+				this.currentDocument?.diagnostics.push({
+					message: Locale.t("Non-executable code"),
+					range: range,
+					severity: DiagnosticSeverity.Hint,
+					source: "pawn-lsp",
+					tags: [DiagnosticTag.Unnecessary]
+				});
 			}
 		}
+		
 		return code;
 	}
 
@@ -560,15 +546,11 @@ export class Preprocessor {
 
 		this.recursivElse(currentIf.directive, directive);
 
-		currentIf.skip = currentIf.directive.conditionResult;
+		// currentIf.skip = currentIf.directive.conditionResult;
 
 		return code;
 	}
-	private handleElseIf(directive: Directives.Conditionals.ElseIf, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>): void {
-		if (ifStack.length === 0) {
-			this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, directive.range));
-			return;
-		}
+	private handleElseIf(directive: Directives.Conditionals.ElseIf, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>, canExecute: boolean): void {
 
 		const currentIf = ifStack[ifStack.length - 1];
 
@@ -576,14 +558,19 @@ export class Preprocessor {
 
 		const conditionResult = this.evaluateCondition(directive.conditionalString, directive.startIndex, defines);
 		directive.conditionResult = conditionResult;
-		currentIf.skip = !conditionResult; // Если условие истинно, то пропускаем остаток блока if
+		// currentIf.skip = !conditionResult; // Если условие истинно, то пропускаем остаток блока if
 
-		ifStack.push({ directive: directive, skip: !directive.conditionResult });
+		// ifStack.push({ directive: directive, skip: !directive.conditionResult });
 	}
-	private handleCondition(directive: Condition, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>) {
-		const conditionResult = this.evaluateCondition(directive.conditionalString, directive.startIndex, defines);
-		ifStack.push({ directive: directive, skip: !conditionResult }); // Важно: сохраняем состояние пропуска
+	private handleCondition(directive: Condition, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>, isVisible: boolean) {
+		const conditionResult = isVisible ? this.evaluateCondition(directive.conditionalString, directive.startIndex, defines) : false;
 		directive.conditionResult = conditionResult;
+		ifStack.push({
+			directive: directive,
+			parentActive: isVisible,
+			currentlyActive: isVisible && conditionResult,
+			anyBranchExecuted: conditionResult,
+		});
 	}
 
 	private evaluateCondition(conditionStr: string, pos: number, defines: Map<string, Directives.Defining.Define[]>): boolean {
@@ -652,7 +639,7 @@ export class Preprocessor {
 		}
 
 
-		
+
 
 		return {
 			directives,
@@ -1297,12 +1284,12 @@ export class Preprocessor {
 		Preprocessor.profilePatternReplacing = 0;
 		// Обход строки до ее конца
 		let asd = false;
-		if(stream.length > 3232322) {
+		if (stream.length > 3232322) {
 			console.profile('MyPerformanceTest');
 			asd = true;
 		}
 
-		
+
 		let curIndex = stream.curIndex;
 		let charCode = stream.charCodeAt(curIndex);
 		while (!this.isFileEndCharCode(stream.charCodeAt(curIndex))) {
@@ -1323,7 +1310,7 @@ export class Preprocessor {
 				curIndex = ++stream.curIndex;          /* skip non-alphapetic character (or closing quote of a string) */
 				charCode = stream.charCodeAt(curIndex);
 			}
-			
+
 			if (this.isFileEnd(stream.char)) {
 				break; /* abort loop on error */
 			}
@@ -1355,8 +1342,7 @@ export class Preprocessor {
 			/* get the prefix (length), look for a matching definition */
 			prefixlen = 0;
 			charCode = stream.charCodeAt(curIndex);
-			while ((charCode >= 48 && charCode <= 57) || (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122) || charCode === 95 || charCode === 64) 
-			{
+			while ((charCode >= 48 && charCode <= 57) || (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122) || charCode === 95 || charCode === 64) {
 				prefixlen++;
 				charCode = stream.charCodeAt(curIndex + prefixlen);
 			}
@@ -1416,7 +1402,7 @@ export class Preprocessor {
 			}
 			curIndex = stream.curIndex;
 		}
-		if(asd) {
+		if (asd) {
 			console.profileEnd('MyPerformanceTest');
 		}
 
