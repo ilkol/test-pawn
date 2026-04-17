@@ -89,38 +89,6 @@ export class Parser
 			Logger.error("Error on tree visit");
 			console.error(e);
 		}
-	
-		// this.diagnostic(analyzer.diagnostics);
-		// analyzer.functions.forEach((val, key) => {
-		// 	this.functions.set(key, val);
-		// });
-		// this.prepareSignatures();
-	
-		// console.log(document.AST);
-		
-		// analyzer.functionsDeclarations.forEach((value, key) => {	
-		// 	const keyMap = this.fileManager.definitionProvider.definitions.get(key);
-		// 	if(keyMap) {
-		// 		keyMap.set(this.file.uri, value);
-		// 	}
-		// 	else {
-		// 		const map = new Map<vscode.Uri, Definition<Declaration>[]>();
-		// 		map.set(this.file.uri, value);
-		// 		this.fileManager.definitionProvider.definitions.set(key, map);
-		// 	}
-		// });
-		// analyzer.functionsCalls.forEach((value, key) => {	
-		// 	const keyMap = this.fileManager.referenceProvider.references.get(key);
-		// 	if(keyMap) {
-		// 		keyMap.set(this.file.uri, value);
-		// 	}
-		// 	else {
-		// 		const map = new Map<vscode.Uri, Reference<IHasID>[]>();
-		// 		map.set(this.file.uri, value);
-		// 		this.fileManager.referenceProvider.references.set(key, map);
-		// 	}
-		// });
-		// this._isParsed = true;
 
 		await Parser._onFileWalkedASTListener?.(document);
 	}
