@@ -6,30 +6,28 @@ import { Symbols } from "../../SymbolSystem";
 import { MayBeTag } from "../../SymbolSystem/Symbols/MayBeTag";
 import { SymbolKind } from "vscode-languageserver";
 
-export class Scope implements IScope
-{
+export class Scope implements IScope {
 	private _currentFunction: Function | undefined;
 
 	/**
 	 * Родительская область видимости
 	 */
-	protected _parent: IScope|undefined;
+	protected _parent: IScope | undefined;
 
-	
-	public constructor(protected _file: AbstractOpenFile, private _range: Range, IScope: IScope|undefined = undefined)
-	{
+
+	public constructor(protected _file: AbstractOpenFile, private _range: Range, IScope: IScope | undefined = undefined) {
 		this._parent = IScope;
 	}
 	includedScopes: IScope[] = [];
 	currentSymbol: SymbolReferance | undefined;
 
 	public extend(range: Range, newSymbol?: SymbolReferance): IScope {
-		const scope =  new Scope(this._file, range, this);
+		const scope = new Scope(this._file, range, this);
 		scope.currentSymbol = newSymbol ?? this.currentSymbol;
 		return scope;
 	}
 
-	public get parent(): IScope|undefined {
+	public get parent(): IScope | undefined {
 		return this._parent;
 	}
 
@@ -52,21 +50,31 @@ export class Scope implements IScope
 	add(symbol: AbstractSymbol) {
 		this._symbols.set(symbol.name, symbol);
 	}
+	get localSymbolsMap() {
+		return this._symbols;
+	}
 	findSymbol(name: string, onlyLocal: boolean = false): AbstractSymbol | undefined {
-		const local = this._symbols.get(name) ?? (!onlyLocal ? this.parent?.findSymbol(name) : undefined);
-		if(local || onlyLocal) return local;
+		let current: IScope | undefined = this;
+		while (current) {
+			const found = current.localSymbolsMap.get(name);
 
-		if (!this.parent) {
-			for (const inc of this.includedScopes) {
-				const found = inc.findSymbol(name);
-				if (found) return found;
+			if (found) return found;
+			if (onlyLocal) break;
+
+			if (!current.parent) {
+				for (const inc of current.includedScopes) {
+					const foundInInc = inc.findSymbol(name);
+					if (foundInInc) return foundInInc;
+				}
 			}
+
+			current = current.parent;
 		}
 		return undefined;
 	}
 	renameSymbol(oldName: string, newName: string) {
 		const local = this._symbols.get(oldName);
-		if(local) {
+		if (local) {
 			local.name = newName;
 			this._symbols.delete(oldName);
 			this._symbols.set(newName, local);
@@ -81,35 +89,35 @@ export class Scope implements IScope
 
 	getAllVisibleSymbols(position: Position, result: Map<string, AbstractSymbol> = new Map(), tags: Set<MayBeTag> = new Set()) {
 		for (const [name, symbol] of this._symbols) {
-			if(symbol.isInternal) continue;
+			if (symbol.isInternal) continue;
 			if (result.has(name)) continue;
 			// Функции видны в любом месте файла, а остальные символы только после объявления
-			if(symbol instanceof Function || symbol.defenition.range.start.isBefore(position)) {
+			if (symbol instanceof Function || symbol.defenition.range.start.isBefore(position)) {
 				result.set(name, symbol);
 			}
 		}
-		
+
 		this._tags.forEach(tags.add.bind(tags));
 
-		if(this.parent) {
+		if (this.parent) {
 			this.parent.getAllVisibleSymbols(position, result, tags);
 		} else {
 			for (const [name, defineList] of this._file.defines) {
 				if (result.has(name)) continue;
-				for(const define of defineList) {
-					if(define.symbol?.defenition.range.start.isBefore(position)) {
+				for (const define of defineList) {
+					if (define.symbol?.defenition.range.start.isBefore(position)) {
 						result.set(name, define.symbol);
 					}
 				}
 			}
 			for (const inc of this.includedScopes) {
-				inc.getAllVisibleSymbols(new Position(0,0), result, tags);
+				inc.getAllVisibleSymbols(new Position(0, 0), result, tags);
 			}
 		}
-	
+
 		let tagsArray = Array.from(tags.values());
 		tagsArray = tagsArray.filter(tag => {
-			if(tag.symbolKind === SymbolKind.Enum) {
+			if (tag.symbolKind === SymbolKind.Enum) {
 				return !result.has(tag.name);
 			}
 			return true;
@@ -119,7 +127,7 @@ export class Scope implements IScope
 
 	private _tags: Map<string, MayBeTag> = new Map();
 	addTag(tag: Symbols.Tag) {
-		if(this._tags.has(tag.name)) {
+		if (this._tags.has(tag.name)) {
 			return;
 		}
 		this._tags.set(tag.name, tag);

@@ -24,6 +24,7 @@ export interface IScope
 	getAllVisibleSymbols(position: Position, result?: Map<string, AbstractSymbol>, tags?: Set<MayBeTag>): AbstractSymbol[];
 	/** Возвращает список всех объявленных символов (без тегов) */
 	getLocalSymbols(): AbstractSymbol[];
+	get localSymbolsMap(): Map<string, AbstractSymbol>;
 
 	addTag(tag: MayBeTag): void;
 	findTag(name: string): MayBeTag | undefined;

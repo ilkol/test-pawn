@@ -950,6 +950,9 @@ export class Analyzer extends BaseVisitor
 	private restrictScope(checkUsed: boolean = true, skipConstatns: boolean = false) {
 		if(checkUsed) {
 			for(const symbol of this.curScope.getLocalSymbols()) {
+				if(symbol.name === "MaxSpeedCar") {
+					console.log(1);
+				}
 				if(skipConstatns && (symbol instanceof Symbols.Variable || symbol instanceof Symbols.Enum || symbol instanceof Symbols.EnumMember) && symbol.isConst) {
 					continue;
 				}
@@ -1162,24 +1165,37 @@ export class Analyzer extends BaseVisitor
 	}
 
 	private addSymbolReference(name: string, symbolRange: Range, symbolNameRange: Range, modifiers: SemanticTokenModifiers[] = [], addPendingReference = false) {
-		const symbol = this.curScope.findSymbol(name);
-		if(!symbol) {
-			if(addPendingReference) {
-				// TODO: проврека параметров после разрешения ссылки
-				// this.addPendingReference(name, symbolNameRange);
-			} else {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, symbolNameRange, name));
+		// Пришлось обернуть в try-catch, потому что иначе поисходит оптимизация, из-за которой
+		// иногда isUsed устаналивается не всем символам. Не знаю почему так
+		// TODO: попробовать избавиться от try-catch
+		try {
+			const symbol = this.curScope.findSymbol(name);
+			if(!symbol) {
+				if(addPendingReference) {
+					// TODO: проврека параметров после разрешения ссылки
+					// this.addPendingReference(name, symbolNameRange);
+				} else {
+					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, symbolNameRange, name));
+				}
+				return undefined;
+			} 
+	
+			symbol.isUsed = true;
+			if(symbol.name === "MaxSpeedCar") {
+				console.log(symbol.id, symbol.isUsed);
 			}
+	
+			const reference = new Symbols.SymbolReferance(this.file.path, symbolRange, symbolNameRange, symbol.modifiers);
+			symbol.addReferance(reference);
+			this.curScope.currentSymbol?.childrens.push(reference);
+	
+			return symbol;
+
+		}
+		catch(e) {
+			console.error(e);
 			return undefined;
-		} 
-
-		symbol.isUsed = true;
-
-		const reference = new Symbols.SymbolReferance(this.file.path, symbolRange, symbolNameRange, symbol.modifiers);
-		symbol.addReferance(reference);
-		this.curScope.currentSymbol?.childrens.push(reference);
-
-		return symbol;
+		}
 	}
 
 	private addTag(name: string, range: Range, nameRange: Range = range): MayBeTag {
