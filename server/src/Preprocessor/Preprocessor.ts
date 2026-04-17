@@ -1289,10 +1289,10 @@ export class Preprocessor {
 		Preprocessor.profilePatternReplacing = 0;
 		// Обход строки до ее конца
 		let asd = false;
-		if (stream.length > 3232322) {
-			console.profile('MyPerformanceTest');
-			asd = true;
-		}
+		// if (stream.length > 3232322) {
+		// 	console.profile('MyPerformanceTest');
+		// 	asd = true;
+		// }
 
 
 		let curIndex = stream.curIndex;
@@ -1407,9 +1407,9 @@ export class Preprocessor {
 			}
 			curIndex = stream.curIndex;
 		}
-		if (asd) {
-			console.profileEnd('MyPerformanceTest');
-		}
+		// if (asd) {
+		// 	console.profileEnd('MyPerformanceTest');
+		// }
 
 		onProgress?.(100);
 		return stream.buildString;
