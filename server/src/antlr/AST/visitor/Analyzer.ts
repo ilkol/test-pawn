@@ -1001,11 +1001,12 @@ export class Analyzer extends BaseVisitor
 
 
 	private checkMultyTagMismatch(formalTags: MayBeTag[], actualTag: MayBeTag, range: Range) {
+		formalTags = formalTags.length ? formalTags : [SymbolsFactory.defaultTag]
 		if(this.checkAllTags(formalTags, actualTag)) {
 			return;
 		}
 		
-		const tags = formalTags.length ? formalTags : [SymbolsFactory.defaultTag];
+		const tags = formalTags;
 		const names: string[] = tags.map((tag) =>tag.name);
 		const lastTag = names.pop();
 		const formalTag = names.join(", ");
