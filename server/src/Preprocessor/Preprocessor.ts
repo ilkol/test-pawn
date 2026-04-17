@@ -377,22 +377,27 @@ export class Preprocessor {
 			}
 
 
-			if (element instanceof Directives.Conditionals.Condition) {
-				this.handleCondition(element, ifStack, defines, isVisible);
-			}
-			else if (element instanceof Directives.Conditionals.ElseIf) {
+			if (element instanceof Directives.Conditionals.ElseIf) {
 				if (!cur) {
 					this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, element.range));
 					continue;
 				}
+
+				cur.directive.elseBlock = element;
+				
 				const canExecute = cur.parentActive && !cur.anyBranchExecuted;
 				const result = canExecute ? this.evaluateCondition(element.conditionalString, element.startIndex, defines) : false;
 
-				cur.directive.elseBlock = element;
 				element.conditionResult = result;
 				if (result) cur.anyBranchExecuted = true;
+
 				cur.currentlyActive = canExecute && result;
-			}
+
+				cur.directive = element;
+			} 
+			else if (element instanceof Directives.Conditionals.Condition) {
+				this.handleCondition(element, ifStack, defines, isVisible);
+			} 
 			else if (element instanceof Directives.Conditionals.Else) {
 				if (!cur) {
 					this.currentDocument?.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, element.range));
