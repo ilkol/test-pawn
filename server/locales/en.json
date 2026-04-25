@@ -252,7 +252,8 @@
 		"generic": "Syntax error: {{offending}} (in rule: {{rule}})",
 		"extraneous_input": "Extraneous input '{{offending}}'. Expected: {{expected}}",
 		"mismatched_input": "Input mismatch '{{offending}}'. Expected: {{expected}} (rule: {{rule}})",
-		"no_viable_alt": "No viable alternative at input '{{offending}}'"
+		"no_viable_alt": "No viable alternative at input '{{offending}}'",
+		"missing_token": "Syntax error: {{msg}}"
 	},
 	"token recognition error at": " '№'",
 	"Unexpected return statement": "Unexpected return statement",
