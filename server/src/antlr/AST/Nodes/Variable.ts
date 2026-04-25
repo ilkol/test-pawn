@@ -31,7 +31,6 @@ export class Variable extends Expression implements IHasID
     public accept(visitor: IVisitor): void {
         visitor.visitVariable(this);
     }
- 
 	
 	public get id() : string {
 		return this._identifire;

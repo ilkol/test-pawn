@@ -217,7 +217,7 @@ export class Analyzer extends BaseVisitor
 	afterVisitAssigment(node: AssigmentOperator): void {
 		if(node.left) {
 			if(!node.left.isLValue) {
-				console.log(node.left);
+				console.error(node.left);
 				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.range));
 			}
 			if(node.right) {
@@ -322,10 +322,14 @@ export class Analyzer extends BaseVisitor
 			|| symbol instanceof Symbols.Parameter 
 			|| symbol instanceof Symbols.Variable) {
 			node.symbol = symbol;
+			
 		}
 		node.inferredTag = this.tagInferer.inferTag(node);
 		if(symbol instanceof Symbols.EnumMember) {
 			node.constExpr = symbol.value;
+			node.isConstExpr = true;
+		} else if(symbol instanceof Symbols.Variable || symbol instanceof Symbols.Parameter) {
+			node.isConstExpr = symbol.isConst;
 		}
 		
 		/*
@@ -678,6 +682,7 @@ export class Analyzer extends BaseVisitor
 				}
 			}
 			node.constExpr = modif ? modif(node.left.constExpr, node.right.constExpr) : 0;
+			node.isConstExpr = true;
 		} else {
 			node.constExpr = 0;
 		}
@@ -950,9 +955,6 @@ export class Analyzer extends BaseVisitor
 	private restrictScope(checkUsed: boolean = true, skipConstatns: boolean = false) {
 		if(checkUsed) {
 			for(const symbol of this.curScope.getLocalSymbols()) {
-				if(symbol.name === "MaxSpeedCar") {
-					console.log(1);
-				}
 				if(skipConstatns && (symbol instanceof Symbols.Variable || symbol instanceof Symbols.Enum || symbol instanceof Symbols.EnumMember) && symbol.isConst) {
 					continue;
 				}
@@ -1181,9 +1183,6 @@ export class Analyzer extends BaseVisitor
 			} 
 	
 			symbol.isUsed = true;
-			if(symbol.name === "MaxSpeedCar") {
-				console.log(symbol.id, symbol.isUsed);
-			}
 	
 			const reference = new Symbols.SymbolReferance(this.file.path, symbolRange, symbolNameRange, symbol.modifiers);
 			symbol.addReferance(reference);

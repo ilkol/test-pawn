@@ -8,44 +8,48 @@ import { MayBeTag } from "../../../SymbolSystem/Symbols/MayBeTag";
 
 export class Expression extends AbstractStatement implements IHasTag {
 	name = "вырожение";
-	
+
 	private translateTag: boolean = false;
 	private _tag: Tag = new DefaultTag();
-	protected exp: Expression|undefined = undefined;
+	protected exp: Expression | undefined = undefined;
 	public inferredTag: MayBeTag | null = null;
 
 	public constExpr: number = 0;
+	private _isConstExpr: boolean = false;
+
+	public set isConstExpr(v: boolean) {
+		this._isConstExpr = v;
+	}
+
 	public get isConstExpr(): boolean {
-		return false;
+		return this._isConstExpr;
 	}
 	public isLValue: boolean = false;
 
-	public get tag() : Tag {
+	public get tag(): Tag {
 		return this._tag;
 	}
 
-	public set tag(v : Tag) {
+	public set tag(v: Tag) {
 		this._tag = v;
 	}
 
-	public get isTaged(): boolean
-	{
+	public get isTaged(): boolean {
 		return this.translateTag;
 	}
-	public set isTaged(v: true)
-	{
+	public set isTaged(v: true) {
 		this.translateTag = v;
 	}
 
 
 	public accept(visitor: IVisitor): void {
-		if(this.exp) {
+		if (this.exp) {
 			this.exp?.accept(visitor);
 			this.range = this.exp.pos;
 		}
 	}
 
-	public get expresion(): Expression|undefined {
+	public get expresion(): Expression | undefined {
 		return this.exp;
 	}
 	public set expresion(v: Expression) {
