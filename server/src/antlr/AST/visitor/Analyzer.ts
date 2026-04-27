@@ -33,7 +33,7 @@ import { ArrayChar } from "../Nodes/Operators/ArrayChar";
 import { DoWhileCycle } from "../Nodes/Cycles/DoWhileCycle";
 import { Range } from "../../../types";
 import { Locale } from "../../../Locale";
-import { DiagnosticSeverity, DiagnosticTag, SemanticTokenModifiers, SymbolKind } from "vscode-languageserver";
+import { Diagnostic, DiagnosticSeverity, DiagnosticTag, SemanticTokenModifiers, SymbolKind } from "vscode-languageserver";
 import { PawnErrors } from "../../../Errors/PawnErrors";
 import { LSPPawnErrors } from "../../../Errors/LSPPawnErrors";
 import { SemanticTokensLegendManager, SymbolManager } from "../../../SymbolSystem";
@@ -145,14 +145,14 @@ export class Analyzer extends BaseVisitor {
 								if (member.index) {
 									if (node.right?.isConstExpr) {
 										if (member.index <= node.right.constExpr) {
-											this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArrayIndexOutOfRange, node.right.range, arraySymbol.name));
+											this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ArrayIndexOutOfRange, node.right.range, arraySymbol.name));
 										}
 									}
 								} else {
-									this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArrayIndexOutOfRange, (node.right ? node.right : node).range, arraySymbol.name));
+									this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ArrayIndexOutOfRange, (node.right ? node.right : node).range, arraySymbol.name));
 								}
 							} else {
-								this.file.diagnostics.push(LSPPawnErrors.reportCustom(
+								this.pushDiagnostic(LSPPawnErrors.reportCustom(
 									Locale.t("Member %s not found in enum %s", lastIndex.id, lastDim.tag.name),
 									DiagnosticSeverity.Error,
 									lastIndex.range
@@ -217,7 +217,7 @@ export class Analyzer extends BaseVisitor {
 		if (node.left) {
 			if (!node.left.isLValue) {
 				console.error(node.left);
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.range));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.range));
 			}
 			if (node.right) {
 				let leftTag = this.tagInferer.inferTag(node.left);
@@ -264,11 +264,11 @@ export class Analyzer extends BaseVisitor {
 		}
 
 		if (this.curScope.findSymbol(symbol.name, true)) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
+			this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, node.id));
 		} else {
 			const findedSymbol = this.curScope.findSymbol(symbol.name);
 			if (findedSymbol && !(findedSymbol instanceof Symbols.Function)) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolShadowing, node.pos, node.id));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.SymbolShadowing, node.pos, node.id));
 			}
 		}
 
@@ -288,11 +288,11 @@ export class Analyzer extends BaseVisitor {
 
 		if (node.dimensions.length) {
 			if (node.reference) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CanBeReferenceToArray, node.pos, node.id));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.CanBeReferenceToArray, node.pos, node.id));
 			}
 		}
 		if (node.dimensions.length >= Pawn.MAX_ARRAY_DIMENSIONS) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArrayDimenssions, node.pos));
+			this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MaxArrayDimenssions, node.pos));
 		}
 
 		const symbol = node.symbol!;
@@ -338,7 +338,7 @@ export class Analyzer extends BaseVisitor {
 			}
 			else {
 				if(variable.indexes.length !== node.indexes.length) {
-					this.file.diagnostics.push(LSPPawnErrors.reportError(48, 48, node.idPos, {original: variable.indexes.length, passed: node.indexes.length}));
+					this.pushDiagnostic(LSPPawnErrors.reportError(48, 48, node.idPos, {original: variable.indexes.length, passed: node.indexes.length}));
 				}
 				else {
 					let iter = -1;
@@ -347,14 +347,14 @@ export class Analyzer extends BaseVisitor {
 						if(el.expresion instanceof IntLiteral) {
 							const size = variable.size[iter];
 							if(!size)
-								this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, el.pos));
+								this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, el.pos));
 							else {
 								const val = el.expresion.value;
 								if(val < 0) {
-									this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArraySize, el.pos));
+									this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InvalidArraySize, el.pos));
 								}
 								else if(val >= size) {
-									this.file.diagnostics.push(LSPPawnErrors.reportError(32, 32, el.pos, node.id,  size-1));
+									this.pushDiagnostic(LSPPawnErrors.reportError(32, 32, el.pos, node.id,  size-1));
 								}
 							}
 							return el.expresion;
@@ -367,11 +367,11 @@ export class Analyzer extends BaseVisitor {
 							// } else {
 							// 	if(checkVar instanceof EnumMember) {
 							// 		if(enumer !== checkVar.parent) {
-							// 			this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\", but found from \"%s\"", enumer.id, checkVar.parent!.id), DiagnosticSeverity.Error, el.pos));
+							// 			this.pushDiagnostic(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\", but found from \"%s\"", enumer.id, checkVar.parent!.id), DiagnosticSeverity.Error, el.pos));
 							// 		}
 							// 	}
 							// 	else {
-							// 		this.file.diagnostics.push(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\"", enumer.id), DiagnosticSeverity.Error, el.pos));
+							// 		this.pushDiagnostic(LSPPawnErrors.reportCustom(Locale.t("Expected enum member from \"%s\"", enumer.id), DiagnosticSeverity.Error, el.pos));
 							// 	}
 							// }
 						}
@@ -385,7 +385,7 @@ export class Analyzer extends BaseVisitor {
 				if(variable instanceof FunctionDeclarationParameter){
 					let checkvar = variable.variable;
 					if(!(checkvar instanceof Array)) {
-						this.file.diagnostics.push(LSPPawnErrors.reportError("28.notArray",28,  node.idPos, node.id, node.idPos));
+						this.pushDiagnostic(LSPPawnErrors.reportError("28.notArray",28,  node.idPos, node.id, node.idPos));
 					}
 				}
 			}
@@ -448,7 +448,7 @@ export class Analyzer extends BaseVisitor {
 			if (tag) {
 				const resultTag = this.addTag(tag.id, tag.pos, tag.idPos);
 				if (resultTag !== SymbolsFactory.defaultTag) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionWithTagUsedBeforeDeclaration, node.idPos));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.FunctionWithTagUsedBeforeDeclaration, node.idPos));
 				}
 				node.inferredTag = resultTag;
 			}
@@ -456,7 +456,7 @@ export class Analyzer extends BaseVisitor {
 			return;
 		}
 		if (!(symbol instanceof Symbols.Function)) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidFunctioncall, node.idPos));
+			this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InvalidFunctioncall, node.idPos));
 			return;
 		}
 
@@ -481,7 +481,7 @@ export class Analyzer extends BaseVisitor {
 		pending.forEach(func => {
 			functionSymbol.addReferance(new Symbols.SymbolReferance(this.file.path, func.pos, func.idPos));
 			if (returnNotDefaultTag) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionWithTagUsedBeforeDeclaration, func.idPos));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.FunctionWithTagUsedBeforeDeclaration, func.idPos));
 			}
 			this.checkCallFunctionParameters(functionSymbol, func);
 		});
@@ -504,10 +504,10 @@ export class Analyzer extends BaseVisitor {
 			case "++":
 			case "--":
 				if (!node.value?.isLValue) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.value?.range ?? node.range));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.value?.range ?? node.range));
 				}
 				if (node.value instanceof Variable && !(node.value.symbol instanceof Symbols.Function) && node.value.symbol?.hasModifier(Symbols.VariableModifire.Const)) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.value?.range ?? node.range));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MustBeLValue, node.value?.range ?? node.range));
 				}
 				break;
 			case "~":
@@ -550,18 +550,18 @@ export class Analyzer extends BaseVisitor {
 					if (node.value instanceof Variable) {
 						const symbol = this.curScope.findSymbol(node.value.id);
 						if (!symbol) {
-							this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, node.value.range, node.value.id));
+							this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, node.value.range, node.value.id));
 						}
 
 						// TODO:
 						// if(symbol.isConstExp) {
-						// 	this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ConstSymbolHasnotSize, node.value.range));
+						// 	this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ConstSymbolHasnotSize, node.value.range));
 						// }
 						if (symbol instanceof Symbols.Function) {
-							this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionSymbolHasnotSize, node.value.range));
+							this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.FunctionSymbolHasnotSize, node.value.range));
 						}
 						// if(!symbol.isDefined) {
-						// 	this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, node.value.range, node.value.id));
+						// 	this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, node.value.range, node.value.id));
 						// }
 						node.constExpr = 1;
 						// if(symbol instanceof Symbols.Variable) {
@@ -571,7 +571,7 @@ export class Analyzer extends BaseVisitor {
 						// }
 
 					} else {
-						this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidSymbolName, node.value.range, "unknown"));
+						this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InvalidSymbolName, node.value.range, "unknown"));
 					}
 					node.inferredTag = SymbolsFactory.defaultTag;
 				}
@@ -677,7 +677,7 @@ export class Analyzer extends BaseVisitor {
 					modif = (first, second) => first % second;
 					break;
 				default: {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ExpressionError, node.range));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ExpressionError, node.range));
 				}
 			}
 			node.constExpr = modif ? modif(node.left.constExpr, node.right.constExpr) : 0;
@@ -721,15 +721,15 @@ export class Analyzer extends BaseVisitor {
 				currentFunction.emptyReturnsRanges.push(node.range);
 				return;
 			}
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ShoutdReturnValue, node.range, currentFunction.name));
+			this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ShoutdReturnValue, node.range, currentFunction.name));
 			return;
 		}
 		if (!currentFunction.shuldReturnValue) {
 			currentFunction.emptyReturnsRanges.forEach(range => {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ShoutdReturnValue, range, currentFunction.name));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ShoutdReturnValue, range, currentFunction.name));
 			});
 			if (currentFunction.emptyReturnsRanges.length) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MixEmptyReturnAndReturnValue, node.range));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MixEmptyReturnAndReturnValue, node.range));
 			}
 			currentFunction.emptyReturnsRanges = [];
 		}
@@ -806,7 +806,7 @@ export class Analyzer extends BaseVisitor {
 	afterVisitDeclarations(declaration: Declarations): void {
 		this.pendingReferences.forEach((ranges, id) => {
 			ranges.forEach(func => {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, func.idPos, id));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, func.idPos, id));
 			});
 		});
 		this.pendingReferences.clear();
@@ -814,10 +814,13 @@ export class Analyzer extends BaseVisitor {
 
 		for (const symbol of this.curScope.getLocalSymbols()) {
 			if (symbol instanceof Symbols.Function) {
+				if(symbol.isUsed || !symbol.hasModifier(FunctionModifire.Stock)) {
+					this.file.diagnostics.push(...symbol.diagnostics);
+				}
 				if(symbol.isUsed) {
 					continue;
 				}
-				this.file.diagnostics.push({
+				this.pushDiagnostic({
 					message: Locale.t("Non-executable code"),
 					range: symbol.defenition.range,
 					severity: DiagnosticSeverity.Hint,
@@ -876,6 +879,15 @@ export class Analyzer extends BaseVisitor {
 
 
 	}
+
+	private pushDiagnostic(diagnsotic: Diagnostic) {
+		if(this.curScope.currentFunction) {
+			this.curScope.currentFunction.diagnostics.push(diagnsotic);
+		} else {
+			this.file.diagnostics.push(diagnsotic);
+		}
+	}
+
 	private addVariableDimensions(dims: (Expression | null)[], symbol: Symbols.Variable | Symbols.Parameter) {
 
 		for (const dim of dims) {
@@ -931,7 +943,7 @@ export class Analyzer extends BaseVisitor {
 		if (dim instanceof Variable) {
 			const enumRoot = this.curScope.findSymbol(dim.id);
 			if (!(enumRoot instanceof Symbols.Enum)) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, dim.range));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, dim.range));
 				return;
 			}
 			declaredSize = enumRoot.members.length;
@@ -944,18 +956,18 @@ export class Analyzer extends BaseVisitor {
 			if (val instanceof ArrayInit) {
 				if (val.value.length > declaredSize) {
 					if (declaredSize !== 0) {
-						this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
+						this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InitDataExceededDeclareSize, val.range));
 					}
 				} else if (val.value.length < declaredSize) {
 					if (depth === dims.length - 1) {
-						this.file.diagnostics.push(LSPPawnErrors.reportCustom(
+						this.pushDiagnostic(LSPPawnErrors.reportCustom(
 							Locale.t("Vector partially initialized. Remaining %s elements will be 0.", declaredSize - val.value.length),
 							DiagnosticSeverity.Hint,
 							val.range
 						));
 					}
 					else {
-						this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArrayNotFullyInit, val.range));
+						this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ArrayNotFullyInit, val.range));
 					}
 				}
 				this.checkInitArraySize(val.value, dims, depth + 1);
@@ -980,7 +992,7 @@ export class Analyzer extends BaseVisitor {
 					if (symbol instanceof Symbols.Variable && symbol.hasModifier(Symbols.VariableModifire.Stock | Symbols.VariableModifire.Public)) {
 						continue;
 					}
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, symbol.defenition.tokenRange, symbol.name));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.SymbolIsNeverUsed, symbol.defenition.tokenRange, symbol.name));
 				}
 			}
 		}
@@ -1031,7 +1043,7 @@ export class Analyzer extends BaseVisitor {
 		const lastTag = names.pop();
 		const formalTag = names.join(", ");
 		const formalTagsName = formalTag === "" ? `${lastTag},` : `${formalTag} or ${lastTag};`;
-		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, range, tags.length === 1 ? Locale.t("tag") : Locale.t("tags"), formalTagsName, actualTag.name))
+		this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.TagMismatch, range, tags.length === 1 ? Locale.t("tag") : Locale.t("tags"), formalTagsName, actualTag.name))
 	}
 
 	private checkAllTags(formalTags: MayBeTag[], actualTag: MayBeTag): boolean {
@@ -1047,7 +1059,7 @@ export class Analyzer extends BaseVisitor {
 		if (this.simpleCheckTagMismatch(formalTag, actualTag, allowCoerce)) {
 			return;
 		}
-		this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.TagMismatch, range, Locale.t("tag"), formalTag, actualTag))
+		this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.TagMismatch, range, Locale.t("tag"), formalTag, actualTag))
 	}
 
 	private isDefaultTag(tag: string): boolean {
@@ -1068,18 +1080,18 @@ export class Analyzer extends BaseVisitor {
 
 	private handleFunctionRedeclaration(node: FunctionDeclaration, existing: Symbols.AbstractSymbol) {
 		if (!(existing instanceof Symbols.Function)) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.idPos, node.id));
+			this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.idPos, node.id));
 			return;
 		}
 		if (existing.hasImplementation) {
 			if (!node.code) {
-				this.file.diagnostics.push(LSPPawnErrors.reportCustom(
+				this.pushDiagnostic(LSPPawnErrors.reportCustom(
 					Locale.t("duplicating function head"),
 					DiagnosticSeverity.Warning,
 					node.idPos
 				));
 			} else {
-				this.file.diagnostics.push(LSPPawnErrors.reportCustom(
+				this.pushDiagnostic(LSPPawnErrors.reportCustom(
 					Locale.t("duplicating function implementation"),
 					DiagnosticSeverity.Warning,
 					node.idPos
@@ -1090,7 +1102,7 @@ export class Analyzer extends BaseVisitor {
 			//                  (existing.modifier === FunctionModifire.public && node.modifier === FunctionModifire.forward);
 
 			// if (!isCompatible) {
-			// 	this.file.diagnostics.push(PawnErrors.report(21, node.idPos, node.id));
+			// 	this.pushDiagnostic(PawnErrors.report(21, node.idPos, node.id));
 			// }
 		}
 	}
@@ -1103,7 +1115,7 @@ export class Analyzer extends BaseVisitor {
 		for (const argument of node.vars) {
 			if (argNumber >= functionSymbol.parameters.length) {
 				if (!functionSymbol.ellipse) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentCountMismatch, argument.pos, argNumber));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ArgumentCountMismatch, argument.pos, argNumber));
 					break;
 				}
 				const value = argument instanceof NamedArgument ? argument.value : argument;
@@ -1122,22 +1134,22 @@ export class Analyzer extends BaseVisitor {
 				namedArguments = true;
 				argPos = functionSymbol.parameters.findIndex(param => param.name === argument.id);
 				if (argPos === -1) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, argument.idPos, argument.id));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, argument.idPos, argument.id));
 					break;
 				}
 			} else {
 				if (namedArguments) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.NamedargumentsMustBeAfterPositional, argument.pos));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.NamedargumentsMustBeAfterPositional, argument.pos));
 				}
 				argPos = argNumber;
 			}
 
 			if (argPos >= Pawn.MAX_PARAMETERS_COUNt) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArguments, argument.pos));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MaxArguments, argument.pos));
 				break;
 			}
 			if (usedArgs[argPos] !== ArgumentState.Unset) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentAlreadySet, argument.pos));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ArgumentAlreadySet, argument.pos));
 			}
 
 			if (argument instanceof NamedArgument && argument.id === "_") {
@@ -1145,7 +1157,7 @@ export class Analyzer extends BaseVisitor {
 				/*if (arg[argidx].ident==0 || arg[argidx].ident==iVARARGS) {
 					error(202);
 				} else */if (!functionSymbol.parameters[argPos].hasDefaultValue) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentHasntDefaultValue, argument.pos, argPos + 1));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ArgumentHasntDefaultValue, argument.pos, argPos + 1));
 				}
 				// if (arg[argidx].ident!=0 && arg[argidx].ident!=iVARARGS)
 				// 	argidx++;
@@ -1167,7 +1179,7 @@ export class Analyzer extends BaseVisitor {
 		for (const parameter of functionSymbol.parameters) {
 			if (usedArgs[argindex] === ArgumentState.Done) continue;
 			if (!parameter.hasDefaultValue) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.ArgumentCountMismatch, node.pos, argindex));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.ArgumentCountMismatch, node.pos, argindex));
 			}
 
 			usedArgs[argindex] = ArgumentState.Done;
@@ -1192,7 +1204,7 @@ export class Analyzer extends BaseVisitor {
 					// TODO: проврека параметров после разрешения ссылки
 					// this.addPendingReference(name, symbolNameRange);
 				} else {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, symbolNameRange, name));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.UndefinedSymbol, symbolNameRange, name));
 				}
 				return undefined;
 			}
@@ -1238,13 +1250,13 @@ export class Analyzer extends BaseVisitor {
 			case ">=": {
 				if (resultTag != this.addTag("bool", errorRange)) {
 					/* operator X requires a "bool:" result tag */
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidOperatorOverloadResultTag, errorRange, operator, "bool:"));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InvalidOperatorOverloadResultTag, errorRange, operator, "bool:"));
 				}
 				break;
 			}
 			case "~": {
 				if (!this.isDefaultTag(resultTag.name)) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidOperatorOverloadResultTag, errorRange, operator, "_:"));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InvalidOperatorOverloadResultTag, errorRange, operator, "_:"));
 				}
 				break;
 			}
@@ -1305,14 +1317,14 @@ export class Analyzer extends BaseVisitor {
 		let symbol = this.scopeManager.globalScope.findSymbol(name);
 		if (symbol) {
 			if (!(symbol instanceof Symbols.Function)) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, idRange, name));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, idRange, name));
 				return null;
 			}
 			if (symbol.hasModifier(FunctionModifire.Native)) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, idRange, name));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, idRange, name));
 			}
 			if (symbol.returnTag != tag) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MismatchPrototype, idRange));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MismatchPrototype, idRange));
 			}
 
 		} else {
@@ -1330,7 +1342,7 @@ export class Analyzer extends BaseVisitor {
 		const isStatic = node.hasModifier(FunctionModifire.Static);
 		if (isNative) {
 			if (isPublic || isStocked || isStatic) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.pos));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.pos));
 			}
 		} else {
 			// if(node.hasModifier(FunctionModifire.Public | FunctionModifire.Stock | FunctionModifire.Static)) {
@@ -1383,7 +1395,7 @@ export class Analyzer extends BaseVisitor {
 			const isStatic = node.hasModifier(FunctionModifire.Static);
 			const isPublic = node.hasModifier(FunctionModifire.Public) || node.id[0] === '@';
 			if (isPublic && isStocked) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.idPos));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InvalidModifiersCombination, node.idPos));
 			}
 
 			if (isPublic) {
@@ -1394,7 +1406,7 @@ export class Analyzer extends BaseVisitor {
 			}
 
 			if (isPublic && !symbol.hasModifier(FunctionModifire.Forward) && node.code) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.PublicBeforeForward, node.idPos, symbol.name));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.PublicBeforeForward, node.idPos, symbol.name));
 			}
 
 			if (isOverload) {
@@ -1403,14 +1415,14 @@ export class Analyzer extends BaseVisitor {
 			const argCount = node.parameters.length;
 			if (symbol.name === "main" || symbol.name === "entry") {
 				if (argCount) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionMaynotHaveArguments, node.pos));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.FunctionMaynotHaveArguments, node.pos));
 				}
 				symbol.isUsed = true;
 			}
 
 			if (node.code === undefined) {
 				symbol.addModifier(FunctionModifire.Forward);
-				// this.file.diagnostics.push(PawnErrors.report(218, node.pos));
+				// this.pushDiagnostic(PawnErrors.report(218, node.pos));
 			} else {
 				symbol.hasImplementation = true;
 			}
@@ -1422,7 +1434,7 @@ export class Analyzer extends BaseVisitor {
 		this.scopeManager.globalScope.add(symbol);
 
 		if (node.parameters.length >= Pawn.MAX_PARAMETERS_COUNt) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MaxArguments, node.pos));
+			this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MaxArguments, node.pos));
 		}
 
 		this.extendScope(node.range, symbol.defenition);
@@ -1437,7 +1449,7 @@ export class Analyzer extends BaseVisitor {
 			if (count < 2) {
 				if (param.tags.length > 1) {
 					/* function argument may only have a single tag */
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.FunctionArgumentMayOnlyHaveSingleArgument, param.pos, count + 1));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.FunctionArgumentMayOnlyHaveSingleArgument, param.pos, count + 1));
 				}
 				else if (param.tags.length == 1) {
 					const tag = param.tags[0];
@@ -1448,15 +1460,15 @@ export class Analyzer extends BaseVisitor {
 			}
 			if (node.operator === "~" && count == 0) {
 				if (param.dimensions.length === 0) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeArrayArgument, param.pos, param.id));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MustBeArrayArgument, param.pos, param.id));
 				}
 			} else {
 				if (param.dimensions.length || param.reference) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeNonReference, param.pos, param.id));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MustBeNonReference, param.pos, param.id));
 				}
 			}
 			if (param.defaultValue) {
-				this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MayNotHaveDefaultValue, param.pos, param.id));
+				this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MayNotHaveDefaultValue, param.pos, param.id));
 			}
 			count++;
 		});
@@ -1467,27 +1479,27 @@ export class Analyzer extends BaseVisitor {
 			case "++":
 			case "--":
 				if (count !== 1) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
 				}
 				break;
 			case "-":
 				if (count !== 1 && count !== 2) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
 				}
 				break;
 			default:
 				if (count !== 2) {
-					this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
+					this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.InvalidArgumentsCountInOperatorOverloading, node.pos));
 				}
 		}
 
 		if (this.isDefaultTag(tags[0].name) && ((node.operator != '=' && this.isDefaultTag(tags[1].name)) || (node.operator == '=' && this.isDefaultTag(symbol.returnTag.name))))
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
+			this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.CantChangePredefinedOperator, node.pos));
 
 		const newName = Analyzer.operatorName(node.operator, tags[0], tags[1], count, symbol.returnTag);
 		if (this.scopeManager.globalScope.findSymbol(newName)) {
 			// TODO: должна быть проверка реализована функция или просто объявлена
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, newName));
+			this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.SymbolAlreadyDefined, node.pos, newName));
 		} else {
 			this.scopeManager.globalScope.add(symbol);
 		}
@@ -1499,7 +1511,7 @@ export class Analyzer extends BaseVisitor {
 
 	private getConstantExpression(expr: Expression): number {
 		if (!expr.isConstExpr) {
-			this.file.diagnostics.push(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, expr.range));
+			this.pushDiagnostic(PawnErrors.report(PawnErrors.Code.MustBeConstantExpression, expr.range));
 			return 0;
 		}
 		return expr.constExpr;

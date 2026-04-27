@@ -1,4 +1,4 @@
-import { CompletionItemKind, SemanticTokenModifiers, SemanticTokenTypes, SymbolKind } from "vscode-languageserver";
+import { CompletionItemKind, Diagnostic, SemanticTokenModifiers, SemanticTokenTypes, SymbolKind } from "vscode-languageserver";
 import { Range } from "../../types";
 import { SemanticTokensLegendManager } from "../SemanticTokensLegendManager";
 import { AbstractSymbol } from "./AbstractSymbol";
@@ -22,6 +22,8 @@ export class Function extends AbstractSymbol {
 	public shuldReturnValue: boolean = false;
 	private functionModifiers: number = FunctionModifire.None;
 	public ellipse?: EllipseInfo;
+
+	diagnostics: Diagnostic[] = [];
 
 	constructor(id: number, name: string, definitionFilePath: string, range: Range, tokenRange: Range) {
 		super(
