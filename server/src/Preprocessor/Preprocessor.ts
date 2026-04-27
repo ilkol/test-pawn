@@ -1322,7 +1322,7 @@ export class Preprocessor {
 
 			if (onProgress) {
 				const originalPos = stream.curIndex - shift;
-				const currentPercent = Math.floor((originalPos / totalSize) * 100);
+				const currentPercent = Math.floor((originalPos / stream.length) * 100);
 
 				if (currentPercent > lastReportedPercent) {
 					onProgress(currentPercent);
