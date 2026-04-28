@@ -2,6 +2,6 @@
 	"config.description": "Расширение для бета теста основного расширения",
 	"command.test": "Тестовая команда",
 	"configuration.clearOnBuild.description": "Очищать консоль перед запуском сборки проекта",
-	"configuration,compilerPath": "Путь до компилятора (pawncc.exe)",
+	"configuration.compilerPath": "Путь до компилятора (pawncc.exe)",
 	"configuration.includePaths": "Подключаемые директории"
 }
