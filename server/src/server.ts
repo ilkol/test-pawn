@@ -20,8 +20,33 @@ import { SettingsManager } from './Settings/SettingsManager';
 import { PathResolver } from './PathResolver';
 import { URI } from 'vscode-uri';
 
+import * as Sentry from "@sentry/node";
+
 async function main() {
+	const startTime = Date.now();
+	const isDebug = false;//process.env.IS_LSP_DEBUG === 'true';
+	if (!isDebug) {
+		Sentry.init({
+			dsn: "https://22d28a9fcd44413118bf6eddba25667d@o4511298449702912.ingest.de.sentry.io/4511298455404624",
+			release: "test-pawn@2.0.0",
+			sendDefaultPii: true,
+		});
+
+		process.on('uncaughtException', (err) => {
+			Sentry.captureException(err);
+		});
+
+		Sentry.setContext("environment", {
+			platform: process.platform, // win32, linux, darwin
+			arch: process.arch,         // x64, arm64
+			nodeVersion: process.version
+		});
+	} else {
+		console.log("Sentry disabled: Debug mode detected via env");
+	}
+
 	const connection = createConnection(ProposedFeatures.all);
+
 
 	SemanticTokensLegendManager.init();
 
@@ -36,12 +61,29 @@ async function main() {
 	const settingsManager = new SettingsManager(connection);
 
 	const orchestrator = new AnalasisOrchestrator(connection, preprocessor, symbolManager);
-	
+
 	fileManager.onFileManagerOpenFileListener = async (document) => {
 		Logger.log(`${document.path} has been opened`);
-		await orchestrator.analyze(document);
+		const start = Date.now();
+		try {
+			await orchestrator.analyze(document);
+		} catch (e) {
+			console.error(e);
+			Sentry.captureException(e, { tags: { stage: "initial_analysis" } });
+		}
+		const duration = Date.now() - start;
+		const fileSizeKb = Math.round(document.getText().length / 1024);
+		const sizeBucket = fileSizeKb < 10 ? "small" : fileSizeKb < 50 ? "medium" : "large";
+
+		Sentry.metrics.distribution("analyze_file_time", duration, {
+			unit: "millisecond",
+			attributes: {
+				file_size_kb: fileSizeKb,
+				size_bucket: sizeBucket,
+			}
+		});
 	}
-	
+
 	const capabilitiesManager = new CapabilitiesManager();
 
 	connection.onInitialize(params => {
@@ -50,6 +92,12 @@ async function main() {
 			workspaceRoot = URI.parse(params.workspaceFolders[0].uri).fsPath;
 		}
 		pathResolver.workspaceRoot = workspaceRoot;
+
+		const clientInfo = params.clientInfo;
+		Sentry.setContext("client", {
+			name: clientInfo?.name,
+			version: clientInfo?.version // Это и есть версия VS Code
+		});
 
 		return capabilitiesManager.getInitializeResult(params, fileManager);
 	});
@@ -62,8 +110,8 @@ async function main() {
 
 			await CacheManager.init(fileManager);
 			fileManager.init();
-		} catch(e) {
-			if(e instanceof Error) {
+		} catch (e) {
+			if (e instanceof Error) {
 				sendNotification(connection, VSCode.NotificationType.Error, e.message);
 			}
 			else {
@@ -78,7 +126,7 @@ async function main() {
 				Logger.log('Workspace folder change event received.');
 			});
 		}
-		if(capabilitiesManager.hasConfigurationCapability) {
+		if (capabilitiesManager.hasConfigurationCapability) {
 			connection.client.register(DidChangeConfigurationNotification.type);
 		}
 		Logger.log(Locale.t('LSP server initialized.'));
@@ -103,13 +151,28 @@ async function main() {
 		const document = fileManager.getOpenedFile(uriStr);
 		if (document) {
 			// Убеждаемся, что препроцессинг завершен
-			await document.waitForAnalysis(); 
+			await document.waitForAnalysis();
 			return document.processedCode; // Та самая строка после всех замен
 		}
 		return "// Ошибка: Файл не найден или еще не проанализирован";
 	});
 
 	fileManager.documentsManager.listen(connection);
+
+	connection.onShutdown(async () => {
+		const sessionDurationMinutes = Math.round((Date.now() - startTime) / 1000 / 60);
+
+		Sentry.captureMessage("Session Ended", {
+			level: "info",
+			extra: {
+				durationMinutes: sessionDurationMinutes
+			},
+			tags: {
+				sessionType: sessionDurationMinutes > 30 ? "long_work" : "short_edit"
+			}
+		});
+		await Sentry.flush(2000);
+	});
 	connection.listen();
 }
 

@@ -129,6 +129,7 @@
 		]
 	},
 	"dependencies": {
+		"@sentry/node": "^10.50.0",
 		"@vscode/l10n": "^0.0.18",
 		"antlr4ts": "^0.5.0-alpha.4",
 		"findup-sync": "^5.0.0"

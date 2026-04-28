@@ -24,6 +24,10 @@ export function activate(context: ExtensionContext) {
 		debug: {
 			module: serverModule,
 			transport: TransportKind.ipc,
+			options: {
+				execArgv: ["--nolazy", "--inspect=6009"],
+				env: { "IS_LSP_DEBUG": "true" } // <--- Явно помечаем дебаг-режим
+			},
 		}
 	}
 
@@ -48,18 +52,18 @@ export function activate(context: ExtensionContext) {
 
 			if (workspaceFolder) {
 				const rootPath = workspaceFolder.uri.fsPath;
-				
+
 				const relPath = path.relative(rootPath, filePath);
-				
+
 				const fileName = relPath.replace(/[\/\\]/g, '_') + '.json';
-				
+
 				const cacheDir = path.resolve(rootPath, '.cache', 'ilkol-pawn-lsp');
 				const fullCachePath = path.join(cacheDir, fileName);
 
 				if (fs.existsSync(fullCachePath)) {
 					const rawData = fs.readFileSync(fullCachePath, 'utf8');
 					const data = JSON.parse(rawData);
-					
+
 					const panel = vscode.window.createWebviewPanel(
 						'pawnAST',
 						`AST: ${path.basename(filePath)}`,
@@ -75,10 +79,10 @@ export function activate(context: ExtensionContext) {
 					// Рекурсивная функция для генерации HTML-дерева
 					function renderNode(node: any): string {
 						if (!node || typeof node !== 'object') return `<span class="value">${node}</span>`;
-						
+
 						const type = node.__type || "Node";
 						const keys = Object.keys(node).filter(k => k !== '__type' && k !== 'pos' && k !== 'parent');
-						
+
 						return `
 							<details open>
 								<summary><span class="type">${type}</span> ${node.operator || node.id || ''}</summary>
@@ -132,13 +136,13 @@ export function activate(context: ExtensionContext) {
 	const GetPreprocessedRequest = new RequestType<string, string, void>('pawn/getPreprocessed');
 
 	const myProvider = new class implements vscode.TextDocumentContentProvider {
-        onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
-        onDidChange = this.onDidChangeEmitter.event;
+		onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
+		onDidChange = this.onDidChangeEmitter.event;
 
-        async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
+		async provideTextDocumentContent(uri: vscode.Uri): Promise<string> {
 			// Извлекаем оригинальный URI файла (убираем нашу схему pawn-preprocessed)
 			const originalUri = uri.query; // Или другой способ передачи, напр. через путь
-			
+
 			try {
 				// Отправляем кастомный запрос напрямую серверу
 				return await client.sendRequest(GetPreprocessedRequest, originalUri);
@@ -150,16 +154,16 @@ export function activate(context: ExtensionContext) {
 		public refresh(uri: vscode.Uri) {
 			this.onDidChangeEmitter.fire(uri);
 		}
-    };
+	};
 
-    context.subscriptions.push(
-        vscode.workspace.registerTextDocumentContentProvider('pawn-preprocessed', myProvider)
-    );
+	context.subscriptions.push(
+		vscode.workspace.registerTextDocumentContentProvider('pawn-preprocessed', myProvider)
+	);
 
-    // Команда для пользователя
-    context.subscriptions.push(
-        vscode.commands.registerCommand('pawnlanguage.openPreprocessed', async () => {
-            const editor = vscode.window.activeTextEditor;
+	// Команда для пользователя
+	context.subscriptions.push(
+		vscode.commands.registerCommand('pawnlanguage.openPreprocessed', async () => {
+			const editor = vscode.window.activeTextEditor;
 			if (!editor) return;
 
 			const originalUri = editor.document.uri.fsPath;
@@ -167,18 +171,18 @@ export function activate(context: ExtensionContext) {
 			const virtualUri = vscode.Uri.parse(`pawn-preprocessed://view/file.pwn?${originalUri}`);
 
 			myProvider.refresh(virtualUri);
-			
+
 			const doc = await vscode.workspace.openTextDocument(virtualUri);
 			await vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside);
-        })
-    );
+		})
+	);
 
 	client.start();
 }
 
 export function deactivate() {
 	console.log('Stoping LSP client...');
-	if(!client) {
+	if (!client) {
 		return undefined;
 	}
 	return client.stop();
