@@ -23,13 +23,10 @@
 - Анализатор кода на синтаксические, грамматические и семантические ошибки.
 - Переход к реализациям функций и их вызовам.
 - [Возможность сборки проекта "в один клик"](#сборка-проекта).
-- Помощь с параметрами функций.
 - [Документирование кода в двух форматах](#документирование-кода).
 
 ## Планы
 
-- Улучшение работы анализа кода.
-- Увеличение количества ошибок, которые может найти анализатор.
 - Быстрые исправления найденных ошибок (quick fix).
 - Отслеживание регистрируемых PVar-ов
 - Подсказки констант в структурированных массивах
@@ -86,8 +83,6 @@ The extension includes:
 - [Documenting code in two formats](#code-documentation)
 ## Plans
 
-- Improved code analysis performance
-- Increasing the number of errors that the analyzer can find
 - Quick fixes for found errors (quick fix)
 - Tracking of registered PVars
 - Constant hints in structured arrays
