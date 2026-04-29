@@ -437,6 +437,10 @@ export class PawnListener implements IPawnListener
 			else if(last instanceof OperatorNew) {
 				this.nodes.push(node);
 			}
+			else if(last instanceof Tag) {
+				// возможно это ситуация когда несколько тегов подряд, например: "tag1:tag2:a;"
+				this.nodes.push(node);
+			}
 			else {
 				this.addDiagnostic(Locale.t("Unexpected tag operator"), DiagnosticSeverity.Error, node.pos);
 				Logger.reportError("Unexpected tag operator", {
