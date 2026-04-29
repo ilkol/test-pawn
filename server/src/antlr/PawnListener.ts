@@ -98,6 +98,7 @@ export class PawnListener implements IPawnListener
 		let node: Declarations = <Declarations>this.nodes.pop();
 		if(ctx.stop)
 			node.setPos(ctx.start, ctx.stop);
+		this.root = null;
 	}
 
 	enterOperatorOverload(ctx: OperatorOverloadContext):void
