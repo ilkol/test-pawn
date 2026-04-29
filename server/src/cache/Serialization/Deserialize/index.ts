@@ -1,6 +1,7 @@
 import * as Serialized from "../types";
 import { Serializable } from "../Serializable";
 import { Position, Range } from "../../../types";
+import { Logger } from "../../../Logger/Logger";
 
 type SerializableConstructor<T extends Serializable> = {
 	fromJSON(json: any): T;
@@ -53,6 +54,9 @@ export namespace Deserialize {
 		const ctor = getSerializableConstructor<T>(type);
 
 		if (!ctor) {
+			Logger.reportError(`No registered class for type "${type}"`, {
+				json: obj
+			});
 			throw new Error(`No registered class for type "${type}"`);
 		}
 
