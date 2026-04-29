@@ -1,6 +1,6 @@
 import { TextDocuments, URI  } from "vscode-languageserver";
 import { URI as Uri } from "vscode-uri";
-import { AbstractOpenFile } from "../AbstractOpenFile";
+import { AbstractOpenFile, InheritsInfo } from "../AbstractOpenFile";
 import { join, relative } from "path";
 import { access, readFile, stat } from "fs/promises";
 import { Logger } from "../Logger/Logger";
@@ -156,13 +156,13 @@ export class FileManager {
 		return Uri.file(path).toString();
 	}
 
-	public async openFile(path: string): Promise<void> {
+	public async openFile(path: string, inheritsInfo?: InheritsInfo): Promise<void> {
 		let openedFile = this.openedFiles.get(path);
 		if(openedFile) {
 			return;
 		}
 		const textDocument = TextDocument.create(FileManager.getUriFromPath(path), "pawn", 0, await this.readFileContent(path));
-		await this.onDidOpenDocument(textDocument);
+		await this.onDidOpenDocument(textDocument, inheritsInfo);
 	}
 
 	public async readFileContent(path: string) {
@@ -181,18 +181,23 @@ export class FileManager {
 		} 
 	}
 
-	private async createOpenedFile(document: TextDocument) {
+	private async createOpenedFile(document: TextDocument, inheritsInfo?: InheritsInfo) {
 		const openedFile = new AntlrOpenedFile(document);
 		openedFile.relativePath = this.getRelativePath(openedFile.path);
+		if(inheritsInfo) {
+			openedFile.inheritsInfo = inheritsInfo;
+		}
 		this.openedFiles.set(openedFile.path, openedFile);
 		await this._onFileManagerOpenFileListener?.(openedFile);
 	}
 
-	private async onDidOpenDocument(document: TextDocument) {
+	private async onDidOpenDocument(document: TextDocument, inheritsInfo?: InheritsInfo) {
 		const path = FileManager.getAbsolutePathFromURI(document.uri);
 		let openedFile = this.getOpenedFile(path);
 		if(!openedFile) {
-			await this.createOpenedFile(document);
+			await this.createOpenedFile(document, inheritsInfo);
+		} else if (inheritsInfo) {
+			openedFile.inheritsInfo = inheritsInfo;
 		}
 	}
 

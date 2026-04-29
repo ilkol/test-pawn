@@ -1,5 +1,5 @@
 import { join } from "path";
-import { AbstractOpenFile } from "../AbstractOpenFile"
+import { AbstractOpenFile, InheritsInfo } from "../AbstractOpenFile"
 import { FileManager } from "../Managers/FileManager";
 import { Position, Range } from "../types";
 import * as Directives from "./Directives"
@@ -198,17 +198,31 @@ export class Preprocessor {
 	}
 
 	private async processIncludes(document: AbstractOpenFile) {
+		
+		
 		for (const includePath of document.sortedIncludes) {
 			if (includePath === document.path) {
 				continue;
 			}
-			await this.fileManager.openFile(includePath);
+			
+			const inc = document.includes.find(i => i.absolutePath === includePath);
+			let inheritsDefines: Map<string, Directives.Defining.Define[]> = new Map();
+
+			document.defines.forEach((defines, key) => {
+				inheritsDefines.set(key, defines.filter(d => d.getFilePos(document.path)?.until === undefined || d.getFilePos(document.path)?.until! > inc?.curEndIndex!));
+			});
+			
+			const inheritsInfo: InheritsInfo = {
+				url: document.path,
+				defines: inheritsDefines
+			};
+			
+			await this.fileManager.openFile(includePath, inheritsInfo);
 			const include = this.fileManager.getOpenedFile(includePath);
 			if (!include) {
 				continue;
 			}
 			await include.waitForAnalysis();
-			const inc = document.includes.find(i => i.absolutePath === includePath);
 			if (!inc) {
 			} else {
 				this.mergeDefines(inc, document.defines, include.defines);
@@ -580,7 +594,24 @@ export class Preprocessor {
 
 	private evaluateCondition(conditionStr: string, pos: number, defines: Map<string, Directives.Defining.Define[]>): boolean {
 		const tokens = tokenize(conditionStr);
-		const parser = new ConstExprParser(tokens, defines);
+		const parser = new ConstExprParser(tokens, (name: string) => {
+			const defs = defines.get(name) || this.currentDocument?.inheritsInfo?.defines.get(name);
+			if (!defs) {
+				return undefined;
+			}
+			for (const def of defs) {
+				if (def.endIndex <= pos) {
+					if (def.undef) {
+						if (def.undef.startIndex >= pos) {
+							return def;
+						}
+					}
+					else {
+						return def;
+					}
+				}
+			}
+		});
 		const result = parser.parse();
 
 		return result === 1;

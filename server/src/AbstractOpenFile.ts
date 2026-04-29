@@ -60,6 +60,11 @@ export enum ParsingStep {
 
 }
 
+export interface InheritsInfo {
+	url: string;
+	defines: Map<string, Define[]>;
+}
+
 export class FunctionInfo
 {
 	private _parameters: FunctionParameterInfo[] = [];
@@ -117,6 +122,7 @@ export abstract class AbstractOpenFile
 {
 	public _parsinState: ParsingStep = ParsingStep.newFile;
 	protected _scopeManager = new ScopeManager(this);
+	public inheritsInfo?: InheritsInfo;
 
 	get scopeManager(): ScopeManager {
 		return this._scopeManager;

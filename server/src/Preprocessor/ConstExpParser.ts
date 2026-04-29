@@ -1,3 +1,5 @@
+import { Define } from "./Directives/Defining";
+
 type Token = { type: 'num' | 'op' | 'word', val: string | number };
 
 export function tokenize(str: string): Token[] {
@@ -15,7 +17,7 @@ export function tokenize(str: string): Token[] {
 
 export class ConstExprParser {
     private pos = 0;
-    constructor(private tokens: Token[], private defines: Map<string, any>) {}
+    constructor(private tokens: Token[], private findDefinedSymbol: (name: string) => Define | undefined) {}
 
     private peek() { return this.tokens[this.pos]; }
     private eat() { return this.tokens[this.pos++]; }
@@ -99,7 +101,7 @@ export class ConstExprParser {
             if (this.peek()?.val === '(') this.eat();
             const name = this.eat().val as string;
             if (this.peek()?.val === ')') this.eat();
-            return (this.defines.has(name)) ? 1 : 0;
+            return (this.findDefinedSymbol(name) !== null) ? 1 : 0;
         }
         
         return this.primary();
@@ -116,9 +118,9 @@ export class ConstExprParser {
         if (t.type === 'word') {
             const name = t.val as string;
             // 1. Сначала смотрим макросы
-            if (this.defines.has(name)) {
-                const def = this.defines.get(name);
-                return parseInt(def.value) || 1; 
+			const def = this.findDefinedSymbol(name);
+            if (def) {
+                return parseInt(def.replacement) || 1; 
             }
             
             return 0; // В Pawn неизвестный символ в #if = 0
