@@ -101,7 +101,7 @@ export class ConstExprParser {
             if (this.peek()?.val === '(') this.eat();
             const name = this.eat().val as string;
             if (this.peek()?.val === ')') this.eat();
-            return (this.findDefinedSymbol(name) !== null) ? 1 : 0;
+            return (this.findDefinedSymbol(name)) ? 1 : 0;
         }
         
         return this.primary();
