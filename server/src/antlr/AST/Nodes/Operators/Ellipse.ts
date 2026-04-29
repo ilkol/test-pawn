@@ -9,7 +9,7 @@ export class Ellipse extends ASTNode
 
 
 	public accept(visitor: IVisitor): void {
-		throw new Error("Method not implemented.");
+		
 	}
 	private _tags: Tag[] | undefined = [];
 
