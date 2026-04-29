@@ -29,8 +29,7 @@ export class Logger {
 				}
 			});
 		} else {
-			Logger.instance.outputChanel.error(message);
-			Logger.instance.outputChanel.error(ctx);
+			console.error(message, ctx);
 		}
 	}
 
