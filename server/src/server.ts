@@ -28,7 +28,7 @@ async function main() {
 	if (!isDebug) {
 		Sentry.init({
 			dsn: "https://22d28a9fcd44413118bf6eddba25667d@o4511298449702912.ingest.de.sentry.io/4511298455404624",
-			release: "test-pawn@2.0.0",
+			release: "test-pawn@2.0.3",
 			sendDefaultPii: true,
 		});
 
