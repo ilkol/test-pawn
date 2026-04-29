@@ -64,6 +64,7 @@ import { Interval } from "antlr4ts/misc/Interval";
 import { RightValue } from "./AST/Nodes/RightValue";
 import { PawnErrors } from "../Errors/PawnErrors";
 import { CompoundExpression } from "./AST/Nodes/CompoundExpression";
+import { Logger } from "../Logger/Logger";
 
 export class PawnListener implements IPawnListener
 {
@@ -436,8 +437,12 @@ export class PawnListener implements IPawnListener
 				this.nodes.push(node);
 			}
 			else {
-				console.log(last);
 				this.addDiagnostic(Locale.t("Unexpected tag operator"), DiagnosticSeverity.Error, node.pos);
+				Logger.reportError("Unexpected tag operator", {
+					nodeType: last?.name,
+					last: last,
+					node: node
+				});
 			}
 		
 		}
