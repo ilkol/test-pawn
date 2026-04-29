@@ -11,6 +11,7 @@ import { AntlrOpenedFile } from "../AntrlOpenedFile";
 import { CacheManager } from "../cache/CacheManager";
 import { PathResolver } from "../PathResolver";
 import { PawnSettings } from "../Settings";
+import { ProjectConfig } from "./ConfigManager";
 
 export type OnFileManagerOpenFileListener = (document: AbstractOpenFile) => (Promise<void> | void);
 
@@ -94,8 +95,8 @@ export class FileManager {
 	constructor() {
 	}
 
-	async setup(resolver: PathResolver, settings: PawnSettings) {
-		const result = await resolver.resolve(settings);
+	async setup(resolver: PathResolver, settings: PawnSettings, config?: ProjectConfig) {
+		const result = await resolver.resolve(settings, config);
         this.includePaths = result.includes;
         this._pawnPath = result.compiler;
 	}

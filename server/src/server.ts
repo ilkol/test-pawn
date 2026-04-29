@@ -1,6 +1,7 @@
 import {
 	createConnection,
 	DidChangeConfigurationNotification,
+	DidChangeWatchedFilesNotification,
 	ProposedFeatures,
 } from 'vscode-languageserver/node';
 
@@ -21,6 +22,7 @@ import { PathResolver } from './PathResolver';
 import { URI } from 'vscode-uri';
 
 import * as Sentry from "@sentry/node";
+import { ConfigManager } from './Managers/ConfigManager';
 
 async function main() {
 	const startTime = Date.now();
@@ -59,6 +61,7 @@ async function main() {
 
 	const symbolManager = new SymbolManager();
 	const pathResolver = new PathResolver();
+	const configManager = new ConfigManager();
 	const settingsManager = new SettingsManager(connection);
 
 	const orchestrator = new AnalasisOrchestrator(connection, preprocessor, symbolManager);
@@ -87,26 +90,30 @@ async function main() {
 
 	const capabilitiesManager = new CapabilitiesManager();
 
-	connection.onInitialize(params => {
+	connection.onInitialize(async params => {
 		let workspaceRoot: string | undefined = undefined;
 		if (params.workspaceFolders && params.workspaceFolders.length > 0) {
 			workspaceRoot = URI.parse(params.workspaceFolders[0].uri).fsPath;
 		}
+		await configManager.initialize(workspaceRoot || "");
 		pathResolver.workspaceRoot = workspaceRoot;
 
 		const clientInfo = params.clientInfo;
 		Sentry.setContext("client", {
 			name: clientInfo?.name,
-			version: clientInfo?.version // Это и есть версия VS Code
+			version: clientInfo?.version
 		});
 
 		return capabilitiesManager.getInitializeResult(params, fileManager);
 	});
 
 	const afterInitializing = async () => {
+		if (!configManager.isEntryPointSet()) {
+			sendNotification(connection, VSCode.NotificationType.Error, Locale.t("No entry point specified in config. Please set the entryPoint field in pawn.json in the root of your workspace."));
+		}
 		try {
 			const settings = await settingsManager.refresh();
-			await fileManager.setup(pathResolver, settings);
+			await fileManager.setup(pathResolver, settings, configManager.config);
 
 
 			await CacheManager.init(fileManager);
@@ -118,6 +125,11 @@ async function main() {
 			else {
 				console.error(e);
 			}
+		}
+
+		if (configManager.isEntryPointSet()) {
+			const entryPointPath = pathResolver.makeAbsolute(configManager.config!.entryPoint);
+			await fileManager.openFile(entryPointPath);
 		}
 	}
 
@@ -131,6 +143,11 @@ async function main() {
 			connection.client.register(DidChangeConfigurationNotification.type);
 		}
 		Logger.log(Locale.t('LSP server initialized.'));
+		connection.client.register(DidChangeWatchedFilesNotification.type, {
+			watchers: [
+				{ globPattern: '**/pawn.json' }
+			]
+		});
 		afterInitializing();
 	});
 
@@ -140,7 +157,7 @@ async function main() {
 	connection.onDefinition(params => LSPHandlers.onDefinition(params, fileManager, symbolManager));
 	connection.languages.semanticTokens.on(params => LSPHandlers.onSemanticTokens(params, fileManager, symbolManager));
 	connection.languages.diagnostics.on(params => LSPHandlers.onDiagnostics(params, fileManager));
-	connection.onDidChangeWatchedFiles(change => LSPHandlers.onDidChangeWatchedFiles(change));
+	connection.onDidChangeWatchedFiles(change => LSPHandlers.onDidChangeWatchedFiles(change, configManager, pathResolver, fileManager));
 	connection.onCompletion(params => LSPHandlers.onCompletion(params, fileManager));
 	connection.onDocumentLinks(params => LSPHandlers.onDocumentLinks(params, fileManager));
 	connection.onDocumentSymbol(params => LSPHandlers.onDocumentSymbols(params, fileManager, symbolManager));

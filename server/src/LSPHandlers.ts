@@ -10,29 +10,31 @@ import { PreprocessorCompletionsProvider } from "./Completions/PreprocessorDirec
 import { SymbolCompletionsProvider } from "./Completions/SymbolCompletionsProvider";
 import { SettingsManager } from "./Settings/SettingsManager";
 import { ClientConnection } from "./ClientConnection";
+import { ConfigManager } from "./Managers/ConfigManager";
+import { PathResolver } from "./PathResolver";
 
 export class LSPHandlers {
-	private static completionsProviders: ICompletionProvider[] = [ 
-		new PreprocessorCompletionsProvider(), 
+	private static completionsProviders: ICompletionProvider[] = [
+		new PreprocessorCompletionsProvider(),
 		new SymbolCompletionsProvider()
 	];
-	public static async onCompletion(params: TextDocumentPositionParams, fileManager: FileManager): Promise<CompletionItem[]>  {
+	public static async onCompletion(params: TextDocumentPositionParams, fileManager: FileManager): Promise<CompletionItem[]> {
 		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(params.textDocument.uri));
-		if(!document) {
+		if (!document) {
 			return [];
 		}
 
 		const lineTillCursor = document.getText(new Range(
-			new Position(params.position.line, 0), 
+			new Position(params.position.line, 0),
 			new Position(params.position.line, params.position.character))
 		);
 
-		for(const provider of this.completionsProviders) {
-			if(provider.checkContext(lineTillCursor, params)) {
+		for (const provider of this.completionsProviders) {
+			if (provider.checkContext(lineTillCursor, params)) {
 				return provider.getCompletions(lineTillCursor, params, document);
 			}
 		}
-		
+
 		return [];
 	}
 
@@ -40,29 +42,29 @@ export class LSPHandlers {
 		Logger.log("Request defenition")
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
-		if(!document) {
+		if (!document) {
 			return null;
 		}
-		
+
 		await document.waitForAnalysis();
 		const position = params.position;
 		const fileSymbols = symbolManager.getFileSymbols(document.path);
 		const symbol = fileSymbols.find(symbol => {
 			const references = symbol.getFileReferances(document.path);
-			for(const ref of references) {
+			for (const ref of references) {
 				const res = position.line === ref.tokenRange.start.line &&
-				position.character >= ref.tokenRange.start.character &&
-				position.character <= ref.tokenRange.end.character;
-				if(res) {
+					position.character >= ref.tokenRange.start.character &&
+					position.character <= ref.tokenRange.end.character;
+				if (res) {
 					return true;
 				}
 			}
 			return false;
 		});
-		if(!symbol) {
+		if (!symbol) {
 			return null;
 		}
-		
+
 		return {
 			range: symbol.defenition.tokenRange,
 			uri: FileManager.getUriFromPath(symbol.defenition.filePath)
@@ -73,19 +75,19 @@ export class LSPHandlers {
 		Logger.log("Request prepare rename")
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
-		if(!document) {
+		if (!document) {
 			return null;
 		}
-		
+
 		await document.waitForAnalysis();
 
 		const position = Position.fromLSP(params.position);
-		const {symbol, ref} = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager) ?? {};
-	
-		if(!symbol || !ref) {
+		const { symbol, ref } = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager) ?? {};
+
+		if (!symbol || !ref) {
 			return null;
 		}
-		
+
 		return {
 			range: ref.tokenRange,
 			placeholder: symbol.name
@@ -95,23 +97,23 @@ export class LSPHandlers {
 		Logger.log("Request rename")
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
-		if(!document) {
+		if (!document) {
 			return null;
 		}
-		
+
 		await document.waitForAnalysis();
 
 		const position = Position.fromLSP(params.position);
-		const {symbol} = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager) ?? {};
-	
-		if(!symbol) {
+		const { symbol } = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager) ?? {};
+
+		if (!symbol) {
 			return null;
 		}
-		
+
 		const changes: {
 			[uri: DocumentUri]: TextEdit[]
 		} = {};
-		
+
 		const newName = params.newName;
 
 		symbol.getReferences().forEach(ref => {
@@ -124,25 +126,25 @@ export class LSPHandlers {
 				newText: newName,
 			} satisfies TextEdit);
 		});
-		
+
 		return {
 			changes
 		} satisfies WorkspaceEdit;
 	}
 	public static async onReferences(params: ReferenceParams, fileManager: FileManager, symbolManager: SymbolManager) {
 		Logger.log("Request references")
-		const references: Location[] = [];	
+		const references: Location[] = [];
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
-		if(!document) {
+		if (!document) {
 			return references;
 		}
-		
+
 		await document.waitForAnalysis();
 
 		const position = Position.fromLSP(params.position);
 		const result = symbolManager.getSymbolOnPosition(document.path, position, document.scopeManager);
-		if(result) {
+		if (result) {
 			const { symbol } = result;
 			const refs = symbol.getReferences();
 
@@ -153,15 +155,15 @@ export class LSPHandlers {
 					uri: FileManager.getUriFromPath(ref.filePath)
 				}));
 		}
-		
+
 		return [];
 	}
 	public static async onSemanticTokens(params: SemanticTokensParams, fileManager: FileManager, symbolManager: SymbolManager) {
 		Logger.log("Request semantic tokens")
-		const builder = new SemanticTokensBuilder();	
+		const builder = new SemanticTokensBuilder();
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
-		if(!document) {
+		if (!document) {
 			return builder.build();
 
 		}
@@ -176,7 +178,7 @@ export class LSPHandlers {
 		}[] = [];
 		symbolManager.getFileSymbols(document.path).forEach((symbol) => {
 			symbol.getFileSemanticTokens(document.path).forEach(info => tokens.push(info))
-		});		
+		});
 
 		tokens.sort((a, b) => {
 			if (a.line !== b.line) return a.line - b.line;
@@ -202,8 +204,21 @@ export class LSPHandlers {
 			} satisfies DocumentDiagnosticReport;
 		}
 	}
-	public static async onDidChangeWatchedFiles(change: DidChangeWatchedFilesParams) {
+	public static async onDidChangeWatchedFiles(change: DidChangeWatchedFilesParams, configManager: ConfigManager, pathResolver: PathResolver, fileManager: FileManager) {
+		const configEvent = change.changes.find(ch => ch.uri.endsWith('pawn.json'));
 
+		
+		if (configEvent) {
+			const needsReindexing = await configManager.handleFileChange(configEvent.uri);
+
+			if (needsReindexing) {
+
+				if (!configManager.isEntryPointSet()) {
+					const entryPointPath = pathResolver.makeAbsolute(configManager.config!.entryPoint);
+					await fileManager.openFile(entryPointPath);
+				}
+			}
+		}
 	}
 	public static async onDocumentLinks(params: DocumentLinkParams, fileManager: FileManager) {
 		Logger.log("клиент запросил список ссылок")
@@ -211,7 +226,7 @@ export class LSPHandlers {
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
 
-		if(!document) {
+		if (!document) {
 			return links;
 		}
 		await document.waitForAnalysis();
@@ -229,12 +244,12 @@ export class LSPHandlers {
 		const symbols: DocumentSymbol[] = [];
 		const uri = params.textDocument.uri;
 		const document = fileManager.getOpenedFile(FileManager.getAbsolutePathFromURI(uri));
-		if(!document) {
+		if (!document) {
 			return symbols;
 
 		}
 		await document.waitForAnalysis();
-		
+
 		symbolManager.getFileGlobalSymbols(document.path).forEach((symbol) => {
 			symbols.push(
 				symbol.defenition.getSymbolInfo(),
@@ -243,7 +258,7 @@ export class LSPHandlers {
 
 		document.defines.forEach(definelist => {
 			definelist.forEach(define => {
-				if(define.symbol) {
+				if (define.symbol) {
 					symbols.push(define.symbol.defenition.getSymbolInfo());
 				}
 			})
@@ -254,7 +269,7 @@ export class LSPHandlers {
 		return item;
 	}
 	public static async onDidChangeConfiguration(hasConfigurationCapability: boolean, connection: ClientConnection, settingsManager: SettingsManager) {
-		if(!hasConfigurationCapability) {
+		if (!hasConfigurationCapability) {
 			return;
 		}
 		await settingsManager.refresh();

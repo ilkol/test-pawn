@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 
 import { PawnSettings } from "./Settings";
+import { ProjectConfig } from "./Managers/ConfigManager";
 
 export class PathResolver {
 	constructor(private _workspaceRoot?: string) {
@@ -12,9 +13,9 @@ export class PathResolver {
 		this._workspaceRoot = v;
 	}
 
-	async resolve(settings: PawnSettings): Promise<{ compiler: string, includes: string[] }> {
+	async resolve(settings: PawnSettings, config?: ProjectConfig): Promise<{ compiler: string, includes: string[] }> {
 		const includes = new Set<string>();
-        let compilerPath = settings.compilerPath;
+        let compilerPath = config?.compilerPath || settings.compilerPath;
 
         if (!compilerPath && this._workspaceRoot) {
             const autoDetected = path.join(this._workspaceRoot, 'pawno', 'pawncc.exe');
@@ -23,10 +24,12 @@ export class PathResolver {
 
         if (compilerPath) {
             const systemInc = path.join(path.dirname(compilerPath), 'include');
-            if (fs.existsSync(systemInc)) includes.add(systemInc);
+			const absolutePath = this.makeAbsolute(systemInc);
+            if (fs.existsSync(absolutePath)) includes.add(absolutePath);
         }
 
-        settings.includePaths.forEach(p => {
+        const includePaths = config ? config.includePaths : settings.includePaths;
+        includePaths.forEach(p => {
             const absolutePath = this.makeAbsolute(p);
             if (fs.existsSync(absolutePath)) includes.add(absolutePath);
         });
@@ -37,7 +40,7 @@ export class PathResolver {
         };
 	}
 
-	private makeAbsolute(p: string): string {
+	public makeAbsolute(p: string): string {
         if (path.isAbsolute(p) || !this._workspaceRoot) return p;
         return path.join(this._workspaceRoot, p);
     }
