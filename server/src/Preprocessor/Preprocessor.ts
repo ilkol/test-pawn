@@ -206,12 +206,24 @@ export class Preprocessor {
 			}
 			
 			const inc = document.includes.find(i => i.absolutePath === includePath);
+			if(!inc) {
+				continue;
+			}
 			let inheritsDefines: Map<string, Directives.Defining.Define[]> = new Map();
 
 			document.defines.forEach((defines, key) => {
-				inheritsDefines.set(key, defines.filter(d => d.getFilePos(document.path)?.until === undefined || d.getFilePos(document.path)?.until! > inc?.curEndIndex!));
+				const includedDefine = defines.find(d => d.getFilePos(document.path)?.until === undefined || d.getFilePos(document.path)?.until! > inc?.curEndIndex!);
+				if(includedDefine) {
+					inheritsDefines.set(key, [includedDefine]);
+					includedDefine.includeToFile(includePath, inc.curEndIndex);
+				}
 			});
-			
+			this.currentDocument!.inheritsInfo?.defines.forEach((defines, key) => {
+				inheritsDefines.set(key, defines);
+				for (const includedDefine of defines) {
+					includedDefine.includeToFile(includePath, inc.curEndIndex);
+				}
+			});
 			const inheritsInfo: InheritsInfo = {
 				url: document.path,
 				defines: inheritsDefines
@@ -223,11 +235,10 @@ export class Preprocessor {
 				continue;
 			}
 			await include.waitForAnalysis();
-			if (!inc) {
-			} else {
-				this.mergeDefines(inc, document.defines, include.defines);
-				document.globalScope.includedScopes.push(include.globalScope);
-			}
+			this.mergeDefines(inc, document.defines, include.defines);
+			const incIncludeDefinePattern = `_inc_${join(inc.pathText).split(/[/\\]/).pop()}`;
+			document.defines.set(incIncludeDefinePattern, [new Directives.Defining.Define(new Range(0, 0, 0, 0), {range: inc.pathRange, replacement: "", text: `#define ${incIncludeDefinePattern}`}, 0, 0, "")]);
+			document.globalScope.includedScopes.push(include.globalScope);
 		}
 	}
 
