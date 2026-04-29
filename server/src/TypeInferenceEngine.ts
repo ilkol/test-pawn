@@ -9,14 +9,20 @@ import { TernarOperator } from "./antlr/AST/Nodes/Operators/TernarOperator";
 import { UnarOperator } from "./antlr/AST/Nodes/Operators/UnarOperator";
 import { Variable } from "./antlr/AST/Nodes/Variable";
 import { Analyzer } from "./antlr/AST/visitor/Analyzer";
+import { Logger } from "./Logger/Logger";
 import { ScopeManager } from "./Managers/ScopeManager";
 import { Symbols } from "./SymbolSystem";
 import { MayBeTag } from "./SymbolSystem/Symbols/MayBeTag";
 import { SymbolsFactory } from "./SymbolSystem/SymbolsFactory";
 import { Range } from "./types";
+import * as Sentry from "@sentry/node";
 
 export class TypeInferenceEngine {
-	constructor(private scopeManager: ScopeManager, private addTag: (name: string, range: Range, nameRange?: Range) => MayBeTag) {}
+	constructor(
+		private scopeManager: ScopeManager, 
+		private addTag: (name: string, range: Range, nameRange?: Range) => MayBeTag,
+		private getErrorContextText: (range: Range) => string
+	) {}
 
 	public inferTag(node: Expression): MayBeTag {
 		if(node.isTaged) {
@@ -60,9 +66,14 @@ export class TypeInferenceEngine {
 			return SymbolsFactory.boolTag;
 		}
 		if(!leftTag || !rightTag ) {
-			console.error(node.left?.range, node.right?.range);
-			console.error(node.left?.inferredTag, node.right?.inferredTag);
-			console.error("Undefined tag", node.left?.name, node.right?.name);
+			Logger.reportError("Undefined tag in binary operation", {
+				extra: {
+					leftTag: node.left?.inferredTag,
+					rightTag: node.right?.inferredTag,
+					operator: node.operator,
+					context: this.getErrorContextText(node.range.with({ start: node.range.start.with({ character: 0 }) })),
+				}
+			});
 			return SymbolsFactory.defaultTag;
 		}
 

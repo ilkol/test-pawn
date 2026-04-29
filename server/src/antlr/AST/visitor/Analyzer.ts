@@ -78,7 +78,13 @@ export class Analyzer extends BaseVisitor {
 		super();
 		this.curScope = scope;
 
-		this.tagInferer = new TypeInferenceEngine(this.scopeManager, this.addTag.bind(this));
+		this.tagInferer = new TypeInferenceEngine(
+			this.scopeManager, 
+			this.addTag.bind(this), 
+			(range: Range) => {
+				return this.file.file.getText(range);
+			}
+		);
 		this.addBuildinConstants();
 	}
 

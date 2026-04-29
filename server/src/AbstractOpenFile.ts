@@ -135,6 +135,13 @@ export abstract class AbstractOpenFile
 	 */
 	protected _file?: TextDocument;
 
+	get file(): TextDocument {
+		if(!this._file) {
+			throw new Error("File is not set");
+		}
+		return this._file;
+	}
+
 
 	private _cache?: FileCache;
 
