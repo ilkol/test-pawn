@@ -23,6 +23,7 @@ import { URI } from 'vscode-uri';
 
 import * as Sentry from "@sentry/node";
 import { ConfigManager } from './Managers/ConfigManager';
+import path from 'path';
 
 async function main() {
 	const startTime = Date.now();
@@ -62,6 +63,7 @@ async function main() {
 	const symbolManager = new SymbolManager();
 	const pathResolver = new PathResolver();
 	const configManager = new ConfigManager();
+	const cachedConfigManager = new ConfigManager();
 	const settingsManager = new SettingsManager(connection);
 
 	const orchestrator = new AnalasisOrchestrator(connection, preprocessor, symbolManager);
@@ -96,6 +98,7 @@ async function main() {
 			workspaceRoot = URI.parse(params.workspaceFolders[0].uri).fsPath;
 		}
 		await configManager.initialize(workspaceRoot || "");
+		await cachedConfigManager.initialize(path.join(workspaceRoot || "", ".cache"));
 		pathResolver.workspaceRoot = workspaceRoot;
 
 		const clientInfo = params.clientInfo;
@@ -128,6 +131,10 @@ async function main() {
 			}
 		}
 
+		if(configManager.config !== cachedConfigManager.config) {
+			CacheManager.flushWorkspaceCache();
+		}
+
 		if (configManager.isEntryPointSet()) {
 			const entryPointPath = pathResolver.makeAbsolute(configManager.config!.entryPoint);
 			await fileManager.openFile(entryPointPath);
@@ -158,7 +165,7 @@ async function main() {
 	connection.onDefinition(params => LSPHandlers.onDefinition(params, fileManager, symbolManager));
 	connection.languages.semanticTokens.on(params => LSPHandlers.onSemanticTokens(params, fileManager, symbolManager));
 	connection.languages.diagnostics.on(params => LSPHandlers.onDiagnostics(params, fileManager));
-	connection.onDidChangeWatchedFiles(change => LSPHandlers.onDidChangeWatchedFiles(change, configManager, pathResolver, fileManager));
+	connection.onDidChangeWatchedFiles(change => LSPHandlers.onDidChangeWatchedFiles(change, configManager, cachedConfigManager, pathResolver, fileManager));
 	connection.onCompletion(params => LSPHandlers.onCompletion(params, fileManager));
 	connection.onDocumentLinks(params => LSPHandlers.onDocumentLinks(params, fileManager));
 	connection.onDocumentSymbol(params => LSPHandlers.onDocumentSymbols(params, fileManager, symbolManager));

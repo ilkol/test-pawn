@@ -12,6 +12,7 @@ import { SettingsManager } from "./Settings/SettingsManager";
 import { ClientConnection } from "./ClientConnection";
 import { ConfigManager } from "./Managers/ConfigManager";
 import { PathResolver } from "./PathResolver";
+import { CacheManager } from "./cache/CacheManager";
 
 export class LSPHandlers {
 	private static completionsProviders: ICompletionProvider[] = [
@@ -204,14 +205,18 @@ export class LSPHandlers {
 			} satisfies DocumentDiagnosticReport;
 		}
 	}
-	public static async onDidChangeWatchedFiles(change: DidChangeWatchedFilesParams, configManager: ConfigManager, pathResolver: PathResolver, fileManager: FileManager) {
+	public static async onDidChangeWatchedFiles(change: DidChangeWatchedFilesParams, configManager: ConfigManager, cachedConfigManager: ConfigManager, pathResolver: PathResolver, fileManager: FileManager) {
 		const configEvent = change.changes.find(ch => ch.uri.endsWith('pawn.json'));
 
-		
+
 		if (configEvent) {
 			const needsReindexing = await configManager.handleFileChange(configEvent.uri);
 
 			if (needsReindexing) {
+
+				if (configManager.config !== cachedConfigManager.config) {
+					CacheManager.flushWorkspaceCache();
+				}
 
 				if (!configManager.isEntryPointSet()) {
 					const entryPointPath = pathResolver.makeAbsolute(configManager.config!.entryPoint);
