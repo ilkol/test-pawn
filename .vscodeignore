@@ -11,3 +11,4 @@ esbuild.js
 compil.md
 client/package.json
 server/package.json
+*.mmd
