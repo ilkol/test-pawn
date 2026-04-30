@@ -57,13 +57,35 @@ export class ConfigManager {
 			const parsed = JSON.parse(content);
 
 			// Валидируем структуру
-			this.config = this.validate(parsed);
+			const validated = this.validate(parsed);
+            
+            // 2. Сравниваем: если структура изменилась в процессе валидации - сохраняем обратно в файл
+            if (JSON.stringify(parsed) !== JSON.stringify(validated)) {
+                console.log(`[ConfigManager] Fixing malformed config structure at ${this.configPath}`);
+                this.config = validated;
+                await this.saveCurrentConfig(); // Обновляем файл на диске до полной структуры
+            } else {
+                this.config = validated;
+            }
 		} catch (e) {
 			console.error(`[ConfigManager] Invalid config file at ${this.configPath}. Reverting to defaults.`);
 			this.config = { ...this.DEFAULT_CONFIG };
 			await this.createDefaultConfig(); 
 		}
 	}
+
+	private async saveCurrentConfig() {
+        if (!this.configPath || !this.config) return;
+        try {
+            await fs.promises.writeFile(
+                this.configPath, 
+                JSON.stringify(this.config, null, 4), 
+                'utf-8'
+            );
+        } catch (e) {
+            console.error(`[ConfigManager] Error writing config: ${e}`);
+        }
+    }
 
 	private validate(data: any): ProjectConfig {
         return {
