@@ -101,7 +101,8 @@ async function main() {
 		const clientInfo = params.clientInfo;
 		Sentry.setContext("client", {
 			name: clientInfo?.name,
-			version: clientInfo?.version
+			version: clientInfo?.version,
+			language: params.locale
 		});
 
 		return capabilitiesManager.getInitializeResult(params, fileManager);
