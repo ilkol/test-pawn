@@ -1,0 +1,43 @@
+graph TD
+    subgraph Lifecycle [Жизненный цикл LSP]
+        Start((Старт)) --> OnInit[connection.onInitialize]
+        OnInit --> ConfigInit[ConfigManager: init workspace]
+        ConfigInit --> Sentry[Sentry: set context]
+        Sentry --> Capabilities[Get Capabilities]
+        Capabilities --> Running((Server Ready))
+    end
+
+    %% Слой пост-инициализации (Ваш afterInitializing)
+    subgraph PostInit [Логика запуска]
+        Running --> RefreshSettings[SettingsManager: refresh]
+        RefreshSettings --> SetupFM[FileManager: setup]
+        SetupFM --> InitCache[CacheManager: init]
+        
+        InitCache --> CheckEntry{EntryPoint Set?}
+        CheckEntry -- No --> ErrMsg[Show Error: No entryPoint]
+        CheckEntry -- Yes --> OpenEntry[FileManager: openFile]
+    end
+
+    %% Слой событий пользователя
+    subgraph Events [События редактора]
+        ChangeDoc[onDidUpdate] --> Parse[Parser/ANTLR]
+        SaveDoc[onDidSave] --> Rebuild[Rebuild AST]
+        ConfigDoc[onDidChangeConfig] --> RefreshSettings
+		onDidOpenFile[onDidOpenFile] --> Parse
+    end
+
+    %% Связи
+    OpenEntry --> Parse
+
+	subgraph Preprocessor [Препроцессор]
+		findAndReplaceDirectives[Поиск всех жиректив] --> preprocessCOnditionals
+		preprocessCOnditionals[Обработка условных директив] --> registerSymbols
+		registerSymbols[Регистрация символов] --> sortIncludes
+		sortIncludes[Сортировка инклудов] --> processIncludes
+		subgraph processIncludes[Обработка инклудов]
+			getIheritsInfo[Получение информации о наследовании] --> filemanager.OpenFile
+			filemanager.OpenFile[Открываем инклуд] --> onDidOpenFile
+		end
+		processIncludes --> replaceDefines 
+		replaceDefines[Замена define'ов] 
+	end

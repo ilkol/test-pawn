@@ -1,0 +1,32 @@
+sequenceDiagram
+    autonumber
+    participant FM as FileManager
+    participant O as Orchestrator
+    participant C as CacheManager
+    participant P as Preprocessor
+    participant LE as Lexer
+    participant PA as Parser
+    participant A as Analyzer
+    participant VS as VSCode/Client
+
+    Note over FM, O: Событие: Открытие файла
+    FM->>O: Вызов анализа документа
+    
+    O->>C: handleCacheInitial(document)
+    
+    rect rgb(240, 240, 240)
+        Note right of O: Процесс обработки
+        O->>P: preprocessDocument()
+        P-->>O: Код без комантариев, директив и с замененными макросами
+        
+        O->>LE: tokenizeDocument()
+        LE-->>O: Токены
+        
+        O->>PA: parseDocument()
+        PA-->>O: AST
+        
+        O->>A: analyzeDocumentAST()
+        A-->>O: Диагностика, информация о символах, ссылки
+    end
+
+    O->>VS: sendDiagnostics(uri, diagnostics)
