@@ -445,8 +445,8 @@ export class PawnListener implements IPawnListener
 				this.addDiagnostic(Locale.t("Unexpected tag operator"), DiagnosticSeverity.Error, node.pos);
 				Logger.reportError("Unexpected tag operator", {
 					nodeType: last?.name,
-					last: last,
-					node: node
+					last: last?.toJSON(),
+					node: node.toJSON(),
 				});
 			}
 		
