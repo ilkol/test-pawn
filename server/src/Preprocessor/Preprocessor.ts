@@ -208,7 +208,13 @@ export class Preprocessor {
 			let inheritsDefines: Map<string, Directives.Defining.Define[]> = new Map();
 
 			document.defines.forEach((defines, key) => {
-				const includedDefine = defines.find(d => d.getFilePos(document.path)?.until === undefined || d.getFilePos(document.path)?.until! > inc?.curEndIndex!);
+				const includedDefine = defines.find(d => {
+					const pos = d.getFilePos(document.path);
+					if(pos && pos.from && pos.from > inc.curEndIndex) {
+						return false;
+					}
+					return pos?.until === undefined || pos?.until! > inc?.curEndIndex!;
+				});
 				if (includedDefine) {
 					inheritsDefines.set(key, [includedDefine]);
 					includedDefine.includeToFile(includePath, inc.curEndIndex);
@@ -382,7 +388,7 @@ export class Preprocessor {
 						source: "pawn-lsp",
 						tags: [DiagnosticTag.Unnecessary]
 					});
-					continue;
+					break;
 				}
 				if (element instanceof Directives.Error) {
 					document.diagnostics.push(PawnErrors.report(
@@ -413,7 +419,7 @@ export class Preprocessor {
 				cur.directive.elseBlock = element;
 
 				const canExecute = cur.parentActive && !cur.anyBranchExecuted;
-				const result = canExecute ? this.evaluateCondition(document.inheritsInfo, element.conditionalString, element.startIndex, defines) : false;
+				const result = canExecute ? this.evaluateCondition(document.path, document.inheritsInfo, element.conditionalString, element.startIndex, defines) : false;
 
 				element.conditionResult = result;
 				if (result) cur.anyBranchExecuted = true;
@@ -558,7 +564,7 @@ export class Preprocessor {
 	}
 
 	private handleCondition(document: AbstractOpenFile, directive: Condition, ifStack: ConditionStack, defines: Map<string, Directives.Defining.Define[]>, isVisible: boolean) {
-		const conditionResult = isVisible ? this.evaluateCondition(document.inheritsInfo, directive.conditionalString, directive.startIndex, defines) : false;
+		const conditionResult = isVisible ? this.evaluateCondition(document.path, document.inheritsInfo, directive.conditionalString, directive.startIndex, defines) : false;
 		directive.conditionResult = conditionResult;
 		ifStack.push({
 			directive: directive,
@@ -568,7 +574,7 @@ export class Preprocessor {
 		});
 	}
 
-	private evaluateCondition(inheritsInfo: InheritsInfo | undefined, conditionStr: string, pos: number, defines: Map<string, Directives.Defining.Define[]>): boolean {
+	private evaluateCondition(docPath: string, inheritsInfo: InheritsInfo | undefined, conditionStr: string, pos: number, defines: Map<string, Directives.Defining.Define[]>): boolean {
 		const tokens = tokenize(conditionStr);
 		const parser = new ConstExprParser(tokens, (name: string) => {
 			const defs = defines.get(name) || inheritsInfo?.defines.get(name);
@@ -576,15 +582,16 @@ export class Preprocessor {
 				return undefined;
 			}
 			for (const def of defs) {
-				if (def.endIndex <= pos) {
-					if (def.undef) {
-						if (def.undef.startIndex >= pos) {
-							return def;
-						}
-					}
-					else {
-						return def;
-					}
+				const defPos = def.getFilePos(docPath);
+				if(!defPos) {
+					continue;
+				}
+				if(defPos.from > pos) {
+					continue;
+				}
+
+				if (!defPos.until || defPos.until >= pos) {
+					return def;
 				}
 			}
 		});
