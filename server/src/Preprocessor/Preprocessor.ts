@@ -194,22 +194,22 @@ export class Preprocessor {
 	}
 
 	private async processIncludes(document: AbstractOpenFile) {
-		
-		
+
+
 		for (const includePath of document.sortedIncludes) {
 			if (includePath === document.path) {
 				continue;
 			}
-			
+
 			const inc = document.includes.find(i => i.absolutePath === includePath);
-			if(!inc) {
+			if (!inc) {
 				continue;
 			}
 			let inheritsDefines: Map<string, Directives.Defining.Define[]> = new Map();
 
 			document.defines.forEach((defines, key) => {
 				const includedDefine = defines.find(d => d.getFilePos(document.path)?.until === undefined || d.getFilePos(document.path)?.until! > inc?.curEndIndex!);
-				if(includedDefine) {
+				if (includedDefine) {
 					inheritsDefines.set(key, [includedDefine]);
 					includedDefine.includeToFile(includePath, inc.curEndIndex);
 				}
@@ -224,20 +224,20 @@ export class Preprocessor {
 				url: document.path,
 				defines: inheritsDefines
 			};
-			
+
 			await this.fileManager.openFile(includePath, inheritsInfo);
 			const include = this.fileManager.getOpenedFile(includePath);
 			if (!include) {
 				continue;
 			}
-			if(include.isAnalyzing) {
+			if (include.isAnalyzing) {
 				Logger.log(`Circular dependency detected: ${includePath}`);
 				continue;
 			}
 			await include.waitForAnalysis();
 			this.mergeDefines(document.path, inc, document.defines, include.defines);
 			const incIncludeDefinePattern = `_inc_${join(inc.pathText).split(/[/\\]/).pop()}`;
-			document.defines.set(incIncludeDefinePattern, [new Directives.Defining.Define(new Range(0, 0, 0, 0), {range: inc.pathRange, replacement: "", text: `#define ${incIncludeDefinePattern}`}, 0, 0, "")]);
+			document.defines.set(incIncludeDefinePattern, [new Directives.Defining.Define(new Range(0, 0, 0, 0), { range: inc.pathRange, replacement: "", text: `#define ${incIncludeDefinePattern}` }, 0, 0, "")]);
 			document.globalScope.includedScopes.push(include.globalScope);
 		}
 	}
@@ -411,7 +411,7 @@ export class Preprocessor {
 				}
 
 				cur.directive.elseBlock = element;
-				
+
 				const canExecute = cur.parentActive && !cur.anyBranchExecuted;
 				const result = canExecute ? this.evaluateCondition(document.inheritsInfo, element.conditionalString, element.startIndex, defines) : false;
 
@@ -421,10 +421,10 @@ export class Preprocessor {
 				cur.currentlyActive = canExecute && result;
 
 				cur.directive = element;
-			} 
+			}
 			else if (element instanceof Directives.Conditionals.Condition) {
 				this.handleCondition(document, element, ifStack, defines, isVisible);
-			} 
+			}
 			else if (element instanceof Directives.Conditionals.Else) {
 				if (!cur) {
 					document.diagnostics.push(PawnErrors.report(PawnErrors.Code.NotMatchingPreprocessorCondition, element.range));
@@ -553,7 +553,7 @@ export class Preprocessor {
 				});
 			}
 		}
-		
+
 		return code;
 	}
 
@@ -1276,7 +1276,7 @@ export class Preprocessor {
 		 */
 		let stream = new LikeCCharStream(line);
 		let currentMappingRootOriginalPos = -1;
-		let currentMappingRootEndInCurrentSource = -1;
+		let currentMappingRootEnd = -1;
 		const totalSize = line.length;
 		let lastReportedPercent = 0;
 
@@ -1352,30 +1352,33 @@ export class Preprocessor {
 					stream.curIndex += prefixlen;      /* match failed, skip this prefix */
 				}
 				else {
-					const isRecursive = currentPos < currentMappingRootEndInCurrentSource;
+					const currentPos = stream.curIndex;
 
+					const isRecursive = currentPos < currentMappingRootEnd;
+
+					let replaceData: ReplaceInfo = { shift: 0 };
+					const mappingInfo = { findedLength: 0, replacingLength: 0 };
+
+		
 					if (!isRecursive) {
 						const originalPos = currentPos - shift;
-						currentMappingRootOriginalPos = originalPos;
-						currentMappingRootEndInCurrentSource = currentPos + mappingInfo.replacingLength;
 
 						changes.push(new FindedDefine(
-							currentPos, // Позиция в новой строке (с учетом всех предыдущих замен)
+							currentPos,
 							mappingInfo.findedLength,
 							replaceData.shift,
 							subst
 						));
+						currentMappingRootEnd = currentPos + mappingInfo.replacingLength;
 					} else {
 						const lastChange = changes[changes.length - 1];
 						if (lastChange) {
 							lastChange.shift += replaceData.shift;
-							currentMappingRootEndInCurrentSource += replaceData.shift;
 						}
+						currentMappingRootEnd += replaceData.shift;
 					}
-					shift += replaceData.shift;
 
-					// changes.push(new FindedDefine(stream.curIndex + shift, prefixlen, mappingInfo.findedLength - mappingInfo.replacingLength, subst));
-					// shift += replaceData.shift;
+					shift += replaceData.shift;
 				}
 
 				/* match succeeded: do not update "start", because the substitution text
