@@ -18,6 +18,7 @@ import { SymbolsFactory } from "../SymbolSystem/SymbolsFactory";
 import { SymbolReferance } from "../SymbolSystem/Symbols/SymbolReferance";
 import { IScope } from "../antlr/Scopes/IScope";
 import { ConstExprParser, tokenize } from "./ConstExpParser";
+import { Logger } from "../Logger/Logger";
 
 
 type ConditionStack = ConditionStackElement[];
@@ -84,7 +85,6 @@ export class Preprocessor {
 	public async processFile(document: AbstractOpenFile, symbolManager: SymbolManager, onProgress?: (percent: number) => void) {
 
 		document.processedCode = document.text;
-
 
 		for (const action of [
 			async () => await this.findAndReplaceDirectives(document),
@@ -228,6 +228,10 @@ export class Preprocessor {
 			await this.fileManager.openFile(includePath, inheritsInfo);
 			const include = this.fileManager.getOpenedFile(includePath);
 			if (!include) {
+				continue;
+			}
+			if(include.isAnalyzing) {
+				Logger.log(`Circular dependency detected: ${includePath}`);
 				continue;
 			}
 			await include.waitForAnalysis();
@@ -1277,13 +1281,6 @@ export class Preprocessor {
 		let lastReportedPercent = 0;
 
 		Preprocessor.profilePatternReplacing = 0;
-		// Обход строки до ее конца
-		let asd = false;
-		// if (stream.length > 3232322) {
-		// 	console.profile('MyPerformanceTest');
-		// 	asd = true;
-		// }
-
 
 		let curIndex = stream.curIndex;
 		let charCode = stream.charCodeAt(curIndex);
@@ -1358,10 +1355,8 @@ export class Preprocessor {
 					const isRecursive = currentPos < currentMappingRootEndInCurrentSource;
 
 					if (!isRecursive) {
-						// Это макрос прямо из исходного кода
 						const originalPos = currentPos - shift;
 						currentMappingRootOriginalPos = originalPos;
-						// Запоминаем, до какой поры в новой строке будет идти "рекурсивный" текст
 						currentMappingRootEndInCurrentSource = currentPos + mappingInfo.replacingLength;
 
 						changes.push(new FindedDefine(
@@ -1371,14 +1366,9 @@ export class Preprocessor {
 							subst
 						));
 					} else {
-						// Это рекурсия (как TEST внутри a(TEST))
-						// Мы ОБНОВЛЯЕМ ПРЕДЫДУЩИЙ change.
-						// Почему? Потому что для маппера a(TEST) - это ОДИН кусок, 
-						// пришедший на смену VERY_LONG_PPATERN_NAME.
 						const lastChange = changes[changes.length - 1];
 						if (lastChange) {
 							lastChange.shift += replaceData.shift;
-							// Сдвигаем границу "рекурсивной зоны", так как строка внутри изменилась
 							currentMappingRootEndInCurrentSource += replaceData.shift;
 						}
 					}
@@ -1397,9 +1387,6 @@ export class Preprocessor {
 			}
 			curIndex = stream.curIndex;
 		}
-		// if (asd) {
-		// 	console.profileEnd('MyPerformanceTest');
-		// }
 
 		onProgress?.(100);
 		return stream.buildString;

@@ -13,6 +13,11 @@ export class Logger {
 	static log(message: string) {
 		Logger.instance?.outputChanel.log(message);
 	}
+	static debug(message: string) {
+		if (Logger.isDebug) {
+			Logger.instance?.outputChanel.log(message);
+		}
+	}
 	static error(message: string) {
 		Logger.instance?.outputChanel.error(message);
 	}
